@@ -1,0 +1,99 @@
+[package]
+name = "jive-core"
+version = "0.1.0"
+edition = "2021"
+authors = ["Jive Team"]
+description = "Core business logic for Jive financial app"
+license = "MIT"
+repository = "https://github.com/your-org/jive-flutter-rust"
+homepage = "https://jive.app"
+keywords = ["finance", "personal-finance", "wasm", "flutter"]
+categories = ["finance", "wasm"]
+
+[lib]
+name = "jive_core"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# 序列化/反序列化
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# 日期时间
+chrono = { version = "0.4", features = ["serde"] }
+
+# UUID
+uuid = { version = "1.0", features = ["v4", "serde"] }
+
+# 十进制精度数值
+rust_decimal = { version = "1.0", features = ["serde"] }
+
+# 错误处理
+thiserror = "1.0"
+anyhow = "1.0"
+
+# WASM 绑定
+wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
+js-sys = "0.3"
+
+# 用于更好的 panic 信息
+console_error_panic_hook = { version = "0.1", optional = true }
+
+# 更小的内存分配器
+wee_alloc = { version = "0.4", optional = true }
+
+# Web API 绑定
+[dependencies.web-sys]
+version = "0.3"
+features = [
+  "console",
+  "Window",
+  "Document",
+  "Element",
+  "HtmlElement",
+  "Storage",
+  "localStorage",
+  "sessionStorage",
+]
+
+# 开发依赖
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
+tokio = { version = "1.0", features = ["full"] }
+
+# 数据库 (可选，用于服务端)
+[dependencies.sqlx]
+version = "0.7"
+features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid", "decimal"]
+optional = true
+
+# HTTP 客户端 (可选)
+[dependencies.reqwest]
+version = "0.11"
+features = ["json"]
+optional = true
+
+[features]
+default = ["wasm"]
+wasm = ["wasm-bindgen", "js-sys", "web-sys", "console_error_panic_hook", "wee_alloc"]
+server = ["sqlx", "reqwest"]
+
+# WASM 优化配置
+[profile.release]
+# 优化大小
+opt-level = "s"
+# 链接时优化
+lto = true
+# 减少调试信息
+debug = false
+# 减少代码大小
+codegen-units = 1
+
+# 开发配置
+[profile.dev]
+opt-level = 0
+debug = true
+
+# WASM 包配置
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-Os", "--enable-mutable-globals"]
