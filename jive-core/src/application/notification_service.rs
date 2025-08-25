@@ -1,15 +1,17 @@
 //! NotificationService - 通知管理服务
 //! 
 //! 提供全面的通知管理功能，包括：
-//! - 多种通知类型支持
+//! - 多种通知类型支持（预算、账单、储蓄、成就等）
 //! - 智能推送策略
 //! - 通知模板系统
 //! - 批量通知处理
 //! - 通知历史追踪
+//! - 周报月报生成
+//! - 多渠道发送（应用内、邮件、推送、短信、微信）
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use chrono::{NaiveDateTime, Utc, Duration};
+use chrono::{NaiveDateTime, NaiveDate, Utc, Duration, Datelike};
 use std::collections::HashMap;
 
 #[cfg(feature = "wasm")]
@@ -17,7 +19,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::{
     error::{JiveError, Result},
-    models::{ServiceContext, ServiceResponse, PaginationParams, PaginatedResult}
+    application::{ServiceContext, ServiceResponse, PaginationParams, PaginatedResult}
 };
 
 /// 通知类型枚举
@@ -27,13 +29,17 @@ pub enum NotificationType {
     BudgetAlert,        // 预算警告
     PaymentReminder,    // 付款提醒
     BillDue,           // 账单到期
+    BillReminder,      // 账单提醒
     GoalAchievement,   // 目标达成
+    SavingGoal,        // 储蓄目标
     SecurityAlert,     // 安全警告
     SystemUpdate,      // 系统更新
     TransactionAlert,  // 交易警告
     CategoryAlert,     // 分类警告
-    WeeklyReport,      // 周报
+    WeeklySummary,     // 周报
     MonthlyReport,     // 月报
+    Achievement,       // 成就
+    Subscription,      // 订阅
     CustomAlert,       // 自定义警告
 }
 
@@ -46,13 +52,17 @@ impl NotificationType {
             NotificationType::BudgetAlert => "budget_alert".to_string(),
             NotificationType::PaymentReminder => "payment_reminder".to_string(),
             NotificationType::BillDue => "bill_due".to_string(),
+            NotificationType::BillReminder => "bill_reminder".to_string(),
             NotificationType::GoalAchievement => "goal_achievement".to_string(),
+            NotificationType::SavingGoal => "saving_goal".to_string(),
             NotificationType::SecurityAlert => "security_alert".to_string(),
             NotificationType::SystemUpdate => "system_update".to_string(),
             NotificationType::TransactionAlert => "transaction_alert".to_string(),
             NotificationType::CategoryAlert => "category_alert".to_string(),
-            NotificationType::WeeklyReport => "weekly_report".to_string(),
+            NotificationType::WeeklySummary => "weekly_summary".to_string(),
             NotificationType::MonthlyReport => "monthly_report".to_string(),
+            NotificationType::Achievement => "achievement".to_string(),
+            NotificationType::Subscription => "subscription".to_string(),
             NotificationType::CustomAlert => "custom_alert".to_string(),
         }
     }
@@ -101,6 +111,7 @@ pub enum NotificationChannel {
     Email,      // 邮件
     SMS,        // 短信
     Push,       // 推送通知
+    WeChat,     // 微信通知
     WebHook,    // 网络钩子
 }
 
@@ -387,38 +398,198 @@ pub struct NotificationService {
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub struct NotificationPreferences {
     pub user_id: String,
+    pub family_id: String,
     pub enabled_channels: Vec<NotificationChannel>,
     pub enabled_types: Vec<NotificationType>,
-    pub quiet_hours_start: Option<String>, // HH:MM格式
-    pub quiet_hours_end: Option<String>,
+    pub budget_alerts: bool,
+    pub bill_reminders: bool,
+    pub saving_goals: bool,
+    pub transaction_alerts: bool,
+    pub weekly_summary: bool,
+    pub monthly_reports: bool,
+    pub achievements: bool,
+    pub large_transaction_threshold: f64,  // 大额交易阈值
+    pub bill_reminder_days: Vec<i32>,     // 账单提醒天数 [0, 1, 3, 7]
+    pub quiet_hours_start: Option<String>, // HH:MM格式 "22:00"
+    pub quiet_hours_end: Option<String>,   // "08:00"
     pub timezone: Option<String>,
     pub email: Option<String>,
     pub phone: Option<String>,
+    pub wechat_openid: Option<String>,    // 微信OpenID
+    pub email_digest_frequency: EmailDigestFrequency,
     pub frequency_limits: HashMap<String, u32>, // 类型 -> 每天最大数量
+}
+
+/// 邮件摘要频率
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum EmailDigestFrequency {
+    Realtime,  // 实时
+    Daily,     // 每日摘要
+    Weekly,    // 每周摘要
+    Never,     // 不发送
 }
 
 #[cfg(feature = "wasm")]
 #[wasm_bindgen]
 impl NotificationPreferences {
     #[wasm_bindgen(constructor)]
-    pub fn new(user_id: String) -> Self {
+    pub fn new(user_id: String, family_id: String) -> Self {
         Self {
             user_id,
+            family_id,
             enabled_channels: vec![NotificationChannel::InApp],
             enabled_types: vec![
                 NotificationType::BudgetAlert,
-                NotificationType::PaymentReminder,
-                NotificationType::BillDue,
+                NotificationType::BillReminder,
                 NotificationType::SecurityAlert,
             ],
-            quiet_hours_start: None,
-            quiet_hours_end: None,
-            timezone: None,
+            budget_alerts: true,
+            bill_reminders: true,
+            saving_goals: true,
+            transaction_alerts: true,
+            weekly_summary: false,
+            monthly_reports: true,
+            achievements: true,
+            large_transaction_threshold: 1000.0,
+            bill_reminder_days: vec![0, 1, 3, 7],
+            quiet_hours_start: Some("22:00".to_string()),
+            quiet_hours_end: Some("08:00".to_string()),
+            timezone: Some("Asia/Shanghai".to_string()),
             email: None,
             phone: None,
+            wechat_openid: None,
+            email_digest_frequency: EmailDigestFrequency::Daily,
             frequency_limits: HashMap::new(),
         }
     }
+}
+
+/// 预算提醒请求
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BudgetAlertRequest {
+    pub family_id: String,
+    pub budget_id: String,
+    pub category_name: String,
+    pub budget_amount: f64,
+    pub spent_amount: f64,
+    pub percentage: f64,
+    pub currency: String,
+}
+
+/// 账单提醒请求
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BillReminderRequest {
+    pub family_id: String,
+    pub credit_card_id: String,
+    pub card_name: String,
+    pub current_balance: f64,
+    pub due_date: NaiveDate,
+    pub days_until_due: i32,
+    pub currency: String,
+}
+
+/// 储蓄目标更新请求
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SavingGoalUpdateRequest {
+    pub family_id: String,
+    pub saving_plan_id: String,
+    pub plan_name: String,
+    pub current_amount: f64,
+    pub target_amount: f64,
+    pub progress_percentage: f64,
+    pub milestone_reached: Option<u32>,  // 25, 50, 75, 100
+    pub currency: String,
+}
+
+/// 交易提醒请求
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TransactionAlertRequest {
+    pub family_id: String,
+    pub transaction_id: String,
+    pub alert_type: TransactionAlertType,
+    pub merchant_name: Option<String>,
+    pub amount: f64,
+    pub category_name: Option<String>,
+    pub description: String,
+    pub currency: String,
+}
+
+/// 交易提醒类型
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum TransactionAlertType {
+    LargeExpense,      // 大额支出
+    UnusualActivity,   // 异常活动
+    AutoCategorized,   // 自动分类
+    DuplicateDetected, // 重复交易
+    RefundReceived,    // 收到退款
+}
+
+/// 成就通知请求
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AchievementNotificationRequest {
+    pub family_id: String,
+    pub achievement_type: AchievementType,
+    pub details: HashMap<String, serde_json::Value>,
+}
+
+/// 成就类型
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum AchievementType {
+    FirstTransaction,    // 第一笔交易
+    StreakMilestone,    // 连续记账里程碑
+    SavingMilestone,    // 储蓄里程碑
+    BudgetMaster,       // 预算大师
+    InvestmentGuru,     // 投资达人
+    DebtFreeHero,       // 无债一身轻
+    CategoryExplorer,   // 分类探索者
+    YearInReview,       // 年度总结
+}
+
+/// 周报统计
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WeeklySummaryStats {
+    pub week_start: NaiveDate,
+    pub week_end: NaiveDate,
+    pub income: f64,
+    pub expenses: f64,
+    pub net_income: f64,
+    pub transaction_count: u32,
+    pub top_categories: Vec<(String, f64)>,
+    pub budget_status: Vec<BudgetStatus>,
+    pub savings_progress: f64,
+}
+
+/// 月报统计
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MonthlyReportStats {
+    pub month: String,  // "2024-01"
+    pub income: f64,
+    pub expenses: f64,
+    pub net_income: f64,
+    pub top_categories: Vec<(String, f64)>,
+    pub comparison_to_last_month: f64,  // 百分比变化
+    pub budget_performance: Vec<BudgetStatus>,
+    pub investment_performance: Option<f64>,
+    pub credit_utilization: Option<f64>,
+}
+
+/// 预算状态
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BudgetStatus {
+    pub category: String,
+    pub budget: f64,
+    pub spent: f64,
+    pub percentage: f64,
+    pub status: BudgetHealthStatus,
+}
+
+/// 预算健康状态
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum BudgetHealthStatus {
+    Good,      // < 75%
+    Warning,   // 75-90%
+    Critical,  // 90-100%
+    Exceeded,  // > 100%
 }
 
 impl NotificationService {
@@ -439,56 +610,65 @@ impl NotificationService {
             (
                 NotificationType::BudgetAlert,
                 "预算警告",
-                "预算超限提醒",
-                "您的{{category}}预算已超出{{percentage}}%",
+                "预算提醒: {{category}}",
+                "您的{{category}}预算已使用{{percentage}}%，已花费¥{{spent}}，预算为¥{{budget}}",
                 NotificationPriority::High,
                 vec![NotificationChannel::InApp, NotificationChannel::Email],
-                vec!["category".to_string(), "percentage".to_string(), "amount".to_string()],
+                vec!["category".to_string(), "percentage".to_string(), "spent".to_string(), "budget".to_string()],
             ),
             (
-                NotificationType::PaymentReminder,
-                "付款提醒",
-                "付款到期提醒",
-                "您有一笔{{amount}}的付款将在{{days}}天后到期",
-                NotificationPriority::Medium,
-                vec![NotificationChannel::InApp, NotificationChannel::Push],
-                vec!["amount".to_string(), "days".to_string(), "payee".to_string()],
-            ),
-            (
-                NotificationType::BillDue,
-                "账单到期",
-                "账单到期通知",
-                "{{bill_name}}账单{{amount}}将在{{date}}到期",
+                NotificationType::BillReminder,
+                "账单提醒",
+                "账单提醒: {{card_name}}",
+                "您的{{card_name}}账单将在{{days}}天后到期，当前欠款¥{{balance}}",
                 NotificationPriority::High,
-                vec![NotificationChannel::InApp, NotificationChannel::Email, NotificationChannel::Push],
-                vec!["bill_name".to_string(), "amount".to_string(), "date".to_string()],
+                vec![NotificationChannel::InApp, NotificationChannel::Push],
+                vec!["card_name".to_string(), "days".to_string(), "balance".to_string()],
             ),
             (
-                NotificationType::GoalAchievement,
-                "目标达成",
-                "恭喜！目标达成",
-                "恭喜您完成了{{goal_name}}目标！",
+                NotificationType::SavingGoal,
+                "储蓄目标",
+                "储蓄目标{{milestone_text}}",
+                "{{message_text}}",
                 NotificationPriority::Medium,
                 vec![NotificationChannel::InApp, NotificationChannel::Push],
-                vec!["goal_name".to_string(), "achievement_date".to_string()],
+                vec!["milestone_text".to_string(), "message_text".to_string()],
             ),
             (
-                NotificationType::SecurityAlert,
-                "安全警告",
-                "账户安全警告",
-                "检测到异常活动：{{activity_type}}",
-                NotificationPriority::Urgent,
-                vec![NotificationChannel::InApp, NotificationChannel::Email, NotificationChannel::SMS],
-                vec!["activity_type".to_string(), "location".to_string(), "time".to_string()],
+                NotificationType::TransactionAlert,
+                "交易提醒",
+                "{{alert_title}}",
+                "{{alert_message}}",
+                NotificationPriority::Medium,
+                vec![NotificationChannel::InApp],
+                vec!["alert_title".to_string(), "alert_message".to_string()],
             ),
             (
-                NotificationType::WeeklyReport,
+                NotificationType::Achievement,
+                "成就达成",
+                "{{achievement_title}}",
+                "{{achievement_message}}",
+                NotificationPriority::Low,
+                vec![NotificationChannel::InApp, NotificationChannel::Push],
+                vec!["achievement_title".to_string(), "achievement_message".to_string()],
+            ),
+            (
+                NotificationType::WeeklySummary,
                 "周报",
-                "本周财务报告",
-                "本周您共消费{{total_spent}}，主要支出为{{top_category}}",
+                "周报：{{week_range}}",
+                "本周收入¥{{income}}，支出¥{{expenses}}，净收入¥{{net}}",
                 NotificationPriority::Low,
                 vec![NotificationChannel::InApp, NotificationChannel::Email],
-                vec!["total_spent".to_string(), "top_category".to_string(), "week_range".to_string()],
+                vec!["week_range".to_string(), "income".to_string(), "expenses".to_string(), "net".to_string()],
+            ),
+            (
+                NotificationType::MonthlyReport,
+                "月报",
+                "{{month}}财务报告",
+                "上月收入¥{{income}}，支出¥{{expenses}}。主要支出类别：{{top_categories}}",
+                NotificationPriority::Low,
+                vec![NotificationChannel::InApp, NotificationChannel::Email],
+                vec!["month".to_string(), "income".to_string(), "expenses".to_string(), "top_categories".to_string()],
             ),
         ];
 
@@ -509,6 +689,458 @@ impl NotificationService {
             
             self.templates.insert(template.id.clone(), template);
         }
+    }
+
+    /// 发送预算提醒
+    pub async fn send_budget_alert(
+        &mut self,
+        request: BudgetAlertRequest,
+        context: &ServiceContext,
+    ) -> Result<String> {
+        // 获取用户偏好
+        let preferences = self.user_preferences.get(&request.family_id)
+            .cloned()
+            .unwrap_or_else(|| NotificationPreferences::new(context.user_id.clone(), request.family_id.clone()));
+
+        if !preferences.budget_alerts {
+            return Ok(String::new());
+        }
+
+        let (title, message) = if request.percentage >= 100.0 {
+            (
+                format!("预算提醒: {}", request.category_name),
+                format!("您已超出{}预算！已花费¥{}，预算为¥{}", 
+                    request.category_name, request.spent_amount, request.budget_amount)
+            )
+        } else if request.percentage >= 90.0 {
+            (
+                format!("预算提醒: {}", request.category_name),
+                format!("您的{}预算已使用{}%，请注意控制支出", 
+                    request.category_name, request.percentage as i32)
+            )
+        } else {
+            (
+                format!("预算提醒: {}", request.category_name),
+                format!("您的{}预算已使用{}%", 
+                    request.category_name, request.percentage as i32)
+            )
+        };
+
+        let mut metadata = HashMap::new();
+        metadata.insert("budget_id".to_string(), serde_json::json!(request.budget_id));
+        metadata.insert("percentage".to_string(), serde_json::json!(request.percentage));
+        metadata.insert("urgent".to_string(), serde_json::json!(request.percentage >= 100.0));
+
+        let notification_request = CreateNotificationRequest {
+            user_id: context.user_id.clone(),
+            notification_type: NotificationType::BudgetAlert,
+            priority: if request.percentage >= 100.0 { 
+                NotificationPriority::Urgent 
+            } else { 
+                NotificationPriority::High 
+            },
+            title,
+            message,
+            action_url: Some(format!("/budgets/{}", request.budget_id)),
+            data: Some(serde_json::to_string(&metadata).unwrap_or_default()),
+            channels: preferences.enabled_channels.clone(),
+            scheduled_at: None,
+            expires_at: None,
+            template_id: None,
+            template_variables: None,
+        };
+
+        let notification = self.create_notification(notification_request, context).await?;
+        Ok(notification.id)
+    }
+
+    /// 发送账单提醒
+    pub async fn send_bill_reminder(
+        &mut self,
+        request: BillReminderRequest,
+        context: &ServiceContext,
+    ) -> Result<String> {
+        let preferences = self.user_preferences.get(&request.family_id)
+            .cloned()
+            .unwrap_or_else(|| NotificationPreferences::new(context.user_id.clone(), request.family_id.clone()));
+
+        if !preferences.bill_reminders {
+            return Ok(String::new());
+        }
+
+        // 检查是否在提醒天数范围内
+        if !preferences.bill_reminder_days.contains(&request.days_until_due) {
+            return Ok(String::new());
+        }
+
+        let (title, message) = match request.days_until_due {
+            0 => (
+                format!("账单提醒: {}", request.card_name),
+                format!("您的{}账单今天到期！当前欠款¥{}", 
+                    request.card_name, request.current_balance)
+            ),
+            1 => (
+                format!("账单提醒: {}", request.card_name),
+                format!("您的{}账单明天到期！当前欠款¥{}", 
+                    request.card_name, request.current_balance)
+            ),
+            _ => (
+                format!("账单提醒: {}", request.card_name),
+                format!("您的{}账单将在{}天后到期，当前欠款¥{}", 
+                    request.card_name, request.days_until_due, request.current_balance)
+            ),
+        };
+
+        let mut metadata = HashMap::new();
+        metadata.insert("credit_card_id".to_string(), serde_json::json!(request.credit_card_id));
+        metadata.insert("days_until_due".to_string(), serde_json::json!(request.days_until_due));
+        metadata.insert("urgent".to_string(), serde_json::json!(request.days_until_due <= 1));
+
+        let notification_request = CreateNotificationRequest {
+            user_id: context.user_id.clone(),
+            notification_type: NotificationType::BillReminder,
+            priority: if request.days_until_due <= 1 { 
+                NotificationPriority::Urgent 
+            } else { 
+                NotificationPriority::High 
+            },
+            title,
+            message,
+            action_url: Some(format!("/credit-cards/{}", request.credit_card_id)),
+            data: Some(serde_json::to_string(&metadata).unwrap_or_default()),
+            channels: if request.days_until_due <= 1 {
+                vec![NotificationChannel::InApp, NotificationChannel::Push, NotificationChannel::SMS]
+            } else {
+                preferences.enabled_channels.clone()
+            },
+            scheduled_at: None,
+            expires_at: None,
+            template_id: None,
+            template_variables: None,
+        };
+
+        let notification = self.create_notification(notification_request, context).await?;
+        Ok(notification.id)
+    }
+
+    /// 发送储蓄目标更新
+    pub async fn send_saving_goal_update(
+        &mut self,
+        request: SavingGoalUpdateRequest,
+        context: &ServiceContext,
+    ) -> Result<String> {
+        let preferences = self.user_preferences.get(&request.family_id)
+            .cloned()
+            .unwrap_or_else(|| NotificationPreferences::new(context.user_id.clone(), request.family_id.clone()));
+
+        if !preferences.saving_goals {
+            return Ok(String::new());
+        }
+
+        let (title, message) = if let Some(milestone) = request.milestone_reached {
+            (
+                "储蓄目标达成！".to_string(),
+                format!("恭喜！您的{}已达到{}%的目标", request.plan_name, milestone)
+            )
+        } else {
+            (
+                "储蓄目标进度更新".to_string(),
+                format!("您的{}已完成{}%，已存¥{}，目标¥{}", 
+                    request.plan_name, 
+                    request.progress_percentage as i32,
+                    request.current_amount, 
+                    request.target_amount)
+            )
+        };
+
+        let mut metadata = HashMap::new();
+        metadata.insert("saving_plan_id".to_string(), serde_json::json!(request.saving_plan_id));
+        metadata.insert("progress".to_string(), serde_json::json!(request.progress_percentage));
+        metadata.insert("celebration".to_string(), serde_json::json!(request.milestone_reached.is_some()));
+
+        let notification_request = CreateNotificationRequest {
+            user_id: context.user_id.clone(),
+            notification_type: NotificationType::SavingGoal,
+            priority: if request.milestone_reached.is_some() { 
+                NotificationPriority::Medium 
+            } else { 
+                NotificationPriority::Low 
+            },
+            title,
+            message,
+            action_url: Some(format!("/savings/{}", request.saving_plan_id)),
+            data: Some(serde_json::to_string(&metadata).unwrap_or_default()),
+            channels: preferences.enabled_channels.clone(),
+            scheduled_at: None,
+            expires_at: None,
+            template_id: None,
+            template_variables: None,
+        };
+
+        let notification = self.create_notification(notification_request, context).await?;
+        Ok(notification.id)
+    }
+
+    /// 发送交易提醒
+    pub async fn send_transaction_alert(
+        &mut self,
+        request: TransactionAlertRequest,
+        context: &ServiceContext,
+    ) -> Result<String> {
+        let preferences = self.user_preferences.get(&request.family_id)
+            .cloned()
+            .unwrap_or_else(|| NotificationPreferences::new(context.user_id.clone(), request.family_id.clone()));
+
+        if !preferences.transaction_alerts {
+            return Ok(String::new());
+        }
+
+        // 检查大额交易阈值
+        if matches!(request.alert_type, TransactionAlertType::LargeExpense) {
+            if request.amount < preferences.large_transaction_threshold {
+                return Ok(String::new());
+            }
+        }
+
+        let (title, message) = match request.alert_type {
+            TransactionAlertType::LargeExpense => (
+                "大额支出提醒".to_string(),
+                format!("您刚刚在{}消费了¥{}", 
+                    request.merchant_name.as_ref().unwrap_or(&"未知商户".to_string()), 
+                    request.amount)
+            ),
+            TransactionAlertType::UnusualActivity => (
+                "异常交易提醒".to_string(),
+                format!("检测到异常交易：{}，金额¥{}", request.description, request.amount)
+            ),
+            TransactionAlertType::AutoCategorized => (
+                "交易已自动分类".to_string(),
+                format!("交易\"{}\"已自动归类为{}", 
+                    request.description, 
+                    request.category_name.as_ref().unwrap_or(&"未分类".to_string()))
+            ),
+            TransactionAlertType::DuplicateDetected => (
+                "重复交易检测".to_string(),
+                format!("检测到可能的重复交易：{}，金额¥{}", request.description, request.amount)
+            ),
+            TransactionAlertType::RefundReceived => (
+                "收到退款".to_string(),
+                format!("您收到了¥{}的退款：{}", request.amount, request.description)
+            ),
+        };
+
+        let mut metadata = HashMap::new();
+        metadata.insert("transaction_id".to_string(), serde_json::json!(request.transaction_id));
+        metadata.insert("alert_type".to_string(), serde_json::json!(format!("{:?}", request.alert_type)));
+        metadata.insert("urgent".to_string(), serde_json::json!(matches!(request.alert_type, TransactionAlertType::UnusualActivity)));
+
+        let notification_request = CreateNotificationRequest {
+            user_id: context.user_id.clone(),
+            notification_type: NotificationType::TransactionAlert,
+            priority: match request.alert_type {
+                TransactionAlertType::UnusualActivity => NotificationPriority::High,
+                TransactionAlertType::LargeExpense => NotificationPriority::Medium,
+                _ => NotificationPriority::Low,
+            },
+            title,
+            message,
+            action_url: Some(format!("/transactions/{}", request.transaction_id)),
+            data: Some(serde_json::to_string(&metadata).unwrap_or_default()),
+            channels: preferences.enabled_channels.clone(),
+            scheduled_at: None,
+            expires_at: None,
+            template_id: None,
+            template_variables: None,
+        };
+
+        let notification = self.create_notification(notification_request, context).await?;
+        Ok(notification.id)
+    }
+
+    /// 发送成就通知
+    pub async fn send_achievement_notification(
+        &mut self,
+        request: AchievementNotificationRequest,
+        context: &ServiceContext,
+    ) -> Result<String> {
+        let preferences = self.user_preferences.get(&request.family_id)
+            .cloned()
+            .unwrap_or_else(|| NotificationPreferences::new(context.user_id.clone(), request.family_id.clone()));
+
+        if !preferences.achievements {
+            return Ok(String::new());
+        }
+
+        let (title, message) = match request.achievement_type {
+            AchievementType::FirstTransaction => (
+                "🎉 欢迎开始记账！".to_string(),
+                "您已记录第一笔交易，继续保持良好的记账习惯".to_string()
+            ),
+            AchievementType::StreakMilestone => {
+                let days = request.details.get("days")
+                    .and_then(|v| v.as_u64())
+                    .unwrap_or(0);
+                (
+                    format!("🔥 连续记账{}天！", days),
+                    format!("太棒了！您已经连续{}天保持记账，继续加油", days)
+                )
+            },
+            AchievementType::SavingMilestone => {
+                let amount = request.details.get("amount")
+                    .and_then(|v| v.as_f64())
+                    .unwrap_or(0.0);
+                (
+                    "💰 储蓄里程碑！".to_string(),
+                    format!("恭喜！您的总储蓄已达到¥{}", amount)
+                )
+            },
+            AchievementType::BudgetMaster => (
+                "📊 预算大师！".to_string(),
+                "连续3个月控制预算在计划内，理财能力提升".to_string()
+            ),
+            AchievementType::InvestmentGuru => (
+                "📈 投资达人！".to_string(),
+                "您的投资组合表现优异，继续保持".to_string()
+            ),
+            AchievementType::DebtFreeHero => (
+                "🎊 无债一身轻！".to_string(),
+                "恭喜您还清所有债务，财务自由更进一步".to_string()
+            ),
+            AchievementType::CategoryExplorer => (
+                "🗂️ 分类探索者！".to_string(),
+                "您已使用了所有消费类别，记账更加精细".to_string()
+            ),
+            AchievementType::YearInReview => (
+                "📅 年度总结！".to_string(),
+                "您的年度财务报告已生成，点击查看详情".to_string()
+            ),
+        };
+
+        let mut metadata = HashMap::new();
+        metadata.insert("achievement_type".to_string(), serde_json::json!(format!("{:?}", request.achievement_type)));
+        for (key, value) in request.details {
+            metadata.insert(key, value);
+        }
+        metadata.insert("celebration".to_string(), serde_json::json!(true));
+
+        let notification_request = CreateNotificationRequest {
+            user_id: context.user_id.clone(),
+            notification_type: NotificationType::Achievement,
+            priority: NotificationPriority::Low,
+            title,
+            message,
+            action_url: Some("/achievements".to_string()),
+            data: Some(serde_json::to_string(&metadata).unwrap_or_default()),
+            channels: vec![NotificationChannel::InApp, NotificationChannel::Push],
+            scheduled_at: None,
+            expires_at: None,
+            template_id: None,
+            template_variables: None,
+        };
+
+        let notification = self.create_notification(notification_request, context).await?;
+        Ok(notification.id)
+    }
+
+    /// 发送周报
+    pub async fn send_weekly_summary(
+        &mut self,
+        family_id: String,
+        stats: WeeklySummaryStats,
+        context: &ServiceContext,
+    ) -> Result<String> {
+        let preferences = self.user_preferences.get(&family_id)
+            .cloned()
+            .unwrap_or_else(|| NotificationPreferences::new(context.user_id.clone(), family_id.clone()));
+
+        if !preferences.weekly_summary {
+            return Ok(String::new());
+        }
+
+        let week_range = format!(
+            "{}月{}日 - {}月{}日",
+            stats.week_start.month(), stats.week_start.day(),
+            stats.week_end.month(), stats.week_end.day()
+        );
+
+        let title = format!("周报：{}", week_range);
+        let message = format!(
+            "本周收入¥{}，支出¥{}，净收入¥{}",
+            stats.income, stats.expenses, stats.net_income
+        );
+
+        let mut metadata = HashMap::new();
+        metadata.insert("week_start".to_string(), serde_json::json!(stats.week_start.to_string()));
+        metadata.insert("week_end".to_string(), serde_json::json!(stats.week_end.to_string()));
+        metadata.insert("stats".to_string(), serde_json::json!(stats));
+
+        let notification_request = CreateNotificationRequest {
+            user_id: context.user_id.clone(),
+            notification_type: NotificationType::WeeklySummary,
+            priority: NotificationPriority::Low,
+            title,
+            message,
+            action_url: Some("/reports/weekly".to_string()),
+            data: Some(serde_json::to_string(&metadata).unwrap_or_default()),
+            channels: vec![NotificationChannel::InApp, NotificationChannel::Email],
+            scheduled_at: None,
+            expires_at: None,
+            template_id: None,
+            template_variables: None,
+        };
+
+        let notification = self.create_notification(notification_request, context).await?;
+        Ok(notification.id)
+    }
+
+    /// 发送月报
+    pub async fn send_monthly_report(
+        &mut self,
+        family_id: String,
+        stats: MonthlyReportStats,
+        context: &ServiceContext,
+    ) -> Result<String> {
+        let preferences = self.user_preferences.get(&family_id)
+            .cloned()
+            .unwrap_or_else(|| NotificationPreferences::new(context.user_id.clone(), family_id.clone()));
+
+        if !preferences.monthly_reports {
+            return Ok(String::new());
+        }
+
+        let title = format!("{}财务报告", stats.month);
+        let top_categories_str = stats.top_categories.iter()
+            .take(3)
+            .map(|(cat, amount)| format!("{}(¥{})", cat, amount))
+            .collect::<Vec<_>>()
+            .join("、");
+
+        let message = format!(
+            "上月收入¥{}，支出¥{}。主要支出类别：{}",
+            stats.income, stats.expenses, top_categories_str
+        );
+
+        let mut metadata = HashMap::new();
+        metadata.insert("month".to_string(), serde_json::json!(stats.month));
+        metadata.insert("stats".to_string(), serde_json::json!(stats));
+
+        let notification_request = CreateNotificationRequest {
+            user_id: context.user_id.clone(),
+            notification_type: NotificationType::MonthlyReport,
+            priority: NotificationPriority::Low,
+            title,
+            message,
+            action_url: Some("/reports/monthly".to_string()),
+            data: Some(serde_json::to_string(&metadata).unwrap_or_default()),
+            channels: vec![NotificationChannel::InApp, NotificationChannel::Email],
+            scheduled_at: None,
+            expires_at: None,
+            template_id: None,
+            template_variables: None,
+        };
+
+        let notification = self.create_notification(notification_request, context).await?;
+        Ok(notification.id)
     }
 
     /// 创建通知
@@ -1090,6 +1722,7 @@ impl NotificationChannel {
             NotificationChannel::Email => "email".to_string(),
             NotificationChannel::SMS => "sms".to_string(),
             NotificationChannel::Push => "push".to_string(),
+            NotificationChannel::WeChat => "wechat".to_string(),
             NotificationChannel::WebHook => "webhook".to_string(),
         }
     }
@@ -1103,6 +1736,7 @@ impl NotificationChannel {
             NotificationChannel::Email => "email".to_string(),
             NotificationChannel::SMS => "sms".to_string(),
             NotificationChannel::Push => "push".to_string(),
+            NotificationChannel::WeChat => "wechat".to_string(),
             NotificationChannel::WebHook => "webhook".to_string(),
         }
     }
@@ -1125,13 +1759,17 @@ impl NotificationType {
             NotificationType::BudgetAlert => "budget_alert".to_string(),
             NotificationType::PaymentReminder => "payment_reminder".to_string(),
             NotificationType::BillDue => "bill_due".to_string(),
+            NotificationType::BillReminder => "bill_reminder".to_string(),
             NotificationType::GoalAchievement => "goal_achievement".to_string(),
+            NotificationType::SavingGoal => "saving_goal".to_string(),
             NotificationType::SecurityAlert => "security_alert".to_string(),
             NotificationType::SystemUpdate => "system_update".to_string(),
             NotificationType::TransactionAlert => "transaction_alert".to_string(),
             NotificationType::CategoryAlert => "category_alert".to_string(),
-            NotificationType::WeeklyReport => "weekly_report".to_string(),
+            NotificationType::WeeklySummary => "weekly_summary".to_string(),
             NotificationType::MonthlyReport => "monthly_report".to_string(),
+            NotificationType::Achievement => "achievement".to_string(),
+            NotificationType::Subscription => "subscription".to_string(),
             NotificationType::CustomAlert => "custom_alert".to_string(),
         }
     }
@@ -1200,12 +1838,9 @@ mod tests {
     use super::*;
 
     fn create_test_context() -> ServiceContext {
-        ServiceContext {
-            user_id: "test-user".to_string(),
-            current_ledger_id: Some("test-ledger".to_string()),
-            request_id: Some("test-request".to_string()),
-            timestamp: Utc::now(),
-        }
+        ServiceContext::new("test-user".to_string(), "test-family".to_string())
+            .with_ledger("test-ledger".to_string())
+            .with_request_id("test-request".to_string())
     }
 
     #[tokio::test]

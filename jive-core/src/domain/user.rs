@@ -56,7 +56,7 @@ impl Default for UserPreferences {
     }
 }
 
-/// 用户实体
+/// 用户实体 - 支持多 Family
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub struct User {
@@ -65,9 +65,10 @@ pub struct User {
     name: String,
     avatar_url: Option<String>,
     status: UserStatus,
-    role: UserRole,
+    role: UserRole,  // 系统级角色
     preferences: UserPreferences,
-    current_ledger_id: Option<String>,
+    current_family_id: Option<String>,  // 当前选中的 Family
+    current_ledger_id: Option<String>,  // 当前选中的 Ledger
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     last_login_at: Option<DateTime<Utc>>,
@@ -97,6 +98,7 @@ impl User {
             status: UserStatus::Inactive,
             role: UserRole::User,
             preferences: UserPreferences::default(),
+            current_family_id: None,
             current_ledger_id: None,
             created_at: now,
             updated_at: now,

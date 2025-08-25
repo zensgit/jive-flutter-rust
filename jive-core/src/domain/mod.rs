@@ -7,9 +7,11 @@ pub mod transaction;
 pub mod ledger;
 pub mod category;
 pub mod user;
+pub mod family;
 
 pub use account::*;
 pub use transaction::*;
 pub use ledger::*;
 pub use category::*;
 pub use user::*;
+pub use family::*;

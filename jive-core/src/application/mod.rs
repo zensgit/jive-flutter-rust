@@ -14,6 +14,17 @@ pub mod ledger_service;
 pub mod category_service;
 pub mod user_service;
 pub mod auth_service;
+pub mod auth_service_enhanced;
+pub mod family_service;
+pub mod multi_family_service;
+pub mod middleware;
+pub mod mfa_service;
+pub mod quick_transaction_service;
+pub mod rules_engine;
+pub mod analytics_service;
+pub mod data_exchange_service;
+pub mod credit_card_service;
+pub mod investment_service;
 pub mod sync_service;
 pub mod import_service;
 pub mod export_service;
@@ -31,6 +42,7 @@ pub use ledger_service::*;
 pub use category_service::*;
 pub use user_service::*;
 pub use auth_service::*;
+pub use family_service::*;
 pub use sync_service::*;
 pub use import_service::*;
 pub use export_service::*;
@@ -390,22 +402,30 @@ impl Default for BatchResult {
     }
 }
 
-/// 服务上下文
+/// 服务上下文 - 增强以支持 Family 多用户协作
 #[derive(Debug, Clone)]
 pub struct ServiceContext {
     pub user_id: String,
+    pub family_id: String,  // 新增：当前 Family
     pub current_ledger_id: Option<String>,
+    pub permissions: Vec<crate::domain::Permission>,  // 新增：用户权限
     pub request_id: Option<String>,
     pub timestamp: chrono::DateTime<chrono::Utc>,
+    pub ip_address: Option<String>,  // 新增：用于审计
+    pub user_agent: Option<String>,  // 新增：用于审计
 }
 
 impl ServiceContext {
-    pub fn new(user_id: String) -> Self {
+    pub fn new(user_id: String, family_id: String) -> Self {
         Self {
             user_id,
+            family_id,
             current_ledger_id: None,
+            permissions: Vec::new(),
             request_id: None,
             timestamp: chrono::Utc::now(),
+            ip_address: None,
+            user_agent: None,
         }
     }
 
@@ -417,6 +437,50 @@ impl ServiceContext {
     pub fn with_request_id(mut self, request_id: String) -> Self {
         self.request_id = Some(request_id);
         self
+    }
+
+    pub fn with_permissions(mut self, permissions: Vec<crate::domain::Permission>) -> Self {
+        self.permissions = permissions;
+        self
+    }
+
+    pub fn with_client_info(mut self, ip: Option<String>, agent: Option<String>) -> Self {
+        self.ip_address = ip;
+        self.user_agent = agent;
+        self
+    }
+
+    /// 检查权限
+    pub fn has_permission(&self, permission: crate::domain::Permission) -> bool {
+        self.permissions.contains(&permission)
+    }
+    
+    /// 检查权限（通过字符串）
+    pub fn has_permission_str(&self, permission_str: &str) -> bool {
+        use crate::domain::Permission;
+        
+        // 将字符串转换为 Permission 枚举
+        let permission = match permission_str {
+            "view_transactions" => Permission::ViewTransactions,
+            "create_transactions" => Permission::CreateTransactions,
+            "edit_transactions" => Permission::EditTransactions,
+            "delete_transactions" => Permission::DeleteTransactions,
+            "manage_rules" => Permission::ManageFamily,  // 暂时使用 ManageFamily 权限
+            _ => return false,
+        };
+        
+        self.has_permission(permission)
+    }
+    
+    /// 要求权限（无权限时抛出错误）
+    pub fn require_permission(&self, permission: crate::domain::Permission) -> crate::error::Result<()> {
+        use crate::error::JiveError;
+        if !self.has_permission(permission) {
+            return Err(JiveError::Unauthorized(
+                format!("Missing permission: {:?}", permission)
+            ));
+        }
+        Ok(())
     }
 }
 
@@ -473,12 +537,18 @@ mod tests {
 
     #[test]
     fn test_service_context() {
-        let context = ServiceContext::new("user-123".to_string())
-            .with_ledger("ledger-456".to_string())
-            .with_request_id("req-789".to_string());
+        use crate::domain::Permission;
+        
+        let context = ServiceContext::new("user-123".to_string(), "family-456".to_string())
+            .with_ledger("ledger-789".to_string())
+            .with_request_id("req-012".to_string())
+            .with_permissions(vec![Permission::ViewTransactions, Permission::CreateTransactions]);
 
         assert_eq!(context.user_id, "user-123");
-        assert_eq!(context.current_ledger_id, Some("ledger-456".to_string()));
-        assert_eq!(context.request_id, Some("req-789".to_string()));
+        assert_eq!(context.family_id, "family-456");
+        assert_eq!(context.current_ledger_id, Some("ledger-789".to_string()));
+        assert_eq!(context.request_id, Some("req-012".to_string()));
+        assert!(context.has_permission(Permission::ViewTransactions));
+        assert!(!context.has_permission(Permission::DeleteTransactions));
     }
 }
