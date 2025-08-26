@@ -1,0 +1,10 @@
+warning: unused import: `extract::State`
+ --> src/main.rs:2:5
+  |
+2 |     extract::State,
+  |     ^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `jive-api` (bin "jive-api") generated 1 warning (run `cargo fix --bin "jive-api"` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 0.40s

@@ -1,5 +1,5 @@
-name: jive
-description: "Jive - Personal Finance Management App"
+name: jive_money
+description: "Jive Money - 集腋记账 Personal Finance Management App"
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -88,12 +88,12 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   
-  # 资源文件（暂时注释，等资源准备好后启用）
-  # assets:
-  #   - assets/images/
-  #   - assets/icons/
-  #   - assets/fonts/
-  #   - assets/data/
+  # 资源文件
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/fonts/
+    - assets/data/
   
   # 自定义字体（暂时注释，等字体文件准备好后启用）
   # fonts:

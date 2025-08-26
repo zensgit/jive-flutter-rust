@@ -1,0 +1,996 @@
+   Compiling jive-core v0.1.0 (/home/zou/SynologyDrive/github/jive-flutter-rust/jive-core)
+error[E0761]: file for module `user` found at both "src/domain/user.rs" and "src/domain/user/mod.rs"
+ --> src/domain/mod.rs:9:1
+  |
+9 | pub mod user;
+  | ^^^^^^^^^^^^^
+  |
+  = help: delete or rename one of them to remove the ambiguity
+
+error[E0583]: file not found for module `middleware`
+  --> src/application/mod.rs:20:1
+   |
+20 | pub mod middleware;
+   | ^^^^^^^^^^^^^^^^^^^
+   |
+   = help: to create the module `middleware`, create file "src/application/middleware.rs" or "src/application/middleware/mod.rs"
+   = note: if there is a `mod middleware` elsewhere in the crate already, import it with `use crate::...` instead
+
+error[E0583]: file not found for module `infrastructure`
+  --> src/lib.rs:12:1
+   |
+12 | pub mod infrastructure;
+   | ^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: to create the module `infrastructure`, create file "src/infrastructure.rs" or "src/infrastructure/mod.rs"
+   = note: if there is a `mod infrastructure` elsewhere in the crate already, import it with `use crate::...` instead
+
+error[E0432]: unresolved imports `super::Entity`, `super::SoftDeletable`, `super::TransactionType`, `super::TransactionStatus`
+  --> src/domain/transaction.rs:12:13
+   |
+12 | use super::{Entity, SoftDeletable, TransactionType, TransactionStatus};
+   |             ^^^^^^  ^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^ no `TransactionStatus` in `domain`
+   |             |       |              |
+   |             |       |              no `TransactionType` in `domain`
+   |             |       |              help: a similar name exists in the module: `Transaction`
+   |             |       no `SoftDeletable` in `domain`
+   |             no `Entity` in `domain`
+   |
+   = help: consider importing one of these items instead:
+           crate::credit_card_service::TransactionType
+           crate::rules_engine::ConditionType::TransactionType
+   = help: consider importing this enum instead:
+           crate::credit_card_service::TransactionStatus
+
+error[E0432]: unresolved imports `super::Entity`, `super::SoftDeletable`
+  --> src/domain/ledger.rs:11:13
+   |
+11 | use super::{Entity, SoftDeletable};
+   |             ^^^^^^  ^^^^^^^^^^^^^ no `SoftDeletable` in `domain`
+   |             |
+   |             no `Entity` in `domain`
+
+error[E0432]: unresolved imports `super::Entity`, `super::SoftDeletable`, `super::AccountClassification`
+  --> src/domain/category.rs:10:13
+   |
+10 | use super::{Entity, SoftDeletable, AccountClassification};
+   |             ^^^^^^  ^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^ no `AccountClassification` in `domain`
+   |             |       |
+   |             |       no `SoftDeletable` in `domain`
+   |             no `Entity` in `domain`
+
+error[E0432]: unresolved imports `super::Entity`, `super::SoftDeletable`
+  --> src/domain/family.rs:14:13
+   |
+14 | use super::{Entity, SoftDeletable};
+   |             ^^^^^^  ^^^^^^^^^^^^^ no `SoftDeletable` in `domain`
+   |             |
+   |             no `Entity` in `domain`
+
+error[E0432]: unresolved import `rand`
+   --> src/domain/family.rs:355:13
+    |
+355 |         use rand::Rng;
+    |             ^^^^ use of unresolved module or unlinked crate `rand`
+    |
+    = help: if you wanted to use a crate named `rand`, use `cargo add rand` to add it to your `Cargo.toml`
+
+error[E0432]: unresolved import `crate::domain::AccountClassification`
+  --> src/application/account_service.rs:12:43
+   |
+12 | use crate::domain::{Account, AccountType, AccountClassification};
+   |                                           ^^^^^^^^^^^^^^^^^^^^^ no `AccountClassification` in `domain`
+
+error[E0432]: unresolved imports `crate::domain::TransactionType`, `crate::domain::TransactionStatus`
+  --> src/application/transaction_service.rs:12:34
+   |
+12 | use crate::domain::{Transaction, TransactionType, TransactionStatus};
+   |                                  ^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^ no `TransactionStatus` in `domain`
+   |                                  |
+   |                                  no `TransactionType` in `domain`
+   |                                  help: a similar name exists in the module: `Transaction`
+   |
+   = help: consider importing one of these items instead:
+           crate::credit_card_service::TransactionType
+           crate::rules_engine::ConditionType::TransactionType
+   = help: consider importing this enum instead:
+           crate::credit_card_service::TransactionStatus
+
+error[E0432]: unresolved import `crate::domain::LedgerStatus`
+  --> src/application/ledger_service.rs:12:29
+   |
+12 | use crate::domain::{Ledger, LedgerStatus, LedgerDisplaySettings};
+   |                             ^^^^^^^^^^^^ no `LedgerStatus` in `domain`
+
+error[E0432]: unresolved imports `crate::domain::User`, `crate::domain::UserStatus`, `crate::domain::UserRole`, `crate::domain::UserPreferences`
+  --> src/application/user_service.rs:12:21
+   |
+12 | use crate::domain::{User, UserStatus, UserRole, UserPreferences};
+   |                     ^^^^  ^^^^^^^^^^  ^^^^^^^^  ^^^^^^^^^^^^^^^ no `UserPreferences` in `domain`
+   |                     |     |           |
+   |                     |     |           no `UserRole` in `domain`
+   |                     |     no `UserStatus` in `domain`
+   |                     no `User` in `domain`
+   |                     help: a similar name exists in the module (notice the capitalization): `user`
+
+error[E0432]: unresolved imports `crate::domain::User`, `crate::domain::UserStatus`, `crate::domain::UserRole`
+  --> src/application/auth_service.rs:12:21
+   |
+12 | use crate::domain::{User, UserStatus, UserRole};
+   |                     ^^^^  ^^^^^^^^^^  ^^^^^^^^ no `UserRole` in `domain`
+   |                     |     |
+   |                     |     no `UserStatus` in `domain`
+   |                     no `User` in `domain`
+   |                     help: a similar name exists in the module (notice the capitalization): `user`
+
+error[E0432]: unresolved import `crate::domain::User`
+ --> src/application/auth_service_enhanced.rs:5:21
+  |
+5 | use crate::domain::{User, Family, FamilyMembership, FamilyRole, FamilyInvitation};
+  |                     ^^^^
+  |                     |
+  |                     no `User` in `domain`
+  |                     help: a similar name exists in the module (notice the capitalization): `user`
+
+error[E0432]: unresolved import `crate::domain::User`
+  --> src/application/multi_family_service.rs:14:5
+   |
+14 |     User, Family, FamilyMembership, FamilyRole, Permission,
+   |     ^^^^
+   |     |
+   |     no `User` in `domain`
+   |     help: a similar name exists in the module (notice the capitalization): `user`
+
+error[E0432]: unresolved import `base32`
+ --> src/application/mfa_service.rs:7:5
+  |
+7 | use base32;
+  |     ^^^^^^ no external crate `base32`
+
+error[E0432]: unresolved import `hmac`
+ --> src/application/mfa_service.rs:8:5
+  |
+8 | use hmac::{Hmac, Mac};
+  |     ^^^^ use of unresolved module or unlinked crate `hmac`
+  |
+  = help: if you wanted to use a crate named `hmac`, use `cargo add hmac` to add it to your `Cargo.toml`
+
+error[E0432]: unresolved import `sha1`
+ --> src/application/mfa_service.rs:9:5
+  |
+9 | use sha1::Sha1;
+  |     ^^^^ use of unresolved module or unlinked crate `sha1`
+  |
+  = help: if you wanted to use a crate named `sha1`, use `cargo add sha1` to add it to your `Cargo.toml`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `qrcode`
+  --> src/application/mfa_service.rs:11:5
+   |
+11 | use qrcode::render::svg;
+   |     ^^^^^^ use of unresolved module or unlinked crate `qrcode`
+   |
+   = help: if you wanted to use a crate named `qrcode`, use `cargo add qrcode` to add it to your `Cargo.toml`
+
+error[E0432]: unresolved import `qrcode`
+  --> src/application/mfa_service.rs:10:5
+   |
+10 | use qrcode::{QrCode, Version, EcLevel};
+   |     ^^^^^^ use of unresolved module or unlinked crate `qrcode`
+   |
+   = help: if you wanted to use a crate named `qrcode`, use `cargo add qrcode` to add it to your `Cargo.toml`
+
+error[E0432]: unresolved import `rand`
+  --> src/application/mfa_service.rs:12:5
+   |
+12 | use rand::Rng;
+   |     ^^^^ use of unresolved module or unlinked crate `rand`
+   |
+   = help: if you wanted to use a crate named `rand`, use `cargo add rand` to add it to your `Cargo.toml`
+
+error[E0432]: unresolved import `crate::domain::User`
+  --> src/application/mfa_service.rs:14:5
+   |
+14 | use crate::domain::User;
+   |     ^^^^^^^^^^^^^^^----
+   |     |              |
+   |     |              help: a similar name exists in the module (notice the capitalization): `user`
+   |     no `User` in `domain`
+
+error[E0432]: unresolved imports `crate::domain::TransactionType`, `crate::domain::Payee`
+  --> src/application/quick_transaction_service.rs:11:34
+   |
+11 | use crate::domain::{Transaction, TransactionType, Account, Category, Payee};
+   |                                  ^^^^^^^^^^^^^^^                     ^^^^^ no `Payee` in `domain`
+   |                                  |
+   |                                  no `TransactionType` in `domain`
+   |                                  help: a similar name exists in the module: `Transaction`
+   |
+   = help: consider importing one of these items instead:
+           crate::credit_card_service::TransactionType
+           crate::rules_engine::ConditionType::TransactionType
+   = help: consider importing one of these items instead:
+           crate::Payee
+           crate::rules_engine::ConditionType::Payee
+
+error[E0432]: unresolved import `regex`
+  --> src/application/rules_engine.rs:10:5
+   |
+10 | use regex::Regex;
+   |     ^^^^^ use of unresolved module or unlinked crate `regex`
+   |
+   = help: if you wanted to use a crate named `regex`, use `cargo add regex` to add it to your `Cargo.toml`
+
+error[E0432]: unresolved import `async_trait`
+  --> src/application/rules_engine.rs:11:5
+   |
+11 | use async_trait::async_trait;
+   |     ^^^^^^^^^^^ use of unresolved module or unlinked crate `async_trait`
+   |
+   = help: if you wanted to use a crate named `async_trait`, use `cargo add async_trait` to add it to your `Cargo.toml`
+
+error[E0432]: unresolved imports `crate::domain::TransactionType`, `crate::domain::Payee`
+  --> src/application/rules_engine.rs:13:34
+   |
+13 | use crate::domain::{Transaction, TransactionType, Category, Account, Payee};
+   |                                  ^^^^^^^^^^^^^^^                     ^^^^^ no `Payee` in `domain`
+   |                                  |
+   |                                  no `TransactionType` in `domain`
+   |                                  help: a similar name exists in the module: `Transaction`
+   |
+   = help: consider importing one of these items instead:
+           crate::credit_card_service::TransactionType
+           crate::rules_engine::ConditionType::TransactionType
+   = help: consider importing one of these items instead:
+           crate::Payee
+           crate::rules_engine::ConditionType::Payee
+
+error[E0432]: unresolved imports `crate::domain::TransactionType`, `crate::domain::Budget`
+  --> src/application/analytics_service.rs:11:34
+   |
+11 | use crate::domain::{Transaction, TransactionType, Category, Account, Budget};
+   |                                  ^^^^^^^^^^^^^^^                     ^^^^^^ no `Budget` in `domain`
+   |                                  |
+   |                                  no `TransactionType` in `domain`
+   |                                  help: a similar name exists in the module: `Transaction`
+   |
+   = help: consider importing one of these items instead:
+           crate::credit_card_service::TransactionType
+           crate::rules_engine::ConditionType::TransactionType
+   = help: consider importing one of these items instead:
+           crate::Budget
+           crate::EntityType::Budget
+           crate::rules_engine::ResourceType::Budget
+
+error[E0432]: unresolved import `csv`
+  --> src/application/data_exchange_service.rs:12:5
+   |
+12 | use csv::{Reader, Writer, StringRecord};
+   |     ^^^ use of unresolved module or unlinked crate `csv`
+   |
+   = help: if you wanted to use a crate named `csv`, use `cargo add csv` to add it to your `Cargo.toml`
+
+error[E0432]: unresolved imports `crate::domain::TransactionType`, `crate::domain::Tag`, `crate::domain::Payee`
+  --> src/application/data_exchange_service.rs:15:34
+   |
+15 | use crate::domain::{Transaction, TransactionType, Category, Account, Tag, Payee};
+   |                                  ^^^^^^^^^^^^^^^                     ^^^  ^^^^^ no `Payee` in `domain`
+   |                                  |                                   |
+   |                                  |                                   no `Tag` in `domain`
+   |                                  no `TransactionType` in `domain`
+   |                                  help: a similar name exists in the module: `Transaction`
+   |
+   = help: consider importing one of these items instead:
+           crate::credit_card_service::TransactionType
+           crate::rules_engine::ConditionType::TransactionType
+   = help: consider importing one of these items instead:
+           crate::GroupBy::Tag
+           crate::Tag
+           crate::rules_engine::ConditionType::Tag
+   = help: consider importing one of these items instead:
+           crate::Payee
+           crate::rules_engine::ConditionType::Payee
+
+error[E0432]: unresolved import `sha2`
+   --> src/application/data_exchange_service.rs:633:13
+    |
+633 |         use sha2::{Sha256, Digest};
+    |             ^^^^ use of unresolved module or unlinked crate `sha2`
+    |
+    = help: if you wanted to use a crate named `sha2`, use `cargo add sha2` to add it to your `Cargo.toml`
+
+error[E0432]: unresolved import `crate::domain::TransactionType`
+  --> src/application/credit_card_service.rs:11:56
+   |
+11 | use crate::domain::{Account, AccountType, Transaction, TransactionType};
+   |                                                        ^^^^^^^^^^^^^^^
+   |                                                        |
+   |                                                        no `TransactionType` in `domain`
+   |                                                        help: a similar name exists in the module: `Transaction`
+   |
+   = help: consider importing this variant instead:
+           crate::rules_engine::ConditionType::TransactionType
+
+error[E0432]: unresolved import `crate::domain::TransactionType`
+  --> src/application/scheduled_transaction_service.rs:16:27
+   |
+16 |     domain::{Transaction, TransactionType},
+   |                           ^^^^^^^^^^^^^^^
+   |                           |
+   |                           no `TransactionType` in `domain`
+   |                           help: a similar name exists in the module: `Transaction`
+   |
+   = help: consider importing one of these items instead:
+           crate::credit_card_service::TransactionType
+           crate::rules_engine::ConditionType::TransactionType
+
+error[E0432]: unresolved import `regex`
+  --> src/application/rule_service.rs:10:5
+   |
+10 | use regex::Regex;
+   |     ^^^^^ use of unresolved module or unlinked crate `regex`
+   |
+   = help: if you wanted to use a crate named `regex`, use `cargo add regex` to add it to your `Cargo.toml`
+
+error[E0432]: unresolved import `crate::models`
+  --> src/application/payee_service.rs:20:5
+   |
+20 |     models::{ServiceContext, ServiceResponse, PaginationParams, PaginatedResult}
+   |     ^^^^^^ could not find `models` in the crate root
+
+error: cannot find derive macro `Serialize` in this scope
+  --> src/application/auth_service_enhanced.rs:10:24
+   |
+10 | #[derive(Debug, Clone, Serialize, Deserialize)]
+   |                        ^^^^^^^^^
+   |
+help: consider importing one of these derive macros
+   |
+5  + use crate::application::Serialize;
+   |
+5  + use serde::Serialize;
+   |
+
+error: cannot find derive macro `Deserialize` in this scope
+  --> src/application/auth_service_enhanced.rs:10:35
+   |
+10 | #[derive(Debug, Clone, Serialize, Deserialize)]
+   |                                   ^^^^^^^^^^^
+   |
+help: consider importing one of these derive macros
+   |
+5  + use crate::application::Deserialize;
+   |
+5  + use serde::Deserialize;
+   |
+
+error: cannot find derive macro `Serialize` in this scope
+   --> src/application/auth_service_enhanced.rs:154:24
+    |
+154 | #[derive(Debug, Clone, Serialize, Deserialize)]
+    |                        ^^^^^^^^^
+    |
+help: consider importing one of these derive macros
+    |
+5   + use crate::application::Serialize;
+    |
+5   + use serde::Serialize;
+    |
+
+error: cannot find derive macro `Deserialize` in this scope
+   --> src/application/auth_service_enhanced.rs:154:35
+    |
+154 | #[derive(Debug, Clone, Serialize, Deserialize)]
+    |                                   ^^^^^^^^^^^
+    |
+help: consider importing one of these derive macros
+    |
+5   + use crate::application::Deserialize;
+    |
+5   + use serde::Deserialize;
+    |
+
+error[E0412]: cannot find type `RegisterResponse` in this scope
+  --> src/application/auth_service_enhanced.rs:28:75
+   |
+11 | pub struct RegisterRequest {
+   | -------------------------- similarly named struct `RegisterRequest` defined here
+...
+28 |     pub async fn register_user(&self, request: RegisterRequest) -> Result<RegisterResponse> {
+   |                                                                           ^^^^^^^^^^^^^^^^
+   |
+help: a struct with a similar name exists
+   |
+28 -     pub async fn register_user(&self, request: RegisterRequest) -> Result<RegisterResponse> {
+28 +     pub async fn register_user(&self, request: RegisterRequest) -> Result<RegisterRequest> {
+   |
+help: you might be missing a type parameter
+   |
+26 | impl<RegisterResponse> EnhancedAuthService {
+   |     ++++++++++++++++++
+
+error[E0422]: cannot find struct, variant or union type `CreateUserRequest` in this scope
+  --> src/application/auth_service_enhanced.rs:30:50
+   |
+30 |         let user = self.user_service.create_user(CreateUserRequest {
+   |                                                  ^^^^^^^^^^^^^^^^^ not found in this scope
+   |
+help: consider importing this struct through its public re-export
+   |
+5  + use crate::CreateUserRequest;
+   |
+
+error[E0422]: cannot find struct, variant or union type `RegisterResponse` in this scope
+  --> src/application/auth_service_enhanced.rs:45:12
+   |
+11 | pub struct RegisterRequest {
+   | -------------------------- similarly named struct `RegisterRequest` defined here
+...
+45 |         Ok(RegisterResponse {
+   |            ^^^^^^^^^^^^^^^^ help: a struct with a similar name exists: `RegisterRequest`
+
+error[E0422]: cannot find struct, variant or union type `CreateFamilyRequest` in this scope
+  --> src/application/auth_service_enhanced.rs:60:13
+   |
+60 |             CreateFamilyRequest {
+   |             ^^^^^^^^^^^^^^^^^^^ not found in this scope
+   |
+help: consider importing this struct through its public re-export
+   |
+5  + use crate::CreateFamilyRequest;
+   |
+
+error[E0433]: failed to resolve: use of undeclared type `Uuid`
+  --> src/application/auth_service_enhanced.rs:72:17
+   |
+72 |             id: Uuid::new_v4().to_string(),
+   |                 ^^^^ use of undeclared type `Uuid`
+   |
+help: consider importing one of these structs
+   |
+5  + use sqlx::types::Uuid;
+   |
+5  + use uuid::Uuid;
+   |
+
+error[E0433]: failed to resolve: use of undeclared type `Utc`
+  --> src/application/auth_service_enhanced.rs:77:24
+   |
+77 |             joined_at: Utc::now(),
+   |                        ^^^ use of undeclared type `Utc`
+   |
+help: consider importing one of these structs
+   |
+5  + use chrono::Utc;
+   |
+5  + use sqlx::types::chrono::Utc;
+   |
+
+error[E0433]: failed to resolve: use of undeclared type `Utc`
+  --> src/application/auth_service_enhanced.rs:80:36
+   |
+80 |             last_accessed_at: Some(Utc::now()),
+   |                                    ^^^ use of undeclared type `Utc`
+   |
+help: consider importing one of these structs
+   |
+5  + use chrono::Utc;
+   |
+5  + use sqlx::types::chrono::Utc;
+   |
+
+error[E0412]: cannot find type `ServiceContext` in this scope
+   --> src/application/auth_service_enhanced.rs:174:18
+    |
+174 |         context: ServiceContext,
+    |                  ^^^^^^^^^^^^^^ not found in this scope
+    |
+help: consider importing this struct through its public re-export
+    |
+5   + use crate::ServiceContext;
+    |
+
+error[E0412]: cannot find type `InviteMemberRequest` in this scope
+   --> src/application/auth_service_enhanced.rs:175:18
+    |
+175 |         request: InviteMemberRequest,
+    |                  ^^^^^^^^^^^^^^^^^^^ not found in this scope
+    |
+help: consider importing this struct through its public re-export
+    |
+5   + use crate::InviteMemberRequest;
+    |
+
+error[E0433]: failed to resolve: use of undeclared type `Permission`
+   --> src/application/auth_service_enhanced.rs:178:36
+    |
+178 |         context.require_permission(Permission::InviteMembers)?;
+    |                                    ^^^^^^^^^^ use of undeclared type `Permission`
+    |
+help: consider importing this enum through its public re-export
+    |
+5   + use crate::Permission;
+    |
+
+error[E0412]: cannot find type `ServiceContext` in this scope
+   --> src/application/auth_service_enhanced.rs:249:18
+    |
+249 |         context: ServiceContext,
+    |                  ^^^^^^^^^^^^^^ not found in this scope
+    |
+help: consider importing this struct through its public re-export
+    |
+5   + use crate::ServiceContext;
+    |
+
+error[E0412]: cannot find type `CreateFamilyRequest` in this scope
+  --> src/application/multi_family_service.rs:68:18
+   |
+36 | pub struct SwitchFamilyRequest {
+   | ------------------------------ similarly named struct `SwitchFamilyRequest` defined here
+...
+68 |         request: CreateFamilyRequest,
+   |                  ^^^^^^^^^^^^^^^^^^^
+   |
+help: a struct with a similar name exists
+   |
+68 -         request: CreateFamilyRequest,
+68 +         request: SwitchFamilyRequest,
+   |
+help: consider importing this struct through its public re-export
+   |
+5  + use crate::CreateFamilyRequest;
+   |
+
+error[E0425]: cannot find value `end` in this scope
+   --> src/application/credit_card_service.rs:152:71
+    |
+152 |         let payment_due_date = self.calculate_payment_due_date(&card, end)?;
+    |                                                                       ^^^ not found in this scope
+
+error[E0425]: cannot find value `start` in this scope
+   --> src/application/credit_card_service.rs:158:13
+    |
+158 |             start,
+    |             ^^^^^ not found in this scope
+
+error[E0425]: cannot find value `end` in this scope
+   --> src/application/credit_card_service.rs:159:13
+    |
+159 |             end,
+    |             ^^^ not found in this scope
+
+error[E0425]: cannot find value `analysis_context` in this scope
+   --> src/application/investment_service.rs:385:61
+    |
+385 |             recommendations: self.generate_recommendations(&analysis_context).await?,
+    |                                                             ^^^^^^^^^^^^^^^^ not found in this scope
+
+warning: unused import: `rust_decimal::Decimal`
+ --> src/domain/transaction.rs:4:5
+  |
+4 | use rust_decimal::Decimal;
+  |     ^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unused import: `uuid::Uuid`
+ --> src/domain/transaction.rs:6:5
+  |
+6 | use uuid::Uuid;
+  |     ^^^^^^^^^^
+
+warning: unused import: `uuid::Uuid`
+ --> src/domain/ledger.rs:5:5
+  |
+5 | use uuid::Uuid;
+  |     ^^^^^^^^^^
+
+warning: unused import: `user::*`
+  --> src/domain/mod.rs:16:9
+   |
+16 | pub use user::*;
+   |         ^^^^^^^
+
+warning: unused imports: `DateTime` and `Utc`
+ --> src/application/account_service.rs:7:14
+  |
+7 | use chrono::{DateTime, Utc, NaiveDate};
+  |              ^^^^^^^^  ^^^
+
+warning: unused imports: `FilterCondition`, `FilterOperator`, `PaginatedResult`, and `ServiceResponse`
+  --> src/application/account_service.rs:14:29
+   |
+14 | use super::{ServiceContext, ServiceResponse, PaginationParams, PaginatedResult, QueryBuilder, FilterCondition, FilterOperator};
+   |                             ^^^^^^^^^^^^^^^                    ^^^^^^^^^^^^^^^                ^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^
+
+warning: unused imports: `DateTime` and `Utc`
+ --> src/application/transaction_service.rs:7:14
+  |
+7 | use chrono::{DateTime, Utc, NaiveDate};
+  |              ^^^^^^^^  ^^^
+
+warning: unused imports: `PaginatedResult` and `ServiceResponse`
+  --> src/application/transaction_service.rs:14:29
+   |
+14 | use super::{ServiceContext, ServiceResponse, PaginationParams, PaginatedResult, BatchResult};
+   |                             ^^^^^^^^^^^^^^^                    ^^^^^^^^^^^^^^^
+
+warning: unused import: `std::collections::HashMap`
+ --> src/application/ledger_service.rs:5:5
+  |
+5 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `NaiveDate`
+ --> src/application/ledger_service.rs:7:29
+  |
+7 | use chrono::{DateTime, Utc, NaiveDate};
+  |                             ^^^^^^^^^
+
+warning: unused imports: `BatchResult` and `ServiceResponse`
+  --> src/application/ledger_service.rs:14:29
+   |
+14 | use super::{ServiceContext, ServiceResponse, PaginationParams, BatchResult};
+   |                             ^^^^^^^^^^^^^^^                    ^^^^^^^^^^^
+
+warning: unused imports: `DateTime` and `Utc`
+ --> src/application/category_service.rs:7:14
+  |
+7 | use chrono::{DateTime, Utc};
+  |              ^^^^^^^^  ^^^
+
+warning: unused import: `ServiceResponse`
+  --> src/application/category_service.rs:14:29
+   |
+14 | use super::{ServiceContext, ServiceResponse, PaginationParams, BatchResult};
+   |                             ^^^^^^^^^^^^^^^
+
+warning: unused imports: `BatchResult` and `ServiceResponse`
+  --> src/application/user_service.rs:14:29
+   |
+14 | use super::{ServiceContext, ServiceResponse, PaginationParams, BatchResult};
+   |                             ^^^^^^^^^^^^^^^                    ^^^^^^^^^^^
+
+warning: unused import: `std::collections::HashMap`
+ --> src/application/auth_service.rs:5:5
+  |
+5 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `ServiceResponse`
+  --> src/application/auth_service.rs:14:29
+   |
+14 | use super::{ServiceContext, ServiceResponse};
+   |                             ^^^^^^^^^^^^^^^
+
+warning: unused import: `std::collections::HashMap`
+ --> src/application/family_service.rs:5:5
+  |
+5 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `InvitationStatus`
+  --> src/application/family_service.rs:15:33
+   |
+15 |     FamilySettings, Permission, InvitationStatus, FamilyAuditLog, AuditAction
+   |                                 ^^^^^^^^^^^^^^^^
+
+warning: unused imports: `PaginatedResult` and `PaginationParams`
+  --> src/application/family_service.rs:18:46
+   |
+18 | use super::{ServiceContext, ServiceResponse, PaginationParams, PaginatedResult};
+   |                                              ^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^
+
+warning: unused import: `std::collections::HashMap`
+ --> src/application/multi_family_service.rs:5:5
+  |
+5 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `FamilyInvitation`
+  --> src/application/multi_family_service.rs:15:21
+   |
+15 |     FamilySettings, FamilyInvitation
+   |                     ^^^^^^^^^^^^^^^^
+
+warning: unused import: `std::collections::HashMap`
+ --> src/application/quick_transaction_service.rs:5:5
+  |
+5 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `Account` and `Category`
+  --> src/application/quick_transaction_service.rs:11:51
+   |
+11 | use crate::domain::{Transaction, TransactionType, Account, Category, Payee};
+   |                                                   ^^^^^^^  ^^^^^^^^
+
+warning: unused imports: `Account`, `Category`, and `Transaction`
+  --> src/application/rules_engine.rs:13:21
+   |
+13 | use crate::domain::{Transaction, TransactionType, Category, Account, Payee};
+   |                     ^^^^^^^^^^^                   ^^^^^^^^  ^^^^^^^
+
+warning: unused import: `uuid::Uuid`
+ --> src/application/analytics_service.rs:9:5
+  |
+9 | use uuid::Uuid;
+  |     ^^^^^^^^^^
+
+warning: unused imports: `Account`, `Category`, and `Transaction`
+  --> src/application/analytics_service.rs:11:21
+   |
+11 | use crate::domain::{Transaction, TransactionType, Category, Account, Budget};
+   |                     ^^^^^^^^^^^                   ^^^^^^^^  ^^^^^^^
+
+warning: unused import: `HashSet`
+ --> src/application/data_exchange_service.rs:5:33
+  |
+5 | use std::collections::{HashMap, HashSet};
+  |                                 ^^^^^^^
+
+warning: unused import: `std::path::PathBuf`
+ --> src/application/data_exchange_service.rs:7:5
+  |
+7 | use std::path::PathBuf;
+  |     ^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `Account`, `Category`, and `Transaction`
+  --> src/application/data_exchange_service.rs:15:21
+   |
+15 | use crate::domain::{Transaction, TransactionType, Category, Account, Tag, Payee};
+   |                     ^^^^^^^^^^^                   ^^^^^^^^  ^^^^^^^
+
+warning: unused imports: `AccountType`, `Account`, and `Transaction`
+  --> src/application/credit_card_service.rs:11:21
+   |
+11 | use crate::domain::{Account, AccountType, Transaction, TransactionType};
+   |                     ^^^^^^^  ^^^^^^^^^^^  ^^^^^^^^^^^
+
+warning: unused imports: `AccountType`, `Account`, and `Transaction`
+  --> src/application/investment_service.rs:11:21
+   |
+11 | use crate::domain::{Account, AccountType, Transaction};
+   |                     ^^^^^^^  ^^^^^^^^^^^  ^^^^^^^^^^^
+
+warning: unused import: `ServiceResponse`
+  --> src/application/sync_service.rs:14:29
+   |
+14 | use super::{ServiceContext, ServiceResponse};
+   |                             ^^^^^^^^^^^^^^^
+
+warning: unused imports: `Account`, `Category`, and `Transaction`
+  --> src/application/import_service.rs:15:21
+   |
+15 | use crate::domain::{Account, Transaction, Category};
+   |                     ^^^^^^^  ^^^^^^^^^^^  ^^^^^^^^
+
+warning: unused imports: `BatchResult` and `ServiceResponse`
+  --> src/application/import_service.rs:16:29
+   |
+16 | use super::{ServiceContext, ServiceResponse, BatchResult};
+   |                             ^^^^^^^^^^^^^^^  ^^^^^^^^^^^
+
+warning: unused imports: `PaginationParams` and `ServiceResponse`
+  --> src/application/export_service.rs:16:29
+   |
+16 | use super::{ServiceContext, ServiceResponse, PaginationParams};
+   |                             ^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^
+
+warning: unused import: `JiveError`
+  --> src/application/report_service.rs:14:20
+   |
+14 | use crate::error::{JiveError, Result};
+   |                    ^^^^^^^^^
+
+warning: unused imports: `Account`, `Category`, and `Transaction`
+  --> src/application/report_service.rs:15:21
+   |
+15 | use crate::domain::{Account, Transaction, Category};
+   |                     ^^^^^^^  ^^^^^^^^^^^  ^^^^^^^^
+
+warning: unused import: `ServiceResponse`
+  --> src/application/report_service.rs:16:29
+   |
+16 | use super::{ServiceContext, ServiceResponse};
+   |                             ^^^^^^^^^^^^^^^
+
+warning: unused import: `std::collections::HashMap`
+ --> src/application/budget_service.rs:5:5
+  |
+5 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `Month`
+ --> src/application/budget_service.rs:7:50
+  |
+7 | use chrono::{DateTime, Utc, NaiveDate, Datelike, Month};
+  |                                                  ^^^^^
+
+warning: unused import: `rust_decimal::prelude::FromStr`
+ --> src/application/budget_service.rs:9:5
+  |
+9 | use rust_decimal::prelude::FromStr;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `Category` and `Transaction`
+  --> src/application/budget_service.rs:16:21
+   |
+16 | use crate::domain::{Category, Transaction};
+   |                     ^^^^^^^^  ^^^^^^^^^^^
+
+warning: unused import: `ServiceResponse`
+  --> src/application/budget_service.rs:17:29
+   |
+17 | use super::{ServiceContext, ServiceResponse, PaginationParams};
+   |                             ^^^^^^^^^^^^^^^
+
+warning: unused import: `std::collections::HashMap`
+ --> src/application/scheduled_transaction_service.rs:9:5
+  |
+9 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `Category` and `Transaction`
+  --> src/application/rule_service.rs:17:14
+   |
+17 |     domain::{Transaction, Category},
+   |              ^^^^^^^^^^^  ^^^^^^^^
+
+warning: unused import: `Result`
+  --> src/application/tag_service.rs:14:24
+   |
+14 |     error::{JiveError, Result},
+   |                        ^^^^^^
+
+warning: unused import: `ServiceResponse`
+  --> src/application/notification_service.rs:22:35
+   |
+22 |     application::{ServiceContext, ServiceResponse, PaginationParams, PaginatedResult}
+   |                                   ^^^^^^^^^^^^^^^
+
+warning: ambiguous glob re-exports
+  --> src/application/mod.rs:47:9
+   |
+47 | pub use import_service::*;
+   |         ^^^^^^^^^^^^^^^^^ the name `FieldMapping` in the type namespace is first re-exported here
+48 | pub use export_service::*;
+   |         ----------------- but the name `FieldMapping` in the type namespace is also re-exported here
+   |
+   = note: `#[warn(ambiguous_glob_reexports)]` on by default
+
+warning: ambiguous glob re-exports
+  --> src/application/mod.rs:47:9
+   |
+47 | pub use import_service::*;
+   |         ^^^^^^^^^^^^^^^^^ the name `ImportResult` in the type namespace is first re-exported here
+...
+53 | pub use tag_service::*;
+   |         -------------- but the name `ImportResult` in the type namespace is also re-exported here
+
+warning: ambiguous glob re-exports
+  --> src/application/mod.rs:48:9
+   |
+48 | pub use export_service::*;
+   |         ^^^^^^^^^^^^^^^^^ the name `ReportData` in the type namespace is first re-exported here
+49 | pub use report_service::*;
+   |         ----------------- but the name `ReportData` in the type namespace is also re-exported here
+
+warning: ambiguous glob re-exports
+  --> src/application/mod.rs:50:9
+   |
+50 | pub use budget_service::*;
+   |         ^^^^^^^^^^^^^^^^^ the name `BudgetStatus` in the type namespace is first re-exported here
+...
+55 | pub use notification_service::*;
+   |         ----------------------- but the name `BudgetStatus` in the type namespace is also re-exported here
+
+warning: ambiguous glob re-exports
+  --> src/lib.rs:18:9
+   |
+18 | pub use domain::*;
+   |         ^^^^^^^^^ the name `NotificationPreferences` in the type namespace is first re-exported here
+19 | pub use application::*;
+   |         -------------- but the name `NotificationPreferences` in the type namespace is also re-exported here
+
+warning: unused import: `DateTime`
+ --> src/utils.rs:3:14
+  |
+3 | use chrono::{DateTime, Utc, NaiveDate};
+  |              ^^^^^^^^
+
+error[E0119]: conflicting implementations of trait `From<serde_json::Error>` for type `JiveError`
+    --> src/error.rs:131:1
+     |
+131  | impl From<serde_json::Error> for JiveError {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ conflicting implementation for `JiveError`
+     |
+    ::: src/application/data_exchange_service.rs:1250:1
+     |
+1250 | impl From<serde_json::Error> for JiveError {
+     | ------------------------------------------ first implementation here
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `rand`
+   --> src/domain/family.rs:359:23
+    |
+359 |         let mut rng = rand::thread_rng();
+    |                       ^^^^ use of unresolved module or unlinked crate `rand`
+    |
+    = help: if you wanted to use a crate named `rand`, use `cargo add rand` to add it to your `Cargo.toml`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `rand`
+   --> src/application/mfa_service.rs:140:23
+    |
+140 |         let mut rng = rand::thread_rng();
+    |                       ^^^^ use of unresolved module or unlinked crate `rand`
+    |
+    = help: if you wanted to use a crate named `rand`, use `cargo add rand` to add it to your `Cargo.toml`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `urlencoding`
+   --> src/application/mfa_service.rs:154:13
+    |
+154 |             urlencoding::encode(app_name),
+    |             ^^^^^^^^^^^ use of unresolved module or unlinked crate `urlencoding`
+    |
+    = help: if you wanted to use a crate named `urlencoding`, use `cargo add urlencoding` to add it to your `Cargo.toml`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `urlencoding`
+   --> src/application/mfa_service.rs:155:13
+    |
+155 |             urlencoding::encode(user_email),
+    |             ^^^^^^^^^^^ use of unresolved module or unlinked crate `urlencoding`
+    |
+    = help: if you wanted to use a crate named `urlencoding`, use `cargo add urlencoding` to add it to your `Cargo.toml`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `urlencoding`
+   --> src/application/mfa_service.rs:157:13
+    |
+157 |             urlencoding::encode(app_name)
+    |             ^^^^^^^^^^^ use of unresolved module or unlinked crate `urlencoding`
+    |
+    = help: if you wanted to use a crate named `urlencoding`, use `cargo add urlencoding` to add it to your `Cargo.toml`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `rand`
+   --> src/application/mfa_service.rs:175:23
+    |
+175 |         let mut rng = rand::thread_rng();
+    |                       ^^^^ use of unresolved module or unlinked crate `rand`
+    |
+    = help: if you wanted to use a crate named `rand`, use `cargo add rand` to add it to your `Cargo.toml`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `csv`
+    --> src/application/data_exchange_service.rs:1238:11
+     |
+1238 | impl From<csv::Error> for JiveError {
+     |           ^^^ use of unresolved module or unlinked crate `csv`
+     |
+     = help: if you wanted to use a crate named `csv`, use `cargo add csv` to add it to your `Cargo.toml`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `csv`
+    --> src/application/data_exchange_service.rs:1239:18
+     |
+1239 |     fn from(err: csv::Error) -> Self {
+     |                  ^^^ use of unresolved module or unlinked crate `csv`
+     |
+     = help: if you wanted to use a crate named `csv`, use `cargo add csv` to add it to your `Cargo.toml`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `csv`
+    --> src/application/data_exchange_service.rs:1256:11
+     |
+1256 | impl From<csv::IntoInnerError<Vec<u8>>> for JiveError {
+     |           ^^^ use of unresolved module or unlinked crate `csv`
+     |
+     = help: if you wanted to use a crate named `csv`, use `cargo add csv` to add it to your `Cargo.toml`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `csv`
+    --> src/application/data_exchange_service.rs:1257:18
+     |
+1257 |     fn from(err: csv::IntoInnerError<Vec<u8>>) -> Self {
+     |                  ^^^ use of unresolved module or unlinked crate `csv`
+     |
+     = help: if you wanted to use a crate named `csv`, use `cargo add csv` to add it to your `Cargo.toml`
+
+Some errors have detailed explanations: E0119, E0412, E0422, E0425, E0432, E0433, E0583, E0761.
+For more information about an error, try `rustc --explain E0119`.
+warning: `jive-core` (lib) generated 53 warnings
+error: could not compile `jive-core` (lib) due to 65 previous errors; 53 warnings emitted

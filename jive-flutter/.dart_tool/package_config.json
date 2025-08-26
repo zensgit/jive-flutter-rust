@@ -908,13 +908,13 @@
       "languageVersion": "2.19"
     },
     {
-      "name": "jive",
+      "name": "jive_money",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     }
   ],
-  "generated": "2025-08-22T15:55:53.465538Z",
+  "generated": "2025-08-26T09:57:53.301326Z",
   "generator": "pub",
   "generatorVersion": "3.2.3"
 }

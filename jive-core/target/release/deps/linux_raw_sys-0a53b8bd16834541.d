@@ -1,0 +1,11 @@
+/home/zou/SynologyDrive/github/jive-flutter-rust/jive-core/target/release/deps/linux_raw_sys-0a53b8bd16834541.d: /home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/lib.rs /home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/elf.rs /home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/x86_64/errno.rs /home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/x86_64/general.rs /home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/x86_64/ioctl.rs
+
+/home/zou/SynologyDrive/github/jive-flutter-rust/jive-core/target/release/deps/liblinux_raw_sys-0a53b8bd16834541.rlib: /home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/lib.rs /home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/elf.rs /home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/x86_64/errno.rs /home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/x86_64/general.rs /home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/x86_64/ioctl.rs
+
+/home/zou/SynologyDrive/github/jive-flutter-rust/jive-core/target/release/deps/liblinux_raw_sys-0a53b8bd16834541.rmeta: /home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/lib.rs /home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/elf.rs /home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/x86_64/errno.rs /home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/x86_64/general.rs /home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/x86_64/ioctl.rs
+
+/home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/lib.rs:
+/home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/elf.rs:
+/home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/x86_64/errno.rs:
+/home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/x86_64/general.rs:
+/home/zou/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/linux-raw-sys-0.9.4/src/x86_64/ioctl.rs:

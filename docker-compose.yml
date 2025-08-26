@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: jive-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-jive}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-jive_password}
+      POSTGRES_DB: ${POSTGRES_DB:-jive}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-jive}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 缓存（可选）
+  redis:
+    image: redis:7-alpine
+    container_name: jive-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Rust API 服务
+  rust-api:
+    build:
+      context: ./jive-core
+      dockerfile: Dockerfile
+    container_name: jive-rust-api
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-jive}:${POSTGRES_PASSWORD:-jive_password}@postgres:5432/${POSTGRES_DB:-jive}
+      REDIS_URL: redis://redis:6379
+      RUST_LOG: ${RUST_LOG:-info}
+      API_PORT: ${RUST_API_PORT:-8080}
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-here}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-your-256-bit-encryption-key-here}
+    ports:
+      - "${RUST_API_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./jive-core:/app
+      - rust_cargo_cache:/usr/local/cargo
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Flutter Web 应用
+  flutter-web:
+    build:
+      context: ./jive-flutter
+      dockerfile: Dockerfile
+    container_name: jive-flutter-web
+    environment:
+      API_URL: http://rust-api:8080
+    ports:
+      - "${FLUTTER_DEV_PORT:-3000}:80"
+    depends_on:
+      rust-api:
+        condition: service_healthy
+    volumes:
+      - ./jive-flutter:/app
+
+  # Nginx 反向代理（生产环境）
+  nginx:
+    image: nginx:alpine
+    container_name: jive-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - rust-api
+      - flutter-web
+    profiles:
+      - production
+
+volumes:
+  postgres_data:
+  redis_data:
+  rust_cargo_cache:
+
+networks:
+  default:
+    name: jive-network
