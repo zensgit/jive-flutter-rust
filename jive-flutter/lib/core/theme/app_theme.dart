@@ -126,92 +126,92 @@ class AppTheme {
 
   /// 构建文本主题
   static TextTheme _buildTextTheme(ColorScheme colorScheme) {
-    return GoogleFonts.geistTextTheme().copyWith(
-      displayLarge: GoogleFonts.geist(
+    return GoogleFonts.interTextTheme().copyWith(
+      displayLarge: GoogleFonts.inter(
         fontSize: 57,
         fontWeight: FontWeight.w400,
         letterSpacing: -0.25,
         color: colorScheme.onBackground,
       ),
-      displayMedium: GoogleFonts.geist(
+      displayMedium: GoogleFonts.inter(
         fontSize: 45,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
         color: colorScheme.onBackground,
       ),
-      displaySmall: GoogleFonts.geist(
+      displaySmall: GoogleFonts.inter(
         fontSize: 36,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
         color: colorScheme.onBackground,
       ),
-      headlineLarge: GoogleFonts.geist(
+      headlineLarge: GoogleFonts.inter(
         fontSize: 32,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
         color: colorScheme.onBackground,
       ),
-      headlineMedium: GoogleFonts.geist(
+      headlineMedium: GoogleFonts.inter(
         fontSize: 28,
         fontWeight: FontWeight.w500,
         letterSpacing: 0,
         color: colorScheme.onBackground,
       ),
-      headlineSmall: GoogleFonts.geist(
+      headlineSmall: GoogleFonts.inter(
         fontSize: 24,
         fontWeight: FontWeight.w500,
         letterSpacing: 0,
         color: colorScheme.onBackground,
       ),
-      titleLarge: GoogleFonts.geist(
+      titleLarge: GoogleFonts.inter(
         fontSize: 22,
         fontWeight: FontWeight.w600,
         letterSpacing: 0,
         color: colorScheme.onBackground,
       ),
-      titleMedium: GoogleFonts.geist(
+      titleMedium: GoogleFonts.inter(
         fontSize: 16,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.15,
         color: colorScheme.onBackground,
       ),
-      titleSmall: GoogleFonts.geist(
+      titleSmall: GoogleFonts.inter(
         fontSize: 14,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.1,
         color: colorScheme.onBackground,
       ),
-      bodyLarge: GoogleFonts.geist(
+      bodyLarge: GoogleFonts.inter(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.5,
         color: colorScheme.onBackground,
       ),
-      bodyMedium: GoogleFonts.geist(
+      bodyMedium: GoogleFonts.inter(
         fontSize: 14,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.25,
         color: colorScheme.onBackground,
       ),
-      bodySmall: GoogleFonts.geist(
+      bodySmall: GoogleFonts.inter(
         fontSize: 12,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.4,
         color: colorScheme.onBackground,
       ),
-      labelLarge: GoogleFonts.geist(
+      labelLarge: GoogleFonts.inter(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.1,
         color: colorScheme.onBackground,
       ),
-      labelMedium: GoogleFonts.geist(
+      labelMedium: GoogleFonts.inter(
         fontSize: 12,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.5,
         color: colorScheme.onBackground,
       ),
-      labelSmall: GoogleFonts.geist(
+      labelSmall: GoogleFonts.inter(
         fontSize: 11,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.5,
@@ -229,7 +229,7 @@ class AppTheme {
       foregroundColor: colorScheme.onSurface,
       surfaceTintColor: colorScheme.surfaceTint,
       centerTitle: true,
-      titleTextStyle: GoogleFonts.geist(
+      titleTextStyle: GoogleFonts.inter(
         fontSize: 20,
         fontWeight: FontWeight.w600,
         color: colorScheme.onSurface,
@@ -264,7 +264,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
-        textStyle: GoogleFonts.geist(
+        textStyle: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
@@ -287,7 +287,7 @@ class AppTheme {
           color: colorScheme.outline,
           width: 1,
         ),
-        textStyle: GoogleFonts.geist(
+        textStyle: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
@@ -306,7 +306,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConstants.smallBorderRadius),
         ),
-        textStyle: GoogleFonts.geist(
+        textStyle: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
@@ -358,17 +358,17 @@ class AppTheme {
           width: 2,
         ),
       ),
-      labelStyle: GoogleFonts.geist(
+      labelStyle: GoogleFonts.inter(
         fontSize: 16,
         fontWeight: FontWeight.w500,
         color: colorScheme.onSurfaceVariant,
       ),
-      hintStyle: GoogleFonts.geist(
+      hintStyle: GoogleFonts.inter(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         color: colorScheme.onSurfaceVariant,
       ),
-      errorStyle: GoogleFonts.geist(
+      errorStyle: GoogleFonts.inter(
         fontSize: 12,
         fontWeight: FontWeight.w400,
         color: colorScheme.error,
@@ -382,7 +382,7 @@ class AppTheme {
       backgroundColor: colorScheme.surfaceVariant,
       selectedColor: colorScheme.primaryContainer,
       deleteIconColor: colorScheme.onSurfaceVariant,
-      labelStyle: GoogleFonts.geist(
+      labelStyle: GoogleFonts.inter(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: colorScheme.onSurfaceVariant,
@@ -418,7 +418,7 @@ class AppTheme {
       elevation: 3,
       height: 80,
       labelTextStyle: MaterialStateProperty.all(
-        GoogleFonts.geist(
+        GoogleFonts.inter(
           fontSize: 12,
           fontWeight: FontWeight.w500,
         ),
@@ -445,12 +445,12 @@ class AppTheme {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppConstants.largeBorderRadius),
       ),
-      titleTextStyle: GoogleFonts.geist(
+      titleTextStyle: GoogleFonts.inter(
         fontSize: 24,
         fontWeight: FontWeight.w600,
         color: colorScheme.onSurface,
       ),
-      contentTextStyle: GoogleFonts.geist(
+      contentTextStyle: GoogleFonts.inter(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         color: colorScheme.onSurface,
@@ -477,7 +477,7 @@ class AppTheme {
   static SnackBarThemeData _buildSnackBarTheme(ColorScheme colorScheme) {
     return SnackBarThemeData(
       backgroundColor: colorScheme.inverseSurface,
-      contentTextStyle: GoogleFonts.geist(
+      contentTextStyle: GoogleFonts.inter(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: colorScheme.onInverseSurface,

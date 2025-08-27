@@ -18,6 +18,8 @@ import 'services/theme_service.dart';
 import 'screens/theme_management_screen.dart';
 import 'models/theme_models.dart' as models;
 import 'widgets/wechat_qr_binding_dialog.dart';
+import 'screens/ai_assistant_page.dart';
+import 'screens/add_transaction_page.dart';
 import 'widgets/invite_member_dialog.dart';
 
 void main() async {
@@ -113,7 +115,6 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = [
     const DashboardPage(),
     const TransactionsPage(),
-    const BudgetPage(),
     const ReportsPage(),
     const SettingsPage(),
   ];
@@ -121,243 +122,392 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SvgPicture.asset(
-              'assets/images/Jiva.svg',
-              width: 32,
-              height: 32,
-            ),
-            const SizedBox(width: 8),
-            const Text('Jive Money'),
-          ],
-        ),
-        centerTitle: true,
-      ),
       body: _pages[_selectedIndex],
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.dashboard),
-            label: '仪表盘',
+      bottomNavigationBar: _buildCustomBottomNavigationBar(),
+      floatingActionButton: _buildFloatingActionButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
+  }
+
+  Widget _buildCustomBottomNavigationBar() {
+    return Container(
+      height: 75,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
+            spreadRadius: 0,
           ),
-          NavigationDestination(
-            icon: Icon(Icons.receipt_long),
-            label: '交易',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.account_balance_wallet),
-            label: '预算',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.analytics),
-            label: '报表',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings),
-            label: '设置',
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 1,
+            offset: const Offset(0, -1),
+            spreadRadius: 0,
           ),
         ],
+      ),
+      child: ClipPath(
+        clipper: _BottomNavClipper(),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(0, Icons.dashboard_outlined, Icons.dashboard_rounded, '仪表盘'),
+              _buildNavItem(1, Icons.receipt_long_outlined, Icons.receipt_long_rounded, '交易'),
+              const SizedBox(width: 80), // 为中间按钮留更多空间
+              _buildNavItem(2, Icons.analytics_outlined, Icons.analytics_rounded, '报表'),
+              _buildNavItem(3, Icons.settings_outlined, Icons.settings_rounded, '设置'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData outlinedIcon, IconData filledIcon, String label) {
+    final isSelected = _selectedIndex == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedIndex = index;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: Icon(
+                isSelected ? filledIcon : outlinedIcon,
+                key: ValueKey(isSelected),
+                color: isSelected ? const Color(0xFF00E676) : Colors.grey[600],
+                size: isSelected ? 26 : 24,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                color: isSelected ? const Color(0xFF00E676) : Colors.grey[600],
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                letterSpacing: 0.2,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFloatingActionButton() {
+    return Transform.translate(
+      offset: const Offset(0, -10), // 向上移动，让按钮更凸出
+      child: Container(
+        width: 68,
+        height: 68,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF00E676), // 更亮的绿色
+              Color(0xFF00C853),
+              Color(0xFF00A74C),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(34),
+          boxShadow: [
+            // 主阴影
+            BoxShadow(
+              color: const Color(0xFF00E676).withOpacity(0.4),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
+              spreadRadius: 0,
+            ),
+            // 内层光晕
+            BoxShadow(
+              color: const Color(0xFF00E676).withOpacity(0.2),
+              blurRadius: 24,
+              offset: const Offset(0, 4),
+              spreadRadius: 4,
+            ),
+            // 顶部高光
+            BoxShadow(
+              color: Colors.white.withOpacity(0.2),
+              blurRadius: 1,
+              offset: const Offset(0, -1),
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(34),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.2),
+              width: 1,
+            ),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(34),
+              splashColor: Colors.white.withOpacity(0.2),
+              highlightColor: Colors.white.withOpacity(0.1),
+              onTap: () {
+                // 添加触觉反馈
+                // HapticFeedback.lightImpact(); // 如果需要的话可以取消注释
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddTransactionPage(),
+                  ),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(34),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.white.withOpacity(0.1),
+                      Colors.transparent,
+                    ],
+                    stops: const [0.0, 0.3],
+                  ),
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.add_rounded,
+                    color: Colors.white,
+                    size: 32,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black26,
+                        offset: Offset(0, 1),
+                        blurRadius: 2,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
 }
 
+// 底部导航栏自定义剪裁器
+class _BottomNavClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    Path path = Path();
+    final double centerX = size.width / 2;
+    const double notchRadius = 36.0;
+    const double notchMargin = 8.0;
+    
+    path.lineTo(centerX - notchRadius - notchMargin, 0);
+    
+    // 创建凸起按钮的凹槽
+    path.quadraticBezierTo(
+      centerX - notchRadius, 0,
+      centerX - notchRadius, notchMargin,
+    );
+    path.arcToPoint(
+      Offset(centerX + notchRadius, notchMargin),
+      radius: const Radius.circular(notchRadius),
+      clockwise: false,
+    );
+    path.quadraticBezierTo(
+      centerX + notchRadius, 0,
+      centerX + notchRadius + notchMargin, 0,
+    );
+    
+    path.lineTo(size.width, 0);
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+    
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
 // 仪表盘页面
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
 
-  // 获取坚持记账天数（模拟数据）
-  int _getAccountingDays() {
-    // 模拟从注册日期开始计算
-    final registerDate = DateTime.now().subtract(const Duration(days: 42));
-    return DateTime.now().difference(registerDate).inDays;
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  int _accountingDays = 0;
+  int _totalTransactions = 0;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserStats();
   }
 
-  // 获取总记录条数（模拟数据）
-  int _getTotalRecords() {
-    final days = _getAccountingDays();
-    // 模拟数据：平均每天1-3条记录
-    return (days * 1.8 + Random().nextInt(days * 2)).round();
+  /// 加载用户统计数据
+  Future<void> _loadUserStats() async {
+    try {
+      // 模拟从API或本地数据库加载数据
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      // 这里应该是实际的数据加载逻辑
+      // 例如：从SharedPreferences、API或数据库获取数据
+      final userRegistrationDate = await _getUserRegistrationDate();
+      final transactionCount = await _getUserTransactionCount();
+      
+      setState(() {
+        _accountingDays = DateTime.now().difference(userRegistrationDate).inDays + 1;
+        _totalTransactions = transactionCount;
+        _isLoading = false;
+      });
+    } catch (e) {
+      // 如果加载失败，使用默认值
+      setState(() {
+        _accountingDays = 42;
+        _totalTransactions = 100;
+        _isLoading = false;
+      });
+    }
   }
 
-  // 构建统计项
-  Widget _buildStatItem(String label, String value, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: Colors.blue, size: 16),
-              const SizedBox(width: 4),
-              Text(
-                label,
-                style: const TextStyle(
-                  color: Colors.black54,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.black87,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
+  /// 获取用户注册日期（模拟数据）
+  Future<DateTime> _getUserRegistrationDate() async {
+    // 这里应该从实际的存储中获取用户注册日期
+    // 暂时使用模拟数据：42天前
+    return DateTime.now().subtract(const Duration(days: 41));
+  }
+
+  /// 获取用户交易记录总数（模拟数据）
+  Future<int> _getUserTransactionCount() async {
+    // 这里应该从实际的数据库中查询用户的交易记录数量
+    // 暂时使用基于天数的模拟算法
+    final days = _accountingDays > 0 ? _accountingDays : 42;
+    // 模拟：平均每天1-3条记录，有些波动
+    return (days * 1.5 + (days * 0.5 * (DateTime.now().millisecond % 100) / 100)).round();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
+    return SelectionArea(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 记账统计信息卡片
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
+          // 欢迎栏和logo
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Logo - 可点击打开AI助理
+              GestureDetector(
+                onTap: () {
+                  // 打开AI助理页面
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AIAssistantPage(),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: SvgPicture.asset(
+                    'assets/images/Jiva.svg',
+                    width: 48,
+                    height: 48,
+                  ),
                 ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+              ),
+              const SizedBox(width: 16),
+              // 右侧内容区域
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text(
+                      '欢迎回来！',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    // 提示信息
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.1),
+                        color: Colors.orange.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(
-                        Icons.trending_up,
-                        color: Colors.blue,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Text(
-                      '记账统计',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildStatItem(
-                        '坚持记账',
-                        '${_getAccountingDays()}天',
-                        Icons.calendar_today,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildStatItem(
-                        '记录账单',
-                        '${_getTotalRecords()}条',
-                        Icons.receipt_long,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.lightbulb, color: Colors.orange, size: 16),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          '坚持记账第${_getAccountingDays()}天，已记录${_getTotalRecords()}条账单，继续保持！',
-                          style: const TextStyle(
-                            color: Colors.black54,
-                            fontSize: 12,
+                      child: Row(
+                        children: [
+                          const Icon(Icons.lightbulb, color: Colors.orange, size: 16),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _isLoading
+                                ? Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 12,
+                                        height: 12,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      const Text(
+                                        '正在加载统计信息...',
+                                        style: TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Text(
+                                    '坚持记账第$_accountingDays天，已记录$_totalTransactions条账单，继续保持！',
+                                    style: const TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: 12,
+                                    ),
+                                  ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          
-          const Text(
-            '欢迎回来！',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-          
-          // 账户概览卡片
-          Card(
-            elevation: 4,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '账户总览',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildColoredStatItem('总资产', '¥125,360.00', Colors.green),
-                      _buildColoredStatItem('本月支出', '¥8,520.00', Colors.orange),
-                      _buildColoredStatItem('本月收入', '¥15,000.00', Colors.blue),
-                    ],
-                  ),
-                ],
               ),
-            ),
+            ],
           ),
-          
           const SizedBox(height: 20),
           
           // 快速操作
@@ -396,24 +546,10 @@ class DashboardPage extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
   }
 
-  Widget _buildColoredStatItem(String label, String value, Color color) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color),
-        ),
-      ],
-    );
-  }
 
   Widget _buildQuickAction(IconData icon, String label, Color color) {
     return Column(
@@ -2134,60 +2270,1638 @@ class SecuritySettingsPage extends StatefulWidget {
 
 class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
   bool _mfaEnabled = false;
-  bool _biometricEnabled = true;
+  bool _biometricEnabled = false;
+  String? _totpSecret;
+  List<String>? _backupCodes;
+  
+  @override
+  void initState() {
+    super.initState();
+    _loadSecuritySettings();
+  }
+  
+  void _loadSecuritySettings() {
+    // 从本地存储加载安全设置
+    setState(() {
+      // 这里模拟从存储加载
+      _mfaEnabled = false;
+      _biometricEnabled = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('安全设置'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0.5,
       ),
+      backgroundColor: Colors.grey[50],
       body: ListView(
         children: [
-          SwitchListTile(
-            title: const Text('多因素认证'),
-            subtitle: const Text('使用 TOTP 增强账户安全'),
-            value: _mfaEnabled,
-            onChanged: (bool value) {
-              setState(() {
-                _mfaEnabled = value;
-              });
-            },
-            secondary: const Icon(Icons.security),
+          // 多因素认证部分
+          Container(
+            color: Colors.white,
+            margin: const EdgeInsets.only(bottom: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Text(
+                    '账户安全',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: _mfaEnabled ? Colors.green[50] : Colors.grey[100],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.security,
+                      color: _mfaEnabled ? Colors.green[600] : Colors.grey[600],
+                      size: 20,
+                    ),
+                  ),
+                  title: const Text('多因素认证 (2FA)'),
+                  subtitle: Text(
+                    _mfaEnabled 
+                      ? '已启用 - 您的账户已受到额外保护'
+                      : '未启用 - 启用以增强账户安全',
+                    style: TextStyle(
+                      color: _mfaEnabled ? Colors.green[600] : Colors.grey[600],
+                      fontSize: 13,
+                    ),
+                  ),
+                  trailing: Switch(
+                    value: _mfaEnabled,
+                    onChanged: (value) {
+                      if (value) {
+                        _showEnableMFADialog();
+                      } else {
+                        _showDisableMFADialog();
+                      }
+                    },
+                    activeColor: Colors.green,
+                  ),
+                ),
+                if (_mfaEnabled)
+                  ListTile(
+                    leading: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.orange[50],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        Icons.backup_outlined,
+                        color: Colors.orange[600],
+                        size: 20,
+                      ),
+                    ),
+                    title: const Text('备份代码'),
+                    subtitle: const Text('查看或重新生成备份代码'),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: _showBackupCodes,
+                  ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: _biometricEnabled ? Colors.blue[50] : Colors.grey[100],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.fingerprint,
+                      color: _biometricEnabled ? Colors.blue[600] : Colors.grey[600],
+                      size: 20,
+                    ),
+                  ),
+                  title: const Text('生物识别认证'),
+                  subtitle: Text(
+                    _biometricEnabled
+                      ? '已启用 - 使用指纹或面部识别快速登录'
+                      : '未启用 - 启用以便快速安全登录',
+                    style: TextStyle(
+                      color: _biometricEnabled ? Colors.blue[600] : Colors.grey[600],
+                      fontSize: 13,
+                    ),
+                  ),
+                  trailing: Switch(
+                    value: _biometricEnabled,
+                    onChanged: (value) {
+                      if (value) {
+                        _enableBiometric();
+                      } else {
+                        _disableBiometric();
+                      }
+                    },
+                    activeColor: Colors.blue,
+                  ),
+                ),
+              ],
+            ),
           ),
-          SwitchListTile(
-            title: const Text('生物识别'),
-            subtitle: const Text('指纹或面部识别登录'),
-            value: _biometricEnabled,
-            onChanged: (bool value) {
-              setState(() {
-                _biometricEnabled = value;
-              });
-            },
-            secondary: const Icon(Icons.fingerprint),
+          
+          // 密码管理部分
+          Container(
+            color: Colors.white,
+            margin: const EdgeInsets.only(bottom: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Text(
+                    '密码管理',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.purple[50],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.lock_outline,
+                      color: Colors.purple[600],
+                      size: 20,
+                    ),
+                  ),
+                  title: const Text('修改密码'),
+                  subtitle: const Text('定期更改密码以保护账户安全'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ChangePasswordPage(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.key),
-            title: const Text('修改密码'),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.devices),
-            title: const Text('设备管理'),
-            subtitle: const Text('管理已登录的设备'),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.history),
-            title: const Text('登录历史'),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {},
+          
+          // 设备和会话管理部分
+          Container(
+            color: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Text(
+                    '设备与会话',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.indigo[50],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.devices_other,
+                      color: Colors.indigo[600],
+                      size: 20,
+                    ),
+                  ),
+                  title: const Text('设备管理'),
+                  subtitle: const Text('查看和管理已登录的设备'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.blue[50],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '3 设备',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.blue[700],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.arrow_forward_ios, size: 16),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DeviceManagementPage(),
+                      ),
+                    );
+                  },
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.teal[50],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.history,
+                      color: Colors.teal[600],
+                      size: 20,
+                    ),
+                  ),
+                  title: const Text('登录历史'),
+                  subtitle: const Text('查看账户登录活动记录'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginHistoryPage(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ],
+      ),
+    );
+  }
+  
+  // 显示启用MFA对话框
+  void _showEnableMFADialog() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MFASetupPage(
+          onEnabled: (secret, backupCodes) {
+            setState(() {
+              _mfaEnabled = true;
+              _totpSecret = secret;
+              _backupCodes = backupCodes;
+            });
+          },
+        ),
+      ),
+    );
+  }
+  
+  // 显示禁用MFA对话框
+  void _showDisableMFADialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('禁用多因素认证'),
+        content: const Text('禁用多因素认证会降低您账户的安全性。确定要继续吗？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                _mfaEnabled = false;
+                _totpSecret = null;
+                _backupCodes = null;
+              });
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('多因素认证已禁用'),
+                  backgroundColor: Colors.orange,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text('禁用'),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  // 显示备份代码
+  void _showBackupCodes() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BackupCodesPage(
+          backupCodes: _backupCodes ?? [],
+          onRegenerate: (newCodes) {
+            setState(() {
+              _backupCodes = newCodes;
+            });
+          },
+        ),
+      ),
+    );
+  }
+  
+  // 启用生物识别
+  void _enableBiometric() async {
+    // 这里应该调用生物识别API
+    setState(() {
+      _biometricEnabled = true;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('生物识别认证已启用'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+  
+  // 禁用生物识别
+  void _disableBiometric() {
+    setState(() {
+      _biometricEnabled = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('生物识别认证已禁用'),
+        backgroundColor: Colors.orange,
+      ),
+    );
+  }
+}
+
+// MFA设置页面
+class MFASetupPage extends StatefulWidget {
+  final Function(String secret, List<String> backupCodes) onEnabled;
+  
+  const MFASetupPage({super.key, required this.onEnabled});
+  
+  @override
+  State<MFASetupPage> createState() => _MFASetupPageState();
+}
+
+class _MFASetupPageState extends State<MFASetupPage> {
+  int _currentStep = 0;
+  String _totpSecret = '';
+  String _verificationCode = '';
+  List<String> _backupCodes = [];
+  final _codeController = TextEditingController();
+  
+  @override
+  void initState() {
+    super.initState();
+    _generateSecret();
+  }
+  
+  void _generateSecret() {
+    // 生成TOTP密钥（实际应该从服务器获取）
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    _totpSecret = List.generate(32, (index) => 
+      chars[Random().nextInt(chars.length)]).join();
+    
+    // 生成备份代码
+    _backupCodes = List.generate(10, (index) => 
+      (100000 + Random().nextInt(900000)).toString());
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('设置多因素认证'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0.5,
+      ),
+      backgroundColor: Colors.grey[50],
+      body: Stepper(
+        currentStep: _currentStep,
+        onStepContinue: () {
+          if (_currentStep == 0) {
+            setState(() {
+              _currentStep++;
+            });
+          } else if (_currentStep == 1) {
+            if (_verifyCode()) {
+              setState(() {
+                _currentStep++;
+              });
+            }
+          } else {
+            // 完成设置
+            widget.onEnabled(_totpSecret, _backupCodes);
+            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('多因素认证已成功启用'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        },
+        onStepCancel: () {
+          if (_currentStep > 0) {
+            setState(() {
+              _currentStep--;
+            });
+          } else {
+            Navigator.pop(context);
+          }
+        },
+        steps: [
+          Step(
+            title: const Text('扫描二维码'),
+            content: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey[300]!),
+                  ),
+                  child: Column(
+                    children: [
+                      const Icon(Icons.qr_code_2, size: 150, color: Colors.grey),
+                      const SizedBox(height: 16),
+                      const Text(
+                        '使用您的认证器应用扫描此二维码',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        '推荐使用: Google Authenticator, Microsoft Authenticator, Authy',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: SelectableText(
+                          _totpSecret,
+                          style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        '无法扫描？手动输入上述密钥',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            isActive: _currentStep >= 0,
+            state: _currentStep > 0 ? StepState.complete : StepState.indexed,
+          ),
+          Step(
+            title: const Text('验证'),
+            content: Column(
+              children: [
+                const Text('输入您认证器应用中显示的6位数字代码'),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _codeController,
+                  keyboardType: TextInputType.number,
+                  maxLength: 6,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 24, letterSpacing: 8),
+                  decoration: InputDecoration(
+                    hintText: '000000',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    counterText: '',
+                  ),
+                  onChanged: (value) {
+                    _verificationCode = value;
+                  },
+                ),
+              ],
+            ),
+            isActive: _currentStep >= 1,
+            state: _currentStep > 1 ? StepState.complete : StepState.indexed,
+          ),
+          Step(
+            title: const Text('保存备份代码'),
+            content: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.orange[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.orange[300]!),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(Icons.warning, color: Colors.orange[700], size: 32),
+                      const SizedBox(height: 8),
+                      const Text(
+                        '请保存这些备份代码',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const Text(
+                        '如果您无法访问认证器应用，可以使用这些代码登录',
+                        style: TextStyle(fontSize: 12),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    children: _backupCodes.map((code) => 
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Text(
+                          code,
+                          style: const TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ).toList(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // 复制到剪贴板
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('备份代码已复制')),
+                    );
+                  },
+                  icon: const Icon(Icons.copy, size: 16),
+                  label: const Text('复制所有代码'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+            isActive: _currentStep >= 2,
+            state: _currentStep == 2 ? StepState.indexed : StepState.complete,
+          ),
+        ],
+      ),
+    );
+  }
+  
+  bool _verifyCode() {
+    // 这里应该验证TOTP代码
+    if (_verificationCode.length == 6) {
+      return true;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('验证码无效，请重试'),
+        backgroundColor: Colors.red,
+      ),
+    );
+    return false;
+  }
+  
+  @override
+  void dispose() {
+    _codeController.dispose();
+    super.dispose();
+  }
+}
+
+// 备份代码页面
+class BackupCodesPage extends StatelessWidget {
+  final List<String> backupCodes;
+  final Function(List<String>) onRegenerate;
+  
+  const BackupCodesPage({
+    super.key,
+    required this.backupCodes,
+    required this.onRegenerate,
+  });
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('备份代码'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0.5,
+      ),
+      backgroundColor: Colors.grey[50],
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.blue[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue[200]!),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.blue[700]),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      '每个备份代码只能使用一次。请将它们保存在安全的地方。',
+                      style: TextStyle(color: Colors.blue[700], fontSize: 14),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              '您的备份代码',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey[300]!),
+              ),
+              child: Column(
+                children: backupCodes.map((code) => 
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Row(
+                      children: [
+                        Icon(Icons.fiber_manual_record, size: 8, color: Colors.grey[400]),
+                        const SizedBox(width: 12),
+                        Text(
+                          code,
+                          style: const TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ).toList(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      // 复制所有代码
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('备份代码已复制')),
+                      );
+                    },
+                    icon: const Icon(Icons.copy, size: 16),
+                    label: const Text('复制'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      _showRegenerateDialog(context);
+                    },
+                    icon: const Icon(Icons.refresh, size: 16),
+                    label: const Text('重新生成'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  void _showRegenerateDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('重新生成备份代码'),
+        content: const Text('重新生成将使当前所有备份代码失效。确定要继续吗？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final newCodes = List.generate(10, (index) => 
+                (100000 + Random().nextInt(900000)).toString());
+              onRegenerate(newCodes);
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('备份代码已重新生成'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+            child: const Text('重新生成'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// 修改密码页面
+class ChangePasswordPage extends StatefulWidget {
+  const ChangePasswordPage({super.key});
+  
+  @override
+  State<ChangePasswordPage> createState() => _ChangePasswordPageState();
+}
+
+class _ChangePasswordPageState extends State<ChangePasswordPage> {
+  final _currentPasswordController = TextEditingController();
+  final _newPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  bool _showCurrentPassword = false;
+  bool _showNewPassword = false;
+  bool _showConfirmPassword = false;
+  bool _isLoading = false;
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('修改密码'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0.5,
+      ),
+      backgroundColor: Colors.grey[50],
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.amber[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.amber[300]!),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.tips_and_updates, color: Colors.amber[700]),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      '建议使用包含大小写字母、数字和特殊字符的强密码',
+                      style: TextStyle(color: Colors.amber[800], fontSize: 14),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            
+            // 当前密码
+            const Text(
+              '当前密码',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _currentPasswordController,
+              obscureText: !_showCurrentPassword,
+              decoration: InputDecoration(
+                hintText: '输入当前密码',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(_showCurrentPassword ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () {
+                    setState(() {
+                      _showCurrentPassword = !_showCurrentPassword;
+                    });
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            
+            // 新密码
+            const Text(
+              '新密码',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _newPasswordController,
+              obscureText: !_showNewPassword,
+              decoration: InputDecoration(
+                hintText: '输入新密码（至少8位）',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(_showNewPassword ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () {
+                    setState(() {
+                      _showNewPassword = !_showNewPassword;
+                    });
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            
+            // 确认新密码
+            const Text(
+              '确认新密码',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _confirmPasswordController,
+              obscureText: !_showConfirmPassword,
+              decoration: InputDecoration(
+                hintText: '再次输入新密码',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(_showConfirmPassword ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () {
+                    setState(() {
+                      _showConfirmPassword = !_showConfirmPassword;
+                    });
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+            
+            // 密码强度指示
+            _buildPasswordStrengthIndicator(),
+            const SizedBox(height: 32),
+            
+            // 提交按钮
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _changePassword,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : const Text('修改密码'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildPasswordStrengthIndicator() {
+    final password = _newPasswordController.text;
+    int strength = 0;
+    String message = '';
+    Color color = Colors.grey;
+    
+    if (password.isEmpty) {
+      message = '请输入密码';
+    } else if (password.length < 8) {
+      strength = 1;
+      message = '弱 - 密码太短';
+      color = Colors.red;
+    } else if (password.length < 12) {
+      strength = 2;
+      message = '中等 - 建议使用更长的密码';
+      color = Colors.orange;
+    } else {
+      strength = 3;
+      message = '强 - 密码强度良好';
+      color = Colors.green;
+    }
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          '密码强度',
+          style: TextStyle(fontSize: 12, color: Colors.grey),
+        ),
+        const SizedBox(height: 8),
+        LinearProgressIndicator(
+          value: strength / 3,
+          backgroundColor: Colors.grey[200],
+          valueColor: AlwaysStoppedAnimation<Color>(color),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          message,
+          style: TextStyle(fontSize: 12, color: color),
+        ),
+      ],
+    );
+  }
+  
+  void _changePassword() async {
+    if (_currentPasswordController.text.isEmpty ||
+        _newPasswordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('请填写所有字段'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    
+    if (_newPasswordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('新密码两次输入不一致'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    
+    if (_newPasswordController.text.length < 8) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('新密码长度至少8位'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    
+    setState(() {
+      _isLoading = true;
+    });
+    
+    // 模拟API调用
+    await Future.delayed(const Duration(seconds: 2));
+    
+    setState(() {
+      _isLoading = false;
+    });
+    
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('密码修改成功'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+  
+  @override
+  void dispose() {
+    _currentPasswordController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+}
+
+// 设备管理页面
+class DeviceManagementPage extends StatefulWidget {
+  const DeviceManagementPage({super.key});
+  
+  @override
+  State<DeviceManagementPage> createState() => _DeviceManagementPageState();
+}
+
+class _DeviceManagementPageState extends State<DeviceManagementPage> {
+  
+  final List<Map<String, dynamic>> devices = [
+    {
+      'id': 'session_001',
+      'name': 'iPhone 14 Pro',
+      'type': 'mobile',
+      'os': 'iOS 17.2',
+      'browser': 'Safari',
+      'location': '北京市朝阳区',
+      'ip': '192.168.1.100',
+      'lastActive': DateTime.now(),
+      'firstLogin': DateTime.now().subtract(const Duration(days: 30)),
+      'isCurrent': true,
+      'trusted': true,
+    },
+    {
+      'id': 'session_002',
+      'name': 'MacBook Pro',
+      'type': 'desktop',
+      'os': 'macOS Sonoma',
+      'browser': 'Chrome 122',
+      'location': '上海市浦东新区',
+      'ip': '10.0.0.50',
+      'lastActive': DateTime.now().subtract(const Duration(hours: 2)),
+      'firstLogin': DateTime.now().subtract(const Duration(days: 15)),
+      'isCurrent': false,
+      'trusted': true,
+    },
+    {
+      'id': 'session_003',
+      'name': 'iPad Pro',
+      'type': 'tablet',
+      'os': 'iPadOS 17.2',
+      'browser': 'Safari',
+      'location': '深圳市南山区',
+      'ip': '192.168.2.150',
+      'lastActive': DateTime.now().subtract(const Duration(days: 1)),
+      'firstLogin': DateTime.now().subtract(const Duration(days: 45)),
+      'isCurrent': false,
+      'trusted': false,
+    },
+  ];
+  
+  String _formatLastActive(DateTime lastActive) {
+    final now = DateTime.now();
+    final difference = now.difference(lastActive);
+    
+    if (difference.inMinutes < 1) {
+      return '当前在线';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} 分钟前';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} 小时前';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays} 天前';
+    } else {
+      return '${lastActive.month}月${lastActive.day}日';
+    }
+  }
+  
+  String _formatFirstLogin(DateTime date) {
+    return '首次登录：${date.year}年${date.month}月${date.day}日';
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    final trustedDevices = devices.where((d) => d['trusted'] == true).length;
+    final activeDevices = devices.where((d) {
+      final lastActive = d['lastActive'] as DateTime;
+      return DateTime.now().difference(lastActive).inHours < 24;
+    }).length;
+    
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('设备管理'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0.5,
+        actions: [
+          TextButton.icon(
+            icon: const Icon(Icons.logout, size: 18),
+            label: const Text('登出所有其他设备'),
+            onPressed: () => _showLogoutAllDialog(context),
+          ),
+        ],
+      ),
+      backgroundColor: Colors.grey[50],
+      body: ListView(
+        children: [
+          // 统计信息卡片
+          Container(
+            padding: const EdgeInsets.all(16),
+            color: Colors.white,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildStatCard('总设备数', devices.length.toString(), Icons.devices, Colors.blue),
+                _buildStatCard('活跃设备', activeDevices.toString(), Icons.check_circle, Colors.green),
+                _buildStatCard('受信任设备', trustedDevices.toString(), Icons.verified_user, Colors.purple),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          
+          // 安全提示
+          if (devices.any((d) => d['trusted'] == false))
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.orange[200]!),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.warning_amber_rounded, color: Colors.orange[700]),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      '您有未受信任的设备登录，建议检查并移除可疑设备',
+                      style: TextStyle(color: Colors.orange[800], fontSize: 13),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          
+          // 设备列表
+          ...devices.map((device) => _buildEnhancedDeviceItem(context, device)).toList(),
+          
+          const SizedBox(height: 80),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildStatCard(String label, String value, IconData icon, Color color) {
+    return Column(
+      children: [
+        Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: color, size: 24),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey[600],
+          ),
+        ),
+      ],
+    );
+  }
+  
+  Widget _buildEnhancedDeviceItem(BuildContext context, Map<String, dynamic> device) {
+    IconData icon;
+    Color color;
+    
+    switch (device['type']) {
+      case 'mobile':
+        icon = Icons.phone_iphone;
+        color = Colors.blue;
+        break;
+      case 'desktop':
+        icon = Icons.computer;
+        color = Colors.purple;
+        break;
+      case 'tablet':
+        icon = Icons.tablet_mac;
+        color = Colors.orange;
+        break;
+      default:
+        icon = Icons.devices_other;
+        color = Colors.grey;
+    }
+    
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        device['name'],
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      if (device['isCurrent'])
+                        Container(
+                          margin: const EdgeInsets.only(left: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.green[50],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '当前设备',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.green[700],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${device['location']} • ${device['lastActive']}',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (!device['isCurrent'])
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert),
+                onSelected: (value) {
+                  if (value == 'remove') {
+                    _showRemoveDeviceDialog(context, device['name']);
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'remove',
+                    child: Row(
+                      children: [
+                        Icon(Icons.logout, size: 16, color: Colors.red),
+                        SizedBox(width: 8),
+                        Text('移除设备', style: TextStyle(color: Colors.red)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  void _toggleTrust(Map<String, dynamic> device) {
+    final isTrusted = device['trusted'] as bool;
+    setState(() {
+      device['trusted'] = !isTrusted;
+    });
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          isTrusted ? '已取消设备信任' : '设备已标记为受信任',
+        ),
+        backgroundColor: isTrusted ? Colors.orange : Colors.green,
+      ),
+    );
+  }
+  
+  void _showRemoveDeviceDialog(BuildContext context, Map<String, dynamic> device) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('登出设备'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('确定要从 ${device['name']} 登出吗？'),
+            const SizedBox(height: 8),
+            Text(
+              '该设备将需要重新登录才能访问您的账户。',
+              style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {
+                devices.removeWhere((d) => d['id'] == device['id']);
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('设备已登出'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('登出设备'),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  void _showLogoutAllDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.orange[700]),
+            const SizedBox(width: 8),
+            const Text('登出所有其他设备'),
+          ],
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('这将登出除当前设备外的所有设备。'),
+            SizedBox(height: 8),
+            Text(
+              '所有其他设备将需要重新登录。',
+              style: TextStyle(fontSize: 13, color: Colors.grey),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {
+                devices.removeWhere((d) => d['isCurrent'] != true);
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('已登出所有其他设备'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('确认登出'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// 登录历史页面
+class LoginHistoryPage extends StatelessWidget {
+  const LoginHistoryPage({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    final loginHistory = [
+      {
+        'date': '2024-03-20 14:30',
+        'device': 'iPhone 14 Pro',
+        'location': '北京市朝阳区',
+        'ip': '192.168.1.100',
+        'status': 'success',
+      },
+      {
+        'date': '2024-03-20 10:15',
+        'device': 'MacBook Pro',
+        'location': '上海市浦东新区',
+        'ip': '10.0.0.50',
+        'status': 'success',
+      },
+      {
+        'date': '2024-03-19 22:45',
+        'device': '未知设备',
+        'location': '广州市天河区',
+        'ip': '117.136.12.79',
+        'status': 'failed',
+      },
+      {
+        'date': '2024-03-19 18:20',
+        'device': 'iPad Pro',
+        'location': '深圳市南山区',
+        'ip': '192.168.2.150',
+        'status': 'success',
+      },
+      {
+        'date': '2024-03-18 09:00',
+        'device': 'Windows PC',
+        'location': '成都市高新区',
+        'ip': '172.16.0.100',
+        'status': 'success',
+      },
+    ];
+    
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('登录历史'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0.5,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: () {
+              // 显示筛选选项
+            },
+          ),
+        ],
+      ),
+      backgroundColor: Colors.grey[50],
+      body: ListView.builder(
+        itemCount: loginHistory.length,
+        itemBuilder: (context, index) {
+          final item = loginHistory[index];
+          final isSuccess = item['status'] == 'success';
+          
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: isSuccess ? Colors.grey[200]! : Colors.red[100]!,
+              ),
+            ),
+            child: ListTile(
+              leading: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: isSuccess ? Colors.green[50] : Colors.red[50],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  isSuccess ? Icons.check_circle : Icons.error,
+                  color: isSuccess ? Colors.green[600] : Colors.red[600],
+                  size: 20,
+                ),
+              ),
+              title: Text(
+                item['device']!,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 4),
+                  Text(
+                    '${item['date']}',
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                  Text(
+                    '${item['location']} • IP: ${item['ip']}',
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                  if (!isSuccess)
+                    Container(
+                      margin: const EdgeInsets.only(top: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.red[50],
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '登录失败',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.red[700],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              trailing: PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert, size: 16),
+                onSelected: (value) {
+                  if (value == 'report') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('已报告可疑活动'),
+                        backgroundColor: Colors.orange,
+                      ),
+                    );
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'report',
+                    child: Row(
+                      children: [
+                        Icon(Icons.flag, size: 16, color: Colors.orange),
+                        SizedBox(width: 8),
+                        Text('报告可疑活动'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

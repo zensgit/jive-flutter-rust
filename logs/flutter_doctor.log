@@ -43,7 +43,16 @@
     • Linux (desktop) • linux  • linux-x64      • Ubuntu 22.04.5 LTS 6.8.0-1031-azure
     • Chrome (web)    • chrome • web-javascript • Google Chrome 139.0.7258.138
 
-[✓] Network resources
-    • All expected network resources are available.
+[!] Network resources
+    ✗ A cryptographic error occurred while checking "https://pub.dev/": Connection terminated during handshake
+      You may be experiencing a man-in-the-middle attack, your network may be compromised, or you may have malware installed on your computer.
+    ✗ A cryptographic error occurred while checking "https://storage.googleapis.com/": Connection terminated during handshake
+      You may be experiencing a man-in-the-middle attack, your network may be compromised, or you may have malware installed on your computer.
+    ✗ A cryptographic error occurred while checking "https://maven.google.com/": Connection terminated during handshake
+      You may be experiencing a man-in-the-middle attack, your network may be compromised, or you may have malware installed on your computer.
+    ✗ A cryptographic error occurred while checking "https://cocoapods.org/": Connection terminated during handshake
+      You may be experiencing a man-in-the-middle attack, your network may be compromised, or you may have malware installed on your computer.
+    ✗ A cryptographic error occurred while checking "https://github.com/": Connection terminated during handshake
+      You may be experiencing a man-in-the-middle attack, your network may be compromised, or you may have malware installed on your computer.
 
-! Doctor found issues in 2 categories.
+! Doctor found issues in 3 categories.

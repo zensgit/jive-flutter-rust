@@ -1,35 +1,46 @@
 // 认证状态管理
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/auth_service.dart';
+import '../services/api/auth_service.dart';
+import '../core/storage/hive_config.dart';
 import '../models/user.dart';
+
+/// 认证状态枚举
+enum AuthStatus {
+  initial,
+  authenticated,
+  unauthenticated,
+  loading,
+  error,
+}
 
 /// 认证状态
 class AuthState {
+  final AuthStatus status;
   final User? user;
-  final bool isAuthenticated;
-  final bool isLoading;
-  final String? error;
-
+  final String? errorMessage;
+  
   const AuthState({
+    this.status = AuthStatus.initial,
     this.user,
-    this.isAuthenticated = false,
-    this.isLoading = false,
-    this.error,
+    this.errorMessage,
   });
-
+  
   AuthState copyWith({
+    AuthStatus? status,
     User? user,
-    bool? isAuthenticated,
-    bool? isLoading,
-    String? error,
+    String? errorMessage,
   }) {
     return AuthState(
+      status: status ?? this.status,
       user: user ?? this.user,
-      isAuthenticated: isAuthenticated ?? this.isAuthenticated,
-      isLoading: isLoading ?? this.isLoading,
-      error: error ?? this.error,
+      errorMessage: errorMessage,
     );
   }
+  
+  bool get isAuthenticated => status == AuthStatus.authenticated;
+  bool get isLoading => status == AuthStatus.loading;
+  String? get error => errorMessage;
 }
 
 /// 认证控制器
@@ -42,69 +53,111 @@ class AuthController extends StateNotifier<AuthState> {
 
   /// 检查认证状态
   Future<void> _checkAuthStatus() async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(status: AuthStatus.loading);
     
     try {
-      final user = await _authService.getCurrentUser();
-      state = state.copyWith(
-        user: user,
-        isAuthenticated: user != null,
-        isLoading: false,
-        error: null,
-      );
+      // 检查本地存储的用户信息
+      final cachedUser = HiveConfig.getCurrentUser();
+      if (cachedUser != null) {
+        state = state.copyWith(
+          status: AuthStatus.authenticated,
+          user: cachedUser,
+        );
+        
+        // 后台刷新用户信息
+        _refreshUserInfo();
+      } else {
+        // 检查是否有有效的token
+        final hasValidToken = await _authService.hasValidToken();
+        if (hasValidToken) {
+          await _refreshUserInfo();
+        } else {
+          state = state.copyWith(status: AuthStatus.unauthenticated);
+        }
+      }
     } catch (e) {
       state = state.copyWith(
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: e.toString(),
+        status: AuthStatus.unauthenticated,
+        errorMessage: e.toString(),
       );
+    }
+  }
+  
+  /// 刷新用户信息
+  Future<void> _refreshUserInfo() async {
+    try {
+      final user = await _authService.getCurrentUser();
+      await HiveConfig.saveUser(user);
+      state = state.copyWith(
+        status: AuthStatus.authenticated,
+        user: user,
+      );
+    } catch (e) {
+      debugPrint('刷新用户信息失败: $e');
     }
   }
 
   /// 登录
-  Future<bool> login(String email, String password) async {
-    state = state.copyWith(isLoading: true, error: null);
+  Future<bool> login({
+    required String email,
+    required String password,
+    bool rememberMe = false,
+  }) async {
+    state = state.copyWith(status: AuthStatus.loading);
     
     try {
-      final user = await _authService.login(email, password);
-      state = state.copyWith(
-        user: user,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
+      final authResponse = await _authService.login(
+        email: email,
+        password: password,
+        rememberMe: rememberMe,
       );
+      
+      // 保存用户信息
+      await HiveConfig.saveUser(authResponse.user);
+      
+      state = state.copyWith(
+        status: AuthStatus.authenticated,
+        user: authResponse.user,
+      );
+      
       return true;
     } catch (e) {
       state = state.copyWith(
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: e.toString(),
+        status: AuthStatus.error,
+        errorMessage: _parseError(e),
       );
       return false;
     }
   }
 
   /// 注册
-  Future<bool> register(String email, String password, String name) async {
-    state = state.copyWith(isLoading: true, error: null);
+  Future<bool> register({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    state = state.copyWith(status: AuthStatus.loading);
     
     try {
-      final user = await _authService.register(email, password, name);
-      state = state.copyWith(
-        user: user,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
+      final authResponse = await _authService.register(
+        name: name,
+        email: email,
+        password: password,
       );
+      
+      // 保存用户信息
+      await HiveConfig.saveUser(authResponse.user);
+      
+      state = state.copyWith(
+        status: AuthStatus.authenticated,
+        user: authResponse.user,
+      );
+      
       return true;
     } catch (e) {
       state = state.copyWith(
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: e.toString(),
+        status: AuthStatus.error,
+        errorMessage: _parseError(e),
       );
       return false;
     }
@@ -112,70 +165,79 @@ class AuthController extends StateNotifier<AuthState> {
 
   /// 登出
   Future<void> logout() async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(status: AuthStatus.loading);
     
     try {
       await _authService.logout();
-      state = const AuthState();
+      await HiveConfig.clearAll();
+      
+      state = const AuthState(status: AuthStatus.unauthenticated);
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.toString(),
-      );
+      debugPrint('登出失败: $e');
+      // 即使登出失败也清除本地数据
+      await HiveConfig.clearAll();
+      state = const AuthState(status: AuthStatus.unauthenticated);
     }
   }
 
   /// 更新用户信息
-  Future<bool> updateProfile(Map<String, dynamic> data) async {
-    state = state.copyWith(isLoading: true, error: null);
+  Future<bool> updateProfile({
+    String? name,
+    String? phone,
+    String? avatar,
+  }) async {
+    if (state.user == null) return false;
     
     try {
-      final updatedUser = await _authService.updateProfile(data);
-      state = state.copyWith(
-        user: updatedUser,
-        isLoading: false,
-        error: null,
+      final updatedUser = await _authService.updateProfile(
+        name: name,
+        phone: phone,
+        avatar: avatar,
       );
+      
+      await HiveConfig.saveUser(updatedUser);
+      
+      state = state.copyWith(user: updatedUser);
       return true;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.toString(),
-      );
+      state = state.copyWith(errorMessage: _parseError(e));
       return false;
     }
   }
 
   /// 修改密码
-  Future<bool> changePassword(String oldPassword, String newPassword) async {
-    state = state.copyWith(isLoading: true, error: null);
-    
+  Future<bool> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
     try {
-      await _authService.changePassword(oldPassword, newPassword);
-      state = state.copyWith(
-        isLoading: false,
-        error: null,
+      await _authService.changePassword(
+        oldPassword: oldPassword,
+        newPassword: newPassword,
       );
       return true;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.toString(),
-      );
+      state = state.copyWith(errorMessage: _parseError(e));
       return false;
     }
   }
-
-  /// 清除错误
+  
+  /// 清除错误信息
   void clearError() {
-    state = state.copyWith(error: null);
+    state = state.copyWith(errorMessage: null);
+  }
+  
+  /// 解析错误信息
+  String _parseError(dynamic error) {
+    if (error is ApiException) {
+      return error.message;
+    }
+    return error.toString();
   }
 }
 
 /// Provider定义
 final authServiceProvider = Provider<AuthService>((ref) {
-  // 这里应该返回实际的AuthService实例
-  // 通过flutter_rust_bridge连接到Rust后端
   return AuthService();
 });
 
@@ -184,11 +246,17 @@ final authControllerProvider = StateNotifierProvider<AuthController, AuthState>(
   return AuthController(authService);
 });
 
-/// 便捷访问
+/// 当前用户Provider
 final currentUserProvider = Provider<User?>((ref) {
-  return ref.watch(authControllerProvider).user;
+  final authState = ref.watch(authControllerProvider);
+  return authState.user;
 });
 
+/// 是否已认证Provider
 final isAuthenticatedProvider = Provider<bool>((ref) {
-  return ref.watch(authControllerProvider).isAuthenticated;
+  final authState = ref.watch(authControllerProvider);
+  return authState.status == AuthStatus.authenticated;
 });
+
+/// 为了兼容性，创建authProvider别名
+final authProvider = authControllerProvider;

@@ -1,258 +1,123 @@
-// 仪表板快捷操作组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/router/app_router.dart';
 
-class QuickActions extends StatelessWidget {
-  final List<QuickActionData> actions;
-  final int itemsPerRow;
-  final double spacing;
-
-  const QuickActions({
-    super.key,
-    required this.actions,
-    this.itemsPerRow = 4,
-    this.spacing = 16,
-  });
+class QuickActions extends ConsumerWidget {
+  const QuickActions({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    
-    return Card(
-      elevation: 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '快捷操作',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildActionGrid(theme),
-          ],
-        ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      height: 100,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          _QuickActionCard(
+            icon: Icons.add_circle,
+            label: '收入',
+            color: Colors.green,
+            onTap: () => _navigateToAddTransaction(context, 'income'),
+          ),
+          _QuickActionCard(
+            icon: Icons.remove_circle,
+            label: '支出',
+            color: Colors.red,
+            onTap: () => _navigateToAddTransaction(context, 'expense'),
+          ),
+          _QuickActionCard(
+            icon: Icons.swap_horiz,
+            label: '转账',
+            color: Colors.blue,
+            onTap: () => _navigateToAddTransaction(context, 'transfer'),
+          ),
+          _QuickActionCard(
+            icon: Icons.camera_alt,
+            label: '扫票据',
+            color: Colors.orange,
+            onTap: () => _scanReceipt(context),
+          ),
+          _QuickActionCard(
+            icon: Icons.repeat,
+            label: '定期交易',
+            color: Colors.purple,
+            onTap: () => _navigateToScheduled(context),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildActionGrid(ThemeData theme) {
-    final rows = <Widget>[];
-    
-    for (int i = 0; i < actions.length; i += itemsPerRow) {
-      final rowActions = actions.skip(i).take(itemsPerRow).toList();
-      rows.add(
-        Row(
-          children: rowActions.map((action) => 
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  right: action != rowActions.last ? spacing : 0,
-                ),
-                child: QuickActionItem(
-                  action: action,
-                  theme: theme,
-                ),
-              ),
-            ),
-          ).toList(),
-        ),
-      );
-      
-      if (i + itemsPerRow < actions.length) {
-        rows.add(SizedBox(height: spacing));
-      }
-    }
-    
-    return Column(children: rows);
+  void _navigateToAddTransaction(BuildContext context, String type) {
+    context.go('${AppRoutes.transactions}/add?type=$type');
   }
-}
 
-class QuickActionItem extends StatelessWidget {
-  final QuickActionData action;
-  final ThemeData theme;
+  void _scanReceipt(BuildContext context) {
+    // TODO: 实现扫描票据功能
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('扫描票据功能开发中')),
+    );
+  }
 
-  const QuickActionItem({
-    super.key,
-    required this.action,
-    required this.theme,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: action.onTap,
-      borderRadius: BorderRadius.circular(AppConstants.smallBorderRadius),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // 图标
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: action.color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Icon(
-                action.icon,
-                size: 28,
-                color: action.color,
-              ),
-            ),
-            
-            const SizedBox(height: 8),
-            
-            // 标题
-            Text(
-              action.title,
-              style: theme.textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
+  void _navigateToScheduled(BuildContext context) {
+    // TODO: 导航到定期交易页面
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('定期交易功能开发中')),
     );
   }
 }
 
-/// 快捷操作数据模型
-class QuickActionData {
-  final String title;
+class _QuickActionCard extends StatelessWidget {
   final IconData icon;
+  final String label;
   final Color color;
   final VoidCallback onTap;
 
-  const QuickActionData({
-    required this.title,
+  const _QuickActionCard({
     required this.icon,
+    required this.label,
     required this.color,
     required this.onTap,
   });
 
-  // 预定义的快捷操作
-  static List<QuickActionData> getDefaultActions({
-    VoidCallback? onAddIncome,
-    VoidCallback? onAddExpense,
-    VoidCallback? onTransfer,
-    VoidCallback? onAddBudget,
-    VoidCallback? onScanReceipt,
-    VoidCallback? onViewReports,
-    VoidCallback? onExportData,
-    VoidCallback? onSettings,
-  }) {
-    return [
-      QuickActionData(
-        title: '添加收入',
-        icon: Icons.add_circle_outline,
-        color: AppConstants.successColor,
-        onTap: onAddIncome ?? () {},
-      ),
-      QuickActionData(
-        title: '添加支出',
-        icon: Icons.remove_circle_outline,
-        color: AppConstants.errorColor,
-        onTap: onAddExpense ?? () {},
-      ),
-      QuickActionData(
-        title: '转账',
-        icon: Icons.swap_horiz,
-        color: AppConstants.primaryColor,
-        onTap: onTransfer ?? () {},
-      ),
-      QuickActionData(
-        title: '预算管理',
-        icon: Icons.pie_chart_outline,
-        color: AppConstants.warningColor,
-        onTap: onAddBudget ?? () {},
-      ),
-      QuickActionData(
-        title: '扫描票据',
-        icon: Icons.camera_alt_outlined,
-        color: AppConstants.infoColor,
-        onTap: onScanReceipt ?? () {},
-      ),
-      QuickActionData(
-        title: '查看报表',
-        icon: Icons.analytics_outlined,
-        color: Colors.purple,
-        onTap: onViewReports ?? () {},
-      ),
-      QuickActionData(
-        title: '导出数据',
-        icon: Icons.file_download_outlined,
-        color: Colors.orange,
-        onTap: onExportData ?? () {},
-      ),
-      QuickActionData(
-        title: '设置',
-        icon: Icons.settings_outlined,
-        color: Colors.grey[600]!,
-        onTap: onSettings ?? () {},
-      ),
-    ];
-  }
-}
-
-/// 简化版快捷操作（只显示主要操作）
-class SimpleQuickActions extends StatelessWidget {
-  final VoidCallback? onAddIncome;
-  final VoidCallback? onAddExpense;
-  final VoidCallback? onTransfer;
-  final VoidCallback? onScanReceipt;
-
-  const SimpleQuickActions({
-    super.key,
-    this.onAddIncome,
-    this.onAddExpense,
-    this.onTransfer,
-    this.onScanReceipt,
-  });
-
   @override
   Widget build(BuildContext context) {
-    final actions = [
-      QuickActionData(
-        title: '收入',
-        icon: Icons.add_circle_outline,
-        color: AppConstants.successColor,
-        onTap: onAddIncome ?? () {},
+    return Padding(
+      padding: const EdgeInsets.only(right: 12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          width: 80,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: color.withOpacity(0.3),
+              width: 1,
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                color: color,
+                size: 32,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      QuickActionData(
-        title: '支出',
-        icon: Icons.remove_circle_outline,
-        color: AppConstants.errorColor,
-        onTap: onAddExpense ?? () {},
-      ),
-      QuickActionData(
-        title: '转账',
-        icon: Icons.swap_horiz,
-        color: AppConstants.primaryColor,
-        onTap: onTransfer ?? () {},
-      ),
-      QuickActionData(
-        title: '扫描',
-        icon: Icons.camera_alt_outlined,
-        color: AppConstants.infoColor,
-        onTap: onScanReceipt ?? () {},
-      ),
-    ];
-
-    return QuickActions(
-      actions: actions,
-      itemsPerRow: 4,
     );
   }
 }

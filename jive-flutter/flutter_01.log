@@ -1,0 +1,85 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter run -d chrome --web-port=3020 -t lib/main_simple.dart
+
+## exception
+
+DartDevelopmentServiceException: DartDevelopmentServiceException: Failed to start Dart Development Service
+
+```
+#0      DartDevelopmentServiceImpl.startService (package:dds/src/dds_impl.dart:136:7)
+<asynchronous suspension>
+#1      DartDevelopmentService.startDartDevelopmentService (package:dds/dds.dart:97:5)
+<asynchronous suspension>
+#2      DebugService.startDartDevelopmentService (package:dwds/src/services/debug_service.dart:165:12)
+<asynchronous suspension>
+#3      DevHandler._createAppDebugServices (package:dwds/src/handlers/dev_handler.dart:510:7)
+<asynchronous suspension>
+#4      DevHandler.loadAppServices (package:dwds/src/handlers/dev_handler.dart:237:21)
+<asynchronous suspension>
+#5      Dwds.debugConnection (package:dwds/dart_web_debug_service.dart:60:30)
+<asynchronous suspension>
+#6      WebDevFS.connect.<anonymous closure> (package:flutter_tools/src/isolated/devfs_web.dart:715:15)
+<asynchronous suspension>
+```
+
+## flutter doctor
+
+```
+[✓] Flutter (Channel stable, 3.16.5, on Ubuntu 22.04.5 LTS 6.8.0-1031-azure, locale zh_CN.UTF-8)
+    • Flutter version 3.16.5 on channel stable at /home/zou/flutter
+    • Upstream repository https://github.com/flutter/flutter.git
+    • Framework revision 78666c8dc5 (1 年 8 个月前), 2023-12-19 16:14:14 -0800
+    • Engine revision 3f3e560236
+    • Dart version 3.2.3
+    • DevTools version 2.28.4
+
+[✓] Android toolchain - develop for Android devices (Android SDK version 34.0.0)
+    • Android SDK at /home/zou/Android/Sdk
+    • Platform android-34, build-tools 34.0.0
+    • ANDROID_HOME = /home/zou/Android/Sdk
+    • ANDROID_SDK_ROOT = /home/zou/Android/Sdk
+    • Java binary at: /usr/lib/jvm/java-17-openjdk-amd64/bin/java
+    • Java version OpenJDK Runtime Environment (build 17.0.16+8-Ubuntu-0ubuntu122.04.1)
+    • All Android licenses accepted.
+
+[✓] Chrome - develop for the web
+    • Chrome at google-chrome
+
+[✓] Linux toolchain - develop for Linux desktop
+    • Ubuntu clang version 14.0.0-1ubuntu1.1
+    • cmake version 3.22.1
+    • ninja version 1.10.1
+    • pkg-config version 0.29.2
+
+[!] Android Studio (not installed)
+    • Android Studio not found; download from https://developer.android.com/studio/index.html
+      (or visit https://flutter.dev/docs/get-started/install/linux#android-setup for detailed instructions).
+
+[✓] VS Code (version 1.103.0)
+    • VS Code at /usr/share/code
+    • Flutter extension version 3.116.0
+
+[!] Proxy Configuration
+    • HTTP_PROXY is set
+    • NO_PROXY is localhost,127.0.0.0/8,::1
+    • NO_PROXY contains localhost
+    ! NO_PROXY does not contain 127.0.0.1
+    • NO_PROXY contains ::1
+
+[✓] Connected device (2 available)
+    • Linux (desktop) • linux  • linux-x64      • Ubuntu 22.04.5 LTS 6.8.0-1031-azure
+    • Chrome (web)    • chrome • web-javascript • Google Chrome 139.0.7258.138
+
+[!] Network resources
+    ✗ A network error occurred while checking "https://pub.dev/": Connection refused
+    ✗ A network error occurred while checking "https://storage.googleapis.com/": Connection refused
+    ✗ A network error occurred while checking "https://maven.google.com/": Connection refused
+    ✗ A network error occurred while checking "https://cocoapods.org/": Connection refused
+    ✗ A network error occurred while checking "https://github.com/": Connection refused
+
+! Doctor found issues in 3 categories.
+```

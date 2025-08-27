@@ -43,7 +43,7 @@ class JiveApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
 
-      // 构建器
+      // 构建器 - 添加文本选择功能
       builder: (context, child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(
@@ -51,7 +51,10 @@ class JiveApp extends ConsumerWidget {
               MediaQuery.of(context).textScaler.scale(1.0).clamp(0.8, 1.2),
             ),
           ),
-          child: child ?? const SizedBox.shrink(),
+          // 为整个应用启用文本选择功能
+          child: SelectionArea(
+            child: child ?? const SizedBox.shrink(),
+          ),
         );
       },
     );

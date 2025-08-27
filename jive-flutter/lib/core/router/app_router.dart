@@ -45,11 +45,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     refreshListenable: _AuthStateNotifier(ref),
     redirect: (context, state) {
       final isAuthenticated = authState.isAuthenticated;
-      final isAuthRoute = state.location == AppRoutes.login || 
-                         state.location == AppRoutes.register;
+      final currentPath = state.uri.path;
+      final isAuthRoute = currentPath == AppRoutes.login || 
+                         currentPath == AppRoutes.register;
       
       // 如果未认证且不在认证页面，重定向到登录页
-      if (!isAuthenticated && !isAuthRoute && state.location != AppRoutes.splash) {
+      if (!isAuthenticated && !isAuthRoute && currentPath != AppRoutes.splash) {
         return AppRoutes.login;
       }
       

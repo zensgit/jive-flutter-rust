@@ -317,3 +317,37 @@ class BudgetStats {
   double get spentPercentage => 
       totalBudgeted > 0 ? (totalSpent / totalBudgeted) : 0;
 }
+
+// 当前月份预算Provider
+final currentMonthBudgetsProvider = FutureProvider<List<dynamic>>((ref) async {
+  // TODO: 从API获取当前月份的预算
+  return [
+    {
+      'id': '1',
+      'name': '餐饮预算',
+      'category': '餐饮',
+      'amount': 3000.0,
+      'spent': 1500.0,
+    },
+    {
+      'id': '2',
+      'name': '交通预算',
+      'category': '交通',
+      'amount': 800.0,
+      'spent': 650.0,
+    },
+    {
+      'id': '3',
+      'name': '购物预算',
+      'category': '购物',
+      'amount': 2000.0,
+      'spent': 1800.0,
+    },
+  ];
+});
+
+// 简单的budgets列表provider（用于兼容旧代码）
+final simpleBudgetsProvider = FutureProvider<List<dynamic>>((ref) async {
+  // TODO: 从API获取所有预算
+  return ref.watch(currentMonthBudgetsProvider).value ?? [];
+});

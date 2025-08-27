@@ -1,10 +1,11 @@
 // 最近交易组件
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../models/transaction.dart';
 import '../cards/transaction_card.dart';
 
 class RecentTransactions extends StatelessWidget {
-  final List<TransactionData> transactions;
+  final List<Transaction> transactions;
   final String title;
   final VoidCallback? onViewAll;
   final int maxItems;
@@ -126,7 +127,7 @@ class RecentTransactions extends StatelessWidget {
 
 /// 按日期分组的最近交易
 class GroupedRecentTransactions extends StatelessWidget {
-  final List<TransactionData> transactions;
+  final List<Transaction> transactions;
   final String title;
   final VoidCallback? onViewAll;
   final int maxDays;
@@ -208,7 +209,7 @@ class GroupedRecentTransactions extends StatelessWidget {
     );
   }
 
-  Widget _buildDateGroup(ThemeData theme, DateTime date, List<TransactionData> transactions) {
+  Widget _buildDateGroup(ThemeData theme, DateTime date, List<Transaction> transactions) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -249,8 +250,8 @@ class GroupedRecentTransactions extends StatelessWidget {
     );
   }
 
-  Map<DateTime, List<TransactionData>> _groupTransactionsByDate() {
-    final Map<DateTime, List<TransactionData>> grouped = {};
+  Map<DateTime, List<Transaction>> _groupTransactionsByDate() {
+    final Map<DateTime, List<Transaction>> grouped = {};
     
     for (final transaction in transactions) {
       final date = DateTime(

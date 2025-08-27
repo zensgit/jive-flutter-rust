@@ -1,8 +1,11 @@
 // 交易状态管理
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/transaction_service.dart';
+import '../services/api/transaction_service.dart';
+import '../services/sync/sync_service.dart';
+import '../core/storage/hive_config.dart';
 import '../models/transaction.dart';
-import '../ui/components/transactions/transaction_filter.dart';
+import '../models/transaction_filter.dart';
 
 /// 交易状态
 class TransactionState {
