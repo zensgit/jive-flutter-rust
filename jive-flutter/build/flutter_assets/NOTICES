@@ -7564,6 +7564,7 @@ SOFTWARE.
 
 --------------------------------------------------------------------------------
 flutter_riverpod
+freezed
 freezed_annotation
 riverpod
 riverpod_annotation

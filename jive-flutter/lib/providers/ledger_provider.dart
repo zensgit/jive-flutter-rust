@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/api/ledger_service.dart' hide LedgerStatistics, LedgerMember;
+import '../services/api/ledger_service.dart' as api;
 import '../models/ledger.dart';
 
 // 账本服务Provider
-final ledgerServiceProvider = Provider<LedgerService>((ref) {
-  return LedgerService();
+final ledgerServiceProvider = Provider<api.LedgerService>((ref) {
+  return api.LedgerService();
 });
 
 // 所有账本列表
@@ -142,13 +142,13 @@ final currentLedgerProvider = StateNotifierProvider<CurrentLedgerNotifier, Ledge
 });
 
 // 账本统计信息
-final ledgerStatisticsProvider = FutureProvider.family<LedgerStatistics, String>((ref, ledgerId) async {
+final ledgerStatisticsProvider = FutureProvider.family<api.LedgerStatistics, String>((ref, ledgerId) async {
   final service = ref.watch(ledgerServiceProvider);
   return await service.getLedgerStatistics(ledgerId);
 });
 
 // 账本共享成员
-final ledgerMembersProvider = FutureProvider.family<List<LedgerMember>, String>((ref, ledgerId) async {
+final ledgerMembersProvider = FutureProvider.family<List<api.LedgerMember>, String>((ref, ledgerId) async {
   final service = ref.watch(ledgerServiceProvider);
   return await service.getLedgerMembers(ledgerId);
 });

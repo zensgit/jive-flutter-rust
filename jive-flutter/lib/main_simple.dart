@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
@@ -20,10 +22,21 @@ import 'models/theme_models.dart' as models;
 import 'widgets/wechat_qr_binding_dialog.dart';
 import 'screens/ai_assistant_page.dart';
 import 'screens/add_transaction_page.dart';
+import 'screens/management/currency_management_page.dart';
+import 'screens/management/category_management_page.dart';
+import 'screens/management/tag_management_page.dart';
+import 'screens/management/payee_management_page.dart';
+import 'screens/management/travel_event_management_page.dart';
+import 'screens/management/rules_management_page.dart';
+import 'screens/currency_converter_page.dart';
 import 'widgets/invite_member_dialog.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // 初始化 Hive for currency preferences
+  await Hive.initFlutter();
+  await Hive.openBox('preferences');
   
   // 初始化服务
   await AuthService().initialize();
@@ -38,7 +51,7 @@ void main() async {
     }
   }
   
-  runApp(const JiveApp());
+  runApp(const ProviderScope(child: JiveApp()));
 }
 
 class JiveApp extends StatefulWidget {
@@ -86,6 +99,13 @@ class _JiveAppState extends State<JiveApp> {
         '/admin-login': (context) => const AdminLoginScreen(),
         '/home': (context) => const HomePage(),
         '/theme': (context) => const ThemeManagementScreen(),
+        '/currency-converter': (context) => const CurrencyConverterPage(),
+        '/settings/currency': (context) => const CurrencyManagementPage(),
+        '/settings/categories': (context) => const CategoryManagementPage(),
+        '/settings/tags': (context) => const TagManagementPage(),
+        '/settings/payees': (context) => const PayeeManagementPage(),
+        '/settings/travel-events': (context) => const TravelEventManagementPage(),
+        '/settings/rules': (context) => const RulesManagementPage(),
       },
     );
   }
@@ -645,6 +665,18 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: [
+        // 账户设置分组
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: Text(
+            '账户设置',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+            ),
+          ),
+        ),
         ListTile(
           leading: const Icon(Icons.person),
           title: const Text('用户信息'),
@@ -656,6 +688,123 @@ class SettingsPage extends StatelessWidget {
               ),
             );
           },
+        ),
+        
+        // 财务管理分组
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
+          child: Text(
+            '财务管理',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.currency_exchange),
+          title: const Text('货币管理'),
+          subtitle: const Text('管理支持的货币类型'),
+          trailing: const Icon(Icons.arrow_forward_ios),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const CurrencyManagementPage(),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.calculate),
+          title: const Text('货币转换器'),
+          subtitle: const Text('实时汇率转换工具'),
+          trailing: const Icon(Icons.arrow_forward_ios),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const CurrencyConverterPage(),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.category),
+          title: const Text('分类管理'),
+          subtitle: const Text('自定义收支分类'),
+          trailing: const Icon(Icons.arrow_forward_ios),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const CategoryManagementPage(),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.label),
+          title: const Text('标签管理'),
+          subtitle: const Text('创建和管理交易标签'),
+          trailing: const Icon(Icons.arrow_forward_ios),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const TagManagementPage(),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.people),
+          title: const Text('交易对方管理'),
+          subtitle: const Text('管理常用交易对象'),
+          trailing: const Icon(Icons.arrow_forward_ios),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const PayeeManagementPage(),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.travel_explore),
+          title: const Text('旅行事件管理'),
+          subtitle: const Text('管理旅行相关记录'),
+          trailing: const Icon(Icons.arrow_forward_ios),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const TravelEventManagementPage(),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.rule),
+          title: const Text('规则管理'),
+          subtitle: const Text('自动化记账规则'),
+          trailing: const Icon(Icons.arrow_forward_ios),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const RulesManagementPage(),
+              ),
+            );
+          },
+        ),
+        
+        // 应用设置分组
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
+          child: Text(
+            '应用设置',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+            ),
+          ),
         ),
         ListTile(
           leading: const Icon(Icons.palette),

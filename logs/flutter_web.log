@@ -3,308 +3,9 @@ To avoid unexpected runtime failures, or future build failures, try to migrate t
 Take a look at the docs for migrating an app: https://github.com/flutter/flutter/wiki/Upgrading-pre-1.12-Android-projects
 Launching lib/main.dart on Chrome in debug mode...
 Waiting for connection from debug service on Chrome...          
-lib/core/app.dart:9:8: Error: Error when reading 'lib/core/localization/app_localizations.dart': No such file or directory
-import 'localization/app_localizations.dart';
-       ^
-lib/core/app.dart:10:8: Error: Error when reading 'lib/features/auth/providers/auth_provider.dart': No such file or directory
-import '../features/auth/providers/auth_provider.dart';
-       ^
-lib/core/app.dart:11:8: Error: Error when reading 'lib/features/settings/providers/settings_provider.dart': No such file or directory
-import '../features/settings/providers/settings_provider.dart';
-       ^
-lib/providers/budget_provider.dart:350:7: Error: 'budgetsProvider' is already declared in this scope.
-final budgetsProvider = FutureProvider<List<dynamic>>((ref) async {
-      ^^^^^^^^^^^^^^^
-lib/providers/budget_provider.dart:222:7: Context: Previous declaration of 'budgetsProvider'.
-final budgetsProvider = Provider<List<Budget>>((ref) {
-      ^^^^^^^^^^^^^^^
-lib/core/config/api_config.dart:21:10: Error: Classes can't be declared inside other classes.
-Try moving the class to the top-level.
-  static class Endpoints {
-         ^^^^^
-Error: Couldn't resolve the package 'flutter_secure_storage' in 'package:flutter_secure_storage/flutter_secure_storage.dart'.
-Error: Couldn't resolve the package 'connectivity_plus' in 'package:connectivity_plus/connectivity_plus.dart'.
-lib/providers/budget_provider.dart:3:8: Error: Error when reading 'lib/services/budget_service.dart': No such file or directory
-import '../services/budget_service.dart';
-       ^
-lib/providers/budget_provider.dart:4:8: Error: Error when reading 'lib/models/budget.dart': No such file or directory
-import '../models/budget.dart';
-       ^
-lib/core/storage/token_storage.dart:1:8: Error: Not found: 'package:flutter_secure_storage/flutter_secure_storage.dart'
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-       ^
-lib/services/sync/sync_service.dart:2:8: Error: Not found: 'package:connectivity_plus/connectivity_plus.dart'
-import 'package:connectivity_plus/connectivity_plus.dart';
-       ^
 ../../../../.pub-cache/hosted/pub.dev/google_fonts-6.2.0/lib/src/google_fonts_base.dart:69:8: Error: Type 'FontFeature' not found.
   List<FontFeature>? fontFeatures,
        ^^^^^^^^^^^
-lib/ui/components/dashboard/recent_transactions.dart:7:14: Error: Type 'TransactionData' not found.
-  final List<TransactionData> transactions;
-             ^^^^^^^^^^^^^^^
-lib/ui/components/dashboard/recent_transactions.dart:129:14: Error: Type 'TransactionData' not found.
-  final List<TransactionData> transactions;
-             ^^^^^^^^^^^^^^^
-lib/ui/components/dashboard/recent_transactions.dart:211:63: Error: Type 'TransactionData' not found.
-  Widget _buildDateGroup(ThemeData theme, DateTime date, List<TransactionData> transactions) {
-                                                              ^^^^^^^^^^^^^^^
-lib/ui/components/dashboard/recent_transactions.dart:252:22: Error: Type 'TransactionData' not found.
-  Map<DateTime, List<TransactionData>> _groupTransactionsByDate() {
-                     ^^^^^^^^^^^^^^^
-lib/providers/transaction_provider.dart:13:9: Error: Type 'TransactionFilterData' not found.
-  final TransactionFilterData? filter;
-        ^^^^^^^^^^^^^^^^^^^^^
-lib/providers/transaction_provider.dart:34:5: Error: Type 'TransactionFilterData' not found.
-    TransactionFilterData? filter,
-    ^^^^^^^^^^^^^^^^^^^^^
-lib/providers/transaction_provider.dart:159:20: Error: Type 'TransactionFilterData' not found.
-  void applyFilter(TransactionFilterData filter) {
-                   ^^^^^^^^^^^^^^^^^^^^^
-lib/providers/transaction_provider.dart:249:73: Error: Type 'TransactionFilterData' not found.
-  List<Transaction> _filterTransactions(List<Transaction> transactions, TransactionFilterData filter) {
-                                                                        ^^^^^^^^^^^^^^^^^^^^^
-lib/providers/budget_provider.dart:8:14: Error: Type 'Budget' not found.
-  final List<Budget> budgets;
-             ^^^^^^
-lib/providers/budget_provider.dart:9:9: Error: Type 'Budget' not found.
-  final Budget? selectedBudget;
-        ^^^^^^
-lib/providers/budget_provider.dart:27:10: Error: Type 'Budget' not found.
-    List<Budget>? budgets,
-         ^^^^^^
-lib/providers/budget_provider.dart:28:5: Error: Type 'Budget' not found.
-    Budget? selectedBudget,
-    ^^^^^^
-lib/providers/budget_provider.dart:49:9: Error: Type 'BudgetService' not found.
-  final BudgetService _budgetService;
-        ^^^^^^^^^^^^^
-lib/providers/budget_provider.dart:132:21: Error: Type 'Budget' not found.
-  void selectBudget(Budget? budget) {
-                    ^^^^^^
-lib/providers/budget_provider.dart:137:28: Error: Type 'Budget' not found.
-  double getBudgetProgress(Budget budget) {
-                           ^^^^^^
-lib/providers/budget_provider.dart:143:32: Error: Type 'Budget' not found.
-  BudgetStatus getBudgetStatus(Budget budget) {
-                               ^^^^^^
-lib/providers/budget_provider.dart:162:43: Error: Type 'Budget' not found.
-  Future<void> _updateBudgetSpending(List<Budget> budgets) async {
-                                          ^^^^^^
-lib/core/router/app_router.dart:48:33: Error: The getter 'location' isn't defined for the class 'GoRouterState'.
- - 'GoRouterState' is from 'package:go_router/src/state.dart' ('../../../../.pub-cache/hosted/pub.dev/go_router-12.1.3/lib/src/state.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'location'.
-      final isAuthRoute = state.location == AppRoutes.login || 
-                                ^^^^^^^^
-lib/core/router/app_router.dart:49:32: Error: The getter 'location' isn't defined for the class 'GoRouterState'.
- - 'GoRouterState' is from 'package:go_router/src/state.dart' ('../../../../.pub-cache/hosted/pub.dev/go_router-12.1.3/lib/src/state.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'location'.
-                         state.location == AppRoutes.register;
-                               ^^^^^^^^
-lib/core/router/app_router.dart:52:53: Error: The getter 'location' isn't defined for the class 'GoRouterState'.
- - 'GoRouterState' is from 'package:go_router/src/state.dart' ('../../../../.pub-cache/hosted/pub.dev/go_router-12.1.3/lib/src/state.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'location'.
-      if (!isAuthenticated && !isAuthRoute && state.location != AppRoutes.splash) {
-                                                    ^^^^^^^^
-lib/providers/ledger_provider.dart:3:1: Error: 'LedgerStatistics' is imported from both 'package:jive_money/models/ledger.dart' and 'package:jive_money/services/api/ledger_service.dart'.
-import '../models/ledger.dart';
-^^^^^^^^^^^^^^^^
-lib/providers/ledger_provider.dart:3:1: Error: 'LedgerMember' is imported from both 'package:jive_money/models/ledger.dart' and 'package:jive_money/services/api/ledger_service.dart'.
-import '../models/ledger.dart';
-^^^^^^^^^^^^
-lib/providers/account_provider.dart:223:20: Error: Undefined name 'accountControllerProvider'.
-  return ref.watch(accountControllerProvider).accounts;
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^
-lib/providers/account_provider.dart:227:20: Error: Undefined name 'accountControllerProvider'.
-  return ref.watch(accountControllerProvider).selectedAccount;
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^
-lib/providers/account_provider.dart:231:20: Error: Undefined name 'accountControllerProvider'.
-  return ref.watch(accountControllerProvider).netWorth;
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^
-lib/providers/account_provider.dart:248:27: Error: Undefined name 'accountControllerProvider'.
-  final state = ref.watch(accountControllerProvider);
-                          ^^^^^^^^^^^^^^^^^^^^^^^^^
-lib/providers/budget_provider.dart:211:40: Error: 'BudgetService' isn't a type.
-final budgetServiceProvider = Provider<BudgetService>((ref) {
-                                       ^^^^^^^^^^^^^
-lib/providers/budget_provider.dart:212:10: Error: Method not found: 'BudgetService'.
-  return BudgetService();
-         ^^^^^^^^^^^^^
-lib/providers/budget_provider.dart:222:39: Error: 'Budget' isn't a type.
-final budgetsProvider = Provider<List<Budget>>((ref) {
-                                      ^^^^^^
-lib/providers/budget_provider.dart:226:41: Error: 'Budget' isn't a type.
-final selectedBudgetProvider = Provider<Budget?>((ref) {
-                                        ^^^^^^
-lib/providers/budget_provider.dart:231:45: Error: 'Budget' isn't a type.
-final activeBudgetsProvider = Provider<List<Budget>>((ref) {
-                                            ^^^^^^
-lib/providers/budget_provider.dart:232:29: Error: Can't use 'budgetsProvider' because it is declared more than once.
-  final budgets = ref.watch(budgetsProvider);
-                            ^
-lib/providers/budget_provider.dart:246:43: Error: 'Budget' isn't a type.
-final overBudgetsProvider = Provider<List<Budget>>((ref) {
-                                          ^^^^^^
-lib/core/storage/token_storage.dart:6:27: Error: Method not found: 'FlutterSecureStorage'.
-  static const _storage = FlutterSecureStorage();
-                          ^^^^^^^^^^^^^^^^^^^^
-lib/core/app.dart:40:9: Error: Undefined name 'AppLocalizations'.
-        AppLocalizations.delegate,
-        ^^^^^^^^^^^^^^^^
-lib/core/app.dart:38:25: Error: The getter 'AppLocalizations' isn't defined for the class 'JiveApp'.
- - 'JiveApp' is from 'package:jive_money/core/app.dart' ('lib/core/app.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppLocalizations'.
-      supportedLocales: AppLocalizations.supportedLocales,
-                        ^^^^^^^^^^^^^^^^
-lib/core/app.dart:76:32: Error: The getter 'settingsProvider' isn't defined for the class 'ThemeModeNotifier'.
- - 'ThemeModeNotifier' is from 'package:jive_money/core/app.dart' ('lib/core/app.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'settingsProvider'.
-    final settings = _ref.read(settingsProvider);
-                               ^^^^^^^^^^^^^^^^
-lib/core/app.dart:84:32: Error: The getter 'settingsProvider' isn't defined for the class 'ThemeModeNotifier'.
- - 'ThemeModeNotifier' is from 'package:jive_money/core/app.dart' ('lib/core/app.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'settingsProvider'.
-    final settings = _ref.read(settingsProvider);
-                               ^^^^^^^^^^^^^^^^
-lib/core/app.dart:129:32: Error: The getter 'settingsProvider' isn't defined for the class 'LocaleNotifier'.
- - 'LocaleNotifier' is from 'package:jive_money/core/app.dart' ('lib/core/app.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'settingsProvider'.
-    final settings = _ref.read(settingsProvider);
-                               ^^^^^^^^^^^^^^^^
-lib/core/app.dart:141:34: Error: The getter 'settingsProvider' isn't defined for the class 'LocaleNotifier'.
- - 'LocaleNotifier' is from 'package:jive_money/core/app.dart' ('lib/core/app.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'settingsProvider'.
-      final settings = _ref.read(settingsProvider);
-                                 ^^^^^^^^^^^^^^^^
-lib/core/app.dart:172:35: Error: The getter 'authProvider' isn't defined for the class 'AppStateNotifier'.
- - 'AppStateNotifier' is from 'package:jive_money/core/app.dart' ('lib/core/app.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'authProvider'.
-      final authState = _ref.read(authProvider);
-                                  ^^^^^^^^^^^^
-lib/core/theme/app_theme.dart:129:24: Error: Member not found: 'GoogleFonts.geistTextTheme'.
-    return GoogleFonts.geistTextTheme().copyWith(
-                       ^^^^^^^^^^^^^^
-lib/core/theme/app_theme.dart:130:33: Error: Member not found: 'GoogleFonts.geist'.
-      displayLarge: GoogleFonts.geist(
-                                ^^^^^
-lib/core/theme/app_theme.dart:136:34: Error: Member not found: 'GoogleFonts.geist'.
-      displayMedium: GoogleFonts.geist(
-                                 ^^^^^
-lib/core/theme/app_theme.dart:142:33: Error: Member not found: 'GoogleFonts.geist'.
-      displaySmall: GoogleFonts.geist(
-                                ^^^^^
-lib/core/theme/app_theme.dart:148:34: Error: Member not found: 'GoogleFonts.geist'.
-      headlineLarge: GoogleFonts.geist(
-                                 ^^^^^
-lib/core/theme/app_theme.dart:154:35: Error: Member not found: 'GoogleFonts.geist'.
-      headlineMedium: GoogleFonts.geist(
-                                  ^^^^^
-lib/core/theme/app_theme.dart:160:34: Error: Member not found: 'GoogleFonts.geist'.
-      headlineSmall: GoogleFonts.geist(
-                                 ^^^^^
-lib/core/theme/app_theme.dart:166:31: Error: Member not found: 'GoogleFonts.geist'.
-      titleLarge: GoogleFonts.geist(
-                              ^^^^^
-lib/core/theme/app_theme.dart:172:32: Error: Member not found: 'GoogleFonts.geist'.
-      titleMedium: GoogleFonts.geist(
-                               ^^^^^
-lib/core/theme/app_theme.dart:178:31: Error: Member not found: 'GoogleFonts.geist'.
-      titleSmall: GoogleFonts.geist(
-                              ^^^^^
-lib/core/theme/app_theme.dart:184:30: Error: Member not found: 'GoogleFonts.geist'.
-      bodyLarge: GoogleFonts.geist(
-                             ^^^^^
-lib/core/theme/app_theme.dart:190:31: Error: Member not found: 'GoogleFonts.geist'.
-      bodyMedium: GoogleFonts.geist(
-                              ^^^^^
-lib/core/theme/app_theme.dart:196:30: Error: Member not found: 'GoogleFonts.geist'.
-      bodySmall: GoogleFonts.geist(
-                             ^^^^^
-lib/core/theme/app_theme.dart:202:31: Error: Member not found: 'GoogleFonts.geist'.
-      labelLarge: GoogleFonts.geist(
-                              ^^^^^
-lib/core/theme/app_theme.dart:208:32: Error: Member not found: 'GoogleFonts.geist'.
-      labelMedium: GoogleFonts.geist(
-                               ^^^^^
-lib/core/theme/app_theme.dart:214:31: Error: Member not found: 'GoogleFonts.geist'.
-      labelSmall: GoogleFonts.geist(
-                              ^^^^^
-lib/core/theme/app_theme.dart:232:35: Error: Member not found: 'GoogleFonts.geist'.
-      titleTextStyle: GoogleFonts.geist(
-                                  ^^^^^
-lib/core/theme/app_theme.dart:267:32: Error: Member not found: 'GoogleFonts.geist'.
-        textStyle: GoogleFonts.geist(
-                               ^^^^^
-lib/core/theme/app_theme.dart:290:32: Error: Member not found: 'GoogleFonts.geist'.
-        textStyle: GoogleFonts.geist(
-                               ^^^^^
-lib/core/theme/app_theme.dart:309:32: Error: Member not found: 'GoogleFonts.geist'.
-        textStyle: GoogleFonts.geist(
-                               ^^^^^
-lib/core/theme/app_theme.dart:361:31: Error: Member not found: 'GoogleFonts.geist'.
-      labelStyle: GoogleFonts.geist(
-                              ^^^^^
-lib/core/theme/app_theme.dart:366:30: Error: Member not found: 'GoogleFonts.geist'.
-      hintStyle: GoogleFonts.geist(
-                             ^^^^^
-lib/core/theme/app_theme.dart:371:31: Error: Member not found: 'GoogleFonts.geist'.
-      errorStyle: GoogleFonts.geist(
-                              ^^^^^
-lib/core/theme/app_theme.dart:385:31: Error: Member not found: 'GoogleFonts.geist'.
-      labelStyle: GoogleFonts.geist(
-                              ^^^^^
-lib/core/theme/app_theme.dart:421:21: Error: Member not found: 'GoogleFonts.geist'.
-        GoogleFonts.geist(
-                    ^^^^^
-lib/core/theme/app_theme.dart:448:35: Error: Member not found: 'GoogleFonts.geist'.
-      titleTextStyle: GoogleFonts.geist(
-                                  ^^^^^
-lib/core/theme/app_theme.dart:453:37: Error: Member not found: 'GoogleFonts.geist'.
-      contentTextStyle: GoogleFonts.geist(
-                                    ^^^^^
-lib/core/theme/app_theme.dart:480:37: Error: Member not found: 'GoogleFonts.geist'.
-      contentTextStyle: GoogleFonts.geist(
-                                    ^^^^^
-lib/core/storage/adapters/ledger_adapter.dart:22:7: Error: No named parameter with the name 'icon'.
-      icon: fields[5] != null 
-      ^^^^
-lib/models/ledger.dart:37:3: Context: Found this candidate, but the arguments don't match.
-  Ledger({
-  ^^^^^^
-lib/core/storage/adapters/ledger_adapter.dart:53:19: Error: The getter 'icon' isn't defined for the class 'Ledger'.
- - 'Ledger' is from 'package:jive_money/models/ledger.dart' ('lib/models/ledger.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'icon'.
-      ..write(obj.icon.codePoint)
-                  ^^^^
-lib/core/storage/adapters/ledger_adapter.dart:55:19: Error: The getter 'color' isn't defined for the class 'Ledger'.
- - 'Ledger' is from 'package:jive_money/models/ledger.dart' ('lib/models/ledger.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'color'.
-      ..write(obj.color.value)
-                  ^^^^^
-lib/core/storage/adapters/ledger_adapter.dart:59:19: Error: The getter 'isShared' isn't defined for the class 'Ledger'.
- - 'Ledger' is from 'package:jive_money/models/ledger.dart' ('lib/models/ledger.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'isShared'.
-      ..write(obj.isShared)
-                  ^^^^^^^^
-lib/core/storage/adapters/ledger_adapter.dart:61:19: Error: The getter 'sharedWith' isn't defined for the class 'Ledger'.
- - 'Ledger' is from 'package:jive_money/models/ledger.dart' ('lib/models/ledger.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'sharedWith'.
-      ..write(obj.sharedWith)
-                  ^^^^^^^^^^
-lib/core/storage/adapters/ledger_adapter.dart:63:19: Error: The getter 'permissions' isn't defined for the class 'Ledger'.
- - 'Ledger' is from 'package:jive_money/models/ledger.dart' ('lib/models/ledger.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'permissions'.
-      ..write(obj.permissions)
-                  ^^^^^^^^^^^
-lib/core/storage/adapters/ledger_adapter.dart:71:19: Error: The getter 'lastAccessedAt' isn't defined for the class 'Ledger'.
- - 'Ledger' is from 'package:jive_money/models/ledger.dart' ('lib/models/ledger.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'lastAccessedAt'.
-      ..write(obj.lastAccessedAt)
-                  ^^^^^^^^^^^^^^
-lib/core/storage/adapters/ledger_adapter.dart:73:19: Error: The getter 'accountIds' isn't defined for the class 'Ledger'.
- - 'Ledger' is from 'package:jive_money/models/ledger.dart' ('lib/models/ledger.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'accountIds'.
-      ..write(obj.accountIds);
-                  ^^^^^^^^^^
 lib/providers/auth_provider.dart:71:50: Error: The method 'hasValidToken' isn't defined for the class 'AuthService'.
  - 'AuthService' is from 'package:jive_money/services/api/auth_service.dart' ('lib/services/api/auth_service.dart').
 Try correcting the name to the name of an existing method, or defining a method named 'hasValidToken'.
@@ -333,7 +34,7 @@ lib/screens/dashboard/dashboard_screen.dart:49:26: Error: 'accountsProvider' is 
 lib/screens/dashboard/dashboard_screen.dart:76:37: Error: Required named parameter 'transactions' must be provided.
             const RecentTransactions(),
                                     ^
-lib/ui/components/dashboard/recent_transactions.dart:12:9: Context: Found this candidate, but the arguments don't match.
+lib/ui/components/dashboard/recent_transactions.dart:13:9: Context: Found this candidate, but the arguments don't match.
   const RecentTransactions({
         ^^^^^^^^^^^^^^^^^^
 lib/screens/dashboard/dashboard_screen.dart:290:45: Error: The argument type 'LedgerType' can't be assigned to the parameter type 'String'.
@@ -375,13 +76,15 @@ lib/screens/accounts/accounts_screen.dart:69:22: Error: The method 'when' isn't 
 Try correcting the name to the name of an existing method, or defining a method named 'when'.
       body: accounts.when(
                      ^^^^
-lib/screens/budgets/budgets_screen.dart:39:47: Error: The argument type 'List<invalid-type>' can't be assigned to the parameter type 'AsyncValue<List<dynamic>>'.
+lib/screens/budgets/budgets_screen.dart:39:47: Error: The argument type 'List<Budget>' can't be assigned to the parameter type 'AsyncValue<List<dynamic>>'.
  - 'List' is from 'dart:core'.
+ - 'Budget' is from 'package:jive_money/models/budget.dart' ('lib/models/budget.dart').
  - 'AsyncValue' is from 'package:riverpod/src/common.dart' ('../../../../.pub-cache/hosted/pub.dev/riverpod-2.6.1/lib/src/common.dart').
             _buildMonthlyBudget(context, ref, budgets),
                                               ^
-lib/screens/budgets/budgets_screen.dart:40:46: Error: The argument type 'List<invalid-type>' can't be assigned to the parameter type 'AsyncValue<List<dynamic>>'.
+lib/screens/budgets/budgets_screen.dart:40:46: Error: The argument type 'List<Budget>' can't be assigned to the parameter type 'AsyncValue<List<dynamic>>'.
  - 'List' is from 'dart:core'.
+ - 'Budget' is from 'package:jive_money/models/budget.dart' ('lib/models/budget.dart').
  - 'AsyncValue' is from 'package:riverpod/src/common.dart' ('../../../../.pub-cache/hosted/pub.dev/riverpod-2.6.1/lib/src/common.dart').
             _buildYearlyBudget(context, ref, budgets),
                                              ^
@@ -391,63 +94,30 @@ lib/screens/settings/settings_screen.dart:13:28: Error: 'currentUserProvider' is
 ../../../../.pub-cache/hosted/pub.dev/google_fonts-6.2.0/lib/src/google_fonts_base.dart:69:8: Error: 'FontFeature' isn't a type.
   List<FontFeature>? fontFeatures,
        ^^^^^^^^^^^
-lib/services/api/auth_service.dart:18:19: Error: Member not found: 'Endpoints'.
-        ApiConfig.Endpoints.login,
-                  ^^^^^^^^^
-lib/services/api/auth_service.dart:62:19: Error: Member not found: 'Endpoints'.
-        ApiConfig.Endpoints.register,
-                  ^^^^^^^^^
-lib/services/api/auth_service.dart:99:36: Error: Member not found: 'Endpoints'.
-      await _client.post(ApiConfig.Endpoints.logout);
-                                   ^^^^^^^^^
-lib/services/api/auth_service.dart:121:19: Error: Member not found: 'Endpoints'.
-        ApiConfig.Endpoints.refreshToken,
-                  ^^^^^^^^^
-lib/services/api/auth_service.dart:151:52: Error: Member not found: 'Endpoints'.
-      final response = await _client.get(ApiConfig.Endpoints.profile);
-                                                   ^^^^^^^^^
-lib/services/api/auth_service.dart:166:19: Error: Member not found: 'Endpoints'.
-        ApiConfig.Endpoints.profile,
-                  ^^^^^^^^^
-lib/services/api/auth_service.dart:187:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.profile}/password',
-                     ^^^^^^^^^
-lib/services/api/auth_service.dart:202:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.auth}/reset-password',
-                     ^^^^^^^^^
-lib/services/api/auth_service.dart:216:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.auth}/verify-email',
-                     ^^^^^^^^^
+lib/services/api/auth_service.dart:202:22: Error: Member not found: 'auth'.
+        '${Endpoints.auth}/reset-password',
+                     ^^^^
+lib/services/api/auth_service.dart:216:22: Error: Member not found: 'auth'.
+        '${Endpoints.auth}/verify-email',
+                     ^^^^
 lib/ui/components/dashboard/account_overview.dart:14:21: Error: The method 'when' isn't defined for the class 'List<Account>'.
  - 'List' is from 'dart:core'.
  - 'Account' is from 'package:jive_money/models/account.dart' ('lib/models/account.dart').
 Try correcting the name to the name of an existing method, or defining a method named 'when'.
     return accounts.when(
                     ^^^^
-lib/ui/components/dashboard/recent_transactions.dart:7:14: Error: 'TransactionData' isn't a type.
-  final List<TransactionData> transactions;
-             ^^^^^^^^^^^^^^^
-lib/ui/components/dashboard/recent_transactions.dart:88:21: Error: No named parameter with the name 'transaction'.
+lib/ui/components/dashboard/recent_transactions.dart:89:21: Error: No named parameter with the name 'transaction'.
                     transaction: transaction,
                     ^^^^^^^^^^^
 lib/ui/components/cards/transaction_card.dart:21:9: Context: Found this candidate, but the arguments don't match.
   const TransactionCard({
         ^^^^^^^^^^^^^^^
-lib/ui/components/dashboard/recent_transactions.dart:129:14: Error: 'TransactionData' isn't a type.
-  final List<TransactionData> transactions;
-             ^^^^^^^^^^^^^^^
-lib/ui/components/dashboard/recent_transactions.dart:211:63: Error: 'TransactionData' isn't a type.
-  Widget _buildDateGroup(ThemeData theme, DateTime date, List<TransactionData> transactions) {
-                                                              ^^^^^^^^^^^^^^^
-lib/ui/components/dashboard/recent_transactions.dart:241:13: Error: No named parameter with the name 'transaction'.
+lib/ui/components/dashboard/recent_transactions.dart:242:13: Error: No named parameter with the name 'transaction'.
             transaction: transaction,
             ^^^^^^^^^^^
 lib/ui/components/cards/transaction_card.dart:21:9: Context: Found this candidate, but the arguments don't match.
   const TransactionCard({
         ^^^^^^^^^^^^^^^
-lib/ui/components/dashboard/recent_transactions.dart:253:30: Error: 'TransactionData' isn't a type.
-    final Map<DateTime, List<TransactionData>> grouped = {};
-                             ^^^^^^^^^^^^^^^
 lib/providers/ledger_provider.dart:27:36: Error: The method 'getCurrentLedger' isn't defined for the class 'LedgerService'.
  - 'LedgerService' is from 'package:jive_money/services/api/ledger_service.dart' ('lib/services/api/ledger_service.dart').
 Try correcting the name to the name of an existing method, or defining a method named 'getCurrentLedger'.
@@ -461,326 +131,131 @@ Try correcting the name to the name of an existing method, or defining a method 
 lib/providers/ledger_provider.dart:102:33: Error: Too few positional arguments: 2 required, 1 given.
       await service.updateLedger(ledger);
                                 ^
-lib/providers/account_provider.dart:64:32: Error: The method '_loadCachedAccounts' isn't defined for the class 'AccountNotifier'.
- - 'AccountNotifier' is from 'package:jive_money/providers/account_provider.dart' ('lib/providers/account_provider.dart').
-Try correcting the name to the name of an existing method, or defining a method named '_loadCachedAccounts'.
-        final cachedAccounts = _loadCachedAccounts();
-                               ^^^^^^^^^^^^^^^^^^^
-lib/providers/account_provider.dart:79:13: Error: The method '_cacheAccounts' isn't defined for the class 'AccountNotifier'.
- - 'AccountNotifier' is from 'package:jive_money/providers/account_provider.dart' ('lib/providers/account_provider.dart').
-Try correcting the name to the name of an existing method, or defining a method named '_cacheAccounts'.
-      await _cacheAccounts(accounts);
-            ^^^^^^^^^^^^^^
-lib/providers/account_provider.dart:100:45: Error: No named parameter with the name 'error'.
-    state = state.copyWith(isLoading: true, error: null);
-                                            ^^^^^
-lib/providers/account_provider.dart:103:59: Error: The argument type 'Map<String, dynamic>' can't be assigned to the parameter type 'Account'.
+lib/providers/account_provider.dart:119:60: Error: The argument type 'Map<String, dynamic>' can't be assigned to the parameter type 'Account'.
  - 'Map' is from 'dart:core'.
  - 'Account' is from 'package:jive_money/models/account.dart' ('lib/models/account.dart').
-      final account = await _accountService.createAccount(data);
-                                                          ^
-lib/providers/account_provider.dart:110:9: Error: No named parameter with the name 'error'.
-        error: e.toString(),
-        ^^^^^
-lib/providers/account_provider.dart:118:45: Error: No named parameter with the name 'error'.
-    state = state.copyWith(isLoading: true, error: null);
-                                            ^^^^^
-lib/providers/account_provider.dart:130:9: Error: No named parameter with the name 'error'.
-        error: e.toString(),
-        ^^^^^
-lib/providers/account_provider.dart:138:45: Error: No named parameter with the name 'error'.
-    state = state.copyWith(isLoading: true, error: null);
-                                            ^^^^^
-lib/providers/account_provider.dart:148:9: Error: No named parameter with the name 'error'.
-        error: e.toString(),
-        ^^^^^
-lib/providers/account_provider.dart:156:28: Error: No named parameter with the name 'selectedAccount'.
-    state = state.copyWith(selectedAccount: account);
-                           ^^^^^^^^^^^^^^^
-lib/providers/account_provider.dart:166:45: Error: No named parameter with the name 'error'.
-    state = state.copyWith(isLoading: true, error: null);
-                                            ^^^^^
-lib/providers/account_provider.dart:169:29: Error: The method 'transfer' isn't defined for the class 'AccountService'.
- - 'AccountService' is from 'package:jive_money/services/api/account_service.dart' ('lib/services/api/account_service.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'transfer'.
-      await _accountService.transfer(fromId, toId, amount, note);
-                            ^^^^^^^^
-lib/providers/account_provider.dart:175:9: Error: No named parameter with the name 'error'.
-        error: e.toString(),
-        ^^^^^
-lib/providers/account_provider.dart:183:28: Error: No named parameter with the name 'error'.
-    state = state.copyWith(error: null);
-                           ^^^^^
-lib/providers/account_provider.dart:192:39: Error: Member not found: 'asset'.
-      if (account.type == AccountType.asset) {
-                                      ^^^^^
-lib/providers/account_provider.dart:194:46: Error: Member not found: 'liability'.
-      } else if (account.type == AccountType.liability) {
-                                             ^^^^^^^^^
-lib/providers/account_provider.dart:202:7: Error: No named parameter with the name 'error'.
-      error: null,
-      ^^^^^
-lib/providers/transaction_provider.dart:13:9: Error: 'TransactionFilterData' isn't a type.
-  final TransactionFilterData? filter;
-        ^^^^^^^^^^^^^^^^^^^^^
-lib/providers/transaction_provider.dart:34:5: Error: 'TransactionFilterData' isn't a type.
-    TransactionFilterData? filter,
-    ^^^^^^^^^^^^^^^^^^^^^
-lib/providers/transaction_provider.dart:68:20: Error: The argument type 'TransactionListResponse' can't be assigned to the parameter type 'List<Transaction>'.
+      final response = await _accountService.createAccount(data);
+                                                           ^
+lib/providers/account_provider.dart:121:73: Error: The argument type 'Account' can't be assigned to the parameter type 'Map<String, dynamic>'.
+ - 'Account' is from 'package:jive_money/models/account.dart' ('lib/models/account.dart').
+ - 'Map' is from 'dart:core'.
+      final account = response is Account ? response : Account.fromJson(response);
+                                                                        ^
+lib/providers/transaction_provider.dart:69:20: Error: The argument type 'TransactionListResponse' can't be assigned to the parameter type 'List<Transaction>'.
  - 'TransactionListResponse' is from 'package:jive_money/services/api/transaction_service.dart' ('lib/services/api/transaction_service.dart').
  - 'List' is from 'dart:core'.
  - 'Transaction' is from 'package:jive_money/models/transaction.dart' ('lib/models/transaction.dart').
       _updateState(transactions);
                    ^
-lib/providers/transaction_provider.dart:87:71: Error: The argument type 'Map<String, dynamic>' can't be assigned to the parameter type 'Transaction'.
+lib/providers/transaction_provider.dart:88:71: Error: The argument type 'Map<String, dynamic>' can't be assigned to the parameter type 'Transaction'.
  - 'Map' is from 'dart:core'.
  - 'Transaction' is from 'package:jive_money/models/transaction.dart' ('lib/models/transaction.dart').
       final transaction = await _transactionService.createTransaction(data);
                                                                       ^
-lib/providers/transaction_provider.dart:143:33: Error: The method 'deleteTransactions' isn't defined for the class 'TransactionService'.
+lib/providers/transaction_provider.dart:144:33: Error: The method 'deleteTransactions' isn't defined for the class 'TransactionService'.
  - 'TransactionService' is from 'package:jive_money/services/api/transaction_service.dart' ('lib/services/api/transaction_service.dart').
 Try correcting the name to the name of an existing method, or defining a method named 'deleteTransactions'.
       await _transactionService.deleteTransactions(ids);
                                 ^^^^^^^^^^^^^^^^^^
-lib/providers/transaction_provider.dart:159:20: Error: 'TransactionFilterData' isn't a type.
-  void applyFilter(TransactionFilterData filter) {
-                   ^^^^^^^^^^^^^^^^^^^^^
-lib/providers/transaction_provider.dart:249:73: Error: 'TransactionFilterData' isn't a type.
-  List<Transaction> _filterTransactions(List<Transaction> transactions, TransactionFilterData filter) {
-                                                                        ^^^^^^^^^^^^^^^^^^^^^
-lib/providers/transaction_provider.dart:284:56: Error: Method 'contains' cannot be called on 'List<String>?' because it is potentially null.
+lib/providers/transaction_provider.dart:253:18: Error: The getter 'types' isn't defined for the class 'TransactionFilterData'.
+ - 'TransactionFilterData' is from 'package:jive_money/models/transaction_filter.dart' ('lib/models/transaction_filter.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'types'.
+      if (filter.types.isNotEmpty && !filter.types.contains(t.type)) {
+                 ^^^^^
+lib/providers/transaction_provider.dart:253:46: Error: The getter 'types' isn't defined for the class 'TransactionFilterData'.
+ - 'TransactionFilterData' is from 'package:jive_money/models/transaction_filter.dart' ('lib/models/transaction_filter.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'types'.
+      if (filter.types.isNotEmpty && !filter.types.contains(t.type)) {
+                                             ^^^^^
+lib/providers/transaction_provider.dart:274:18: Error: The getter 'accounts' isn't defined for the class 'TransactionFilterData'.
+ - 'TransactionFilterData' is from 'package:jive_money/models/transaction_filter.dart' ('lib/models/transaction_filter.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'accounts'.
+      if (filter.accounts.isNotEmpty && !filter.accounts.contains(t.accountId)) {
+                 ^^^^^^^^
+lib/providers/transaction_provider.dart:274:49: Error: The getter 'accounts' isn't defined for the class 'TransactionFilterData'.
+ - 'TransactionFilterData' is from 'package:jive_money/models/transaction_filter.dart' ('lib/models/transaction_filter.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'accounts'.
+      if (filter.accounts.isNotEmpty && !filter.accounts.contains(t.accountId)) {
+                                                ^^^^^^^^
+lib/providers/transaction_provider.dart:279:18: Error: The getter 'categories' isn't defined for the class 'TransactionFilterData'.
+ - 'TransactionFilterData' is from 'package:jive_money/models/transaction_filter.dart' ('lib/models/transaction_filter.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'categories'.
+      if (filter.categories.isNotEmpty && !filter.categories.contains(t.category)) {
+                 ^^^^^^^^^^
+lib/providers/transaction_provider.dart:279:51: Error: The getter 'categories' isn't defined for the class 'TransactionFilterData'.
+ - 'TransactionFilterData' is from 'package:jive_money/models/transaction_filter.dart' ('lib/models/transaction_filter.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'categories'.
+      if (filter.categories.isNotEmpty && !filter.categories.contains(t.category)) {
+                                                  ^^^^^^^^^^
+lib/providers/transaction_provider.dart:284:23: Error: Property 'isNotEmpty' cannot be accessed on 'List<String>?' because it is potentially null.
+ - 'List' is from 'dart:core'.
+Try accessing using ?. instead.
+      if (filter.tags.isNotEmpty) {
+                      ^^^^^^^^^^
+lib/providers/transaction_provider.dart:285:56: Error: Method 'contains' cannot be called on 'List<String>?' because it is potentially null.
  - 'List' is from 'dart:core'.
 Try calling using ?. instead.
         final hasTag = filter.tags.any((tag) => t.tags.contains(tag));
                                                        ^^^^^^^^
-lib/providers/budget_provider.dart:8:14: Error: 'Budget' isn't a type.
-  final List<Budget> budgets;
-             ^^^^^^
-lib/providers/budget_provider.dart:9:9: Error: 'Budget' isn't a type.
-  final Budget? selectedBudget;
-        ^^^^^^
-lib/providers/budget_provider.dart:27:10: Error: 'Budget' isn't a type.
-    List<Budget>? budgets,
-         ^^^^^^
-lib/providers/budget_provider.dart:28:5: Error: 'Budget' isn't a type.
-    Budget? selectedBudget,
-    ^^^^^^
-lib/providers/budget_provider.dart:49:9: Error: 'BudgetService' isn't a type.
-  final BudgetService _budgetService;
-        ^^^^^^^^^^^^^
-lib/providers/budget_provider.dart:100:18: Error: The getter 'id' isn't defined for the class 'Object?'.
- - 'Object' is from 'dart:core'.
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'id'.
-        return b.id == id ? updatedBudget : b;
-                 ^^
-lib/providers/budget_provider.dart:119:59: Error: The getter 'id' isn't defined for the class 'Object?'.
- - 'Object' is from 'dart:core'.
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'id'.
-      final updatedBudgets = state.budgets.where((b) => b.id != id).toList();
-                                                          ^^
-lib/providers/budget_provider.dart:132:21: Error: 'Budget' isn't a type.
-  void selectBudget(Budget? budget) {
-                    ^^^^^^
-lib/providers/budget_provider.dart:137:28: Error: 'Budget' isn't a type.
-  double getBudgetProgress(Budget budget) {
-                           ^^^^^^
-lib/providers/budget_provider.dart:143:32: Error: 'Budget' isn't a type.
-  BudgetStatus getBudgetStatus(Budget budget) {
-                               ^^^^^^
-lib/providers/budget_provider.dart:162:43: Error: 'Budget' isn't a type.
-  Future<void> _updateBudgetSpending(List<Budget> budgets) async {
-                                          ^^^^^^
-lib/providers/budget_provider.dart:168:20: Error: The getter 'id' isn't defined for the class 'Object?'.
- - 'Object' is from 'dart:core'.
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'id'.
-            budget.id,
-                   ^^
-lib/providers/budget_provider.dart:169:20: Error: The getter 'startDate' isn't defined for the class 'Object?'.
- - 'Object' is from 'dart:core'.
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'startDate'.
-            budget.startDate,
-                   ^^^^^^^^^
-lib/providers/budget_provider.dart:170:20: Error: The getter 'endDate' isn't defined for the class 'Object?'.
- - 'Object' is from 'dart:core'.
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'endDate'.
-            budget.endDate ?? DateTime.now(),
-                   ^^^^^^^
-lib/providers/budget_provider.dart:172:25: Error: The method 'copyWith' isn't defined for the class 'Object?'.
- - 'Object' is from 'dart:core'.
-Try correcting the name to the name of an existing method, or defining a method named 'copyWith'.
-          return budget.copyWith(spent: spending);
-                        ^^^^^^^^
-lib/providers/budget_provider.dart:180:33: Error: The getter 'amount' isn't defined for the class 'Object?'.
- - 'Object' is from 'dart:core'.
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'amount'.
-        totalBudgeted += budget.amount;
-                                ^^^^^^
-lib/providers/budget_provider.dart:181:30: Error: The getter 'spent' isn't defined for the class 'Object?'.
- - 'Object' is from 'dart:core'.
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'spent'.
-        totalSpent += budget.spent;
-                             ^^^^^
-lib/core/storage/token_storage.dart:98:23: Error: The argument type 'List<dynamic>' can't be assigned to the parameter type 'Iterable<Future<dynamic>>'.
+lib/providers/transaction_provider.dart:285:36: Error: Method 'any' cannot be called on 'List<String>?' because it is potentially null.
  - 'List' is from 'dart:core'.
+Try calling using ?. instead.
+        final hasTag = filter.tags.any((tag) => t.tags.contains(tag));
+                                   ^^^
+lib/services/sync/sync_service.dart:76:23: Error: The getter 'isAuthenticated' isn't defined for the class 'AuthService'.
+ - 'AuthService' is from 'package:jive_money/services/api/auth_service.dart' ('lib/services/api/auth_service.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'isAuthenticated'.
+    if (!_authService.isAuthenticated) {
+                      ^^^^^^^^^^^^^^^
+lib/services/sync/sync_service.dart:110:25: Error: The getter 'isAuthenticated' isn't defined for the class 'AuthService'.
+ - 'AuthService' is from 'package:jive_money/services/api/auth_service.dart' ('lib/services/api/auth_service.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'isAuthenticated'.
+      if (!_authService.isAuthenticated) {
+                        ^^^^^^^^^^^^^^^
+lib/services/sync/sync_service.dart:148:34: Error: The method 'put' isn't defined for the class 'String'.
+Try correcting the name to the name of an existing method, or defining a method named 'put'.
+        await HiveConfig.userBox.put('current_user', user);
+                                 ^^^
+lib/services/sync/sync_service.dart:161:24: Error: Member not found: 'ledgerBox'.
+      await HiveConfig.ledgerBox.clear();
+                       ^^^^^^^^^
+lib/services/sync/sync_service.dart:165:26: Error: Member not found: 'ledgerBox'.
+        await HiveConfig.ledgerBox.put(ledger.id, ledger);
+                         ^^^^^^^^^
+lib/services/sync/sync_service.dart:158:44: Error: The method 'getLedgers' isn't defined for the class 'LedgerService'.
+ - 'LedgerService' is from 'package:jive_money/services/api/ledger_service.dart' ('lib/services/api/ledger_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'getLedgers'.
+      final ledgers = await _ledgerService.getLedgers();
+                                           ^^^^^^^^^^
+lib/services/sync/sync_service.dart:178:24: Error: Member not found: 'accountBox'.
+      await HiveConfig.accountBox.clear();
+                       ^^^^^^^^^^
+lib/services/sync/sync_service.dart:182:26: Error: Member not found: 'accountBox'.
+        await HiveConfig.accountBox.put(account.id, account);
+                         ^^^^^^^^^^
+lib/services/sync/sync_service.dart:175:46: Error: The method 'getAccounts' isn't defined for the class 'AccountService'.
+ - 'AccountService' is from 'package:jive_money/services/api/account_service.dart' ('lib/services/api/account_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'getAccounts'.
+      final accounts = await _accountService.getAccounts();
+                                             ^^^^^^^^^^^
+lib/services/sync/sync_service.dart:202:24: Error: Member not found: 'transactionBox'.
+      await HiveConfig.transactionBox.clear();
+                       ^^^^^^^^^^^^^^
+lib/services/sync/sync_service.dart:206:26: Error: Member not found: 'transactionBox'.
+        await HiveConfig.transactionBox.put(transaction.id, transaction);
+                         ^^^^^^^^^^^^^^
+lib/services/sync/sync_service.dart:205:33: Error: The type 'TransactionListResponse' used in the 'for' loop must implement 'Iterable<dynamic>'.
+ - 'TransactionListResponse' is from 'package:jive_money/services/api/transaction_service.dart' ('lib/services/api/transaction_service.dart').
  - 'Iterable' is from 'dart:core'.
- - 'Future' is from 'dart:async'.
-    await Future.wait([
-                      ^
-lib/services/api/ledger_service.dart:13:19: Error: Member not found: 'Endpoints'.
-        ApiConfig.Endpoints.ledgers,
-                  ^^^^^^^^^
-lib/services/api/ledger_service.dart:27:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.ledgers}/$id',
-                     ^^^^^^^^^
-lib/services/api/ledger_service.dart:40:19: Error: Member not found: 'Endpoints'.
-        ApiConfig.Endpoints.ledgers,
-                  ^^^^^^^^^
-lib/services/api/ledger_service.dart:54:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.ledgers}/$id',
-                     ^^^^^^^^^
-lib/services/api/ledger_service.dart:68:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.ledgers}/$id',
-                     ^^^^^^^^^
-lib/services/api/ledger_service.dart:79:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.ledgers}/$id/set-default',
-                     ^^^^^^^^^
-lib/services/api/ledger_service.dart:92:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.ledgers}/$id/share',
-                     ^^^^^^^^^
-lib/services/api/ledger_service.dart:108:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.ledgers}/$id/unshare',
-                     ^^^^^^^^^
-lib/services/api/ledger_service.dart:124:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.ledgers}/$id/statistics',
-                     ^^^^^^^^^
-lib/services/api/ledger_service.dart:137:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.ledgers}/$id/members',
-                     ^^^^^^^^^
-lib/services/api/ledger_service.dart:155:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.ledgers}/$ledgerId/members/$userId',
-                     ^^^^^^^^^
-lib/services/api/account_service.dart:16:19: Error: Member not found: 'Endpoints'.
-        ApiConfig.Endpoints.accounts,
-                  ^^^^^^^^^
-lib/services/api/account_service.dart:34:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.accounts}/$id',
-                     ^^^^^^^^^
-lib/services/api/account_service.dart:47:19: Error: Member not found: 'Endpoints'.
-        ApiConfig.Endpoints.accounts,
-                  ^^^^^^^^^
-lib/services/api/account_service.dart:61:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.accounts}/$id',
-                     ^^^^^^^^^
-lib/services/api/account_service.dart:75:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.accounts}/$id',
-                     ^^^^^^^^^
-lib/services/api/account_service.dart:86:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.accounts}/$id/archive',
-                     ^^^^^^^^^
-lib/services/api/account_service.dart:99:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.accounts}/$id/unarchive',
-                     ^^^^^^^^^
-lib/services/api/account_service.dart:112:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.accounts}/$id/set-default',
-                     ^^^^^^^^^
-lib/services/api/account_service.dart:125:19: Error: Member not found: 'Endpoints'.
-        ApiConfig.Endpoints.accountStats.replaceAll(':id', id),
-                  ^^^^^^^^^
-lib/services/api/account_service.dart:144:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.accounts}/$id/transactions',
-                     ^^^^^^^^^
-lib/services/api/account_service.dart:167:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.accounts}/$id/balance-history',
-                     ^^^^^^^^^
-lib/services/api/account_service.dart:185:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.accounts}/reorder',
-                     ^^^^^^^^^
-lib/services/sync/sync_service.dart:37:50: Error: 'ConnectivityResult' isn't a type.
-    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-                                                 ^^^^^^^^^^^^^^^^^^
-lib/services/sync/sync_service.dart:37:5: Error: The method 'Connectivity' isn't defined for the class 'SyncService'.
- - 'SyncService' is from 'package:jive_money/services/sync/sync_service.dart' ('lib/services/sync/sync_service.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'Connectivity'.
-    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-    ^^^^^^^^^^^^
-lib/services/sync/sync_service.dart:38:29: Error: The getter 'ConnectivityResult' isn't defined for the class 'SyncService'.
- - 'SyncService' is from 'package:jive_money/services/sync/sync_service.dart' ('lib/services/sync/sync_service.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'ConnectivityResult'.
-      _isOnline = result != ConnectivityResult.none;
-                            ^^^^^^^^^^^^^^^^^^
-lib/services/api/transaction_service.dart:24:19: Error: Member not found: 'Endpoints'.
-        ApiConfig.Endpoints.transactions,
-                  ^^^^^^^^^
-lib/services/api/transaction_service.dart:49:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.transactions}/$id',
-                     ^^^^^^^^^
-lib/services/api/transaction_service.dart:62:19: Error: Member not found: 'Endpoints'.
-        ApiConfig.Endpoints.transactions,
-                  ^^^^^^^^^
-lib/services/api/transaction_service.dart:76:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.transactions}/$id',
-                     ^^^^^^^^^
-lib/services/api/transaction_service.dart:90:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.transactions}/$id',
-                     ^^^^^^^^^
-lib/services/api/transaction_service.dart:101:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.transactions}/bulk',
-                     ^^^^^^^^^
-lib/services/api/transaction_service.dart:118:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.transactions}/bulk-delete',
-                     ^^^^^^^^^
-lib/services/api/transaction_service.dart:132:19: Error: Member not found: 'Endpoints'.
-        ApiConfig.Endpoints.transactionCategories,
-                  ^^^^^^^^^
-lib/services/api/transaction_service.dart:146:19: Error: Member not found: 'Endpoints'.
-        ApiConfig.Endpoints.transactionCategories,
-                  ^^^^^^^^^
-lib/services/api/transaction_service.dart:166:19: Error: Member not found: 'Endpoints'.
-        ApiConfig.Endpoints.transactionStats,
-                  ^^^^^^^^^
-lib/services/api/transaction_service.dart:189:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.transactions}/search',
-                     ^^^^^^^^^
-lib/services/api/transaction_service.dart:207:19: Error: Member not found: 'Endpoints'.
-        ApiConfig.Endpoints.scheduledTransactions,
-                  ^^^^^^^^^
-lib/services/api/transaction_service.dart:223:19: Error: Member not found: 'Endpoints'.
-        ApiConfig.Endpoints.scheduledTransactions,
-                  ^^^^^^^^^
-lib/services/api/transaction_service.dart:237:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.scheduledTransactions}/$id/${pause ? "pause" : "resume"}',
-                     ^^^^^^^^^
-lib/services/api/transaction_service.dart:250:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.scheduledTransactions}/$id',
-                     ^^^^^^^^^
-lib/services/api/transaction_service.dart:267:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.transactions}/export',
-                     ^^^^^^^^^
-lib/services/api/transaction_service.dart:298:22: Error: Member not found: 'Endpoints'.
-        '${ApiConfig.Endpoints.transactions}/import',
-                     ^^^^^^^^^
-lib/services/api/transaction_service.dart:291:24: Error: The getter 'FormData' isn't defined for the class 'TransactionService'.
- - 'TransactionService' is from 'package:jive_money/services/api/transaction_service.dart' ('lib/services/api/transaction_service.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'FormData'.
-      final formData = FormData.fromMap({
-                       ^^^^^^^^
-lib/services/api/transaction_service.dart:292:23: Error: The getter 'MultipartFile' isn't defined for the class 'TransactionService'.
- - 'TransactionService' is from 'package:jive_money/services/api/transaction_service.dart' ('lib/services/api/transaction_service.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'MultipartFile'.
-        'file': await MultipartFile.fromFile(filePath),
-                      ^^^^^^^^^^^^^
-lib/core/network/interceptors/retry_interceptor.dart:38:47: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-      milliseconds: retryDelay.inMilliseconds * (retryCount + 1),
-                                              ^
-Unhandled exception:
-Null check operator used on a null value
-#0      IncrementalJavaScriptBundler.compile (package:frontend_server/src/javascript_bundle.dart:230:69)
-#1      FrontendCompiler.writeJavaScriptBundle (package:frontend_server/frontend_server.dart:793:46)
-<asynchronous suspension>
-#2      FrontendCompiler.compile (package:frontend_server/frontend_server.dart:657:9)
-<asynchronous suspension>
-#3      listenAndCompile.<anonymous closure> (package:frontend_server/frontend_server.dart:1323:11)
-<asynchronous suspension>
-the Dart compiler exited unexpectedly.
-Waiting for connection from debug service on Chrome...             20.3s
+      for (final transaction in transactions) {
+                                ^
+lib/services/sync/sync_service.dart:215:46: Error: The method 'get' isn't defined for the class 'String'.
+Try correcting the name to the name of an existing method, or defining a method named 'get'.
+    final timestamp = HiveConfig.settingsBox.get('last_sync_time');
+                                             ^^^
+lib/services/sync/sync_service.dart:224:34: Error: The method 'put' isn't defined for the class 'String'.
+Try correcting the name to the name of an existing method, or defining a method named 'put'.
+    await HiveConfig.settingsBox.put(
+                                 ^^^
+Waiting for connection from debug service on Chrome...             22.6s
 Failed to compile application.

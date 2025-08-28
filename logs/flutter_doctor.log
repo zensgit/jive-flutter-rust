@@ -44,15 +44,8 @@
     • Chrome (web)    • chrome • web-javascript • Google Chrome 139.0.7258.138
 
 [!] Network resources
-    ✗ A cryptographic error occurred while checking "https://pub.dev/": Connection terminated during handshake
-      You may be experiencing a man-in-the-middle attack, your network may be compromised, or you may have malware installed on your computer.
-    ✗ A cryptographic error occurred while checking "https://storage.googleapis.com/": Connection terminated during handshake
-      You may be experiencing a man-in-the-middle attack, your network may be compromised, or you may have malware installed on your computer.
-    ✗ A cryptographic error occurred while checking "https://maven.google.com/": Connection terminated during handshake
-      You may be experiencing a man-in-the-middle attack, your network may be compromised, or you may have malware installed on your computer.
-    ✗ A cryptographic error occurred while checking "https://cocoapods.org/": Connection terminated during handshake
-      You may be experiencing a man-in-the-middle attack, your network may be compromised, or you may have malware installed on your computer.
-    ✗ A cryptographic error occurred while checking "https://github.com/": Connection terminated during handshake
-      You may be experiencing a man-in-the-middle attack, your network may be compromised, or you may have malware installed on your computer.
+    ✗ A network error occurred while checking "https://maven.google.com/": Connection reset by peer
+    ✗ A network error occurred while checking "https://cocoapods.org/": Connection reset by peer
+    ✗ A network error occurred while checking "https://github.com/": Connection reset by peer
 
 ! Doctor found issues in 3 categories.

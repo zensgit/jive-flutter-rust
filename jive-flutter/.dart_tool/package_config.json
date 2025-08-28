@@ -320,6 +320,12 @@
       "languageVersion": "3.2"
     },
     {
+      "name": "freezed",
+      "rootUri": "file:///home/zou/.pub-cache/hosted/pub.dev/freezed-2.5.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
       "name": "freezed_annotation",
       "rootUri": "file:///home/zou/.pub-cache/hosted/pub.dev/freezed_annotation-2.4.4",
       "packageUri": "lib/",
@@ -914,7 +920,7 @@
       "languageVersion": "3.2"
     }
   ],
-  "generated": "2025-08-27T06:53:31.885517Z",
+  "generated": "2025-08-28T10:05:03.284774Z",
   "generator": "pub",
   "generatorVersion": "3.2.3"
 }
