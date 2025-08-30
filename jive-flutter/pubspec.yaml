@@ -13,7 +13,7 @@ dependencies:
 
   # UI 和设计
   cupertino_icons: ^1.0.6
-  material_color_utilities: ^0.5.0
+  material_color_utilities: ^0.11.1
   
   # 状态管理
   flutter_riverpod: ^2.4.9
@@ -39,7 +39,7 @@ dependencies:
   # flutter_rust_bridge: ^2.0.0-dev.11
   
   # 工具库
-  intl: ^0.18.1
+  intl: ^0.20.2
   uuid: ^4.2.1
   logger: ^2.0.2+1
   
@@ -63,7 +63,7 @@ dependencies:
   
   # 图片处理
   cached_network_image: ^3.3.0
-  image_picker: ^1.0.7
+  # image_picker: ^1.0.4  # 暂时注释掉，有兼容性问题
   
   # 国际化
   flutter_localizations:
@@ -91,6 +91,9 @@ dev_dependencies:
   # 图标生成
   flutter_launcher_icons: ^0.13.1
 
+dependency_overrides:
+  web: ^0.5.1
+
 # Flutter 配置
 flutter:
   uses-material-design: true
@@ -98,9 +101,6 @@ flutter:
   # 资源文件
   assets:
     - assets/images/
-    - assets/icons/
-    - assets/fonts/
-    - assets/data/
   
   # 自定义字体（暂时注释，等字体文件准备好后启用）
   # fonts:

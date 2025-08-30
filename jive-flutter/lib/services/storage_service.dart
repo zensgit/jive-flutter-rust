@@ -18,6 +18,9 @@ class StorageService {
   static const String _keyThemeSettings = 'theme_settings';
   static const String _keyCustomThemes = 'custom_themes';
   static const String _keySharedThemes = 'shared_themes';
+  static const String _keyTags = 'tags';
+  static const String _keyTagGroups = 'tag_groups';
+  static const String _keyRememberedCredentials = 'remembered_credentials';
 
   // 模拟的内存存储（实际项目中应使用 SharedPreferences 或 Hive）
   final Map<String, dynamic> _storage = {};
@@ -286,6 +289,103 @@ class StorageService {
       debugPrint('清理过期分享主题失败: $e');
     }
   }
+
+  /// 保存标签列表
+  Future<bool> saveTags(List<Map<String, dynamic>> tags) async {
+    try {
+      _storage[_keyTags] = tags;
+      await _simulateDelay();
+      debugPrint('标签数据已保存: ${tags.length} 个标签');
+      return true;
+    } catch (e) {
+      debugPrint('保存标签数据失败: $e');
+      return false;
+    }
+  }
+
+  /// 获取标签列表
+  Future<List<Map<String, dynamic>>> getTags() async {
+    try {
+      await _simulateDelay();
+      final data = _storage[_keyTags];
+      if (data != null && data is List) {
+        return List<Map<String, dynamic>>.from(data);
+      }
+      return [];
+    } catch (e) {
+      debugPrint('获取标签数据失败: $e');
+      return [];
+    }
+  }
+
+  /// 保存标签分组列表
+  Future<bool> saveTagGroups(List<Map<String, dynamic>> tagGroups) async {
+    try {
+      _storage[_keyTagGroups] = tagGroups;
+      await _simulateDelay();
+      debugPrint('标签分组数据已保存: ${tagGroups.length} 个分组');
+      return true;
+    } catch (e) {
+      debugPrint('保存标签分组数据失败: $e');
+      return false;
+    }
+  }
+
+  /// 获取标签分组列表
+  Future<List<Map<String, dynamic>>> getTagGroups() async {
+    try {
+      await _simulateDelay();
+      final data = _storage[_keyTagGroups];
+      if (data != null && data is List) {
+        return List<Map<String, dynamic>>.from(data);
+      }
+      return [];
+    } catch (e) {
+      debugPrint('获取标签分组数据失败: $e');
+      return [];
+    }
+  }
+
+  /// 保存记住的登录凭据
+  Future<bool> saveRememberedCredentials(RememberedCredentials credentials) async {
+    try {
+      _storage[_keyRememberedCredentials] = credentials.toJson();
+      await _simulateDelay();
+      debugPrint('登录凭据已保存: ${credentials.username}');
+      return true;
+    } catch (e) {
+      debugPrint('保存登录凭据失败: $e');
+      return false;
+    }
+  }
+
+  /// 获取记住的登录凭据
+  Future<RememberedCredentials?> getRememberedCredentials() async {
+    try {
+      await _simulateDelay();
+      final data = _storage[_keyRememberedCredentials];
+      if (data != null) {
+        return RememberedCredentials.fromJson(data);
+      }
+      return null;
+    } catch (e) {
+      debugPrint('获取记住的登录凭据失败: $e');
+      return null;
+    }
+  }
+
+  /// 清除记住的登录凭据
+  Future<bool> clearRememberedCredentials() async {
+    try {
+      _storage.remove(_keyRememberedCredentials);
+      await _simulateDelay();
+      debugPrint('已清除记住的登录凭据');
+      return true;
+    } catch (e) {
+      debugPrint('清除记住的登录凭据失败: $e');
+      return false;
+    }
+  }
 }
 
 /// 用户数据模型
@@ -354,6 +454,77 @@ class UserData {
       lastLoginTime: lastLoginTime ?? this.lastLoginTime,
       role: role ?? this.role,
     );
+  }
+}
+
+/// 记住的登录凭据数据模型
+class RememberedCredentials {
+  final String username;
+  final String password;
+  final bool rememberPassword;
+  final bool rememberPermanently; // 新增永久记住选项
+  final DateTime savedAt;
+  final DateTime? lastUsedAt;
+
+  RememberedCredentials({
+    required this.username,
+    required this.password,
+    this.rememberPassword = false,
+    this.rememberPermanently = false, // 默认不永久记住
+    required this.savedAt,
+    this.lastUsedAt,
+  });
+
+  factory RememberedCredentials.fromJson(Map<String, dynamic> json) {
+    return RememberedCredentials(
+      username: json['username'] ?? '',
+      password: json['password'] ?? '',
+      rememberPassword: json['remember_password'] ?? false,
+      rememberPermanently: json['remember_permanently'] ?? false,
+      savedAt: DateTime.parse(json['saved_at'] ?? DateTime.now().toIso8601String()),
+      lastUsedAt: json['last_used_at'] != null 
+        ? DateTime.parse(json['last_used_at']) 
+        : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'username': username,
+      'password': password,
+      'remember_password': rememberPassword,
+      'remember_permanently': rememberPermanently,
+      'saved_at': savedAt.toIso8601String(),
+      'last_used_at': lastUsedAt?.toIso8601String(),
+    };
+  }
+
+  RememberedCredentials copyWith({
+    String? username,
+    String? password,
+    bool? rememberPassword,
+    bool? rememberPermanently,
+    DateTime? savedAt,
+    DateTime? lastUsedAt,
+  }) {
+    return RememberedCredentials(
+      username: username ?? this.username,
+      password: password ?? this.password,
+      rememberPassword: rememberPassword ?? this.rememberPassword,
+      rememberPermanently: rememberPermanently ?? this.rememberPermanently,
+      savedAt: savedAt ?? this.savedAt,
+      lastUsedAt: lastUsedAt ?? this.lastUsedAt,
+    );
+  }
+
+  /// 检查凭据是否过期（30天，永久记住则永不过期）
+  bool get isExpired {
+    // 如果设置了永久记住，则永不过期
+    if (rememberPermanently) return false;
+    
+    // 否则检查30天有效期
+    final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
+    return savedAt.isBefore(thirtyDaysAgo);
   }
 }
 

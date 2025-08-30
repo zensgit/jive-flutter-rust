@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 
 # 默认端口配置
 RUST_API_PORT=${RUST_API_PORT:-8012}
-FLUTTER_DEV_PORT=${FLUTTER_DEV_PORT:-3020}
+FLUTTER_DEV_PORT=3021
 POSTGRES_PORT=${POSTGRES_PORT:-5432}
 REDIS_PORT=${REDIS_PORT:-6379}
 
@@ -462,7 +462,7 @@ start_flutter_app() {
     case $platform_choice in
         1)
             print_msg "$BLUE" "  启动 Flutter Web..."
-            flutter run -d chrome --web-port=$FLUTTER_DEV_PORT > "$LOG_DIR/flutter_web.log" 2>&1 &
+            flutter run lib/main_simple.dart -d chrome --web-port=$FLUTTER_DEV_PORT > "$LOG_DIR/flutter_web.log" 2>&1 &
             local pid=$!
             echo $pid > "$PROJECT_ROOT/.flutter_web.pid"
             print_msg "$GREEN" "✓ Flutter Web 已启动"
@@ -582,10 +582,64 @@ show_menu() {
     echo "5) 开发模式 (热重载)"
     echo "6) 查看服务状态"
     echo "7) 停止所有服务"
-    echo "8) 查看日志"
-    echo "9) 退出"
+    echo "8) 快速重启 Flutter"
+    echo "9) 查看日志"
+    echo "10) 退出"
     echo
-    read -p "请选择操作 (1-9): " choice
+    read -p "请选择操作 (1-10): " choice
+}
+
+# 快速重启 Flutter
+quick_restart_flutter() {
+    print_msg "$CYAN" "\n=== 快速重启 Flutter 应用 ==="
+    
+    cd "$FLUTTER_DIR"
+    
+    # 停止现有的 Flutter 进程
+    if [ -f "$PROJECT_ROOT/.flutter_web.pid" ]; then
+        local pid=$(cat "$PROJECT_ROOT/.flutter_web.pid")
+        if kill -0 $pid 2>/dev/null; then
+            kill $pid
+            print_msg "$YELLOW" "已停止现有 Flutter 进程 (PID: $pid)"
+        fi
+        rm "$PROJECT_ROOT/.flutter_web.pid"
+    fi
+    
+    # 杀死所有 Flutter 相关进程
+    pkill -f "flutter run" 2>/dev/null || true
+    pkill -f "dart.*web_entrypoint" 2>/dev/null || true
+    
+    # 等待进程完全结束
+    sleep 2
+    
+    # 检查端口是否释放
+    if lsof -Pi :$FLUTTER_DEV_PORT -sTCP:LISTEN -t >/dev/null 2>&1; then
+        local pid=$(lsof -Pi :$FLUTTER_DEV_PORT -sTCP:LISTEN -t)
+        print_msg "$YELLOW" "强制终止占用端口 $FLUTTER_DEV_PORT 的进程 (PID: $pid)"
+        kill -9 $pid 2>/dev/null || true
+        sleep 1
+    fi
+    
+    # 重新启动 Flutter
+    print_msg "$BLUE" "正在重新启动 Flutter 应用..."
+    flutter run lib/main_simple.dart -d chrome --web-port=$FLUTTER_DEV_PORT > "$LOG_DIR/flutter_web.log" 2>&1 &
+    
+    local pid=$!
+    echo $pid > "$PROJECT_ROOT/.flutter_web.pid"
+    
+    print_msg "$GREEN" "✓ Flutter 应用重启成功 (PID: $pid)"
+    print_msg "$BLUE" "  访问地址: http://localhost:$FLUTTER_DEV_PORT"
+    
+    # 显示启动日志
+    print_msg "$BLUE" "等待应用启动..."
+    sleep 3
+    
+    if kill -0 $pid 2>/dev/null; then
+        print_msg "$GREEN" "✅ 应用启动成功!"
+    else
+        print_msg "$RED" "❌ 应用启动失败，查看日志:"
+        tail -20 "$LOG_DIR/flutter_web.log"
+    fi
 }
 
 # 查看日志
@@ -666,13 +720,15 @@ dev_mode() {
     # Flutter 热重载
     cd "$FLUTTER_DIR"
     print_msg "$BLUE" "启动 Flutter 热重载..."
-    flutter run -d chrome --web-port=$FLUTTER_DEV_PORT
+    flutter run lib/main_simple.dart -d chrome --web-port=$FLUTTER_DEV_PORT
 }
 
 # 清理函数
 cleanup() {
-    print_msg "$YELLOW" "\n正在清理..."
-    stop_all_services
+    if [ "$SKIP_CLEANUP" != "true" ]; then
+        print_msg "$YELLOW" "\n正在清理..."
+        stop_all_services
+    fi
     exit 0
 }
 
@@ -700,6 +756,10 @@ main() {
             ;;
         dev)
             dev_mode
+            ;;
+        restart)
+            SKIP_CLEANUP=true
+            quick_restart_flutter
             ;;
         *)
             # 显示交互式菜单
@@ -730,9 +790,12 @@ main() {
                         stop_all_services
                         ;;
                     8) 
-                        view_logs
+                        quick_restart_flutter
                         ;;
                     9) 
+                        view_logs
+                        ;;
+                    10) 
                         print_msg "$GREEN" "再见!"
                         exit 0
                         ;;

@@ -1,15 +1,30 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/tag.dart';
+import '../services/storage_service.dart';
 
 /// 标签状态管理 - 基于Riverpod
 class TagNotifier extends StateNotifier<List<Tag>> {
+  final _storage = StorageService();
+  
   TagNotifier() : super([]) {
     _loadTags();
   }
 
-  void _loadTags() {
-    // TODO: 从存储加载标签，目前使用示例数据
-    state = [
+  void _loadTags() async {
+    try {
+      // 从存储加载标签
+      final tagData = await _storage.getTags();
+      if (tagData.isNotEmpty) {
+        final tags = tagData.map((json) => Tag.fromJson(json)).toList();
+        state = tags;
+        return;
+      }
+    } catch (e) {
+      print('从存储加载标签失败: $e');
+    }
+    
+    // 如果存储中没有数据，使用示例数据并保存
+    final defaultTags = [
       Tag(
         id: '1',
         name: '工作',
@@ -44,39 +59,52 @@ class TagNotifier extends StateNotifier<List<Tag>> {
         createdAt: DateTime.now().subtract(const Duration(days: 60)),
       ),
     ];
+    
+    state = defaultTags;
+    _saveTags(); // 保存默认数据到存储
+  }
+
+  /// 保存标签到存储
+  Future<void> _saveTags() async {
+    try {
+      final tagData = state.map((tag) => tag.toJson()).toList();
+      await _storage.saveTags(tagData);
+    } catch (e) {
+      print('保存标签到存储失败: $e');
+    }
   }
 
   /// 添加标签
-  void addTag(Tag tag) {
+  Future<void> addTag(Tag tag) async {
     final newTag = tag.copyWith(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
+      id: tag.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      createdAt: tag.createdAt ?? DateTime.now(),
+      updatedAt: tag.updatedAt ?? DateTime.now(),
     );
     
     state = [...state, newTag];
-    // TODO: 保存到存储
+    await _saveTags();
   }
 
   /// 更新标签
-  void updateTag(Tag updatedTag) {
+  Future<void> updateTag(Tag updatedTag) async {
     state = state.map((tag) {
       if (tag.id == updatedTag.id) {
         return updatedTag.copyWith(updatedAt: DateTime.now());
       }
       return tag;
     }).toList();
-    // TODO: 保存到存储
+    await _saveTags();
   }
 
   /// 删除标签
-  void deleteTag(String tagId) {
+  Future<void> deleteTag(String tagId) async {
     state = state.where((tag) => tag.id != tagId).toList();
-    // TODO: 保存到存储
+    await _saveTags();
   }
 
   /// 归档标签
-  void archiveTag(String tagId, bool archived) {
+  Future<void> archiveTag(String tagId, bool archived) async {
     state = state.map((tag) {
       if (tag.id == tagId) {
         return tag.copyWith(
@@ -86,11 +114,11 @@ class TagNotifier extends StateNotifier<List<Tag>> {
       }
       return tag;
     }).toList();
-    // TODO: 保存到存储
+    await _saveTags();
   }
 
   /// 更新标签使用次数
-  void incrementUsageCount(String tagId) {
+  Future<void> incrementUsageCount(String tagId) async {
     state = state.map((tag) {
       if (tag.id == tagId) {
         return tag.copyWith(
@@ -100,11 +128,11 @@ class TagNotifier extends StateNotifier<List<Tag>> {
       }
       return tag;
     }).toList();
-    // TODO: 保存到存储
+    await _saveTags();
   }
 
   /// 重新排序标签
-  void reorderTags(List<Tag> reorderedTags) {
+  Future<void> reorderTags(List<Tag> reorderedTags) async {
     final updatedTags = <Tag>[];
     for (int i = 0; i < reorderedTags.length; i++) {
       updatedTags.add(reorderedTags[i].copyWith(
@@ -113,19 +141,33 @@ class TagNotifier extends StateNotifier<List<Tag>> {
       ));
     }
     state = updatedTags;
-    // TODO: 保存到存储
+    await _saveTags();
   }
 }
 
 /// 标签组状态管理
 class TagGroupNotifier extends StateNotifier<List<TagGroup>> {
+  final _storage = StorageService();
+  
   TagGroupNotifier() : super([]) {
     _loadTagGroups();
   }
 
-  void _loadTagGroups() {
-    // TODO: 从存储加载标签组，目前使用示例数据
-    state = [
+  void _loadTagGroups() async {
+    try {
+      // 从存储加载标签组
+      final groupData = await _storage.getTagGroups();
+      if (groupData.isNotEmpty) {
+        final groups = groupData.map((json) => TagGroup.fromJson(json)).toList();
+        state = groups;
+        return;
+      }
+    } catch (e) {
+      print('从存储加载标签组失败: $e');
+    }
+    
+    // 如果存储中没有数据，使用示例数据并保存
+    final defaultGroups = [
       TagGroup(
         id: 'work',
         name: '工作相关',
@@ -155,10 +197,23 @@ class TagGroupNotifier extends StateNotifier<List<TagGroup>> {
         createdAt: DateTime.now().subtract(const Duration(days: 15)),
       ),
     ];
+    
+    state = defaultGroups;
+    _saveTagGroups(); // 保存默认数据到存储
+  }
+
+  /// 保存标签组到存储
+  Future<void> _saveTagGroups() async {
+    try {
+      final groupData = state.map((group) => group.toJson()).toList();
+      await _storage.saveTagGroups(groupData);
+    } catch (e) {
+      print('保存标签组到存储失败: $e');
+    }
   }
 
   /// 添加标签组
-  void addTagGroup(TagGroup group) {
+  Future<void> addTagGroup(TagGroup group) async {
     final newGroup = group.copyWith(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       createdAt: DateTime.now(),
@@ -166,28 +221,28 @@ class TagGroupNotifier extends StateNotifier<List<TagGroup>> {
     );
     
     state = [...state, newGroup];
-    // TODO: 保存到存储
+    await _saveTagGroups();
   }
 
   /// 更新标签组
-  void updateTagGroup(TagGroup updatedGroup) {
+  Future<void> updateTagGroup(TagGroup updatedGroup) async {
     state = state.map((group) {
       if (group.id == updatedGroup.id) {
         return updatedGroup.copyWith(updatedAt: DateTime.now());
       }
       return group;
     }).toList();
-    // TODO: 保存到存储
+    await _saveTagGroups();
   }
 
   /// 删除标签组
-  void deleteTagGroup(String groupId) {
+  Future<void> deleteTagGroup(String groupId) async {
     state = state.where((group) => group.id != groupId).toList();
-    // TODO: 保存到存储，同时处理该组下的标签
+    await _saveTagGroups();
   }
 
   /// 归档标签组
-  void archiveTagGroup(String groupId, bool archived) {
+  Future<void> archiveTagGroup(String groupId, bool archived) async {
     state = state.map((group) {
       if (group.id == groupId) {
         return group.copyWith(
@@ -197,7 +252,7 @@ class TagGroupNotifier extends StateNotifier<List<TagGroup>> {
       }
       return group;
     }).toList();
-    // TODO: 保存到存储
+    await _saveTagGroups();
   }
 }
 

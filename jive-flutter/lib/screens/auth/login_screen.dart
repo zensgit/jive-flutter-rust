@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../services/wechat_service.dart';
 import '../../services/auth_service.dart';
+import '../../services/storage_service.dart';
 import '../../widgets/wechat_login_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -17,7 +18,60 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isLoading = false;
+  bool _rememberMe = false;
+  bool _rememberPassword = false;
+  bool _rememberPermanently = false;
   final AuthService _authService = AuthService();
+  final StorageService _storageService = StorageService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  /// 加载保存的登录凭据
+  Future<void> _loadSavedCredentials() async {
+    try {
+      final credentials = await _storageService.getRememberedCredentials();
+      if (credentials != null && !credentials.isExpired) {
+        setState(() {
+          _emailController.text = credentials.username;
+          _rememberMe = true;
+          _rememberPermanently = credentials.rememberPermanently;
+          
+          if (credentials.rememberPassword) {
+            _passwordController.text = credentials.password;
+            _rememberPassword = true;
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint('加载保存的凭据失败: $e');
+    }
+  }
+
+  /// 保存登录凭据
+  Future<void> _saveCredentials() async {
+    if (_rememberMe && _emailController.text.trim().isNotEmpty) {
+      try {
+        final credentials = RememberedCredentials(
+          username: _emailController.text.trim(),
+          password: _rememberPassword ? _passwordController.text : '',
+          rememberPassword: _rememberPassword,
+          rememberPermanently: _rememberPermanently,
+          savedAt: DateTime.now(),
+          lastUsedAt: DateTime.now(),
+        );
+        await _storageService.saveRememberedCredentials(credentials);
+      } catch (e) {
+        debugPrint('保存登录凭据失败: $e');
+      }
+    } else {
+      // 如果不记住密码，清除保存的凭据
+      await _storageService.clearRememberedCredentials();
+    }
+  }
 
   @override
   void dispose() {
@@ -41,6 +95,9 @@ class _LoginScreenState extends State<LoginScreen> {
       
       if (mounted) {
         if (result.success) {
+          // 保存登录凭据
+          await _saveCredentials();
+          
           // 登录成功，显示欢迎消息并导航到主页
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -177,7 +234,165 @@ class _LoginScreenState extends State<LoginScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
+                    
+                    // 记住密码选项
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _rememberMe,
+                              onChanged: (value) {
+                                setState(() {
+                                  _rememberMe = value ?? false;
+                                  if (!_rememberMe) {
+                                    _rememberPassword = false;
+                                    _rememberPermanently = false;
+                                  }
+                                });
+                              },
+                            ),
+                            const Text('记住账号'),
+                            const SizedBox(width: 16),
+                            Checkbox(
+                              value: _rememberPassword && _rememberMe,
+                              onChanged: _rememberMe ? (value) {
+                                setState(() {
+                                  _rememberPassword = value ?? false;
+                                });
+                              } : null,
+                            ),
+                            const Text('记住密码'),
+                            const Spacer(),
+                            TextButton(
+                              onPressed: () async {
+                                // 清除保存的凭据
+                                await _storageService.clearRememberedCredentials();
+                                setState(() {
+                                  _emailController.clear();
+                                  _passwordController.clear();
+                                  _rememberMe = false;
+                                  _rememberPassword = false;
+                                  _rememberPermanently = false;
+                                });
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('已清除保存的登录信息'),
+                                      backgroundColor: Colors.blue,
+                                    ),
+                                  );
+                                }
+                              },
+                              child: const Text(
+                                '清除',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            ),
+                          ],
+                        ),
+                        // 永久记住选项（测试专用）
+                        if (_rememberPassword)
+                          Row(
+                            children: [
+                              const SizedBox(width: 12),
+                              Checkbox(
+                                value: _rememberPermanently,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _rememberPermanently = value ?? false;
+                                  });
+                                },
+                              ),
+                              const Text(
+                                '永久记住（测试模式）',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.orange,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Icon(
+                                Icons.warning_amber,
+                                size: 16,
+                                color: Colors.orange[600],
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '永不过期',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.orange[700],
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                    
+                    // 安全提示
+                    if (_rememberPassword)
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: _rememberPermanently ? Colors.red[50] : Colors.orange[50],
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: _rememberPermanently ? Colors.red[200]! : Colors.orange[200]!
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  _rememberPermanently ? Icons.warning : Icons.security,
+                                  size: 16,
+                                  color: _rememberPermanently ? Colors.red[600] : Colors.orange[600],
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _rememberPermanently
+                                        ? '⚠️ 永久记住模式 - 测试专用'
+                                        : '密码将保存在本地，请确保设备安全',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: _rememberPermanently ? Colors.red[700] : Colors.orange[700],
+                                      fontWeight: _rememberPermanently ? FontWeight.bold : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (_rememberPermanently) ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                '• 凭据永不过期，适合测试环境\n• 生产环境请取消永久记住选项\n• 定期清除凭据确保安全',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.red[600],
+                                  height: 1.3,
+                                ),
+                              ),
+                            ] else ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                '• 凭据30天后自动过期\n• 仅保存在本地设备',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.orange[600],
+                                  height: 1.3,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    const SizedBox(height: 16),
                     
                     // 登录按钮
                     SizedBox(
@@ -317,7 +532,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               '• 测试账户：demo / 密码：123456\n'
                               '• 测试账户：test / 密码：Test123!\n'
                               '• 管理账户：superadmin / 密码：admin123\n'
-                              '• 也可以使用微信登录（模拟）',
+                              '• 也可以使用微信登录（模拟）\n'
+                              '• 记住功能：账号+密码（30天）或永久记住（测试用）',
                               style: TextStyle(fontSize: 12, color: Colors.blue),
                             ),
                           ],

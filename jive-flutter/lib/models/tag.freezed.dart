@@ -23,6 +23,7 @@ mixin _$Tag {
   String? get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String? get color => throw _privateConstructorUsedError;
+  String? get icon => throw _privateConstructorUsedError;
   String? get groupId => throw _privateConstructorUsedError;
   bool get archived => throw _privateConstructorUsedError;
   int get usageCount => throw _privateConstructorUsedError;
@@ -45,6 +46,7 @@ abstract class $TagCopyWith<$Res> {
       {String? id,
       String name,
       String? color,
+      String? icon,
       String? groupId,
       bool archived,
       int usageCount,
@@ -69,6 +71,7 @@ class _$TagCopyWithImpl<$Res, $Val extends Tag> implements $TagCopyWith<$Res> {
     Object? id = freezed,
     Object? name = null,
     Object? color = freezed,
+    Object? icon = freezed,
     Object? groupId = freezed,
     Object? archived = null,
     Object? usageCount = null,
@@ -89,6 +92,10 @@ class _$TagCopyWithImpl<$Res, $Val extends Tag> implements $TagCopyWith<$Res> {
       color: freezed == color
           ? _value.color
           : color // ignore: cast_nullable_to_non_nullable
+              as String?,
+      icon: freezed == icon
+          ? _value.icon
+          : icon // ignore: cast_nullable_to_non_nullable
               as String?,
       groupId: freezed == groupId
           ? _value.groupId
@@ -132,6 +139,7 @@ abstract class _$$TagImplCopyWith<$Res> implements $TagCopyWith<$Res> {
       {String? id,
       String name,
       String? color,
+      String? icon,
       String? groupId,
       bool archived,
       int usageCount,
@@ -153,6 +161,7 @@ class __$$TagImplCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res, _$TagImpl>
     Object? id = freezed,
     Object? name = null,
     Object? color = freezed,
+    Object? icon = freezed,
     Object? groupId = freezed,
     Object? archived = null,
     Object? usageCount = null,
@@ -173,6 +182,10 @@ class __$$TagImplCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res, _$TagImpl>
       color: freezed == color
           ? _value.color
           : color // ignore: cast_nullable_to_non_nullable
+              as String?,
+      icon: freezed == icon
+          ? _value.icon
+          : icon // ignore: cast_nullable_to_non_nullable
               as String?,
       groupId: freezed == groupId
           ? _value.groupId
@@ -208,18 +221,20 @@ class __$$TagImplCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res, _$TagImpl>
 
 /// @nodoc
 @JsonSerializable()
-class _$TagImpl implements _Tag {
+class _$TagImpl extends _Tag {
   const _$TagImpl(
       {this.id,
       required this.name,
       this.color,
+      this.icon,
       this.groupId,
       this.archived = false,
       this.usageCount = 0,
       this.position,
       this.lastUsedAt,
       this.createdAt,
-      this.updatedAt});
+      this.updatedAt})
+      : super._();
 
   factory _$TagImpl.fromJson(Map<String, dynamic> json) =>
       _$$TagImplFromJson(json);
@@ -230,6 +245,8 @@ class _$TagImpl implements _Tag {
   final String name;
   @override
   final String? color;
+  @override
+  final String? icon;
   @override
   final String? groupId;
   @override
@@ -249,7 +266,7 @@ class _$TagImpl implements _Tag {
 
   @override
   String toString() {
-    return 'Tag(id: $id, name: $name, color: $color, groupId: $groupId, archived: $archived, usageCount: $usageCount, position: $position, lastUsedAt: $lastUsedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Tag(id: $id, name: $name, color: $color, icon: $icon, groupId: $groupId, archived: $archived, usageCount: $usageCount, position: $position, lastUsedAt: $lastUsedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -260,6 +277,7 @@ class _$TagImpl implements _Tag {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.color, color) || other.color == color) &&
+            (identical(other.icon, icon) || other.icon == icon) &&
             (identical(other.groupId, groupId) || other.groupId == groupId) &&
             (identical(other.archived, archived) ||
                 other.archived == archived) &&
@@ -277,7 +295,7 @@ class _$TagImpl implements _Tag {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, color, groupId,
+  int get hashCode => Object.hash(runtimeType, id, name, color, icon, groupId,
       archived, usageCount, position, lastUsedAt, createdAt, updatedAt);
 
   @JsonKey(ignore: true)
@@ -294,11 +312,12 @@ class _$TagImpl implements _Tag {
   }
 }
 
-abstract class _Tag implements Tag {
+abstract class _Tag extends Tag {
   const factory _Tag(
       {final String? id,
       required final String name,
       final String? color,
+      final String? icon,
       final String? groupId,
       final bool archived,
       final int usageCount,
@@ -306,6 +325,7 @@ abstract class _Tag implements Tag {
       final DateTime? lastUsedAt,
       final DateTime? createdAt,
       final DateTime? updatedAt}) = _$TagImpl;
+  const _Tag._() : super._();
 
   factory _Tag.fromJson(Map<String, dynamic> json) = _$TagImpl.fromJson;
 
@@ -315,6 +335,8 @@ abstract class _Tag implements Tag {
   String get name;
   @override
   String? get color;
+  @override
+  String? get icon;
   @override
   String? get groupId;
   @override

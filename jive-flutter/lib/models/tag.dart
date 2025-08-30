@@ -10,6 +10,7 @@ class Tag with _$Tag {
     String? id,
     required String name,
     String? color,
+    String? icon,
     String? groupId,
     @Default(false) bool archived,
     @Default(0) int usageCount,
@@ -19,7 +20,23 @@ class Tag with _$Tag {
     DateTime? updatedAt,
   }) = _Tag;
 
+  const Tag._();
+
   factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
+
+  /// 获取标签的显示颜色
+  String get displayColor => color ?? TagColors.defaultColor;
+  
+  /// 是否是活跃标签
+  bool get isActive => !archived;
+  
+  /// 获取使用频率级别
+  String get usageLevel {
+    if (usageCount == 0) return 'unused';
+    if (usageCount < 5) return 'low';
+    if (usageCount < 20) return 'medium';
+    return 'high';
+  }
 }
 
 /// 标签组
