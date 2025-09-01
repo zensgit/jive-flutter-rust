@@ -1,0 +1,71 @@
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+_$SystemCategoryTemplateImpl _$$SystemCategoryTemplateImplFromJson(
+        Map<String, dynamic> json) =>
+    _$SystemCategoryTemplateImpl(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      nameEn: json['nameEn'] as String?,
+      nameZh: json['nameZh'] as String?,
+      description: json['description'] as String?,
+      classification:
+          $enumDecode(_$CategoryClassificationEnumMap, json['classification']),
+      color: json['color'] as String,
+      icon: json['icon'] as String?,
+      categoryGroup: $enumDecode(_$CategoryGroupEnumMap, json['categoryGroup']),
+      isFeatured: json['isFeatured'] as bool? ?? false,
+      isActive: json['isActive'] as bool? ?? true,
+      tags:
+          (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+              const [],
+      globalUsageCount: (json['globalUsageCount'] as num?)?.toInt() ?? 0,
+      version: json['version'] as String? ?? '1.0.0',
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
+    );
+
+Map<String, dynamic> _$$SystemCategoryTemplateImplToJson(
+        _$SystemCategoryTemplateImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'nameEn': instance.nameEn,
+      'nameZh': instance.nameZh,
+      'description': instance.description,
+      'classification':
+          _$CategoryClassificationEnumMap[instance.classification]!,
+      'color': instance.color,
+      'icon': instance.icon,
+      'categoryGroup': _$CategoryGroupEnumMap[instance.categoryGroup]!,
+      'isFeatured': instance.isFeatured,
+      'isActive': instance.isActive,
+      'tags': instance.tags,
+      'globalUsageCount': instance.globalUsageCount,
+      'version': instance.version,
+      'createdAt': instance.createdAt?.toIso8601String(),
+      'updatedAt': instance.updatedAt?.toIso8601String(),
+    };
+
+const _$CategoryClassificationEnumMap = {
+  CategoryClassification.income: 'income',
+  CategoryClassification.expense: 'expense',
+  CategoryClassification.transfer: 'transfer',
+};
+
+const _$CategoryGroupEnumMap = {
+  CategoryGroup.income: 'income',
+  CategoryGroup.dailyExpense: 'dailyExpense',
+  CategoryGroup.transportation: 'transportation',
+  CategoryGroup.housing: 'housing',
+  CategoryGroup.medical: 'medical',
+  CategoryGroup.entertainmentSocial: 'entertainmentSocial',
+  CategoryGroup.education: 'education',
+  CategoryGroup.finance: 'finance',
+  CategoryGroup.other: 'other',
+};

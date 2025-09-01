@@ -1,0 +1,90 @@
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+_$TagImpl _$$TagImplFromJson(Map<String, dynamic> json) => _$TagImpl(
+      id: json['id'] as String?,
+      name: json['name'] as String,
+      color: json['color'] as String?,
+      icon: json['icon'] as String?,
+      groupId: json['groupId'] as String?,
+      archived: json['archived'] as bool? ?? false,
+      usageCount: (json['usageCount'] as num?)?.toInt() ?? 0,
+      position: (json['position'] as num?)?.toInt(),
+      lastUsedAt: json['lastUsedAt'] == null
+          ? null
+          : DateTime.parse(json['lastUsedAt'] as String),
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
+    );
+
+Map<String, dynamic> _$$TagImplToJson(_$TagImpl instance) => <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'color': instance.color,
+      'icon': instance.icon,
+      'groupId': instance.groupId,
+      'archived': instance.archived,
+      'usageCount': instance.usageCount,
+      'position': instance.position,
+      'lastUsedAt': instance.lastUsedAt?.toIso8601String(),
+      'createdAt': instance.createdAt?.toIso8601String(),
+      'updatedAt': instance.updatedAt?.toIso8601String(),
+    };
+
+_$TagGroupImpl _$$TagGroupImplFromJson(Map<String, dynamic> json) =>
+    _$TagGroupImpl(
+      id: json['id'] as String?,
+      name: json['name'] as String,
+      color: json['color'] as String?,
+      icon: json['icon'] as String?,
+      archived: json['archived'] as bool? ?? false,
+      position: (json['position'] as num?)?.toInt(),
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
+      tags: (json['tags'] as List<dynamic>?)
+              ?.map((e) => Tag.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+    );
+
+Map<String, dynamic> _$$TagGroupImplToJson(_$TagGroupImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'color': instance.color,
+      'icon': instance.icon,
+      'archived': instance.archived,
+      'position': instance.position,
+      'createdAt': instance.createdAt?.toIso8601String(),
+      'updatedAt': instance.updatedAt?.toIso8601String(),
+      'tags': instance.tags,
+    };
+
+_$QuickTagImpl _$$QuickTagImplFromJson(Map<String, dynamic> json) =>
+    _$QuickTagImpl(
+      id: json['id'] as String?,
+      tagId: json['tagId'] as String,
+      tag: Tag.fromJson(json['tag'] as Map<String, dynamic>),
+      position: (json['position'] as num?)?.toInt(),
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+    );
+
+Map<String, dynamic> _$$QuickTagImplToJson(_$QuickTagImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'tagId': instance.tagId,
+      'tag': instance.tag,
+      'position': instance.position,
+      'createdAt': instance.createdAt?.toIso8601String(),
+    };

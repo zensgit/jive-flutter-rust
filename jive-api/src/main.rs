@@ -1,214 +1,179 @@
+//! Jive Money API Server
+//! 
+//! 本地测试API服务器，提供分类模板的网络加载功能
+//! 监听地址: 127.0.0.1:8080
+
 use axum::{
-    http::StatusCode,
+    http::{header, HeaderValue, Method, StatusCode},
     response::Json,
-    routing::{get, post},
+    routing::{get, post, put, delete},
+    serve,
     Router,
 };
 use serde::{Deserialize, Serialize};
-use std::net::SocketAddr;
-use tower_http::cors::CorsLayer;
-use tracing_subscriber;
+use serde_json::json;
+use sqlx::{postgres::PgPoolOptions, PgPool};
+use std::{collections::HashMap, net::SocketAddr};
+use tokio::net::TcpListener;
+use tower::ServiceBuilder;
+use tower_http::{
+    cors::{Any, CorsLayer},
+    trace::{DefaultMakeSpan, TraceLayer},
+};
+use tracing::{info, warn, error};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use uuid::Uuid;
 use chrono::{DateTime, Utc};
 
+mod handlers;
+use handlers::template_handler::*;
+
+/// 应用状态
 #[derive(Clone)]
 struct AppState {
-    // 在实际应用中，这里会包含数据库连接等
+    pub pool: PgPool,
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 初始化日志
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "info".into()),
+        )
+        .with(tracing_subscriber::fmt::layer())
+        .init();
 
-    let state = AppState {};
+    info!("🚀 Starting Jive Money API Server...");
 
-    // 构建路由
+    // 数据库连接
+    let database_url = std::env::var("DATABASE_URL")
+        .unwrap_or_else(|_| "postgresql://jive:jive_password@localhost/jive_money".to_string());
+    
+    info!("📦 Connecting to database: {}", database_url.replace("jive_password", "***"));
+    
+    let pool = match PgPoolOptions::new()
+        .max_connections(10)
+        .connect(&database_url)
+        .await
+    {
+        Ok(pool) => {
+            info!("✅ Database connected successfully");
+            pool
+        }
+        Err(e) => {
+            error!("❌ Failed to connect to database: {}", e);
+            warn!("💡 Make sure PostgreSQL is running and database is created");
+            warn!("💡 You can create the database with: createdb jive_money");
+            std::process::exit(1);
+        }
+    };
+
+    // 测试数据库连接
+    match sqlx::query("SELECT 1").execute(&pool).await {
+        Ok(_) => info!("✅ Database connection test passed"),
+        Err(e) => {
+            error!("❌ Database connection test failed: {}", e);
+            std::process::exit(1);
+        }
+    }
+
+    let app_state = AppState { pool };
+
+    // CORS配置
+    let cors = CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
+        .allow_headers([header::CONTENT_TYPE, header::AUTHORIZATION]);
+
+    // 路由配置
     let app = Router::new()
-        .route("/", get(root))
+        // 健康检查
         .route("/health", get(health_check))
-        .route("/api/transactions", get(get_transactions))
-        .route("/api/transactions", post(create_transaction))
-        .route("/api/accounts", get(get_accounts))
-        .route("/api/budget", get(get_budget))
-        .route("/api/reports/summary", get(get_summary))
-        .layer(CorsLayer::permissive())
-        .with_state(state);
+        .route("/", get(api_info))
+        
+        // 分类模板API (模拟钱记的接口)
+        .route("/api/v1/templates/list", get(get_templates))
+        .route("/api/v1/icons/list", get(get_icons))
+        .route("/api/v1/templates/updates", get(get_template_updates))
+        .route("/api/v1/templates/usage", post(submit_usage))
+        
+        // 超级管理员API
+        .route("/api/v1/admin/templates", post(create_template))
+        .route("/api/v1/admin/templates/:template_id", put(update_template))
+        .route("/api/v1/admin/templates/:template_id", delete(delete_template))
+        
+        // 静态文件 (模拟CDN)
+        .route("/static/icons/*path", get(serve_icon))
+        
+        .layer(
+            ServiceBuilder::new()
+                .layer(TraceLayer::new_for_http())
+                .layer(cors),
+        )
+        .with_state(app_state.pool);
 
-    let port = std::env::var("API_PORT")
-        .unwrap_or_else(|_| "8012".to_string())
-        .parse::<u16>()
-        .unwrap_or(8012);
+    // 启动服务器
+    let addr: SocketAddr = "127.0.0.1:8080".parse()?;
+    let listener = TcpListener::bind(addr).await?;
     
-    let addr = SocketAddr::from(([0, 0, 0, 0], port));
-    println!("🚀 Jive Money API Server running at http://{}", addr);
-
-    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
-}
-
-async fn root() -> &'static str {
-    "Jive Money API Server v1.0.0"
-}
-
-async fn health_check() -> Json<HealthResponse> {
-    Json(HealthResponse {
-        status: "healthy".to_string(),
-        timestamp: Utc::now(),
-    })
-}
-
-#[derive(Serialize)]
-struct HealthResponse {
-    status: String,
-    timestamp: DateTime<Utc>,
-}
-
-// 交易相关
-#[derive(Serialize, Deserialize)]
-struct Transaction {
-    id: String,
-    amount: f64,
-    description: String,
-    category: String,
-    date: DateTime<Utc>,
-    transaction_type: String, // income or expense
-}
-
-async fn get_transactions() -> Json<Vec<Transaction>> {
-    // 模拟数据
-    let transactions = vec![
-        Transaction {
-            id: Uuid::new_v4().to_string(),
-            amount: -35.0,
-            description: "星巴克".to_string(),
-            category: "餐饮".to_string(),
-            date: Utc::now(),
-            transaction_type: "expense".to_string(),
-        },
-        Transaction {
-            id: Uuid::new_v4().to_string(),
-            amount: 15000.0,
-            description: "工资".to_string(),
-            category: "收入".to_string(),
-            date: Utc::now(),
-            transaction_type: "income".to_string(),
-        },
-    ];
+    info!("🌐 Server running at http://{}", addr);
+    info!("📋 API Documentation:");
+    info!("  GET  /api/v1/templates/list    - 获取模板列表");
+    info!("  GET  /api/v1/icons/list        - 获取图标列表");
+    info!("  GET  /api/v1/templates/updates - 增量更新");
+    info!("  POST /api/v1/templates/usage   - 提交使用统计");
+    info!("  POST /api/v1/admin/templates   - 创建模板 (管理员)");
+    info!("  PUT  /api/v1/admin/templates/:id - 更新模板 (管理员)");
+    info!("  DELETE /api/v1/admin/templates/:id - 删除模板 (管理员)");
+    info!("💡 Test with: curl http://127.0.0.1:8080/api/v1/templates/list");
     
-    Json(transactions)
-}
-
-async fn create_transaction(
-    Json(payload): Json<CreateTransactionRequest>,
-) -> (StatusCode, Json<Transaction>) {
-    let transaction = Transaction {
-        id: Uuid::new_v4().to_string(),
-        amount: payload.amount,
-        description: payload.description,
-        category: payload.category,
-        date: Utc::now(),
-        transaction_type: if payload.amount < 0.0 { "expense" } else { "income" }.to_string(),
-    };
+    serve(listener, app).await?;
     
-    (StatusCode::CREATED, Json(transaction))
+    Ok(())
 }
 
-#[derive(Deserialize)]
-struct CreateTransactionRequest {
-    amount: f64,
-    description: String,
-    category: String,
+/// 健康检查接口
+async fn health_check() -> Json<serde_json::Value> {
+    Json(json!({
+        "status": "healthy",
+        "service": "jive-money-api",
+        "version": "1.0.0",
+        "timestamp": chrono::Utc::now().to_rfc3339()
+    }))
 }
 
-// 账户相关
-#[derive(Serialize)]
-struct Account {
-    id: String,
-    name: String,
-    balance: f64,
-    account_type: String,
-}
-
-async fn get_accounts() -> Json<Vec<Account>> {
-    let accounts = vec![
-        Account {
-            id: Uuid::new_v4().to_string(),
-            name: "储蓄账户".to_string(),
-            balance: 50000.0,
-            account_type: "savings".to_string(),
+/// API信息接口
+async fn api_info() -> Json<serde_json::Value> {
+    Json(json!({
+        "name": "Jive Money API",
+        "version": "1.0.0",
+        "description": "Category template management API",
+        "endpoints": {
+            "templates": "/api/v1/templates/list",
+            "icons": "/api/v1/icons/list",
+            "updates": "/api/v1/templates/updates",
+            "admin": "/api/v1/admin/templates"
         },
-        Account {
-            id: Uuid::new_v4().to_string(),
-            name: "支票账户".to_string(),
-            balance: 25360.0,
-            account_type: "checking".to_string(),
-        },
-        Account {
-            id: Uuid::new_v4().to_string(),
-            name: "投资账户".to_string(),
-            balance: 50000.0,
-            account_type: "investment".to_string(),
-        },
-    ];
-    
-    Json(accounts)
+        "documentation": "https://api.jivemoney.app/docs",
+        "support": "support@jivemoney.app"
+    }))
 }
 
-// 预算相关
-#[derive(Serialize)]
-struct Budget {
-    category: String,
-    limit: f64,
-    spent: f64,
-    remaining: f64,
-}
-
-async fn get_budget() -> Json<Vec<Budget>> {
-    let budgets = vec![
-        Budget {
-            category: "餐饮".to_string(),
-            limit: 3000.0,
-            spent: 1200.0,
-            remaining: 1800.0,
-        },
-        Budget {
-            category: "交通".to_string(),
-            limit: 1000.0,
-            spent: 450.0,
-            remaining: 550.0,
-        },
-        Budget {
-            category: "购物".to_string(),
-            limit: 5000.0,
-            spent: 3200.0,
-            remaining: 1800.0,
-        },
-    ];
-    
-    Json(budgets)
-}
-
-// 报表相关
-#[derive(Serialize)]
-struct Summary {
-    total_assets: f64,
-    total_liabilities: f64,
-    net_worth: f64,
-    monthly_income: f64,
-    monthly_expenses: f64,
-    savings_rate: f64,
-}
-
-async fn get_summary() -> Json<Summary> {
-    let summary = Summary {
-        total_assets: 125360.0,
-        total_liabilities: 0.0,
-        net_worth: 125360.0,
-        monthly_income: 15000.0,
-        monthly_expenses: 8520.0,
-        savings_rate: 0.432,
-    };
-    
-    Json(summary)
+/// 服务静态图标文件 (模拟CDN)
+async fn serve_icon() -> Result<Json<serde_json::Value>, StatusCode> {
+    // 实际实现中这里应该返回真实的图片文件
+    // 现在返回图标信息用于测试
+    Ok(Json(json!({
+        "message": "Icon serving not implemented yet",
+        "note": "In production, this would serve actual image files",
+        "example_icons": {
+            "salary": "💰",
+            "food": "🍽️",
+            "transport": "🚗",
+            "shopping": "🛒",
+            "entertainment": "🎬"
+        }
+    })))
 }

@@ -24,6 +24,8 @@ import 'screens/ai_assistant_page.dart';
 import 'screens/add_transaction_page.dart';
 import 'screens/management/currency_management_page.dart';
 import 'screens/management/category_management_page.dart';
+import 'screens/management/category_template_library.dart';
+import 'screens/admin/template_admin_page.dart';
 import 'screens/management/tag_management_page.dart';
 import 'screens/management/payee_management_page.dart';
 import 'screens/management/travel_event_management_page.dart';
@@ -102,6 +104,8 @@ class _JiveAppState extends State<JiveApp> {
         '/currency-converter': (context) => const CurrencyConverterPage(),
         '/settings/currency': (context) => const CurrencyManagementPage(),
         '/settings/categories': (context) => const CategoryManagementPage(),
+        '/category/templates': (context) => const CategoryTemplateLibraryPage(),
+        '/admin/templates': (context) => const TemplateAdminPage(),
         '/settings/tags': (context) => const TagManagementPage(),
         '/settings/payees': (context) => const PayeeManagementPage(),
         '/settings/travel-events': (context) => const TravelEventManagementPage(),

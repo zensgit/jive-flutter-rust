@@ -1,28 +1,45 @@
 [package]
 name = "jive-money-api"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
-description = "Jive Money - 集腋记账 API Server"
+authors = ["Jive Money Team"]
+description = "Jive Money API Server for category template management"
 
 [dependencies]
-# Web framework
-axum = "0.7"
-tower = "0.4"
-tower-http = { version = "0.5", features = ["cors"] }
+# Web框架
+axum = { version = "0.7", features = ["macros", "multipart"] }
+tokio = { version = "1.0", features = ["full"] }
+tower = { version = "0.4", features = ["full"] }
+tower-http = { version = "0.5", features = ["cors", "fs", "trace"] }
 
-# Async runtime
-tokio = { version = "1", features = ["full"] }
+# 数据库
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid", "json"] }
 
-# Serialization
+# 序列化
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
-# Logging
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-
-# Time
+# 日期时间
 chrono = { version = "0.4", features = ["serde"] }
 
 # UUID
 uuid = { version = "1.0", features = ["v4", "serde"] }
+
+# 日志
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# 配置管理
+config = "0.14"
+dotenv = "0.15"
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[[bin]]
+name = "jive-api"
+path = "src/main.rs"
+
+[[bin]]
+name = "jive-api-simple"
+path = "src/main_simple.rs"

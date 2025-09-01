@@ -1,0 +1,75 @@
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+_$PayeeImpl _$$PayeeImplFromJson(Map<String, dynamic> json) => _$PayeeImpl(
+      id: json['id'] as String?,
+      name: json['name'] as String,
+      color: json['color'] as String?,
+      payeeType: $enumDecodeNullable(_$PayeeTypeEnumMap, json['payeeType']),
+      source: $enumDecodeNullable(_$PayeeSourceEnumMap, json['source']),
+      logo: json['logo'] as String?,
+      website: json['website'] as String?,
+      transactionsCount: (json['transactionsCount'] as num?)?.toInt() ?? 0,
+      position: (json['position'] as num?)?.toInt(),
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
+      categoryIds: (json['categoryIds'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
+      primaryCategoryId: json['primaryCategoryId'] as String?,
+    );
+
+Map<String, dynamic> _$$PayeeImplToJson(_$PayeeImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'color': instance.color,
+      'payeeType': _$PayeeTypeEnumMap[instance.payeeType],
+      'source': _$PayeeSourceEnumMap[instance.source],
+      'logo': instance.logo,
+      'website': instance.website,
+      'transactionsCount': instance.transactionsCount,
+      'position': instance.position,
+      'createdAt': instance.createdAt?.toIso8601String(),
+      'updatedAt': instance.updatedAt?.toIso8601String(),
+      'categoryIds': instance.categoryIds,
+      'primaryCategoryId': instance.primaryCategoryId,
+    };
+
+const _$PayeeTypeEnumMap = {
+  PayeeType.familyPayee: 'family_payee',
+  PayeeType.providerPayee: 'provider_payee',
+};
+
+const _$PayeeSourceEnumMap = {
+  PayeeSource.manual: 'manual',
+  PayeeSource.plaid: 'plaid',
+  PayeeSource.synth: 'synth',
+  PayeeSource.ai: 'ai',
+};
+
+_$PayeeCategoryImpl _$$PayeeCategoryImplFromJson(Map<String, dynamic> json) =>
+    _$PayeeCategoryImpl(
+      id: json['id'] as String?,
+      payeeId: json['payeeId'] as String,
+      categoryId: json['categoryId'] as String,
+      usageCount: (json['usageCount'] as num?)?.toInt() ?? 0,
+      lastUsedAt: json['lastUsedAt'] == null
+          ? null
+          : DateTime.parse(json['lastUsedAt'] as String),
+    );
+
+Map<String, dynamic> _$$PayeeCategoryImplToJson(_$PayeeCategoryImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'payeeId': instance.payeeId,
+      'categoryId': instance.categoryId,
+      'usageCount': instance.usageCount,
+      'lastUsedAt': instance.lastUsedAt?.toIso8601String(),
+    };
