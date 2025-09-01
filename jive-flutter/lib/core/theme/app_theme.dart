@@ -131,91 +131,91 @@ class AppTheme {
         fontSize: 57,
         fontWeight: FontWeight.w400,
         letterSpacing: -0.25,
-        color: colorScheme.onBackground,
+        color: colorScheme.onSurface,
       ),
       displayMedium: GoogleFonts.inter(
         fontSize: 45,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
-        color: colorScheme.onBackground,
+        color: colorScheme.onSurface,
       ),
       displaySmall: GoogleFonts.inter(
         fontSize: 36,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
-        color: colorScheme.onBackground,
+        color: colorScheme.onSurface,
       ),
       headlineLarge: GoogleFonts.inter(
         fontSize: 32,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
-        color: colorScheme.onBackground,
+        color: colorScheme.onSurface,
       ),
       headlineMedium: GoogleFonts.inter(
         fontSize: 28,
         fontWeight: FontWeight.w500,
         letterSpacing: 0,
-        color: colorScheme.onBackground,
+        color: colorScheme.onSurface,
       ),
       headlineSmall: GoogleFonts.inter(
         fontSize: 24,
         fontWeight: FontWeight.w500,
         letterSpacing: 0,
-        color: colorScheme.onBackground,
+        color: colorScheme.onSurface,
       ),
       titleLarge: GoogleFonts.inter(
         fontSize: 22,
         fontWeight: FontWeight.w600,
         letterSpacing: 0,
-        color: colorScheme.onBackground,
+        color: colorScheme.onSurface,
       ),
       titleMedium: GoogleFonts.inter(
         fontSize: 16,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.15,
-        color: colorScheme.onBackground,
+        color: colorScheme.onSurface,
       ),
       titleSmall: GoogleFonts.inter(
         fontSize: 14,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.1,
-        color: colorScheme.onBackground,
+        color: colorScheme.onSurface,
       ),
       bodyLarge: GoogleFonts.inter(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.5,
-        color: colorScheme.onBackground,
+        color: colorScheme.onSurface,
       ),
       bodyMedium: GoogleFonts.inter(
         fontSize: 14,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.25,
-        color: colorScheme.onBackground,
+        color: colorScheme.onSurface,
       ),
       bodySmall: GoogleFonts.inter(
         fontSize: 12,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.4,
-        color: colorScheme.onBackground,
+        color: colorScheme.onSurface,
       ),
       labelLarge: GoogleFonts.inter(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.1,
-        color: colorScheme.onBackground,
+        color: colorScheme.onSurface,
       ),
       labelMedium: GoogleFonts.inter(
         fontSize: 12,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.5,
-        color: colorScheme.onBackground,
+        color: colorScheme.onSurface,
       ),
       labelSmall: GoogleFonts.inter(
         fontSize: 11,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.5,
-        color: colorScheme.onBackground,
+        color: colorScheme.onSurface,
       ),
     );
   }
@@ -379,7 +379,7 @@ class AppTheme {
   /// 构建其他组件主题的方法...
   static ChipThemeData _buildChipTheme(ColorScheme colorScheme) {
     return ChipThemeData(
-      backgroundColor: colorScheme.surfaceVariant,
+      backgroundColor: colorScheme.surfaceContainerHighest,
       selectedColor: colorScheme.primaryContainer,
       deleteIconColor: colorScheme.onSurfaceVariant,
       labelStyle: GoogleFonts.inter(
@@ -417,7 +417,7 @@ class AppTheme {
       indicatorColor: colorScheme.primaryContainer,
       elevation: 3,
       height: 80,
-      labelTextStyle: MaterialStateProperty.all(
+      labelTextStyle: WidgetStateProperty.all(
         GoogleFonts.inter(
           fontSize: 12,
           fontWeight: FontWeight.w500,

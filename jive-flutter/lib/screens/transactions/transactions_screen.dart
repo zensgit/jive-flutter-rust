@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/router/app_router.dart';
 import '../../providers/transaction_provider.dart';
 import '../../ui/components/transactions/transaction_list_item.dart';
+import '../../models/transaction.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
   const TransactionsScreen({super.key});
@@ -32,7 +33,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final transactions = ref.watch(transactionsProvider);
+    final transactionState = ref.watch(transactionControllerProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -60,10 +61,10 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildTransactionList(transactions, 'all'),
-          _buildTransactionList(transactions, 'expense'),
-          _buildTransactionList(transactions, 'income'),
-          _buildTransactionList(transactions, 'transfer'),
+          _buildTransactionList(transactionState, 'all'),
+          _buildTransactionList(transactionState, 'expense'),
+          _buildTransactionList(transactionState, 'income'),
+          _buildTransactionList(transactionState, 'transfer'),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -75,50 +76,50 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
   }
 
   Widget _buildTransactionList(
-    AsyncValue<List<dynamic>> transactions,
+    TransactionState transactionState,
     String type,
   ) {
-    return transactions.when(
-      data: (data) {
-        final filtered = _filterTransactions(data, type);
-        if (filtered.isEmpty) {
-          return _buildEmptyState(type);
-        }
-        
-        return RefreshIndicator(
-          onRefresh: () async {
-            ref.invalidate(transactionsProvider);
-          },
-          child: ListView.builder(
-            padding: const EdgeInsets.only(bottom: 80),
-            itemCount: filtered.length,
-            itemBuilder: (context, index) {
-              final transaction = filtered[index];
-              return TransactionListItem(
-                transaction: transaction,
-                onTap: () {
-                  context.go('${AppRoutes.transactions}/${transaction.id}');
-                },
-              );
-            },
-          ),
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Center(
+    if (transactionState.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    
+    if (transactionState.error != null) {
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            Text('加载失败: $error'),
+            Text('加载失败: ${transactionState.error}'),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () => ref.invalidate(transactionsProvider),
+              onPressed: () => ref.read(transactionControllerProvider.notifier).refresh(),
               child: const Text('重试'),
             ),
           ],
         ),
+      );
+    }
+    
+    final filtered = _filterTransactions(transactionState.filteredTransactions, type);
+    if (filtered.isEmpty) {
+      return _buildEmptyState(type);
+    }
+    
+    return RefreshIndicator(
+      onRefresh: () => ref.read(transactionControllerProvider.notifier).refresh(),
+      child: ListView.builder(
+        padding: const EdgeInsets.only(bottom: 80),
+        itemCount: filtered.length,
+        itemBuilder: (context, index) {
+          final transaction = filtered[index];
+          return TransactionListItem(
+            transaction: transaction,
+            onTap: () {
+              context.go('${AppRoutes.transactions}/${transaction.id}');
+            },
+          );
+        },
       ),
     );
   }
@@ -173,12 +174,20 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
     );
   }
 
-  List<dynamic> _filterTransactions(List<dynamic> transactions, String type) {
+  List<Transaction> _filterTransactions(List<Transaction> transactions, String type) {
     if (type == 'all') return transactions;
     
     return transactions.where((t) {
-      // TODO: 根据实际的交易模型字段进行过滤
-      return t.type == type;
+      switch (type) {
+        case 'expense':
+          return t.type == TransactionType.expense;
+        case 'income':
+          return t.type == TransactionType.income;
+        case 'transfer':
+          return t.type == TransactionType.transfer;
+        default:
+          return true;
+      }
     }).toList();
   }
 

@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/category.dart' as models;
 import '../models/category_template.dart';
 import '../services/api/category_service_simple.dart';
-import '../models/category.dart' show CategoryClassification;
 
 /// 分类服务提供器
 final categoryServiceProvider = Provider<CategoryServiceIntegrated>((ref) {

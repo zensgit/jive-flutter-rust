@@ -184,10 +184,6 @@ class ThemeService extends ChangeNotifier {
       (t) => t.id == themeId,
       orElse: () => _presetThemes.firstWhere((t) => t.id == themeId),
     );
-    
-    if (theme == null) {
-      throw Exception('主题不存在');
-    }
 
     final shareCode = _generateShareCode();
     final sharedTheme = models.SharedThemeData(
@@ -245,10 +241,6 @@ class ThemeService extends ChangeNotifier {
       (t) => t.id == themeId,
       orElse: () => _presetThemes.firstWhere((t) => t.id == themeId),
     );
-    
-    if (theme == null) {
-      throw Exception('主题不存在');
-    }
 
     return jsonEncode(theme.toJson());
   }

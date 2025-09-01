@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/api/auth_service.dart';
 import '../core/storage/hive_config.dart';
+import '../core/network/http_client.dart';
 import '../models/user.dart';
 
 /// 认证状态枚举
@@ -113,14 +114,22 @@ class AuthController extends StateNotifier<AuthState> {
       );
       
       // 保存用户信息
-      await HiveConfig.saveUser(authResponse.user);
-      
-      state = state.copyWith(
-        status: AuthStatus.authenticated,
-        user: authResponse.user,
-      );
-      
-      return true;
+      if (authResponse.user != null) {
+        await HiveConfig.saveUser(authResponse.user!);
+        
+        state = state.copyWith(
+          status: AuthStatus.authenticated,
+          user: authResponse.user,
+        );
+        
+        return true;
+      } else {
+        state = state.copyWith(
+          status: AuthStatus.error,
+          errorMessage: '登录响应中缺少用户信息',
+        );
+        return false;
+      }
     } catch (e) {
       state = state.copyWith(
         status: AuthStatus.error,
@@ -146,14 +155,22 @@ class AuthController extends StateNotifier<AuthState> {
       );
       
       // 保存用户信息
-      await HiveConfig.saveUser(authResponse.user);
-      
-      state = state.copyWith(
-        status: AuthStatus.authenticated,
-        user: authResponse.user,
-      );
-      
-      return true;
+      if (authResponse.user != null) {
+        await HiveConfig.saveUser(authResponse.user!);
+        
+        state = state.copyWith(
+          status: AuthStatus.authenticated,
+          user: authResponse.user,
+        );
+        
+        return true;
+      } else {
+        state = state.copyWith(
+          status: AuthStatus.error,
+          errorMessage: '注册响应中缺少用户信息',
+        );
+        return false;
+      }
     } catch (e) {
       state = state.copyWith(
         status: AuthStatus.error,
@@ -207,12 +224,12 @@ class AuthController extends StateNotifier<AuthState> {
 
   /// 修改密码
   Future<bool> changePassword({
-    required String oldPassword,
+    required String currentPassword,
     required String newPassword,
   }) async {
     try {
       await _authService.changePassword(
-        oldPassword: oldPassword,
+        currentPassword: currentPassword,
         newPassword: newPassword,
       );
       return true;

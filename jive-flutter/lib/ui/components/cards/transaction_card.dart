@@ -2,23 +2,55 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../models/transaction.dart';
 
 class TransactionCard extends StatelessWidget {
-  final String id;
-  final String title;
+  // 支持Transaction对象的构造方法
+  final Transaction? transaction;
+  final bool? showDate;
+  final bool? compact;
+  final EdgeInsets? margin;
+  final double? elevation;
+  
+  // 原有的构造参数
+  final String? id;
+  final String? title;
   final String? description;
-  final double amount;
-  final DateTime date;
-  final String category;
+  final double? amount;
+  final DateTime? date;
+  final String? category;
   final Color? categoryColor;
   final IconData? categoryIcon;
-  final bool isIncome;
+  final bool? isIncome;
   final String? payee;
   final List<String>? tags;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
 
+  // Transaction对象构造方法
   const TransactionCard({
+    super.key,
+    this.transaction,
+    this.showDate = true,
+    this.compact = false,
+    this.margin,
+    this.elevation,
+    this.onTap,
+    this.onLongPress,
+  }) : id = null,
+       title = null,
+       description = null,
+       amount = null,
+       date = null,
+       category = null,
+       categoryColor = null,
+       categoryIcon = null,
+       isIncome = null,
+       payee = null,
+       tags = null;
+
+  // 原有的构造方法
+  const TransactionCard.legacy({
     super.key,
     required this.id,
     required this.title,
@@ -33,16 +65,36 @@ class TransactionCard extends StatelessWidget {
     this.tags,
     this.onTap,
     this.onLongPress,
-  });
+  }) : transaction = null,
+       showDate = true,
+       compact = false,
+       margin = null,
+       elevation = null;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final currencyFormatter = NumberFormat.currency(symbol: '¥');
     
+    // 从transaction对象或直接参数获取数据
+    final cardTitle = transaction?.description ?? title ?? '';
+    final cardDescription = transaction?.note ?? description;
+    final cardAmount = transaction?.amount ?? amount ?? 0.0;
+    final cardDate = transaction?.date ?? date ?? DateTime.now();
+    final cardCategory = transaction?.category ?? category ?? '';
+    final cardIsIncome = transaction?.type == TransactionType.income ?? (isIncome ?? false);
+    final cardPayee = transaction?.payee ?? payee;
+    final cardTags = transaction?.tags ?? tags;
+    
+    final cardMargin = margin ?? 
+        (compact == true 
+            ? const EdgeInsets.symmetric(horizontal: 16, vertical: 2)
+            : const EdgeInsets.symmetric(horizontal: 16, vertical: 4));
+    final cardElevation = elevation ?? (compact == true ? 0 : 1);
+    
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      elevation: 1,
+      margin: cardMargin,
+      elevation: cardElevation,
       shadowColor: theme.shadowColor.withOpacity(0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
@@ -69,7 +121,7 @@ class TransactionCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            title,
+                            cardTitle,
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -78,7 +130,7 @@ class TransactionCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          DateFormat('MM/dd HH:mm').format(date),
+                          DateFormat('MM/dd HH:mm').format(cardDate),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurface.withOpacity(0.6),
                           ),
@@ -98,23 +150,23 @@ class TransactionCard extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: (categoryColor ?? theme.primaryColor)
+                            color: (transaction?.type.color ?? categoryColor ?? theme.primaryColor)
                                 .withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            category,
+                            cardCategory,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: categoryColor ?? theme.primaryColor,
+                              color: transaction?.type.color ?? categoryColor ?? theme.primaryColor,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
                         
-                        if (payee != null) ...[
+                        if (cardPayee != null) ...[
                           const SizedBox(width: 8),
                           Text(
-                            '• $payee',
+                            '• $cardPayee',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurface.withOpacity(0.6),
                             ),
@@ -126,10 +178,10 @@ class TransactionCard extends StatelessWidget {
                     ),
                     
                     // 描述
-                    if (description != null && description!.isNotEmpty) ...[
+                    if (cardDescription != null && cardDescription.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
-                        description!,
+                        cardDescription,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurface.withOpacity(0.7),
                         ),
@@ -139,12 +191,12 @@ class TransactionCard extends StatelessWidget {
                     ],
                     
                     // 标签
-                    if (tags != null && tags!.isNotEmpty) ...[
+                    if (cardTags != null && cardTags.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 4,
                         runSpacing: 4,
-                        children: tags!.take(3).map((tag) {
+                        children: cardTags.take(3).map((tag) {
                           return Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 6,
@@ -176,15 +228,15 @@ class TransactionCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '${isIncome ? '+' : '-'}${currencyFormatter.format(amount.abs())}',
+                    '${cardIsIncome ? '+' : '-'}${currencyFormatter.format(cardAmount.abs())}',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: isIncome 
+                      color: cardIsIncome 
                           ? AppConstants.successColor
                           : AppConstants.errorColor,
                     ),
                   ),
-                  if (date.day == DateTime.now().day) ...[
+                  if (cardDate.day == DateTime.now().day) ...[
                     const SizedBox(height: 2),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -215,16 +267,19 @@ class TransactionCard extends StatelessWidget {
   }
 
   Widget _buildCategoryIcon(ThemeData theme) {
+    final iconColor = transaction?.type.color ?? categoryColor ?? theme.primaryColor;
+    final iconData = transaction?.type.icon ?? categoryIcon ?? Icons.category;
+    
     return Container(
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: (categoryColor ?? theme.primaryColor).withOpacity(0.1),
+        color: iconColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Icon(
-        categoryIcon ?? Icons.category,
-        color: categoryColor ?? theme.primaryColor,
+        iconData,
+        color: iconColor,
         size: 20,
       ),
     );

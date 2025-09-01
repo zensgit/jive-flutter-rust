@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:math' as math;
 
 /// 颜色选择器对话框
 class ColorPickerDialog extends StatefulWidget {

@@ -1,7 +1,6 @@
 // 余额趋势图表组件
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../../core/constants/app_constants.dart';
 
 class BalanceChart extends StatelessWidget {
   final List<BalancePoint> data;

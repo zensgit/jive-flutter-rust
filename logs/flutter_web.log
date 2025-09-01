@@ -1,3 +1,101 @@
+Resolving dependencies...
+Downloading packages...
+  _fe_analyzer_shared 64.0.0 (88.0.0 available)
+  analyzer 6.2.0 (8.1.1 available)
+  analyzer_plugin 0.11.3 (0.13.7 available)
+  args 2.5.0 (2.7.0 available)
+  async 2.11.0 (2.13.0 available)
+  boolean_selector 2.1.1 (2.1.2 available)
+  build 2.4.1 (3.0.2 available)
+  build_config 1.1.1 (1.2.0 available)
+  build_daemon 4.0.1 (4.0.4 available)
+  build_resolvers 2.4.2 (3.0.2 available)
+  build_runner 2.4.9 (2.7.0 available)
+  build_runner_core 7.3.0 (9.3.0 available)
+  cached_network_image 3.3.1 (3.4.1 available)
+  cached_network_image_platform_interface 4.0.0 (4.1.1 available)
+  cached_network_image_web 1.2.0 (1.3.1 available)
+  characters 1.4.0 (1.4.1 available)
+  checked_yaml 2.0.3 (2.0.4 available)
+  cli_util 0.4.1 (0.4.2 available)
+  code_builder 4.10.0 (4.10.1 available)
+  convert 3.1.1 (3.1.2 available)
+  crypto 3.0.3 (3.0.6 available)
+  custom_lint_core 0.6.3 (0.8.0 available)
+  dart_style 2.3.6 (3.1.2 available)
+  dio_web_adapter 1.1.1 (2.1.1 available)
+  ffi 2.1.0 (2.1.4 available)
+  file_picker 6.2.1 (10.3.2 available)
+  fl_chart 0.66.2 (1.1.0 available)
+  flutter_cache_manager 3.3.1 (3.4.1 available)
+  flutter_launcher_icons 0.13.1 (0.14.4 available)
+  flutter_lints 3.0.2 (6.0.0 available)
+  flutter_plugin_android_lifecycle 2.0.19 (2.0.30 available)
+  flutter_svg 2.0.10+1 (2.2.0 available)
+  freezed 2.5.2 (3.2.0 available)
+  freezed_annotation 2.4.4 (3.1.0 available)
+  glob 2.1.2 (2.1.3 available)
+  go_router 12.1.3 (16.2.1 available)
+  google_fonts 6.2.0 (6.3.1 available)
+  graphs 2.3.1 (2.3.2 available)
+  http 1.2.0 (1.5.0 available)
+  http_parser 4.0.2 (4.1.2 available)
+  io 1.0.4 (1.0.5 available)
+  js 0.7.1 (0.7.2 available)
+  json_serializable 6.8.0 (6.11.0 available)
+  lints 3.0.0 (6.0.0 available)
+  logger 2.6.0 (2.6.1 available)
+  logging 1.2.0 (1.3.0 available)
+  material_color_utilities 0.11.1 (0.13.0 available)
+  meta 1.16.0 (1.17.0 available)
+  mime 1.0.6 (2.0.0 available)
+  package_config 2.1.0 (2.2.0 available)
+  path_parsing 1.0.1 (1.1.0 available)
+  path_provider 2.1.4 (2.1.5 available)
+  path_provider_android 2.2.4 (2.2.18 available)
+  path_provider_foundation 2.3.2 (2.4.2 available)
+  petitparser 6.0.2 (7.0.1 available)
+  protobuf 3.1.0 (4.2.0 available)
+  pub_semver 2.1.4 (2.2.0 available)
+  pubspec_parse 1.4.0 (1.5.0 available)
+  retrofit 4.5.0 (4.7.2 available)
+  retrofit_generator 8.2.1 (10.0.2 available)
+  riverpod_analyzer_utils 0.5.1 (0.5.10 available)
+  riverpod_generator 2.4.0 (2.6.5 available)
+  rxdart 0.27.7 (0.28.0 available)
+  shared_preferences 2.2.3 (2.5.3 available)
+  shared_preferences_android 2.2.2 (2.4.12 available)
+  shared_preferences_foundation 2.3.5 (2.5.4 available)
+  shared_preferences_linux 2.4.0 (2.4.1 available)
+  shared_preferences_web 2.2.2 (2.4.3 available)
+  shared_preferences_windows 2.4.0 (2.4.1 available)
+  shelf 1.4.1 (1.4.2 available)
+  shelf_web_socket 1.0.4 (3.0.0 available)
+  source_gen 1.5.0 (4.0.0 available)
+  source_helper 1.3.4 (1.3.7 available)
+  source_span 1.10.0 (1.10.1 available)
+  sqflite 2.3.2 (2.4.2 available)
+  sqflite_common 2.5.3 (2.5.6 available)
+  string_scanner 1.2.0 (1.4.1 available)
+  synchronized 3.1.0+1 (3.4.0 available)
+  term_glyph 1.2.1 (1.2.2 available)
+  test_api 0.7.6 (0.7.7 available)
+  timing 1.0.1 (1.0.2 available)
+  typed_data 1.3.2 (1.4.0 available)
+  vector_graphics 1.1.11+1 (1.1.19 available)
+  vector_graphics_codec 1.1.11+1 (1.1.13 available)
+  vector_graphics_compiler 1.1.11+1 (1.1.19 available)
+  very_good_analysis 5.1.0 (9.0.0 available)
+  watcher 1.1.2 (1.1.3 available)
+! web 0.5.1 (overridden) (1.1.1 available)
+  web_socket_channel 2.4.0 (3.0.3 available)
+  win32 5.2.0 (5.14.0 available)
+  xdg_directories 1.0.4 (1.1.0 available)
+  xml 6.5.0 (6.6.1 available)
+  yaml 3.1.2 (3.1.3 available)
+Got dependencies!
+93 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
 Package file_picker:linux references file_picker:linux as the default plugin, but it does not provide an inline implementation.
 Ask the maintainers of file_picker to either avoid referencing a default implementation via `platforms: linux: default_package: file_picker` or add an inline implementation to file_picker via `platforms: linux:` `pluginClass` or `dartPluginClass`.
 
@@ -47,1184 +145,758 @@ Ask the maintainers of file_picker to either avoid referencing a default impleme
 
 Warning: In index.html:39: Local variable for "serviceWorkerVersion" is deprecated. Use "{{flutter_service_worker_version}}" template token instead. See https://docs.flutter.dev/platform-integration/web/initialization for more details.
 Warning: In index.html:48: "FlutterLoader.loadEntrypoint" is deprecated. Use "FlutterLoader.load" instead. See https://docs.flutter.dev/platform-integration/web/initialization for more details.
-Waiting for connection from debug service on Chrome...             13.2s
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-This app is linked to the debug service: ws://127.0.0.1:46191/zphy2cYpB0o=/ws
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-Debug service listening on ws://127.0.0.1:46191/zphy2cYpB0o=/ws
-
-Flutter run key commands.
-r Hot reload. 🔥🔥🔥
-R Hot restart.
-h List all available interactive commands.
-d Detach (terminate "flutter run" but leave application running).
-c Clear the screen
-q Quit (terminate the application on the device).
-
-A Dart VM Service on Chrome is available at: http://127.0.0.1:46191/zphy2cYpB0o=
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-Starting application from main method in: org-dartlang-app:/web_entrypoint.dart.
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-Got object store box in database preferences.
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-The Flutter DevTools debugger and profiler on Chrome is available at: http://127.0.0.1:9103?uri=http://127.0.0.1:46191/zphy2cYpB0o=
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-Could not find a set of Noto fonts to display all missing characters. Please add a font asset for the missing characters. See: https://flutter.dev/docs/cookbook/design/fonts
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-用户数据已保存: superadmin
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-认证令牌已保存
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-用户数据已保存: superadmin
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-登录历史已记录: username
-用户登录成功: superadmin
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-登录凭据已保存: superadmin
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-标签数据已保存: 4 个标签
-标签分组数据已保存: 4 个分组
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DEBUG: _showAddTagDialog called with groupId: null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DEBUG: Dialog closed
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DEBUG: _showAddGroupDialog called
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DEBUG: Group dialog closed
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
-DebugService: Error serving requestsError: Unsupported operation: Cannot send Null
+Error: Couldn't resolve the package 'provider' in 'package:provider/provider.dart'.
+lib/screens/management/category_template_library.dart:2:8: Error: Not found: 'package:provider/provider.dart'
+import 'package:provider/provider.dart';
+       ^
+lib/screens/admin/template_admin_page.dart:2:8: Error: Not found: 'package:provider/provider.dart'
+import 'package:provider/provider.dart';
+       ^
+lib/screens/management/category_management_enhanced.dart:2:8: Error: Not found: 'package:provider/provider.dart'
+import 'package:provider/provider.dart';
+       ^
+lib/screens/management/category_template_library.dart:6:8: Error: Error when reading 'lib/utils/constants.dart': No such file or directory
+import '../../utils/constants.dart';
+       ^
+lib/screens/management/category_template_library.dart:7:8: Error: Error when reading 'lib/widgets/common/custom_card.dart': No such file or directory
+import '../../widgets/common/custom_card.dart';
+       ^
+lib/screens/management/category_template_library.dart:8:8: Error: Error when reading 'lib/widgets/common/loading_widget.dart': No such file or directory
+import '../../widgets/common/loading_widget.dart';
+       ^
+lib/screens/admin/template_admin_page.dart:7:8: Error: Error when reading 'lib/widgets/common/loading_widget.dart': No such file or directory
+import '../../widgets/common/loading_widget.dart';
+       ^
+lib/screens/management/category_template_library.dart:9:8: Error: Error when reading 'lib/widgets/common/error_widget.dart': No such file or directory
+import '../../widgets/common/error_widget.dart';
+       ^
+lib/screens/admin/template_admin_page.dart:8:8: Error: Error when reading 'lib/widgets/common/error_widget.dart': No such file or directory
+import '../../widgets/common/error_widget.dart';
+       ^
+Error: Couldn't resolve the package 'connectivity_plus' in 'package:connectivity_plus/connectivity_plus.dart'.
+lib/services/network/network_category_service.dart:4:8: Error: Not found: 'package:connectivity_plus/connectivity_plus.dart'
+import 'package:connectivity_plus/connectivity_plus.dart';
+       ^
+lib/screens/management/category_template_library.dart:128:3: Error: Type 'AccountClassification' not found.
+  AccountClassification? _getCurrentClassification() {
+  ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:488:29: Error: Type 'AccountClassification' not found.
+  Widget _buildTemplateList(AccountClassification classification) {
+                            ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:908:33: Error: Type 'AccountClassification' not found.
+  String _getClassificationName(AccountClassification classification) {
+                                ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:35:3: Error: Type 'AccountClassification' not found.
+  AccountClassification? _selectedClassification;
+  ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:601:33: Error: Type 'AccountClassification' not found.
+  String _getClassificationName(AccountClassification classification) {
+                                ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:688:3: Error: Type 'AccountClassification' not found.
+  AccountClassification _classification = AccountClassification.expense;
+  ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:978:33: Error: Type 'AccountClassification' not found.
+  String _getClassificationName(AccountClassification classification) {
+                                ^^^^^^^^^^^^^^^^^^^^^
+lib/services/api/category_service_integrated.dart:151:5: Error: Type 'CategoryClassification' not found.
+    CategoryClassification classification, {
+    ^^^^^^^^^^^^^^^^^^^^^^
+lib/services/api/category_service_integrated.dart:283:5: Error: Type 'AccountClassification' not found.
+    AccountClassification? classification,
+    ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:5:1: Error: 'SystemCategoryTemplate' is imported from both 'package:jive_money/models/category_template.dart' and 'package:jive_money/services/api/category_service.dart'.
+import '../../models/category_template.dart';
+^^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:4:1: Error: 'SystemCategoryTemplate' is imported from both 'package:jive_money/models/category_template.dart' and 'package:jive_money/services/api/category_service.dart'.
+import '../../models/category_template.dart';
+^^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:47:19: Error: Member not found: 'business'.
+    CategoryGroup.business,
+                  ^^^^^^^^
+lib/screens/management/category_template_library.dart:46:19: Error: Member not found: 'financial'.
+    CategoryGroup.financial,
+                  ^^^^^^^^^
+lib/screens/management/category_template_library.dart:44:19: Error: Member not found: 'healthEducation'.
+    CategoryGroup.healthEducation,
+                  ^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:55:32: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+    _categoryService = context.read<CategoryService>();
+                               ^^^^
+lib/screens/management/category_template_library.dart:73:48: Error: The method 'getAllTemplates' isn't defined for the type 'CategoryService'.
+ - 'CategoryService' is from 'package:jive_money/services/api/category_service.dart' ('lib/services/api/category_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'getAllTemplates'.
+      final templates = await _categoryService.getAllTemplates();
+                                               ^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:101:42: Error: The getter 'name' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'name'.
+          final matchesSearch = template.name.toLowerCase().contains(query) ||
+                                         ^^^^
+lib/screens/management/category_template_library.dart:102:25: Error: The getter 'nameEn' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'nameEn'.
+              (template.nameEn?.toLowerCase().contains(query) ?? false) ||
+                        ^^^^^^
+lib/screens/management/category_template_library.dart:103:24: Error: The getter 'tags' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'tags'.
+              template.tags.any((tag) => tag.toLowerCase().contains(query));
+                       ^^^^
+lib/screens/management/category_template_library.dart:109:24: Error: The getter 'categoryGroup' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'categoryGroup'.
+          if (template.categoryGroup != _selectedGroup) return false;
+                       ^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:113:44: Error: The getter 'isFeatured' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'isFeatured'.
+        if (_showOnlyFeatured && !template.isFeatured) {
+                                           ^^^^^^^^^^
+lib/screens/management/category_template_library.dart:119:48: Error: The getter 'classification' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'classification'.
+        if (classification != null && template.classification != classification) {
+                                               ^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:131:16: Error: The getter 'AccountClassification' isn't defined for the type '_CategoryTemplateLibraryPageState'.
+ - '_CategoryTemplateLibraryPageState' is from 'package:jive_money/screens/management/category_template_library.dart' ('lib/screens/management/category_template_library.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
+        return AccountClassification.income;
+               ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:133:16: Error: The getter 'AccountClassification' isn't defined for the type '_CategoryTemplateLibraryPageState'.
+ - '_CategoryTemplateLibraryPageState' is from 'package:jive_money/screens/management/category_template_library.dart' ('lib/screens/management/category_template_library.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
+        return AccountClassification.expense;
+               ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:135:16: Error: The getter 'AccountClassification' isn't defined for the type '_CategoryTemplateLibraryPageState'.
+ - '_CategoryTemplateLibraryPageState' is from 'package:jive_money/screens/management/category_template_library.dart' ('lib/screens/management/category_template_library.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
+        return AccountClassification.transfer;
+               ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:162:62: Error: The getter 'id' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'id'.
+      _selectedTemplateIds = _filteredTemplates.map((t) => t.id).toSet();
+                                                             ^^
+lib/screens/management/category_template_library.dart:162:66: Error: A value of type 'Set<dynamic>' can't be assigned to a variable of type 'Set<String>'.
+ - 'Set' is from 'dart:core'.
+      _selectedTemplateIds = _filteredTemplates.map((t) => t.id).toSet();
+                                                                 ^
+lib/screens/management/category_template_library.dart:197:62: Error: The getter 'id' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'id'.
+          final template = _allTemplates.firstWhere((t) => t.id == templateId);
+                                                             ^^
+lib/screens/management/category_template_library.dart:198:34: Error: The method 'importTemplateAsCategory' isn't defined for the type 'CategoryService'.
+ - 'CategoryService' is from 'package:jive_money/services/api/category_service.dart' ('lib/services/api/category_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'importTemplateAsCategory'.
+          await _categoryService.importTemplateAsCategory(template);
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:271:32: Error: The method 'importTemplateAsCategory' isn't defined for the type 'CategoryService'.
+ - 'CategoryService' is from 'package:jive_money/services/api/category_service.dart' ('lib/services/api/category_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'importTemplateAsCategory'.
+        await _categoryService.importTemplateAsCategory(template);
+                               ^^^^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:335:19: Error: Not a constant expression.
+          ? const LoadingWidget()
+                  ^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:337:28: Error: Too few positional arguments: 1 required, 0 given.
+              ? ErrorWidget(
+                           ^
+/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart:5529:3: Context: Found this candidate, but the arguments don't match.
+  ErrorWidget(Object exception)
+  ^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:351:46: Error: The getter 'AccountClassification' isn't defined for the type '_CategoryTemplateLibraryPageState'.
+ - '_CategoryTemplateLibraryPageState' is from 'package:jive_money/screens/management/category_template_library.dart' ('lib/screens/management/category_template_library.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
+                          _buildTemplateList(AccountClassification.income),
+                                             ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:352:46: Error: The getter 'AccountClassification' isn't defined for the type '_CategoryTemplateLibraryPageState'.
+ - '_CategoryTemplateLibraryPageState' is from 'package:jive_money/screens/management/category_template_library.dart' ('lib/screens/management/category_template_library.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
+                          _buildTemplateList(AccountClassification.expense),
+                                             ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:353:46: Error: The getter 'AccountClassification' isn't defined for the type '_CategoryTemplateLibraryPageState'.
+ - '_CategoryTemplateLibraryPageState' is from 'package:jive_money/screens/management/category_template_library.dart' ('lib/screens/management/category_template_library.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
+                          _buildTemplateList(AccountClassification.transfer),
+                                             ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:430:38: Error: The getter 'icon' isn't defined for the type 'CategoryGroup'.
+ - 'CategoryGroup' is from 'package:jive_money/models/category_template.dart' ('lib/models/category_template.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'icon'.
+                          Text(group.icon),
+                                     ^^^^
+lib/screens/management/category_template_library.dart:488:29: Error: 'AccountClassification' isn't a type.
+  Widget _buildTemplateList(AccountClassification classification) {
+                            ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:490:25: Error: The getter 'classification' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'classification'.
+        .where((t) => t.classification == classification)
+                        ^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:538:27: Error: The getter 'icon' isn't defined for the type 'CategoryGroup'.
+ - 'CategoryGroup' is from 'package:jive_money/models/category_template.dart' ('lib/models/category_template.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'icon'.
+                    group.icon,
+                          ^^^^
+lib/screens/management/category_template_library.dart:908:33: Error: 'AccountClassification' isn't a type.
+  String _getClassificationName(AccountClassification classification) {
+                                ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:910:12: Error: Not a constant expression.
+      case AccountClassification.income:
+           ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:912:12: Error: Not a constant expression.
+      case AccountClassification.expense:
+           ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_template_library.dart:914:12: Error: Not a constant expression.
+      case AccountClassification.transfer:
+           ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:35:3: Error: 'AccountClassification' isn't a type.
+  AccountClassification? _selectedClassification;
+  ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:46:32: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+    _categoryService = context.read<CategoryService>();
+                               ^^^^
+lib/screens/admin/template_admin_page.dart:47:28: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+    _authService = context.read<AuthService>();
+                           ^^^^
+lib/screens/admin/template_admin_page.dart:60:31: Error: The getter 'isSuperAdmin' isn't defined for the type 'UserData'.
+ - 'UserData' is from 'package:jive_money/services/storage_service.dart' ('lib/services/storage_service.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'isSuperAdmin'.
+    if (user == null || !user.isSuperAdmin) {
+                              ^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:77:48: Error: The method 'getAllTemplates' isn't defined for the type 'CategoryService'.
+ - 'CategoryService' is from 'package:jive_money/services/api/category_service.dart' ('lib/services/api/category_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'getAllTemplates'.
+      final templates = await _categoryService.getAllTemplates();
+                                               ^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:99:24: Error: The getter 'name' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'name'.
+              template.name.toLowerCase().contains(query) ||
+                       ^^^^
+lib/screens/admin/template_admin_page.dart:100:25: Error: The getter 'nameEn' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'nameEn'.
+              (template.nameEn?.toLowerCase().contains(query) ?? false) ||
+                        ^^^^^^
+lib/screens/admin/template_admin_page.dart:101:25: Error: The getter 'nameZh' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'nameZh'.
+              (template.nameZh?.toLowerCase().contains(query) ?? false) ||
+                        ^^^^^^
+lib/screens/admin/template_admin_page.dart:102:24: Error: The getter 'tags' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'tags'.
+              template.tags.any((tag) => tag.toLowerCase().contains(query));
+                       ^^^^
+lib/screens/admin/template_admin_page.dart:108:24: Error: The getter 'categoryGroup' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'categoryGroup'.
+          if (template.categoryGroup != _selectedGroup) return false;
+                       ^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:113:24: Error: The getter 'classification' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'classification'.
+          if (template.classification != _selectedClassification) return false;
+                       ^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:117:44: Error: The getter 'isFeatured' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'isFeatured'.
+        if (_showOnlyFeatured && !template.isFeatured) {
+                                           ^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:140:38: Error: The method 'createTemplate' isn't defined for the type 'CategoryService'.
+ - 'CategoryService' is from 'package:jive_money/services/api/category_service.dart' ('lib/services/api/category_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'createTemplate'.
+              await _categoryService.createTemplate(updatedTemplate);
+                                     ^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:148:38: Error: The method 'updateTemplate' isn't defined for the type 'CategoryService'.
+ - 'CategoryService' is from 'package:jive_money/services/api/category_service.dart' ('lib/services/api/category_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'updateTemplate'.
+              await _categoryService.updateTemplate(updatedTemplate);
+                                     ^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:197:32: Error: The method 'deleteTemplate' isn't defined for the type 'CategoryService'.
+ - 'CategoryService' is from 'package:jive_money/services/api/category_service.dart' ('lib/services/api/category_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'deleteTemplate'.
+        await _categoryService.deleteTemplate(template.id);
+                               ^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:219:30: Error: The method 'updateTemplate' isn't defined for the type 'CategoryService'.
+ - 'CategoryService' is from 'package:jive_money/services/api/category_service.dart' ('lib/services/api/category_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'updateTemplate'.
+      await _categoryService.updateTemplate(template);
+                             ^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:306:19: Error: Not a constant expression.
+          ? const LoadingWidget()
+                  ^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:308:28: Error: Too few positional arguments: 1 required, 0 given.
+              ? ErrorWidget(
+                           ^
+/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart:5529:3: Context: Found this candidate, but the arguments don't match.
+  ErrorWidget(Object exception)
+  ^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:284:25: Error: The getter 'AccountClassification' isn't defined for the type '_TemplateAdminPageState'.
+ - '_TemplateAdminPageState' is from 'package:jive_money/screens/admin/template_admin_page.dart' ('lib/screens/admin/template_admin_page.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
+                      ? AccountClassification.income
+                        ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:286:29: Error: The getter 'AccountClassification' isn't defined for the type '_TemplateAdminPageState'.
+ - '_TemplateAdminPageState' is from 'package:jive_money/screens/admin/template_admin_page.dart' ('lib/screens/admin/template_admin_page.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
+                          ? AccountClassification.expense
+                            ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:287:29: Error: The getter 'AccountClassification' isn't defined for the type '_TemplateAdminPageState'.
+ - '_TemplateAdminPageState' is from 'package:jive_money/screens/admin/template_admin_page.dart' ('lib/screens/admin/template_admin_page.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
+                          : AccountClassification.transfer;
+                            ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:429:61: Error: The getter 'isFeatured' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'isFeatured'.
+    final featuredCount = _filteredTemplates.where((t) => t.isFeatured).length;
+                                                            ^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:601:33: Error: 'AccountClassification' isn't a type.
+  String _getClassificationName(AccountClassification classification) {
+                                ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:603:12: Error: Not a constant expression.
+      case AccountClassification.income:
+           ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:605:12: Error: Not a constant expression.
+      case AccountClassification.expense:
+           ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:607:12: Error: Not a constant expression.
+      case AccountClassification.transfer:
+           ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:688:3: Error: 'AccountClassification' isn't a type.
+  AccountClassification _classification = AccountClassification.expense;
+  ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:688:43: Error: Undefined name 'AccountClassification'.
+  AccountClassification _classification = AccountClassification.expense;
+                                          ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:795:54: Error: 'AccountClassification' isn't a type.
+                      child: DropdownButtonFormField<AccountClassification>(
+                                                     ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:801:32: Error: The getter 'AccountClassification' isn't defined for the type '_TemplateEditorDialogState'.
+ - '_TemplateEditorDialogState' is from 'package:jive_money/screens/admin/template_admin_page.dart' ('lib/screens/admin/template_admin_page.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
+                        items: AccountClassification.values.map((c) => 
+                               ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:946:24: Error: 'SystemCategoryTemplate' is imported from both 'package:jive_money/models/category_template.dart' and 'package:jive_money/services/api/category_service.dart'.
+      final template = SystemCategoryTemplate(
+                       ^^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:978:33: Error: 'AccountClassification' isn't a type.
+  String _getClassificationName(AccountClassification classification) {
+                                ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:980:12: Error: Not a constant expression.
+      case AccountClassification.income:
+           ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:982:12: Error: Not a constant expression.
+      case AccountClassification.expense:
+           ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/admin/template_admin_page.dart:984:12: Error: Not a constant expression.
+      case AccountClassification.transfer:
+           ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:39:20: Error: 'CategoryProvider' isn't a type.
+      context.read<CategoryProvider>().loadCategories();
+                   ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:39:15: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+      context.read<CategoryProvider>().loadCategories();
+              ^^^^
+lib/screens/management/category_management_enhanced.dart:143:21: Error: 'CategoryProvider' isn't a type.
+    return Consumer<CategoryProvider>(
+                    ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:143:12: Error: The method 'Consumer' isn't defined for the type '_CategoryManagementEnhancedPageState'.
+ - '_CategoryManagementEnhancedPageState' is from 'package:jive_money/screens/management/category_management_enhanced.dart' ('lib/screens/management/category_management_enhanced.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'Consumer'.
+    return Consumer<CategoryProvider>(
+           ^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:198:34: Error: 'CategoryProvider' isn't a type.
+                    context.read<CategoryProvider>().clearSearch();
+                                 ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:208:24: Error: 'CategoryProvider' isn't a type.
+          context.read<CategoryProvider>().searchCategories(value);
+                       ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:198:29: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+                    context.read<CategoryProvider>().clearSearch();
+                            ^^^^
+lib/screens/management/category_management_enhanced.dart:208:19: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+          context.read<CategoryProvider>().searchCategories(value);
+                  ^^^^
+lib/screens/management/category_management_enhanced.dart:240:21: Error: 'CategoryProvider' isn't a type.
+    return Consumer<CategoryProvider>(
+                    ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:240:12: Error: The method 'Consumer' isn't defined for the type '_CategoryManagementEnhancedPageState'.
+ - '_CategoryManagementEnhancedPageState' is from 'package:jive_money/screens/management/category_management_enhanced.dart' ('lib/screens/management/category_management_enhanced.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'Consumer'.
+    return Consumer<CategoryProvider>(
+           ^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:400:44: Error: The argument type 'String?' can't be assigned to the parameter type 'String'.
+          _selectedCategories.add(category.id);
+                                           ^
+lib/screens/management/category_management_enhanced.dart:416:35: Error: 'CategoryProvider' isn't a type.
+    final provider = context.read<CategoryProvider>();
+                                  ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:416:30: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+    final provider = context.read<CategoryProvider>();
+                             ^^^^
+lib/screens/management/category_management_enhanced.dart:435:18: Error: 'CategoryProvider' isn't a type.
+    context.read<CategoryProvider>().reorderCategory(
+                 ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:435:13: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+    context.read<CategoryProvider>().reorderCategory(
+            ^^^^
+lib/screens/management/category_management_enhanced.dart:451:18: Error: 'CategoryProvider' isn't a type.
+    context.read<CategoryProvider>().updateCategoryParent(
+                 ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:462:26: Error: 'CategoryProvider' isn't a type.
+            context.read<CategoryProvider>().undoLastAction();
+                         ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:451:13: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+    context.read<CategoryProvider>().updateCategoryParent(
+            ^^^^
+lib/screens/management/category_management_enhanced.dart:462:21: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+            context.read<CategoryProvider>().undoLastAction();
+                    ^^^^
+lib/screens/management/category_management_enhanced.dart:474:35: Error: 'CategoryProvider' isn't a type.
+    final provider = context.read<CategoryProvider>();
+                                  ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:474:30: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+    final provider = context.read<CategoryProvider>();
+                             ^^^^
+lib/screens/management/category_management_enhanced.dart:557:35: Error: 'CategoryProvider' isn't a type.
+    final provider = context.read<CategoryProvider>();
+                                  ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:557:30: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+    final provider = context.read<CategoryProvider>();
+                             ^^^^
+lib/screens/management/category_management_enhanced.dart:558:38: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
+ - 'Category' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'transactionCount'.
+    final hasTransactions = category.transactionCount > 0;
+                                     ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:646:45: Error: 'CategoryProvider' isn't a type.
+              final provider = context.read<CategoryProvider>();
+                                            ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:646:40: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+              final provider = context.read<CategoryProvider>();
+                                       ^^^^
+lib/screens/management/category_management_enhanced.dart:842:35: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
+ - 'Category' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'transactionCount'.
+                      '${category.transactionCount}',
+                                  ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:1019:26: Error: 'CategoryProvider' isn't a type.
+            context.read<CategoryProvider>().convertCategoryToTag(
+                         ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:1033:34: Error: 'CategoryProvider' isn't a type.
+                    context.read<CategoryProvider>().undoLastAction();
+                                 ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:946:53: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
+ - 'Category' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'transactionCount'.
+            subtitle: Text('使用次数: ${widget.category.transactionCount}'),
+                                                    ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:977:55: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
+ - 'Category' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'transactionCount'.
+          if (_applyToTransactions && widget.category.transactionCount > 0)
+                                                      ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:993:46: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
+ - 'Category' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'transactionCount'.
+                      '将更新 ${widget.category.transactionCount} 笔交易',
+                                             ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:1019:21: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+            context.read<CategoryProvider>().convertCategoryToTag(
+                    ^^^^
+lib/screens/management/category_management_enhanced.dart:1033:29: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+                    context.read<CategoryProvider>().undoLastAction();
+                            ^^^^
+lib/screens/management/category_management_enhanced.dart:1097:26: Error: 'CategoryProvider' isn't a type.
+            context.read<CategoryProvider>().duplicateCategory(
+                         ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:1097:21: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+            context.read<CategoryProvider>().duplicateCategory(
+                    ^^^^
+lib/screens/management/category_management_enhanced.dart:1160:31: Error: 'CategoryProvider' isn't a type.
+              child: Consumer<CategoryProvider>(
+                              ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:1224:43: Error: 'CategoryProvider' isn't a type.
+            final provider = context.read<CategoryProvider>();
+                                          ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:1142:64: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
+ - 'Category' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'transactionCount'.
+          Text('分类"${widget.category.name}"有 ${widget.category.transactionCount} 笔交易'),
+                                                               ^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:1160:22: Error: The method 'Consumer' isn't defined for the type '_CategoryDeletionDialogState'.
+ - '_CategoryDeletionDialogState' is from 'package:jive_money/screens/management/category_management_enhanced.dart' ('lib/screens/management/category_management_enhanced.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'Consumer'.
+              child: Consumer<CategoryProvider>(
+                     ^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:1224:38: Error: The method 'read' isn't defined for the type 'BuildContext'.
+ - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'read'.
+            final provider = context.read<CategoryProvider>();
+                                     ^^^^
+lib/providers/category_provider.dart:112:57: Error: The argument type 'Category/*1*/' can't be assigned to the parameter type 'Category/*2*/'.
+ - 'Category/*1*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+ - 'Category/*2*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
+      final newCategory = await _service.createCategory(category);
+                                                        ^
+lib/providers/category_provider.dart:113:26: Error: A value of type 'Category/*1*/' can't be assigned to a variable of type 'Category/*2*/'.
+ - 'Category/*1*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
+ - 'Category/*2*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+      state = [...state, newCategory];
+                         ^
+lib/providers/category_provider.dart:122:37: Error: The argument type 'Category/*1*/' can't be assigned to the parameter type 'Category/*2*/'.
+ - 'Category/*1*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+ - 'Category/*2*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
+      await _service.updateCategory(category);
+                                    ^
+lib/providers/category_provider.dart:151:26: Error: A value of type 'Category/*1*/' can't be assigned to a variable of type 'Category/*2*/'.
+ - 'Category/*1*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
+ - 'Category/*2*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+      state = [...state, category];
+                         ^
+lib/services/api/category_service_integrated.dart:75:25: Error: A value of type 'List<Category/*1*/>' can't be assigned to a variable of type 'List<Category/*2*/>'.
+ - 'List' is from 'dart:core'.
+ - 'Category/*1*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
+ - 'Category/*2*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+      _userCategories = await _loadUserCategoriesFromCache();
+                        ^
+lib/services/api/category_service_integrated.dart:151:5: Error: 'CategoryClassification' isn't a type.
+    CategoryClassification classification, {
+    ^^^^^^^^^^^^^^^^^^^^^^
+lib/services/api/category_service_integrated.dart:226:32: Error: Too few positional arguments: 1 required, 0 given.
+      final category = Category(
+                               ^
+/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart:42:9: Context: Found this candidate, but the arguments don't match.
+  const Category(this.sections);
+        ^^^^^^^^
+lib/services/api/category_service_integrated.dart:257:25: Error: The argument type 'Category/*1*/' can't be assigned to the parameter type 'Category/*2*/'.
+ - 'Category/*1*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
+ - 'Category/*2*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+    _userCategories.add(category);
+                        ^
+lib/services/api/category_service_integrated.dart:265:70: Error: The getter 'id' isn't defined for the type 'Category'.
+ - 'Category' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'id'.
+    final index = _userCategories.indexWhere((c) => c.id == category.id);
+                                                                     ^^
+lib/services/api/category_service_integrated.dart:267:32: Error: A value of type 'Category/*1*/' can't be assigned to a variable of type 'Category/*2*/'.
+ - 'Category/*1*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
+ - 'Category/*2*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+      _userCategories[index] = category;
+                               ^
+lib/services/api/category_service_integrated.dart:283:5: Error: 'AccountClassification' isn't a type.
+    AccountClassification? classification,
+    ^^^^^^^^^^^^^^^^^^^^^
+lib/services/api/category_service_integrated.dart:289:8: Error: A value of type 'List<Category/*1*/>' can't be returned from a function with return type 'List<Category/*2*/>'.
+ - 'List' is from 'dart:core'.
+ - 'Category/*1*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+ - 'Category/*2*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
+    }).toList();
+       ^
+lib/services/api/category_service_integrated.dart:349:25: Error: The getter 'AccountClassification' isn't defined for the type 'CategoryServiceIntegrated'.
+ - 'CategoryServiceIntegrated' is from 'package:jive_money/services/api/category_service_integrated.dart' ('lib/services/api/category_service_integrated.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
+        classification: AccountClassification.income,
+                        ^^^^^^^^^^^^^^^^^^^^^
+lib/services/api/category_service_integrated.dart:360:25: Error: The getter 'AccountClassification' isn't defined for the type 'CategoryServiceIntegrated'.
+ - 'CategoryServiceIntegrated' is from 'package:jive_money/services/api/category_service_integrated.dart' ('lib/services/api/category_service_integrated.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
+        classification: AccountClassification.expense,
+                        ^^^^^^^^^^^^^^^^^^^^^
+lib/services/api/category_service_integrated.dart:371:25: Error: The getter 'AccountClassification' isn't defined for the type 'CategoryServiceIntegrated'.
+ - 'CategoryServiceIntegrated' is from 'package:jive_money/services/api/category_service_integrated.dart' ('lib/services/api/category_service_integrated.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
+        classification: AccountClassification.expense,
+                        ^^^^^^^^^^^^^^^^^^^^^
+lib/services/api/category_service_integrated.dart:382:25: Error: The getter 'AccountClassification' isn't defined for the type 'CategoryServiceIntegrated'.
+ - 'CategoryServiceIntegrated' is from 'package:jive_money/services/api/category_service_integrated.dart' ('lib/services/api/category_service_integrated.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
+        classification: AccountClassification.expense,
+                        ^^^^^^^^^^^^^^^^^^^^^
+lib/services/api/category_service_integrated.dart:393:25: Error: The getter 'AccountClassification' isn't defined for the type 'CategoryServiceIntegrated'.
+ - 'CategoryServiceIntegrated' is from 'package:jive_money/services/api/category_service_integrated.dart' ('lib/services/api/category_service_integrated.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
+        classification: AccountClassification.expense,
+                        ^^^^^^^^^^^^^^^^^^^^^
+lib/services/api/category_service_integrated.dart:420:49: Error: A value of type 'List<Category/*1*/>' can't be returned from a function with return type 'List<Category/*2*/>'.
+ - 'List' is from 'dart:core'.
+ - 'Category/*1*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+ - 'Category/*2*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
+  List<Category> get userCategories => _service.userCategories;
+                                                ^
+lib/services/network/network_category_service.dart:127:32: Error: Member not found: 'SystemCategoryTemplate.fromNetworkJson'.
+        SystemCategoryTemplate.fromNetworkJson(json)
+                               ^^^^^^^^^^^^^^^
+lib/services/network/network_category_service.dart:107:34: Error: The method 'Connectivity' isn't defined for the type 'NetworkCategoryService'.
+ - 'NetworkCategoryService' is from 'package:jive_money/services/network/network_category_service.dart' ('lib/services/network/network_category_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'Connectivity'.
+      final connectivity = await Connectivity().checkConnectivity();
+                                 ^^^^^^^^^^^^
+lib/services/network/network_category_service.dart:108:27: Error: The getter 'ConnectivityResult' isn't defined for the type 'NetworkCategoryService'.
+ - 'NetworkCategoryService' is from 'package:jive_money/services/network/network_category_service.dart' ('lib/services/network/network_category_service.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'ConnectivityResult'.
+      if (connectivity == ConnectivityResult.none) {
+                          ^^^^^^^^^^^^^^^^^^
+lib/services/network/network_category_service.dart:131:35: Error: The argument type 'List<dynamic>' can't be assigned to the parameter type 'List<SystemCategoryTemplate>'.
+ - 'List' is from 'dart:core'.
+ - 'SystemCategoryTemplate' is from 'package:jive_money/models/category_template.dart' ('lib/models/category_template.dart').
+      await _saveTemplatesToCache(templates);
+                                  ^
+lib/services/network/network_category_service.dart:135:14: Error: A value of type 'List<dynamic>' can't be returned from an async function with return type 'Future<List<SystemCategoryTemplate>>'.
+ - 'List' is from 'dart:core'.
+ - 'Future' is from 'dart:async'.
+ - 'SystemCategoryTemplate' is from 'package:jive_money/models/category_template.dart' ('lib/models/category_template.dart').
+      return templates;
+             ^
+lib/services/network/network_category_service.dart:226:34: Error: The method 'Connectivity' isn't defined for the type 'NetworkCategoryService'.
+ - 'NetworkCategoryService' is from 'package:jive_money/services/network/network_category_service.dart' ('lib/services/network/network_category_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'Connectivity'.
+      final connectivity = await Connectivity().checkConnectivity();
+                                 ^^^^^^^^^^^^
+lib/services/network/network_category_service.dart:227:27: Error: The getter 'ConnectivityResult' isn't defined for the type 'NetworkCategoryService'.
+ - 'NetworkCategoryService' is from 'package:jive_money/services/network/network_category_service.dart' ('lib/services/network/network_category_service.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'ConnectivityResult'.
+      if (connectivity != ConnectivityResult.wifi) {
+                          ^^^^^^^^^^^^^^^^^^
+lib/services/network/network_category_service.dart:253:12: Error: Not a constant expression.
+      case ConnectivityResult.wifi:
+           ^^^^^^^^^^^^^^^^^^
+lib/services/network/network_category_service.dart:257:12: Error: Not a constant expression.
+      case ConnectivityResult.mobile:
+           ^^^^^^^^^^^^^^^^^^
+lib/services/network/network_category_service.dart:261:12: Error: Not a constant expression.
+      case ConnectivityResult.none:
+           ^^^^^^^^^^^^^^^^^^
+lib/services/network/network_category_service.dart:250:32: Error: The method 'Connectivity' isn't defined for the type 'NetworkCategoryService'.
+ - 'NetworkCategoryService' is from 'package:jive_money/services/network/network_category_service.dart' ('lib/services/network/network_category_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'Connectivity'.
+    final connectivity = await Connectivity().checkConnectivity();
+                               ^^^^^^^^^^^^
+lib/services/network/network_category_service.dart:377:51: Error: Member not found: 'SystemCategoryTemplate.fromNetworkJson'.
+          final template = SystemCategoryTemplate.fromNetworkJson(update['template']);
+                                                  ^^^^^^^^^^^^^^^
+lib/services/network/network_category_service.dart:410:35: Error: Member not found: 'SystemCategoryTemplate.getDefaultTemplates'.
+    return SystemCategoryTemplate.getDefaultTemplates();
+                                  ^^^^^^^^^^^^^^^^^^^
+Unhandled exception:
+Unsupported operation: Unsupported invalid type InvalidType(<invalid>) (InvalidType). Encountered while compiling file:///Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/%E5%BA%94%E7%94%A8/GitHub/jive-flutter-rust/jive-flutter/lib/screens/admin/template_admin_page.dart, which contains the type: InterfaceType(List<<invalid>>).
+#0      LibraryCompiler._typeCompilationError (package:dev_compiler/src/kernel/compiler_new.dart:4451)
+#1      LibraryCompiler._emitType (package:dev_compiler/src/kernel/compiler_new.dart:4416)
+#2      LibraryCompiler._emitCast (package:dev_compiler/src/kernel/compiler_new.dart:8566)
+#3      LibraryCompiler.visitAsExpression (package:dev_compiler/src/kernel/compiler_new.dart:8494)
+#4      AsExpression.accept (package:kernel/src/ast/expressions.dart:3627)
+#5      LibraryCompiler._visitExpression (package:dev_compiler/src/kernel/compiler_new.dart:5112)
+#6      LibraryCompiler.visitInstanceSet (package:dev_compiler/src/kernel/compiler_new.dart:6265)
+#7      InstanceSet.accept (package:kernel/src/ast/expressions.dart:856)
+#8      LibraryCompiler._visitExpression (package:dev_compiler/src/kernel/compiler_new.dart:5112)
+#9      LibraryCompiler.visitExpressionStatement (package:dev_compiler/src/kernel/compiler_new.dart:5200)
+#10     ExpressionStatement.accept (package:kernel/src/ast/statements.dart:50)
+#11     LibraryCompiler._visitStatement (package:dev_compiler/src/kernel/compiler_new.dart:5015)
+#12     MappedIterable.elementAt (dart:_internal/iterable.dart:402)
+#13     ListIterator.moveNext (dart:_internal/iterable.dart:371)
+#14     new _GrowableList._ofEfficientLengthIterable (dart:core-patch/growable_array.dart:194)
+#15     new _GrowableList.of (dart:core-patch/growable_array.dart:154)
+#16     new List.of (dart:core-patch/array_patch.dart:39)
+#17     SetBase.toList (dart:collection/set.dart:119)
+#18     LibraryCompiler.visitBlock (package:dev_compiler/src/kernel/compiler_new.dart:5222)
+#19     Block.accept (package:kernel/src/ast/statements.dart:103)
+#20     LibraryCompiler._visitStatement (package:dev_compiler/src/kernel/compiler_new.dart:5015)
+#21     LibraryCompiler._emitFunctionScopedBody (package:dev_compiler/src/kernel/compiler_new.dart:5048)
+#22     LibraryCompiler._emitFunction.<anonymous closure> (package:dev_compiler/src/kernel/compiler_new.dart:4638)
+#23     LibraryCompiler._withLetScope (package:dev_compiler/src/kernel/compiler_new.dart:3632)
+#24     LibraryCompiler._withCurrentFunction (package:dev_compiler/src/kernel/compiler_new.dart:4812)
+#25     LibraryCompiler._emitFunction (package:dev_compiler/src/kernel/compiler_new.dart:4630)
+#26     LibraryCompiler._emitArrowFunction (package:dev_compiler/src/kernel/compiler_new.dart:8791)
+#27     LibraryCompiler.visitFunctionExpression (package:dev_compiler/src/kernel/compiler_new.dart:8781)
+#28     FunctionExpression.accept (package:kernel/src/ast/expressions.dart:4608)
+#29     LibraryCompiler._visitExpression (package:dev_compiler/src/kernel/compiler_new.dart:5112)
+#30     LibraryCompiler._emitArgumentGroups (package:dev_compiler/src/kernel/compiler_new.dart:7943)
+#31     LibraryCompiler._emitArgumentList (package:dev_compiler/src/kernel/compiler_new.dart:7906)
+#32     LibraryCompiler._emitInstanceInvocation (package:dev_compiler/src/kernel/compiler_new.dart:6684)
+#33     LibraryCompiler.visitInstanceInvocation (package:dev_compiler/src/kernel/compiler_new.dart:6523)
+#34     InstanceInvocation.accept (package:kernel/src/ast/expressions.dart:1793)
+#35     LibraryCompiler._visitExpression (package:dev_compiler/src/kernel/compiler_new.dart:5112)
+#36     LibraryCompiler.visitExpressionStatement (package:dev_compiler/src/kernel/compiler_new.dart:5200)
+#37     ExpressionStatement.accept (package:kernel/src/ast/statements.dart:50)
+#38     LibraryCompiler._visitStatement (package:dev_compiler/src/kernel/compiler_new.dart:5015)
+#39     MappedIterable.elementAt (dart:_internal/iterable.dart:402)
+#40     ListIterator.moveNext (dart:_internal/iterable.dart:371)
+#41     new _GrowableList._ofEfficientLengthIterable (dart:core-patch/growable_array.dart:194)
+#42     new _GrowableList.of (dart:core-patch/growable_array.dart:154)
+#43     new List.of (dart:core-patch/array_patch.dart:39)
+#44     SetBase.toList (dart:collection/set.dart:119)
+#45     LibraryCompiler.visitBlock (package:dev_compiler/src/kernel/compiler_new.dart:5222)
+#46     Block.accept (package:kernel/src/ast/statements.dart:103)
+#47     LibraryCompiler._visitStatement (package:dev_compiler/src/kernel/compiler_new.dart:5015)
+#48     LibraryCompiler.visitTryCatch (package:dev_compiler/src/kernel/compiler_new.dart:5874)
+#49     TryCatch.accept (package:kernel/src/ast/statements.dart:1130)
+#50     LibraryCompiler._visitStatement (package:dev_compiler/src/kernel/compiler_new.dart:5015)
+#51     MappedIterable.elementAt (dart:_internal/iterable.dart:402)
+#52     ListIterator.moveNext (dart:_internal/iterable.dart:371)
+#53     new _GrowableList._ofEfficientLengthIterable (dart:core-patch/growable_array.dart:194)
+#54     new _GrowableList.of (dart:core-patch/growable_array.dart:154)
+#55     new List.of (dart:core-patch/array_patch.dart:39)
+#56     SetBase.toList (dart:collection/set.dart:119)
+#57     LibraryCompiler.visitBlock (package:dev_compiler/src/kernel/compiler_new.dart:5222)
+#58     Block.accept (package:kernel/src/ast/statements.dart:103)
+#59     LibraryCompiler._visitStatement (package:dev_compiler/src/kernel/compiler_new.dart:5015)
+#60     LibraryCompiler._emitFunctionScopedBody (package:dev_compiler/src/kernel/compiler_new.dart:5048)
+#61     LibraryCompiler._emitFunction.<anonymous closure> (package:dev_compiler/src/kernel/compiler_new.dart:4638)
+#62     LibraryCompiler._withLetScope (package:dev_compiler/src/kernel/compiler_new.dart:3632)
+#63     LibraryCompiler._withCurrentFunction (package:dev_compiler/src/kernel/compiler_new.dart:4812)
+#64     LibraryCompiler._emitFunction (package:dev_compiler/src/kernel/compiler_new.dart:4630)
+#65     LibraryCompiler._emitMethodDeclaration.<anonymous closure> (package:dev_compiler/src/kernel/compiler_new.dart:2912)
+#66     LibraryCompiler._withMethodDeclarationContext (package:dev_compiler/src/kernel/compiler_new.dart:4837)
+#67     LibraryCompiler._emitMethodDeclaration (package:dev_compiler/src/kernel/compiler_new.dart:2910)
+#68     LibraryCompiler._emitClassProperties (package:dev_compiler/src/kernel/compiler_new.dart:2851)
+#69     LibraryCompiler._emitClassDeclaration (package:dev_compiler/src/kernel/compiler_new.dart:1452)
+#70     LibraryCompiler._emitClass (package:dev_compiler/src/kernel/compiler_new.dart:1390)
+#71     List.forEach (dart:core-patch/growable_array.dart:425)
+#72     LibraryCompiler._emitLibrary (package:dev_compiler/src/kernel/compiler_new.dart:1312)
+#73     LibraryCompiler.emitLibrary (package:dev_compiler/src/kernel/compiler_new.dart:926)
+#74     LibraryBundleCompiler.emitModule (package:dev_compiler/src/kernel/compiler_new.dart:163)
+#75     IncrementalJavaScriptBundler.compile (package:frontend_server/src/javascript_bundle.dart:300)
+#76     FrontendCompiler.writeJavaScriptBundle (package:frontend_server/frontend_server.dart:898)
+<asynchronous suspension>
+#77     FrontendCompiler.compile (package:frontend_server/frontend_server.dart:708)
+<asynchronous suspension>
+#78     listenAndCompile.<anonymous closure> (package:frontend_server/frontend_server.dart:1423)
+<asynchronous suspension>
+The Dart compiler exited unexpectedly.
+Waiting for connection from debug service on Chrome...             26.2s
+Failed to compile application.

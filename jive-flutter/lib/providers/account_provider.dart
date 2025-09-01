@@ -1,9 +1,7 @@
 // 账户状态管理
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/api/account_service.dart';
 import '../services/sync/sync_service.dart';
-import '../core/storage/hive_config.dart';
 import '../models/account.dart';
 
 /// 账户状态
@@ -116,10 +114,10 @@ class AccountNotifier extends StateNotifier<AccountState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     
     try {
-      final response = await _accountService.createAccount(data);
-      // Convert the response to Account object if needed
-      final account = response is Account ? response : Account.fromJson(response);
-      final updatedAccounts = [...state.accounts, account];
+      // Convert the data to Account object
+      final account = Account.fromJson(data);
+      final response = await _accountService.createAccount(account);
+      final updatedAccounts = [...state.accounts, response];
       _updateState(updatedAccounts);
       return true;
     } catch (e) {

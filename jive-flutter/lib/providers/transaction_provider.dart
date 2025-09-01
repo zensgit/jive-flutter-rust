@@ -1,9 +1,6 @@
 // 交易状态管理
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/api/transaction_service.dart';
-import '../services/sync/sync_service.dart';
-import '../core/storage/hive_config.dart';
 import '../models/transaction.dart';
 import '../models/transaction_filter.dart';
 
@@ -65,8 +62,8 @@ class TransactionController extends StateNotifier<TransactionState> {
     state = state.copyWith(isLoading: true, error: null);
     
     try {
-      final transactions = await _transactionService.getTransactions();
-      _updateState(transactions);
+      final response = await _transactionService.getTransactions();
+      _updateState(response.data);
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -85,8 +82,10 @@ class TransactionController extends StateNotifier<TransactionState> {
     state = state.copyWith(isLoading: true, error: null);
     
     try {
-      final transaction = await _transactionService.createTransaction(data);
-      final updatedTransactions = [transaction, ...state.transactions];
+      // Convert the data to Transaction object
+      final transaction = Transaction.fromJson(data);
+      final createdTransaction = await _transactionService.createTransaction(transaction);
+      final updatedTransactions = [createdTransaction, ...state.transactions];
       _updateState(updatedTransactions);
       return true;
     } catch (e) {
@@ -141,7 +140,7 @@ class TransactionController extends StateNotifier<TransactionState> {
     state = state.copyWith(isLoading: true, error: null);
     
     try {
-      await _transactionService.deleteTransactions(ids);
+      await _transactionService.deleteBulkTransactions(ids);
       final updatedTransactions = state.transactions
           .where((t) => !ids.contains(t.id))
           .toList();
@@ -282,7 +281,7 @@ class TransactionController extends StateNotifier<TransactionState> {
 
       // 标签筛选
       if (filter.tags.isNotEmpty) {
-        final hasTag = filter.tags.any((tag) => t.tags.contains(tag));
+        final hasTag = filter.tags.any((tag) => t.tags?.contains(tag) == true);
         if (!hasTag) return false;
       }
 

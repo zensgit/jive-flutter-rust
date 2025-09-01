@@ -145,7 +145,7 @@ class _BudgetFormState extends State<BudgetForm> {
         : ['餐饮', '交通', '购物', '娱乐', '住房', '医疗', '教育', '其他'];
     
     return DropdownButtonFormField<String>(
-      value: _selectedCategory,
+      initialValue: _selectedCategory,
       decoration: InputDecoration(
         labelText: '分类',
         border: OutlineInputBorder(

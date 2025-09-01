@@ -230,7 +230,7 @@ class _CurrencyManagementPageState extends ConsumerState<CurrencyManagementPage>
                           onChanged: (value) async {
                             await currencyNotifier.setMultiCurrencyMode(value);
                           },
-                          activeColor: Colors.blue,
+                          activeThumbColor: Colors.blue,
                         ),
                       ],
                     ),
@@ -291,7 +291,7 @@ class _CurrencyManagementPageState extends ConsumerState<CurrencyManagementPage>
                             onChanged: (value) async {
                               await currencyNotifier.setCryptoMode(value);
                             },
-                            activeColor: Colors.purple,
+                            activeThumbColor: Colors.purple,
                           ),
                       ],
                     ),

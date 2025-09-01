@@ -3,13 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/router/app_router.dart';
 import '../../providers/budget_provider.dart';
+import '../../models/budget.dart';
 
 class BudgetsScreen extends ConsumerWidget {
   const BudgetsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final budgets = ref.watch(budgetsProvider);
+    final budgetState = ref.watch(budgetControllerProvider);
     final currentMonth = DateTime.now();
 
     return DefaultTabController(
@@ -36,8 +37,8 @@ class BudgetsScreen extends ConsumerWidget {
         ),
         body: TabBarView(
           children: [
-            _buildMonthlyBudget(context, ref, budgets),
-            _buildYearlyBudget(context, ref, budgets),
+            _buildMonthlyBudget(context, ref, budgetState),
+            _buildYearlyBudget(context, ref, budgetState),
           ],
         ),
         floatingActionButton: FloatingActionButton.extended(
@@ -49,23 +50,42 @@ class BudgetsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMonthlyBudget(BuildContext context, WidgetRef ref, AsyncValue<List<dynamic>> budgets) {
-    return budgets.when(
-      data: (budgetList) {
-        if (budgetList.isEmpty) {
-          return _buildEmptyState(context);
-        }
+  Widget _buildMonthlyBudget(BuildContext context, WidgetRef ref, BudgetState budgetState) {
+    if (budgetState.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    
+    if (budgetState.error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            Text('加载失败: ${budgetState.error}'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => ref.read(budgetControllerProvider.notifier).refresh(),
+              child: const Text('重试'),
+            ),
+          ],
+        ),
+      );
+    }
+    
+    if (budgetState.budgets.isEmpty) {
+      return _buildEmptyState(context);
+    }
 
-        final totalBudget = budgetList.fold<double>(0, (sum, b) => sum + (b.amount ?? 0));
-        final totalSpent = budgetList.fold<double>(0, (sum, b) => sum + (b.spent ?? 0));
-        final remaining = totalBudget - totalSpent;
-        final progress = totalBudget > 0 ? totalSpent / totalBudget : 0.0;
+    final budgetList = budgetState.budgets;
+    final totalBudget = budgetState.totalBudgeted;
+    final totalSpent = budgetState.totalSpent;
+    final remaining = budgetState.totalRemaining;
+    final progress = totalBudget > 0 ? totalSpent / totalBudget : 0.0;
 
-        return RefreshIndicator(
-          onRefresh: () async {
-            ref.invalidate(budgetsProvider);
-          },
-          child: ListView(
+    return RefreshIndicator(
+      onRefresh: () => ref.read(budgetControllerProvider.notifier).refresh(),
+      child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
               // 总览卡片
@@ -167,27 +187,9 @@ class BudgetsScreen extends ConsumerWidget {
             ],
           ),
         );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            Text('加载失败: $error'),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => ref.invalidate(budgetsProvider),
-              child: const Text('重试'),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
-  Widget _buildYearlyBudget(BuildContext context, WidgetRef ref, AsyncValue<List<dynamic>> budgets) {
+  Widget _buildYearlyBudget(BuildContext context, WidgetRef ref, BudgetState budgetState) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -294,9 +296,9 @@ class BudgetsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBudgetItem(BuildContext context, dynamic budget) {
-    final spent = budget.spent ?? 0;
-    final amount = budget.amount ?? 0;
+  Widget _buildBudgetItem(BuildContext context, Budget budget) {
+    final spent = budget.spent;
+    final amount = budget.amount;
     final progress = amount > 0 ? spent / amount : 0.0;
     final remaining = amount - spent;
     final isOverBudget = spent > amount;
@@ -334,14 +336,14 @@ class BudgetsScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            budget.name ?? '未命名预算',
+                            budget.name,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
                           ),
                           Text(
-                            budget.category ?? '',
+                            budget.category,
                             style: TextStyle(
                               color: Colors.grey[600],
                               fontSize: 12,

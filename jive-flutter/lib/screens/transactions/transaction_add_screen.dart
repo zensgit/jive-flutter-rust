@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import '../../core/router/app_router.dart';
 import '../../providers/transaction_provider.dart';
 import '../../providers/account_provider.dart';
 import '../../providers/ledger_provider.dart';
@@ -190,7 +189,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                     const SizedBox(height: 12),
                     accounts.when(
                       data: (accountList) => DropdownButtonFormField<String>(
-                        value: _selectedAccountId,
+                        initialValue: _selectedAccountId,
                         decoration: InputDecoration(
                           hintText: '选择账户',
                           border: OutlineInputBorder(
@@ -247,7 +246,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                       const SizedBox(height: 12),
                       accounts.when(
                         data: (accountList) => DropdownButtonFormField<String>(
-                          value: _selectedToAccountId,
+                          initialValue: _selectedToAccountId,
                           decoration: InputDecoration(
                             hintText: '选择账户',
                             border: OutlineInputBorder(
@@ -458,7 +457,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                     if (_isRecurring) ...[
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
-                        value: _recurringPeriod,
+                        initialValue: _recurringPeriod,
                         decoration: InputDecoration(
                           hintText: '选择重复周期',
                           border: OutlineInputBorder(

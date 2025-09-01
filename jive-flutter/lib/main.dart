@@ -5,7 +5,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/app.dart';
-import 'core/constants/app_constants.dart';
 import 'core/storage/hive_config.dart';
 import 'core/utils/logger.dart';
 

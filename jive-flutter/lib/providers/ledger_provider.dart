@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/api/ledger_service.dart' as api;
 import '../models/ledger.dart';
+import 'account_provider.dart';
+import 'transaction_provider.dart';
+import 'budget_provider.dart';
 
 // 账本服务Provider
 final ledgerServiceProvider = Provider<api.LedgerService>((ref) {
@@ -99,11 +102,11 @@ class CurrentLedgerNotifier extends StateNotifier<Ledger?> {
   Future<void> updateLedger(Ledger ledger) async {
     try {
       final service = ref.read(ledgerServiceProvider);
-      await service.updateLedger(ledger);
+      final updatedLedger = await service.updateLedgerFromObject(ledger);
       
       // 如果更新的是当前账本，更新状态
       if (state?.id == ledger.id) {
-        state = ledger;
+        state = updatedLedger;
       }
       
       // 刷新账本列表
@@ -155,17 +158,14 @@ final ledgerMembersProvider = FutureProvider.family<List<api.LedgerMember>, Stri
 
 // 依赖的导入
 // 需要导入account_provider, transaction_provider, budget_provider
-final accountsProvider = FutureProvider<List<dynamic>>((ref) async {
-  // TODO: 实现账户数据获取
-  return [];
-});
+// 注意：accountsProvider 已在 account_provider.dart 中定义，这里不重复定义
 
-final transactionsProvider = FutureProvider<List<dynamic>>((ref) async {
+final ledgerTransactionsProvider = FutureProvider<List<dynamic>>((ref) async {
   // TODO: 实现交易数据获取
   return [];
 });
 
-final budgetsProvider = FutureProvider<List<dynamic>>((ref) async {
+final ledgerBudgetsProvider = FutureProvider<List<dynamic>>((ref) async {
   // TODO: 实现预算数据获取
   return [];
 });

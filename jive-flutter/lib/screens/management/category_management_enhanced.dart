@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/category_provider.dart';
 import '../../models/category.dart';
-import '../../core/theme/app_theme.dart';
 
 /// 增强版分类管理页面
 /// 实现设计文档中的所有交互功能
@@ -146,7 +144,7 @@ class _CategoryManagementEnhancedPageState extends State<CategoryManagementEnhan
         
         return Container(
           padding: const EdgeInsets.all(16),
-          color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+          color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -736,8 +734,8 @@ class _CategoryListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DragTarget<Category>(
-      onWillAccept: (data) => data != null && data.id != category.id,
-      onAccept: onAcceptDrop,
+      onWillAcceptWithDetails: (data) => data.id != category.id,
+      onAcceptWithDetails: onAcceptDrop,
       builder: (context, candidateData, rejectedData) {
         final isDropTarget = candidateData.isNotEmpty;
         
@@ -764,9 +762,7 @@ class _CategoryListItem extends StatelessWidget {
                       color: Color(int.parse(category.color.replaceFirst('#', '0xFF'))),
                       shape: BoxShape.circle,
                     ),
-                    child: category.icon != null
-                        ? Center(child: Text(category.icon!, style: const TextStyle(fontSize: 12)))
-                        : null,
+                    child: Center(child: Text(category.icon, style: const TextStyle(fontSize: 12))),
                   ),
                   const SizedBox(width: 8),
                   Text(category.name),
@@ -809,9 +805,7 @@ class _CategoryListItem extends StatelessWidget {
                   color: Color(int.parse(category.color.replaceFirst('#', '0xFF'))),
                   shape: BoxShape.circle,
                 ),
-                child: category.icon != null
-                    ? Center(child: Text(category.icon!, style: const TextStyle(fontSize: 20)))
-                    : const Icon(Icons.category, color: Colors.white),
+                child: Center(child: Text(category.icon, style: const TextStyle(fontSize: 20))),
               ),
         title: Text(
           category.name,
@@ -938,9 +932,7 @@ class _CategoryToTagDialogState extends State<_CategoryToTagDialog> {
                 color: Color(int.parse(widget.category.color.replaceFirst('#', '0xFF'))),
                 shape: BoxShape.circle,
               ),
-              child: widget.category.icon != null
-                  ? Center(child: Text(widget.category.icon!))
-                  : const Icon(Icons.category, color: Colors.white),
+              child: Center(child: Text(widget.category.icon)),
             ),
             title: Text(widget.category.name),
             subtitle: Text('使用次数: ${widget.category.transactionCount}'),
@@ -1168,7 +1160,7 @@ class _CategoryDeletionDialogState extends State<_CategoryDeletionDialog> {
                       labelText: '目标分类',
                       border: OutlineInputBorder(),
                     ),
-                    value: _targetCategoryId,
+                    initialValue: _targetCategoryId,
                     items: categories.map((c) => DropdownMenuItem(
                       value: c.id,
                       child: Text(c.name),

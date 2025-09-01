@@ -297,7 +297,7 @@ class _TransactionFormState extends State<TransactionForm> {
     final accounts = ['现金', '支付宝', '微信', '银行卡'];
     
     return DropdownButtonFormField<String>(
-      value: _selectedAccount,
+      initialValue: _selectedAccount,
       decoration: InputDecoration(
         labelText: '账户',
         border: OutlineInputBorder(
@@ -327,7 +327,7 @@ class _TransactionFormState extends State<TransactionForm> {
         : ['工资', '奖金', '投资', '生意', '其他'];
     
     return DropdownButtonFormField<String>(
-      value: _selectedCategory,
+      initialValue: _selectedCategory,
       decoration: InputDecoration(
         labelText: '分类',
         border: OutlineInputBorder(

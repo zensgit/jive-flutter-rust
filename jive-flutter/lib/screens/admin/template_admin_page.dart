@@ -371,7 +371,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
               // 分组过滤
               Expanded(
                 child: DropdownButtonFormField<CategoryGroup?>(
-                  value: _selectedGroup,
+                  initialValue: _selectedGroup,
                   decoration: InputDecoration(
                     labelText: '分类组',
                     border: OutlineInputBorder(
@@ -793,7 +793,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<AccountClassification>(
-                        value: _classification,
+                        initialValue: _classification,
                         decoration: const InputDecoration(
                           labelText: '分类类型',
                           border: OutlineInputBorder(),
@@ -814,7 +814,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: DropdownButtonFormField<CategoryGroup>(
-                        value: _categoryGroup,
+                        initialValue: _categoryGroup,
                         decoration: const InputDecoration(
                           labelText: '分类组',
                           border: OutlineInputBorder(),

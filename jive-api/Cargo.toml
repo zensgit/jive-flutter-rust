@@ -8,12 +8,13 @@ description = "Jive Money API Server for category template management"
 [dependencies]
 # Web框架
 axum = { version = "0.7", features = ["macros", "multipart"] }
+axum-extra = { version = "0.9", features = ["typed-header"] }
 tokio = { version = "1.0", features = ["full"] }
 tower = { version = "0.4", features = ["full"] }
 tower-http = { version = "0.5", features = ["cors", "fs", "trace"] }
 
 # 数据库
-sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid", "json"] }
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid", "json", "rust_decimal"] }
 
 # 序列化
 serde = { version = "1.0", features = ["derive"] }
@@ -32,6 +33,16 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 # 配置管理
 config = "0.14"
 dotenv = "0.15"
+
+# 错误处理
+thiserror = "1.0"
+anyhow = "1.0"
+
+# 认证
+jsonwebtoken = "9.3"
+
+# 数值处理
+rust_decimal = { version = "1.35", features = ["serde"] }
 
 [dev-dependencies]
 tokio-test = "0.4"

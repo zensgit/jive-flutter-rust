@@ -362,7 +362,7 @@ class _AccountFormState extends State<AccountForm> {
     final currencies = ['CNY', 'USD', 'EUR', 'JPY', 'HKD'];
     
     return DropdownButtonFormField<String>(
-      value: _currency,
+      initialValue: _currency,
       decoration: InputDecoration(
         labelText: '货币',
         border: OutlineInputBorder(

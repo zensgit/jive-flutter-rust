@@ -100,7 +100,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                     
                     // 账户类型
                     DropdownButtonFormField<String>(
-                      value: _selectedType,
+                      initialValue: _selectedType,
                       decoration: const InputDecoration(
                         labelText: '账户类型',
                         prefixIcon: Icon(Icons.category),
@@ -245,7 +245,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                     
                     // 货币
                     DropdownButtonFormField<String>(
-                      value: _selectedCurrency,
+                      initialValue: _selectedCurrency,
                       decoration: const InputDecoration(
                         labelText: '货币',
                         prefixIcon: Icon(Icons.currency_exchange),

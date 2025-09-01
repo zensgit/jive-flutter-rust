@@ -182,7 +182,7 @@ Jive Money - 集腋记账
                 prefixIcon: Icon(Icons.person),
                 border: OutlineInputBorder(),
               ),
-              value: _selectedRole,
+              initialValue: _selectedRole,
               items: const [
                 DropdownMenuItem(value: 'Admin', child: Text('管理员 (Admin) - 管理家庭和成员')),
                 DropdownMenuItem(value: 'Member', child: Text('成员 (Member) - 记录和查看交易')),

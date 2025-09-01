@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 
 /// 主题模式枚举
 enum ThemeMode {
@@ -126,8 +125,6 @@ class CustomThemeData {
         onSecondary: onSecondary,
         surface: surface,
         onSurface: onSurface,
-        background: background,
-        onBackground: onBackground,
         error: error,
         onError: onError,
       ),

@@ -1,1 +1,62 @@
-    Finished `release` profile [optimized] target(s) in 0.05s
+warning: unused import: `StatusCode`
+ --> src/main_simple.rs:6:28
+  |
+6 |     http::{header, Method, StatusCode},
+  |                            ^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unused import: `HeaderValue`
+ --> src/main.rs:7:20
+  |
+7 |     http::{header, HeaderValue, Method, StatusCode},
+  |                    ^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unused imports: `Deserialize` and `Serialize`
+  --> src/main.rs:13:13
+   |
+13 | use serde::{Deserialize, Serialize};
+   |             ^^^^^^^^^^^  ^^^^^^^^^
+
+warning: unused import: `collections::HashMap`
+  --> src/main.rs:16:11
+   |
+16 | use std::{collections::HashMap, net::SocketAddr};
+   |           ^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `DefaultMakeSpan`
+  --> src/main.rs:21:13
+   |
+21 |     trace::{DefaultMakeSpan, TraceLayer},
+   |             ^^^^^^^^^^^^^^^
+
+warning: unused import: `uuid::Uuid`
+  --> src/main.rs:25:5
+   |
+25 | use uuid::Uuid;
+   |     ^^^^^^^^^^
+
+warning: unused imports: `DateTime` and `Utc`
+  --> src/main.rs:26:14
+   |
+26 | use chrono::{DateTime, Utc};
+   |              ^^^^^^^^  ^^^
+
+warning: field `lang` is never read
+  --> src/handlers/template_handler.rs:17:9
+   |
+16 | pub struct TemplateQuery {
+   |            ------------- field in this struct
+17 |     pub lang: Option<String>,
+   |         ^^^^
+   |
+   = note: `TemplateQuery` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` on by default
+
+warning: `jive-money-api` (bin "jive-api-simple") generated 1 warning (run `cargo fix --bin "jive-api-simple"` to apply 1 suggestion)
+warning: `jive-money-api` (bin "jive-api") generated 7 warnings (run `cargo fix --bin "jive-api"` to apply 6 suggestions)
+    Finished `release` profile [optimized] target(s) in 1.88s
+warning: the following packages contain code that will be rejected by a future version of Rust: sqlx-postgres v0.7.4
+note: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 2`

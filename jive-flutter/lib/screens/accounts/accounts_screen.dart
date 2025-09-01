@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/router/app_router.dart';
 import '../../providers/account_provider.dart';
+import '../../models/account.dart';
 
 class AccountsScreen extends ConsumerStatefulWidget {
   const AccountsScreen({super.key});
@@ -17,8 +18,9 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final accounts = ref.watch(accountsProvider);
-    final accountGroups = ref.watch(accountGroupsProvider);
+    final accountState = ref.watch(accountProvider);
+    final accounts = accountState.accounts;
+    final accountGroups = accountState.groups;
 
     return Scaffold(
       appBar: AppBar(
@@ -66,41 +68,47 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
           ),
         ],
       ),
-      body: accounts.when(
-        data: (accountList) {
-          if (accountList.isEmpty) {
-            return _buildEmptyState();
-          }
-
-          if (_viewMode == 'group') {
-            return _buildGroupView(accountList, accountGroups);
-          } else {
-            return _buildListView(accountList);
-          }
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.red),
-              const SizedBox(height: 16),
-              Text('加载失败: $error'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => ref.invalidate(accountsProvider),
-                child: const Text('重试'),
-              ),
-            ],
-          ),
-        ),
-      ),
+      body: _buildBody(accountState, accounts, accountGroups),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.go('${AppRoutes.accounts}/add'),
         icon: const Icon(Icons.add),
         label: const Text('新增账户'),
       ),
     );
+  }
+
+  Widget _buildBody(AccountState accountState, List<Account> accounts, List<AccountGroup> accountGroups) {
+    if (accountState.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    
+    if (accountState.errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            Text('加载失败: ${accountState.errorMessage}'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => ref.read(accountProvider.notifier).refresh(),
+              child: const Text('重试'),
+            ),
+          ],
+        ),
+      );
+    }
+    
+    if (accounts.isEmpty) {
+      return _buildEmptyState();
+    }
+
+    if (_viewMode == 'group') {
+      return _buildGroupView(accounts, accountGroups);
+    } else {
+      return _buildListView(accounts);
+    }
   }
 
   Widget _buildEmptyState() {
@@ -144,18 +152,16 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
     );
   }
 
-  Widget _buildListView(List<dynamic> accounts) {
+  Widget _buildListView(List<Account> accounts) {
     // 按类型分组显示
-    final Map<String, List<dynamic>> accountsByType = {};
+    final Map<AccountType, List<Account>> accountsByType = {};
     for (final account in accounts) {
-      final type = account.type ?? 'other';
+      final type = account.type;
       accountsByType.putIfAbsent(type, () => []).add(account);
     }
 
     return RefreshIndicator(
-      onRefresh: () async {
-        ref.invalidate(accountsProvider);
-      },
+      onRefresh: () => ref.read(accountProvider.notifier).refresh(),
       child: ListView.builder(
         padding: const EdgeInsets.only(bottom: 80),
         itemCount: accountsByType.length,
@@ -169,47 +175,44 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
     );
   }
 
-  Widget _buildGroupView(List<dynamic> accounts, AsyncValue<List<dynamic>> groups) {
-    return groups.when(
-      data: (groupList) {
-        return DefaultTabController(
-          length: groupList.length + 1,
-          child: Column(
-            children: [
-              TabBar(
-                isScrollable: true,
-                tabs: [
-                  const Tab(text: '全部'),
-                  ...groupList.map((group) => Tab(text: group.name)),
-                ],
-              ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    _buildAccountGrid(accounts),
-                    ...groupList.map((group) {
-                      final groupAccounts = accounts.where((account) {
-                        // TODO: 根据实际的分组关系过滤
-                        return false;
-                      }).toList();
-                      return _buildAccountGrid(groupAccounts);
-                    }),
-                  ],
-                ),
-              ),
+  Widget _buildGroupView(List<Account> accounts, List<AccountGroup> groups) {
+    if (groups.isEmpty) {
+      return _buildListView(accounts);
+    }
+    
+    return DefaultTabController(
+      length: groups.length + 1,
+      child: Column(
+        children: [
+          TabBar(
+            isScrollable: true,
+            tabs: [
+              const Tab(text: '全部'),
+              ...groups.map((group) => Tab(text: group.name)),
             ],
           ),
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, __) => _buildListView(accounts),
+          Expanded(
+            child: TabBarView(
+              children: [
+                _buildAccountGrid(accounts),
+                ...groups.map((group) {
+                  final groupAccounts = accounts.where((account) {
+                    return account.groupId == group.id;
+                  }).toList();
+                  return _buildAccountGrid(groupAccounts);
+                }),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildAccountSection(String type, List<dynamic> accounts) {
+  Widget _buildAccountSection(AccountType type, List<Account> accounts) {
     final totalBalance = accounts.fold<double>(
       0,
-      (sum, account) => sum + (account.balance ?? 0),
+      (sum, account) => sum + account.balance,
     );
 
     return Column(
@@ -224,13 +227,13 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
               Row(
                 children: [
                   Icon(
-                    _getAccountTypeIcon(type),
+                    type.icon,
                     size: 20,
                     color: Theme.of(context).primaryColor,
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    _getAccountTypeLabel(type),
+                    type.label,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -262,30 +265,30 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
     );
   }
 
-  Widget _buildAccountTile(dynamic account) {
-    final balance = account.balance ?? 0;
+  Widget _buildAccountTile(Account account) {
+    final balance = account.balance;
     final isPositive = balance >= 0;
 
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
         child: Icon(
-          _getAccountTypeIcon(account.type ?? 'other'),
+          account.type.icon,
           color: Theme.of(context).primaryColor,
         ),
       ),
-      title: Text(account.name ?? '未命名账户'),
+      title: Text(account.name),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (account.accountNumber != null)
+          if (account.displayAccountNumber != null)
             Text(
-              '尾号 ${account.accountNumber!.substring(account.accountNumber!.length - 4)}',
+              account.displayAccountNumber!,
               style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             ),
-          if (account.lastTransaction != null)
+          if (account.lastTransactionDate != null)
             Text(
-              '最后交易: ${account.lastTransaction}',
+              '最后交易: ${account.lastTransactionDate!.toLocal().toString().split(' ')[0]}',
               style: TextStyle(fontSize: 12, color: Colors.grey[500]),
             ),
         ],
@@ -295,16 +298,16 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            '¥${balance.toStringAsFixed(2)}',
+            account.formattedBalance,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: isPositive ? Colors.green : Colors.red,
             ),
           ),
-          if (account.currency != null && account.currency != 'CNY')
+          if (account.currency != 'CNY')
             Text(
-              account.currency!,
+              account.currency,
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey[600],
@@ -321,7 +324,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
     );
   }
 
-  Widget _buildAccountGrid(List<dynamic> accounts) {
+  Widget _buildAccountGrid(List<Account> accounts) {
     return GridView.builder(
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -338,8 +341,8 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
     );
   }
 
-  Widget _buildAccountCard(dynamic account) {
-    final balance = account.balance ?? 0;
+  Widget _buildAccountCard(Account account) {
+    final balance = account.balance;
     
     return Card(
       elevation: 2,
@@ -356,10 +359,10 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Icon(
-                    _getAccountTypeIcon(account.type ?? 'other'),
+                    account.type.icon,
                     color: Theme.of(context).primaryColor,
                   ),
-                  if (account.isDefault == true)
+                  if (account.isDefault)
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 6,
@@ -381,7 +384,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                 ],
               ),
               Text(
-                account.name ?? '未命名',
+                account.name,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
@@ -390,7 +393,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                 overflow: TextOverflow.ellipsis,
               ),
               Text(
-                '¥${balance.toStringAsFixed(2)}',
+                account.formattedBalance,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -404,45 +407,8 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
     );
   }
 
-  IconData _getAccountTypeIcon(String type) {
-    switch (type) {
-      case 'checking':
-        return Icons.account_balance;
-      case 'savings':
-        return Icons.savings;
-      case 'credit_card':
-        return Icons.credit_card;
-      case 'investment':
-        return Icons.trending_up;
-      case 'loan':
-        return Icons.money_off;
-      case 'cash':
-        return Icons.account_balance_wallet;
-      default:
-        return Icons.account_circle;
-    }
-  }
 
-  String _getAccountTypeLabel(String type) {
-    switch (type) {
-      case 'checking':
-        return '支票账户';
-      case 'savings':
-        return '储蓄账户';
-      case 'credit_card':
-        return '信用卡';
-      case 'investment':
-        return '投资账户';
-      case 'loan':
-        return '贷款账户';
-      case 'cash':
-        return '现金';
-      default:
-        return '其他';
-    }
-  }
-
-  void _showAccountActions(dynamic account) {
+  void _showAccountActions(Account account) {
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
@@ -488,7 +454,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
     );
   }
 
-  void _confirmDelete(dynamic account) {
+  void _confirmDelete(Account account) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

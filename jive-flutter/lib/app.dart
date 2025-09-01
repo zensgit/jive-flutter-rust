@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'core/constants/app_constants.dart';
 import 'core/router/app_router.dart';
-import 'providers/auth_provider.dart';
 
 class JiveApp extends ConsumerWidget {
   const JiveApp({super.key});

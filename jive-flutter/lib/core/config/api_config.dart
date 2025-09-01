@@ -41,6 +41,7 @@ class Endpoints {
   const Endpoints._();
   
   // 认证相关
+  static const String auth = '/auth';
   static const String login = '/auth/login';
   static const String register = '/auth/register';
   static const String logout = '/auth/logout';

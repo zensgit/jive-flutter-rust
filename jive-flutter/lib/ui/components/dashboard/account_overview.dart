@@ -3,38 +3,46 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/router/app_router.dart';
 import '../../../providers/account_provider.dart';
+import '../../../models/account.dart';
 
 class AccountOverview extends ConsumerWidget {
   const AccountOverview({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final accounts = ref.watch(accountsProvider);
+    final accountState = ref.watch(accountProvider);
+    
+    if (accountState.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    
+    if (accountState.errorMessage != null) {
+      return Center(
+        child: Column(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red),
+            const SizedBox(height: 8),
+            Text('加载失败: ${accountState.errorMessage}'),
+            TextButton(
+              onPressed: () => ref.read(accountProvider.notifier).refresh(),
+              child: const Text('重试'),
+            ),
+          ],
+        ),
+      );
+    }
 
-    return accounts.when(
-      data: (accountList) {
-        if (accountList.isEmpty) {
-          return _buildEmptyState(context);
-        }
+    final accountList = accountState.accounts;
+    if (accountList.isEmpty) {
+      return _buildEmptyState(context);
+    }
 
-        // 按类型分组账户
-        final Map<String, List<dynamic>> groupedAccounts = {};
-        double totalAssets = 0;
-        double totalLiabilities = 0;
+    // 按类型分组账户
+    final Map<AccountType, List<Account>> groupedAccounts = {};
+    double totalAssets = accountState.totalAssets;
+    double totalLiabilities = accountState.totalLiabilities;
 
-        for (final account in accountList) {
-          final type = account.type ?? 'other';
-          groupedAccounts.putIfAbsent(type, () => []).add(account);
-          
-          final balance = account.balance ?? 0.0;
-          if (account.type == 'loan' || account.type == 'credit_card') {
-            totalLiabilities += balance.abs();
-          } else {
-            totalAssets += balance;
-          }
-        }
-
-        return Column(
+    return Column(
           children: [
             // 资产负债概览
             _buildAssetLiabilityOverview(totalAssets, totalLiabilities),
@@ -62,24 +70,6 @@ class AccountOverview extends ConsumerWidget {
               ),
           ],
         );
-      },
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
-      ),
-      error: (error, _) => Center(
-        child: Column(
-          children: [
-            const Icon(Icons.error_outline, color: Colors.red),
-            const SizedBox(height: 8),
-            Text('加载失败: $error'),
-            TextButton(
-              onPressed: () => ref.invalidate(accountsProvider),
-              child: const Text('重试'),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   Widget _buildEmptyState(BuildContext context) {
@@ -198,27 +188,27 @@ class AccountOverview extends ConsumerWidget {
     );
   }
 
-  Widget _buildAccountItem(BuildContext context, dynamic account) {
-    final balance = account.balance ?? 0.0;
+  Widget _buildAccountItem(BuildContext context, Account account) {
+    final balance = account.balance;
     final isNegative = balance < 0;
     
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: _getAccountColor(account.type).withOpacity(0.2),
+          backgroundColor: account.displayColor.withOpacity(0.2),
           child: Icon(
-            _getAccountIcon(account.type),
-            color: _getAccountColor(account.type),
+            account.icon,
+            color: account.displayColor,
             size: 20,
           ),
         ),
         title: Text(
-          account.name ?? '未命名账户',
+          account.name,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
-          _getAccountTypeLabel(account.type),
+          account.type.label,
           style: TextStyle(fontSize: 12, color: Colors.grey[600]),
         ),
         trailing: Column(
@@ -226,16 +216,16 @@ class AccountOverview extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              '¥${balance.abs().toStringAsFixed(2)}',
+              account.formattedBalance,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: isNegative ? Colors.red : Colors.green,
               ),
             ),
-            if (account.lastUpdated != null)
+            if (account.lastTransactionDate != null)
               Text(
-                _formatLastUpdated(account.lastUpdated),
+                _formatLastUpdated(account.lastTransactionDate),
                 style: TextStyle(
                   fontSize: 10,
                   color: Colors.grey[500],
@@ -248,62 +238,6 @@ class AccountOverview extends ConsumerWidget {
     );
   }
 
-  IconData _getAccountIcon(String? type) {
-    switch (type) {
-      case 'checking':
-        return Icons.account_balance;
-      case 'savings':
-        return Icons.savings;
-      case 'credit_card':
-        return Icons.credit_card;
-      case 'investment':
-        return Icons.trending_up;
-      case 'loan':
-        return Icons.money_off;
-      case 'cash':
-        return Icons.account_balance_wallet;
-      default:
-        return Icons.account_circle;
-    }
-  }
-
-  Color _getAccountColor(String? type) {
-    switch (type) {
-      case 'checking':
-        return Colors.blue;
-      case 'savings':
-        return Colors.green;
-      case 'credit_card':
-        return Colors.orange;
-      case 'investment':
-        return Colors.purple;
-      case 'loan':
-        return Colors.red;
-      case 'cash':
-        return Colors.teal;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  String _getAccountTypeLabel(String? type) {
-    switch (type) {
-      case 'checking':
-        return '支票账户';
-      case 'savings':
-        return '储蓄账户';
-      case 'credit_card':
-        return '信用卡';
-      case 'investment':
-        return '投资账户';
-      case 'loan':
-        return '贷款';
-      case 'cash':
-        return '现金';
-      default:
-        return '其他';
-    }
-  }
 
   String _formatLastUpdated(dynamic date) {
     if (date == null) return '';

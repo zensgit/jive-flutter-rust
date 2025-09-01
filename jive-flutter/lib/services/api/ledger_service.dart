@@ -163,6 +163,44 @@ class LedgerService {
       throw _handleError(e);
     }
   }
+
+  /// 获取当前账本
+  Future<Ledger> getCurrentLedger() async {
+    try {
+      final response = await _client.get(
+        '${Endpoints.ledgers}/current',
+      );
+      
+      return Ledger.fromJson(response.data);
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  /// 设置当前账本
+  Future<void> setCurrentLedger(String ledgerId) async {
+    try {
+      await _client.post(
+        '${Endpoints.ledgers}/$ledgerId/set-current',
+      );
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  /// 更新账本 (接受Ledger对象)
+  Future<Ledger> updateLedgerFromObject(Ledger ledger) async {
+    try {
+      final response = await _client.put(
+        '${Endpoints.ledgers}/${ledger.id}',
+        data: ledger.toJson(),
+      );
+      
+      return Ledger.fromJson(response.data);
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
   
   /// 错误处理
   Exception _handleError(dynamic error) {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/tag.dart';
-import '../providers/tag_provider.dart';
 
 class TagEditDialog extends ConsumerWidget {
   final Tag tag;

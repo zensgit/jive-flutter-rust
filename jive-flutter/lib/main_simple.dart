@@ -9,10 +9,6 @@ import 'screens/welcome_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
 import 'screens/auth/admin_login_screen.dart';
-import 'screens/settings/wechat_binding_screen.dart';
-import 'screens/user/edit_profile_screen.dart';
-import 'screens/auth/wechat_qr_screen.dart';
-import 'screens/auth/wechat_register_form_screen.dart';
 import 'services/auth_service.dart';
 import 'services/storage_service.dart';
 import 'services/wechat_service.dart';
@@ -2505,7 +2501,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
                         _showDisableMFADialog();
                       }
                     },
-                    activeColor: Colors.green,
+                    activeThumbColor: Colors.green,
                   ),
                 ),
                 if (_mfaEnabled)
@@ -2562,7 +2558,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
                         _disableBiometric();
                       }
                     },
-                    activeColor: Colors.blue,
+                    activeThumbColor: Colors.blue,
                   ),
                 ),
               ],

@@ -94,6 +94,11 @@ check_rust_deps() {
     local all_good=true
     
     # 检查 Rust 是否安装，如果没有则自动安装
+    # 先尝试加载 cargo 环境
+    if [ -f "$HOME/.cargo/env" ]; then
+        source "$HOME/.cargo/env"
+    fi
+    
     if ! command -v rustc &> /dev/null; then
         print_msg "$YELLOW" "⚠ Rust 未安装"
         read -p "是否要自动安装 Rust? (y/n) " -n 1 -r
@@ -410,9 +415,9 @@ start_rust_server() {
     
     # 使用 cargo watch 进行热重载开发
     if [ "$1" = "dev" ]; then
-        cargo watch -x "run" > "$LOG_DIR/rust_server.log" 2>&1 &
+        cargo watch -x "run --bin jive-api" > "$LOG_DIR/rust_server.log" 2>&1 &
     else
-        cargo run --release > "$LOG_DIR/rust_server.log" 2>&1 &
+        cargo run --bin jive-api --release > "$LOG_DIR/rust_server.log" 2>&1 &
     fi
     
     local pid=$!

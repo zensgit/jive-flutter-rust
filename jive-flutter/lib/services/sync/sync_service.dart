@@ -3,10 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../core/storage/hive_config.dart';
-import '../../models/user.dart';
-import '../../models/account.dart';
-import '../../models/transaction.dart';
-import '../../models/ledger.dart';
 import '../api/auth_service.dart';
 import '../api/account_service.dart';
 import '../api/transaction_service.dart';
@@ -144,10 +140,8 @@ class SyncService {
   Future<void> _syncUserData() async {
     try {
       final user = await _authService.getCurrentUser();
-      if (user != null) {
-        await HiveConfig.userBox.put('current_user', user);
-      }
-    } catch (e) {
+      await HiveConfig.saveUser(user);
+        } catch (e) {
       debugPrint('同步用户数据失败: $e');
     }
   }
@@ -155,14 +149,14 @@ class SyncService {
   /// 同步账本数据
   Future<void> _syncLedgers() async {
     try {
-      final ledgers = await _ledgerService.getLedgers();
+      final ledgers = await _ledgerService.getAllLedgers();
       
       // 清空本地数据
-      await HiveConfig.ledgerBox.clear();
+      await HiveConfig.getLedgersBox().clear();
       
       // 保存新数据
       for (final ledger in ledgers) {
-        await HiveConfig.ledgerBox.put(ledger.id, ledger);
+        await HiveConfig.getLedgersBox().put(ledger.id, ledger);
       }
     } catch (e) {
       debugPrint('同步账本数据失败: $e');
@@ -172,14 +166,14 @@ class SyncService {
   /// 同步账户数据
   Future<void> _syncAccounts() async {
     try {
-      final accounts = await _accountService.getAccounts();
+      final accounts = await _accountService.getAllAccounts();
       
       // 清空本地数据
-      await HiveConfig.accountBox.clear();
+      await HiveConfig.getAccountsBox().clear();
       
       // 保存新数据
       for (final account in accounts) {
-        await HiveConfig.accountBox.put(account.id, account);
+        await HiveConfig.getAccountsBox().put(account.id, account);
       }
     } catch (e) {
       debugPrint('同步账户数据失败: $e');
@@ -193,17 +187,17 @@ class SyncService {
       final endDate = DateTime.now();
       final startDate = endDate.subtract(const Duration(days: 90));
       
-      final transactions = await _transactionService.getTransactions(
+      final response = await _transactionService.getTransactions(
         startDate: startDate,
         endDate: endDate,
       );
       
       // 清空本地数据
-      await HiveConfig.transactionBox.clear();
+      await HiveConfig.getTransactionsBox().clear();
       
       // 保存新数据
-      for (final transaction in transactions) {
-        await HiveConfig.transactionBox.put(transaction.id, transaction);
+      for (final transaction in response.data) {
+        await HiveConfig.getTransactionsBox().put(transaction.id, transaction);
       }
     } catch (e) {
       debugPrint('同步交易数据失败: $e');
@@ -212,7 +206,7 @@ class SyncService {
   
   /// 获取最后同步时间
   Future<DateTime?> _getLastSyncTime() async {
-    final timestamp = HiveConfig.settingsBox.get('last_sync_time');
+    final timestamp = HiveConfig.getSetting<int>('last_sync_time');
     if (timestamp != null) {
       return DateTime.fromMillisecondsSinceEpoch(timestamp);
     }
@@ -221,7 +215,7 @@ class SyncService {
   
   /// 保存最后同步时间
   Future<void> _saveLastSyncTime(DateTime time) async {
-    await HiveConfig.settingsBox.put(
+    await HiveConfig.saveSetting(
       'last_sync_time',
       time.millisecondsSinceEpoch,
     );

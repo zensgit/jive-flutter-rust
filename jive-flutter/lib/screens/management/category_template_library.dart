@@ -410,7 +410,7 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
               // 分组下拉
               Expanded(
                 child: DropdownButtonFormField<CategoryGroup?>(
-                  value: _selectedGroup,
+                  initialValue: _selectedGroup,
                   decoration: InputDecoration(
                     labelText: '分类组',
                     border: OutlineInputBorder(

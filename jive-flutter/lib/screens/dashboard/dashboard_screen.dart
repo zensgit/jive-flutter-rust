@@ -7,6 +7,7 @@ import '../../ui/components/dashboard/budget_summary.dart';
 import '../../providers/ledger_provider.dart';
 import '../../providers/account_provider.dart';
 import '../../providers/transaction_provider.dart';
+import '../../models/account.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -73,7 +74,12 @@ class DashboardScreen extends ConsumerWidget {
               // 导航到交易页面
             }),
             const SizedBox(height: 12),
-            const RecentTransactions(),
+            RecentTransactions(
+              transactions: recentTransactions,
+              onViewAll: () {
+                // 导航到交易页面
+              },
+            ),
             const SizedBox(height: 24),
             
             // 预算摘要
@@ -89,7 +95,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildNetWorthCard(BuildContext context, AsyncValue<List<dynamic>> accounts) {
+  Widget _buildNetWorthCard(BuildContext context, List<Account> accounts) {
     return Card(
       child: Container(
         padding: const EdgeInsets.all(20),
@@ -123,29 +129,16 @@ class DashboardScreen extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 8),
-            accounts.when(
-              data: (data) {
-                final total = _calculateNetWorth(data);
-                return Text(
-                  '¥${total.toStringAsFixed(2)}',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                );
-              },
-              loading: () => const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-              error: (_, __) => const Text(
-                '¥0.00',
-                style: TextStyle(
-                  fontSize: 28,
+            Builder(builder: (context) {
+              final total = _calculateNetWorth(accounts);
+              return Text(
+                '¥${total.toStringAsFixed(2)}',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
-              ),
-            ),
+              );
+            }),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -229,9 +222,17 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  double _calculateNetWorth(List<dynamic> accounts) {
-    // TODO: 实现净资产计算
-    return 0.0;
+  double _calculateNetWorth(List<Account> accounts) {
+    double total = 0.0;
+    for (final account in accounts) {
+      // 根据账户类型计算，负债账户（信用卡、贷款）为负值，其他为正值
+      if (account.type == AccountType.creditCard || account.type == AccountType.loan) {
+        total -= account.balance;
+      } else {
+        total += account.balance;
+      }
+    }
+    return total;
   }
 
   void _showLedgerSwitcher(BuildContext context, WidgetRef ref) {
@@ -287,7 +288,7 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
                         ? Theme.of(context).primaryColor
                         : Colors.grey[300],
                     child: Icon(
-                      _getLedgerIcon(ledger.type),
+                      _getLedgerIcon(ledger.type.value),
                       color: isSelected ? Colors.white : Colors.grey[600],
                     ),
                   ),

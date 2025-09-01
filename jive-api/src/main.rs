@@ -26,7 +26,10 @@ use uuid::Uuid;
 use chrono::{DateTime, Utc};
 
 mod handlers;
+mod error;
+mod auth;
 use handlers::template_handler::*;
+use handlers::accounts::*;
 
 /// 应用状态
 #[derive(Clone)]
@@ -104,6 +107,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/admin/templates/:template_id", put(update_template))
         .route("/api/v1/admin/templates/:template_id", delete(delete_template))
         
+        // 账户管理API
+        .route("/api/v1/accounts", get(list_accounts))
+        .route("/api/v1/accounts", post(create_account))
+        .route("/api/v1/accounts/:id", get(get_account))
+        .route("/api/v1/accounts/:id", put(update_account))
+        .route("/api/v1/accounts/:id", delete(delete_account))
+        .route("/api/v1/accounts/statistics", get(get_account_statistics))
+        
         // 静态文件 (模拟CDN)
         .route("/static/icons/*path", get(serve_icon))
         
@@ -127,6 +138,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     info!("  POST /api/v1/admin/templates   - 创建模板 (管理员)");
     info!("  PUT  /api/v1/admin/templates/:id - 更新模板 (管理员)");
     info!("  DELETE /api/v1/admin/templates/:id - 删除模板 (管理员)");
+    info!("  GET  /api/v1/accounts          - 获取账户列表");
+    info!("  POST /api/v1/accounts          - 创建账户");
+    info!("  GET  /api/v1/accounts/:id      - 获取账户详情");
+    info!("  PUT  /api/v1/accounts/:id      - 更新账户");
+    info!("  DELETE /api/v1/accounts/:id    - 删除账户");
+    info!("  GET  /api/v1/accounts/statistics - 获取账户统计");
     info!("💡 Test with: curl http://127.0.0.1:8080/api/v1/templates/list");
     
     serve(listener, app).await?;
