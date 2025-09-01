@@ -1,0 +1,12 @@
+# Claude本地配置示例
+# 复制此文件为 .claude.local 并根据你的系统修改路径
+
+# MacBook配置示例
+PROJECT_PATH=/Users/huazhou/Documents/GitHub/jive-flutter-rust
+FLUTTER_PATH=/usr/local/flutter
+PUB_CACHE_PATH=$HOME/.pub-cache
+
+# Ubuntu配置示例
+# PROJECT_PATH=/home/zou/projects/jive-flutter-rust
+# FLUTTER_PATH=/snap/flutter/current
+# PUB_CACHE_PATH=$HOME/.pub-cache

@@ -241,8 +241,8 @@ class AppTheme {
   }
 
   /// 构建卡片主题
-  static CardTheme _buildCardTheme(ColorScheme colorScheme) {
-    return CardTheme(
+  static CardThemeData _buildCardTheme(ColorScheme colorScheme) {
+    return CardThemeData(
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
@@ -437,8 +437,8 @@ class AppTheme {
     );
   }
 
-  static DialogTheme _buildDialogTheme(ColorScheme colorScheme) {
-    return DialogTheme(
+  static DialogThemeData _buildDialogTheme(ColorScheme colorScheme) {
+    return DialogThemeData(
       backgroundColor: colorScheme.surface,
       surfaceTintColor: colorScheme.surfaceTint,
       elevation: 24,
@@ -496,7 +496,7 @@ class AppTheme {
   static RadioThemeData _buildRadioTheme(ColorScheme colorScheme) => const RadioThemeData();
   static SliderThemeData _buildSliderTheme(ColorScheme colorScheme) => const SliderThemeData();
   static ProgressIndicatorThemeData _buildProgressIndicatorTheme(ColorScheme colorScheme) => const ProgressIndicatorThemeData();
-  static TabBarTheme _buildTabBarTheme(ColorScheme colorScheme) => const TabBarTheme();
+  static TabBarThemeData _buildTabBarTheme(ColorScheme colorScheme) => const TabBarThemeData();
   static ListTileThemeData _buildListTileTheme(ColorScheme colorScheme) => const ListTileThemeData();
   static ExpansionTileThemeData _buildExpansionTileTheme(ColorScheme colorScheme) => const ExpansionTileThemeData();
 }
