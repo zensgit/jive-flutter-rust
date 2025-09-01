@@ -1,0 +1,45 @@
+# Insync忽略规则 - 避免同步冲突
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Flutter临时文件 - 必须忽略！
+**/ephemeral/
+**/ephemeral
+**/.dart_tool/
+**/build/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/GeneratedPluginRegistrant.*
+
+# Rust编译输出
+**/target/
+**/target
+
+# 软链接 - 重要！不能同步
+**/*.symlink
+**/symlinks/
+**/.plugin_symlinks/
+
+# IDE本地配置
+.idea/
+.vscode/settings.json
+*.iml
+*.iws
+
+# 本地环境配置
+*.local
+.env.local
+
+# 临时文件
+*.tmp
+*.temp
+*.lock
+*.log
+
+# OneDrive冲突文件
+*-MacBook.*
+*-Ubuntu.*
+*.conflict
