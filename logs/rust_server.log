@@ -1,59 +1,31 @@
-warning: unused import: `HeaderValue`
- --> src/main.rs:7:20
-  |
-7 |     http::{header, HeaderValue, Method, StatusCode},
-  |                    ^^^^^^^^^^^
-  |
-  = note: `#[warn(unused_imports)]` on by default
-
-warning: unused imports: `Deserialize` and `Serialize`
-  --> src/main.rs:13:13
-   |
-13 | use serde::{Deserialize, Serialize};
-   |             ^^^^^^^^^^^  ^^^^^^^^^
-
-warning: unused import: `collections::HashMap`
-  --> src/main.rs:16:11
-   |
-16 | use std::{collections::HashMap, net::SocketAddr};
-   |           ^^^^^^^^^^^^^^^^^^^^
-
-warning: unused import: `DefaultMakeSpan`
-  --> src/main.rs:21:13
-   |
-21 |     trace::{DefaultMakeSpan, TraceLayer},
-   |             ^^^^^^^^^^^^^^^
-
-warning: unused import: `uuid::Uuid`
-  --> src/main.rs:25:5
-   |
-25 | use uuid::Uuid;
-   |     ^^^^^^^^^^
-
-warning: unused imports: `DateTime` and `Utc`
-  --> src/main.rs:26:14
-   |
-26 | use chrono::{DateTime, Utc};
-   |              ^^^^^^^^  ^^^
-
-warning: field `lang` is never read
-  --> src/handlers/template_handler.rs:17:9
-   |
-16 | pub struct TemplateQuery {
-   |            ------------- field in this struct
-17 |     pub lang: Option<String>,
-   |         ^^^^
-   |
-   = note: `TemplateQuery` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
-   = note: `#[warn(dead_code)]` on by default
-
-warning: `jive-money-api` (bin "jive-api") generated 7 warnings (run `cargo fix --bin "jive-api"` to apply 6 suggestions)
-    Finished `release` profile [optimized] target(s) in 0.34s
+    Finished `release` profile [optimized] target(s) in 0.37s
 warning: the following packages contain code that will be rejected by a future version of Rust: sqlx-postgres v0.7.4
-note: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 2`
+note: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 1`
      Running `target/release/jive-api`
-[2m2025-09-01T14:40:03.941075Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m 🚀 Starting Jive Money API Server...
-[2m2025-09-01T14:40:03.941201Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m 📦 Connecting to database: postgresql://jive:***@localhost:5432/jive
-[2m2025-09-01T14:40:03.957380Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m ✅ Database connected successfully
-[2m2025-09-01T14:40:03.958935Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m ✅ Database connection test passed
-Error: Os { code: 48, kind: AddrInUse, message: "Address already in use" }
+[2m2025-09-02T15:26:03.993565Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m 🚀 Starting Jive Money API Server...
+[2m2025-09-02T15:26:03.993656Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m 📦 Connecting to database: postgresql://jive:***@localhost:5432/jive
+[2m2025-09-02T15:26:04.002549Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m ✅ Database connected successfully
+[2m2025-09-02T15:26:04.003352Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m ✅ Database connection test passed
+[2m2025-09-02T15:26:04.003783Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m 🌐 Server running at http://127.0.0.1:8012
+[2m2025-09-02T15:26:04.003791Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m 📋 API Documentation:
+[2m2025-09-02T15:26:04.003795Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   GET  /api/v1/templates/list    - 获取模板列表
+[2m2025-09-02T15:26:04.003799Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   GET  /api/v1/icons/list        - 获取图标列表
+[2m2025-09-02T15:26:04.003802Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   GET  /api/v1/templates/updates - 增量更新
+[2m2025-09-02T15:26:04.003805Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   POST /api/v1/templates/usage   - 提交使用统计
+[2m2025-09-02T15:26:04.003809Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   POST /api/v1/admin/templates   - 创建模板 (管理员)
+[2m2025-09-02T15:26:04.003812Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   PUT  /api/v1/admin/templates/:id - 更新模板 (管理员)
+[2m2025-09-02T15:26:04.003815Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   DELETE /api/v1/admin/templates/:id - 删除模板 (管理员)
+[2m2025-09-02T15:26:04.003818Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   GET  /api/v1/accounts          - 获取账户列表
+[2m2025-09-02T15:26:04.003821Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   POST /api/v1/accounts          - 创建账户
+[2m2025-09-02T15:26:04.003824Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   GET  /api/v1/accounts/:id      - 获取账户详情
+[2m2025-09-02T15:26:04.003827Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   PUT  /api/v1/accounts/:id      - 更新账户
+[2m2025-09-02T15:26:04.003830Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   DELETE /api/v1/accounts/:id    - 删除账户
+[2m2025-09-02T15:26:04.003832Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   GET  /api/v1/accounts/statistics - 获取账户统计
+[2m2025-09-02T15:26:04.003835Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   GET  /api/v1/transactions       - 获取交易列表
+[2m2025-09-02T15:26:04.003838Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   POST /api/v1/transactions       - 创建交易
+[2m2025-09-02T15:26:04.003841Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   GET  /api/v1/transactions/:id   - 获取交易详情
+[2m2025-09-02T15:26:04.003844Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   PUT  /api/v1/transactions/:id   - 更新交易
+[2m2025-09-02T15:26:04.003847Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   DELETE /api/v1/transactions/:id - 删除交易
+[2m2025-09-02T15:26:04.003850Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   POST /api/v1/transactions/bulk  - 批量操作
+[2m2025-09-02T15:26:04.003853Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m   GET  /api/v1/transactions/statistics - 获取交易统计
+[2m2025-09-02T15:26:04.003856Z[0m [32m INFO[0m [2mjive_api[0m[2m:[0m 💡 Test with: curl http://127.0.0.1:8012/api/v1/templates/list

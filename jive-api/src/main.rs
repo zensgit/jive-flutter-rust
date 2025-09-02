@@ -1,40 +1,58 @@
 //! Jive Money API Server
 //! 
 //! 本地测试API服务器，提供分类模板的网络加载功能
-//! 监听地址: 127.0.0.1:8080
+//! 监听地址: 127.0.0.1:8012
 
 use axum::{
-    http::{header, HeaderValue, Method, StatusCode},
+    extract::FromRef,
+    http::{header, Method, StatusCode},
     response::Json,
     routing::{get, post, put, delete},
     serve,
     Router,
 };
-use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::{postgres::PgPoolOptions, PgPool};
-use std::{collections::HashMap, net::SocketAddr};
+use std::net::SocketAddr;
 use tokio::net::TcpListener;
 use tower::ServiceBuilder;
 use tower_http::{
     cors::{Any, CorsLayer},
-    trace::{DefaultMakeSpan, TraceLayer},
+    trace::TraceLayer,
 };
 use tracing::{info, warn, error};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-use uuid::Uuid;
-use chrono::{DateTime, Utc};
 
 mod handlers;
 mod error;
 mod auth;
+mod websocket;
 use handlers::template_handler::*;
 use handlers::accounts::*;
+use handlers::transactions::*;
+use handlers::payees::*;
+use handlers::rules::*;
+use handlers::auth as auth_handlers;
+use websocket::{WsConnectionManager, handle_websocket};
 
 /// 应用状态
 #[derive(Clone)]
-struct AppState {
+pub struct AppState {
     pub pool: PgPool,
+    pub ws_manager: std::sync::Arc<WsConnectionManager>,
+}
+
+// 实现FromRef trait以便子状态可以从AppState中提取
+impl FromRef<AppState> for PgPool {
+    fn from_ref(app_state: &AppState) -> PgPool {
+        app_state.pool.clone()
+    }
+}
+
+impl FromRef<AppState> for std::sync::Arc<WsConnectionManager> {
+    fn from_ref(app_state: &AppState) -> std::sync::Arc<WsConnectionManager> {
+        app_state.ws_manager.clone()
+    }
 }
 
 #[tokio::main]
@@ -82,7 +100,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
-    let app_state = AppState { pool };
+    // 创建WebSocket连接管理器
+    let ws_manager = std::sync::Arc::new(WsConnectionManager::new());
+    
+    let app_state = AppState { 
+        pool: pool.clone(),
+        ws_manager: ws_manager.clone(),
+    };
 
     // CORS配置
     let cors = CorsLayer::new()
@@ -115,6 +139,44 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/accounts/:id", delete(delete_account))
         .route("/api/v1/accounts/statistics", get(get_account_statistics))
         
+        // 交易管理API
+        .route("/api/v1/transactions", get(list_transactions))
+        .route("/api/v1/transactions", post(create_transaction))
+        .route("/api/v1/transactions/:id", get(get_transaction))
+        .route("/api/v1/transactions/:id", put(update_transaction))
+        .route("/api/v1/transactions/:id", delete(delete_transaction))
+        .route("/api/v1/transactions/bulk", post(bulk_transaction_operations))
+        .route("/api/v1/transactions/statistics", get(get_transaction_statistics))
+        
+        // 收款人管理API
+        .route("/api/v1/payees", get(list_payees))
+        .route("/api/v1/payees", post(create_payee))
+        .route("/api/v1/payees/:id", get(get_payee))
+        .route("/api/v1/payees/:id", put(update_payee))
+        .route("/api/v1/payees/:id", delete(delete_payee))
+        .route("/api/v1/payees/suggestions", get(get_payee_suggestions))
+        .route("/api/v1/payees/statistics", get(get_payee_statistics))
+        .route("/api/v1/payees/merge", post(merge_payees))
+        
+        // 规则引擎API
+        .route("/api/v1/rules", get(list_rules))
+        .route("/api/v1/rules", post(create_rule))
+        .route("/api/v1/rules/:id", get(get_rule))
+        .route("/api/v1/rules/:id", put(update_rule))
+        .route("/api/v1/rules/:id", delete(delete_rule))
+        .route("/api/v1/rules/execute", post(execute_rules))
+        
+        // 认证API
+        .route("/api/v1/auth/register", post(auth_handlers::register))
+        .route("/api/v1/auth/login", post(auth_handlers::login))
+        .route("/api/v1/auth/refresh", post(auth_handlers::refresh_token))
+        .route("/api/v1/auth/user", get(auth_handlers::get_current_user))
+        .route("/api/v1/auth/user", put(auth_handlers::update_user))
+        .route("/api/v1/auth/password", post(auth_handlers::change_password))
+        
+        // WebSocket端点
+        .route("/ws", get(handle_websocket))
+        
         // 静态文件 (模拟CDN)
         .route("/static/icons/*path", get(serve_icon))
         
@@ -123,10 +185,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .layer(TraceLayer::new_for_http())
                 .layer(cors),
         )
-        .with_state(app_state.pool);
+        .with_state(app_state);
 
     // 启动服务器
-    let addr: SocketAddr = "127.0.0.1:8080".parse()?;
+    let port = std::env::var("API_PORT").unwrap_or_else(|_| "8012".to_string());
+    let addr: SocketAddr = format!("127.0.0.1:{}", port).parse()?;
     let listener = TcpListener::bind(addr).await?;
     
     info!("🌐 Server running at http://{}", addr);
@@ -144,7 +207,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     info!("  PUT  /api/v1/accounts/:id      - 更新账户");
     info!("  DELETE /api/v1/accounts/:id    - 删除账户");
     info!("  GET  /api/v1/accounts/statistics - 获取账户统计");
-    info!("💡 Test with: curl http://127.0.0.1:8080/api/v1/templates/list");
+    info!("  GET  /api/v1/transactions       - 获取交易列表");
+    info!("  POST /api/v1/transactions       - 创建交易");
+    info!("  GET  /api/v1/transactions/:id   - 获取交易详情");
+    info!("  PUT  /api/v1/transactions/:id   - 更新交易");
+    info!("  DELETE /api/v1/transactions/:id - 删除交易");
+    info!("  POST /api/v1/transactions/bulk  - 批量操作");
+    info!("  GET  /api/v1/transactions/statistics - 获取交易统计");
+    info!("💡 Test with: curl http://{}/api/v1/templates/list", addr);
     
     serve(listener, app).await?;
     

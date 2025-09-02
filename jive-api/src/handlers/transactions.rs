@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::{PgPool, Row, QueryBuilder};
 use uuid::Uuid;
 use rust_decimal::Decimal;
+use rust_decimal::prelude::ToPrimitive;
 use chrono::{DateTime, Utc, NaiveDate};
 
 use crate::error::{ApiError, ApiResult};
@@ -235,14 +236,17 @@ pub async fn list_transactions(
     let mut response = Vec::new();
     for row in transactions {
         let tags_json: Option<serde_json::Value> = row.get("tags");
-        let tags = tags_json
-            .and_then(|v| v.as_array())
-            .map(|arr| {
+        let tags = if let Some(json_val) = tags_json {
+            if let Some(arr) = json_val.as_array() {
                 arr.iter()
                     .filter_map(|v| v.as_str().map(String::from))
                     .collect()
-            })
-            .unwrap_or_default();
+            } else {
+                Vec::new()
+            }
+        } else {
+            Vec::new()
+        };
         
         response.push(TransactionResponse {
             id: row.get("id"),
@@ -276,51 +280,55 @@ pub async fn get_transaction(
     Path(id): Path<Uuid>,
     State(pool): State<PgPool>,
 ) -> ApiResult<Json<TransactionResponse>> {
-    let transaction = sqlx::query!(
+    let row = sqlx::query(
         r#"
         SELECT t.*, c.name as category_name, p.name as payee_name
         FROM transactions t
         LEFT JOIN categories c ON t.category_id = c.id
         LEFT JOIN payees p ON t.payee_id = p.id
         WHERE t.id = $1 AND t.deleted_at IS NULL
-        "#,
-        id
+        "#
     )
+    .bind(id)
     .fetch_optional(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     .ok_or(ApiError::NotFound("Transaction not found".to_string()))?;
     
-    let tags = transaction.tags
-        .and_then(|v| v.as_array())
-        .map(|arr| {
+    let tags_json: Option<serde_json::Value> = row.get("tags");
+    let tags = if let Some(json_val) = tags_json {
+        if let Some(arr) = json_val.as_array() {
             arr.iter()
                 .filter_map(|v| v.as_str().map(String::from))
                 .collect()
-        })
-        .unwrap_or_default();
+        } else {
+            Vec::new()
+        }
+    } else {
+        Vec::new()
+    };
     
     let response = TransactionResponse {
-        id: transaction.id,
-        account_id: transaction.account_id,
-        ledger_id: transaction.ledger_id,
-        amount: transaction.amount,
-        transaction_type: transaction.transaction_type,
-        transaction_date: transaction.transaction_date,
-        category_id: transaction.category_id,
-        category_name: transaction.category_name,
-        payee_id: transaction.payee_id,
-        payee_name: transaction.payee_name.or(transaction.payee_name),
-        description: transaction.description,
-        notes: transaction.notes,
+        id: row.get("id"),
+        account_id: row.get("account_id"),
+        ledger_id: row.get("ledger_id"),
+        amount: row.get("amount"),
+        transaction_type: row.get("transaction_type"),
+        transaction_date: row.get("transaction_date"),
+        category_id: row.get("category_id"),
+        category_name: row.try_get("category_name").ok(),
+        payee_id: row.get("payee_id"),
+        payee_name: row.try_get("payee_name").ok(),
+        description: row.get("description"),
+        notes: row.get("notes"),
         tags,
-        location: transaction.location,
-        receipt_url: transaction.receipt_url,
-        status: transaction.status,
-        is_recurring: transaction.is_recurring,
-        recurring_rule: transaction.recurring_rule,
-        created_at: transaction.created_at,
-        updated_at: transaction.updated_at,
+        location: row.get("location"),
+        receipt_url: row.get("receipt_url"),
+        status: row.get("status"),
+        is_recurring: row.get("is_recurring"),
+        recurring_rule: row.get("recurring_rule"),
+        created_at: row.get("created_at"),
+        updated_at: row.get("updated_at"),
     };
     
     Ok(Json(response))
@@ -332,44 +340,44 @@ pub async fn create_transaction(
     Json(req): Json<CreateTransactionRequest>,
 ) -> ApiResult<Json<TransactionResponse>> {
     let id = Uuid::new_v4();
-    let tags_json = req.tags.map(|t| serde_json::json!(t));
+    let _tags_json = req.tags.map(|t| serde_json::json!(t));
     
     // 开始事务
     let mut tx = pool.begin().await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
     // 创建交易
-    let transaction = sqlx::query!(
+    sqlx::query(
         r#"
         INSERT INTO transactions (
             id, account_id, ledger_id, amount, transaction_type,
-            transaction_date, category_id, payee_id, payee_name,
-            description, notes, tags, location, receipt_url,
-            status, is_recurring, recurring_rule, created_at, updated_at
+            transaction_date, category_id, category_name, payee_id, payee,
+            description, notes, location, receipt_url, status, 
+            is_recurring, recurring_rule, created_at, updated_at
         ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14,
-            'pending', $15, $16, NOW(), NOW()
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 
+            $11, $12, $13, $14, $15, $16, $17, NOW(), NOW()
         )
-        RETURNING *
-        "#,
-        id,
-        req.account_id,
-        req.ledger_id,
-        req.amount,
-        req.transaction_type,
-        req.transaction_date,
-        req.category_id,
-        req.payee_id,
-        req.payee_name,
-        req.description,
-        req.notes,
-        tags_json,
-        req.location,
-        req.receipt_url,
-        req.is_recurring.unwrap_or(false),
-        req.recurring_rule
+        "#
     )
-    .fetch_one(&mut *tx)
+    .bind(id)
+    .bind(req.account_id)
+    .bind(req.ledger_id)
+    .bind(req.amount)
+    .bind(&req.transaction_type)
+    .bind(req.transaction_date)
+    .bind(req.category_id)
+    .bind(req.payee_name.clone().or_else(|| Some("Unknown".to_string())))
+    .bind(req.payee_id)
+    .bind(req.payee_name.clone())
+    .bind(req.description.clone())
+    .bind(req.notes.clone())
+    .bind(req.location.clone())
+    .bind(req.receipt_url.clone())
+    .bind("pending")
+    .bind(req.is_recurring.unwrap_or(false))
+    .bind(req.recurring_rule.clone())
+    .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
@@ -380,16 +388,16 @@ pub async fn create_transaction(
         req.amount
     };
     
-    sqlx::query!(
+    sqlx::query(
         r#"
         UPDATE accounts 
         SET current_balance = current_balance + $1,
             updated_at = NOW()
         WHERE id = $2
-        "#,
-        amount_change,
-        req.account_id
+        "#
     )
+    .bind(amount_change)
+    .bind(req.account_id)
     .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -494,41 +502,45 @@ pub async fn delete_transaction(
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
     // 获取交易信息以便回滚余额
-    let transaction = sqlx::query!(
-        "SELECT account_id, amount, transaction_type FROM transactions WHERE id = $1 AND deleted_at IS NULL",
-        id
+    let row = sqlx::query(
+        "SELECT account_id, amount, transaction_type FROM transactions WHERE id = $1 AND deleted_at IS NULL"
     )
+    .bind(id)
     .fetch_optional(&mut *tx)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     .ok_or(ApiError::NotFound("Transaction not found".to_string()))?;
     
+    let account_id: Uuid = row.get("account_id");
+    let amount: Decimal = row.get("amount");
+    let transaction_type: String = row.get("transaction_type");
+    
     // 软删除交易
-    sqlx::query!(
-        "UPDATE transactions SET deleted_at = NOW(), updated_at = NOW() WHERE id = $1",
-        id
+    sqlx::query(
+        "UPDATE transactions SET deleted_at = NOW(), updated_at = NOW() WHERE id = $1"
     )
+    .bind(id)
     .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
     // 回滚账户余额
-    let amount_change = if transaction.transaction_type == "expense" {
-        transaction.amount
+    let amount_change = if transaction_type == "expense" {
+        amount
     } else {
-        -transaction.amount
+        -amount
     };
     
-    sqlx::query!(
+    sqlx::query(
         r#"
         UPDATE accounts 
         SET current_balance = current_balance + $1,
             updated_at = NOW()
         WHERE id = $2
-        "#,
-        amount_change,
-        transaction.account_id
+        "#
     )
+    .bind(amount_change)
+    .bind(account_id)
     .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -548,17 +560,21 @@ pub async fn bulk_transaction_operations(
     match req.operation.as_str() {
         "delete" => {
             // 批量软删除
-            let result = sqlx::query!(
-                r#"
-                UPDATE transactions 
-                SET deleted_at = NOW(), updated_at = NOW()
-                WHERE id = ANY($1) AND deleted_at IS NULL
-                "#,
-                &req.transaction_ids[..]
-            )
-            .execute(&pool)
-            .await
-            .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+            let mut query = QueryBuilder::new(
+                "UPDATE transactions SET deleted_at = NOW(), updated_at = NOW() WHERE id IN ("
+            );
+            
+            let mut separated = query.separated(", ");
+            for id in &req.transaction_ids {
+                separated.push_bind(id);
+            }
+            query.push(") AND deleted_at IS NULL");
+            
+            let result = query
+                .build()
+                .execute(&pool)
+                .await
+                .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
             
             Ok(Json(serde_json::json!({
                 "operation": "delete",
@@ -569,18 +585,23 @@ pub async fn bulk_transaction_operations(
             let category_id = req.category_id
                 .ok_or(ApiError::BadRequest("category_id is required".to_string()))?;
             
-            let result = sqlx::query!(
-                r#"
-                UPDATE transactions 
-                SET category_id = $1, updated_at = NOW()
-                WHERE id = ANY($2) AND deleted_at IS NULL
-                "#,
-                category_id,
-                &req.transaction_ids[..]
-            )
-            .execute(&pool)
-            .await
-            .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+            let mut query = QueryBuilder::new(
+                "UPDATE transactions SET category_id = "
+            );
+            query.push_bind(category_id);
+            query.push(", updated_at = NOW() WHERE id IN (");
+            
+            let mut separated = query.separated(", ");
+            for id in &req.transaction_ids {
+                separated.push_bind(id);
+            }
+            query.push(") AND deleted_at IS NULL");
+            
+            let result = query
+                .build()
+                .execute(&pool)
+                .await
+                .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
             
             Ok(Json(serde_json::json!({
                 "operation": "update_category",
@@ -591,18 +612,23 @@ pub async fn bulk_transaction_operations(
             let status = req.status
                 .ok_or(ApiError::BadRequest("status is required".to_string()))?;
             
-            let result = sqlx::query!(
-                r#"
-                UPDATE transactions 
-                SET status = $1, updated_at = NOW()
-                WHERE id = ANY($2) AND deleted_at IS NULL
-                "#,
-                status,
-                &req.transaction_ids[..]
-            )
-            .execute(&pool)
-            .await
-            .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+            let mut query = QueryBuilder::new(
+                "UPDATE transactions SET status = "
+            );
+            query.push_bind(status);
+            query.push(", updated_at = NOW() WHERE id IN (");
+            
+            let mut separated = query.separated(", ");
+            for id in &req.transaction_ids {
+                separated.push_bind(id);
+            }
+            query.push(") AND deleted_at IS NULL");
+            
+            let result = query
+                .build()
+                .execute(&pool)
+                .await
+                .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
             
             Ok(Json(serde_json::json!({
                 "operation": "update_status",
@@ -622,7 +648,7 @@ pub async fn get_transaction_statistics(
         .ok_or(ApiError::BadRequest("ledger_id is required".to_string()))?;
     
     // 获取总体统计
-    let stats = sqlx::query!(
+    let stats = sqlx::query(
         r#"
         SELECT 
             COUNT(*) as total_count,
@@ -630,16 +656,18 @@ pub async fn get_transaction_statistics(
             SUM(CASE WHEN transaction_type = 'expense' THEN amount ELSE 0 END) as total_expense
         FROM transactions
         WHERE ledger_id = $1 AND deleted_at IS NULL
-        "#,
-        ledger_id
+        "#
     )
+    .bind(ledger_id)
     .fetch_one(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
-    let total_count = stats.total_count.unwrap_or(0);
-    let total_income = stats.total_income.unwrap_or(Decimal::ZERO);
-    let total_expense = stats.total_expense.unwrap_or(Decimal::ZERO);
+    let total_count: i64 = stats.try_get("total_count").unwrap_or(0);
+    let total_income: Option<Decimal> = stats.try_get("total_income").ok();
+    let total_expense: Option<Decimal> = stats.try_get("total_expense").ok();
+    let total_income = total_income.unwrap_or(Decimal::ZERO);
+    let total_expense = total_expense.unwrap_or(Decimal::ZERO);
     let net_amount = total_income - total_expense;
     let average_transaction = if total_count > 0 {
         (total_income + total_expense) / Decimal::from(total_count)
@@ -648,52 +676,63 @@ pub async fn get_transaction_statistics(
     };
     
     // 按分类统计
-    let category_stats = sqlx::query!(
+    let category_stats = sqlx::query(
         r#"
         SELECT 
-            c.id as category_id,
-            c.name as category_name,
-            COUNT(t.id) as count,
-            SUM(t.amount) as total_amount
-        FROM transactions t
-        JOIN categories c ON t.category_id = c.id
-        WHERE t.ledger_id = $1 AND t.deleted_at IS NULL
-        GROUP BY c.id, c.name
+            category_id,
+            category_name,
+            COUNT(*) as count,
+            SUM(amount) as total_amount
+        FROM transactions
+        WHERE ledger_id = $1 AND deleted_at IS NULL AND category_id IS NOT NULL
+        GROUP BY category_id, category_name
         ORDER BY total_amount DESC
-        "#,
-        ledger_id
+        "#
     )
+    .bind(ledger_id)
     .fetch_all(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
     let total_categorized = category_stats
         .iter()
-        .map(|s| s.total_amount.unwrap_or(Decimal::ZERO))
+        .map(|s| {
+            let amount: Option<Decimal> = s.try_get("total_amount").ok();
+            amount.unwrap_or(Decimal::ZERO)
+        })
         .sum::<Decimal>();
     
     let by_category: Vec<CategoryStatistics> = category_stats
         .into_iter()
-        .map(|row| {
-            let amount = row.total_amount.unwrap_or(Decimal::ZERO);
-            let percentage = if total_categorized > Decimal::ZERO {
-                (amount / total_categorized * Decimal::from(100)).to_f64().unwrap_or(0.0)
-            } else {
-                0.0
-            };
+        .filter_map(|row| {
+            let category_id: Option<Uuid> = row.try_get("category_id").ok();
+            let category_name: Option<String> = row.try_get("category_name").ok();
             
-            CategoryStatistics {
-                category_id: row.category_id,
-                category_name: row.category_name,
-                count: row.count.unwrap_or(0),
-                total_amount: amount,
-                percentage,
+            if let (Some(id), Some(name)) = (category_id, category_name) {
+                let count: i64 = row.try_get("count").unwrap_or(0);
+                let total_amount: Option<Decimal> = row.try_get("total_amount").ok();
+                let amount = total_amount.unwrap_or(Decimal::ZERO);
+                let percentage = if total_categorized > Decimal::ZERO {
+                    (amount / total_categorized * Decimal::from(100)).to_f64().unwrap_or(0.0)
+                } else {
+                    0.0
+                };
+                
+                Some(CategoryStatistics {
+                    category_id: id,
+                    category_name: name,
+                    count,
+                    total_amount: amount,
+                    percentage,
+                })
+            } else {
+                None
             }
         })
         .collect();
     
     // 按月统计（最近12个月）
-    let monthly_stats = sqlx::query!(
+    let monthly_stats = sqlx::query(
         r#"
         SELECT 
             TO_CHAR(transaction_date, 'YYYY-MM') as month,
@@ -706,9 +745,9 @@ pub async fn get_transaction_statistics(
             AND transaction_date >= CURRENT_DATE - INTERVAL '12 months'
         GROUP BY TO_CHAR(transaction_date, 'YYYY-MM')
         ORDER BY month DESC
-        "#,
-        ledger_id
+        "#
     )
+    .bind(ledger_id)
     .fetch_all(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -716,15 +755,20 @@ pub async fn get_transaction_statistics(
     let by_month: Vec<MonthlyStatistics> = monthly_stats
         .into_iter()
         .map(|row| {
-            let income = row.income.unwrap_or(Decimal::ZERO);
-            let expense = row.expense.unwrap_or(Decimal::ZERO);
+            let month: String = row.try_get("month").unwrap_or_default();
+            let income: Option<Decimal> = row.try_get("income").ok();
+            let expense: Option<Decimal> = row.try_get("expense").ok();
+            let transaction_count: i64 = row.try_get("transaction_count").unwrap_or(0);
+            
+            let income = income.unwrap_or(Decimal::ZERO);
+            let expense = expense.unwrap_or(Decimal::ZERO);
             
             MonthlyStatistics {
-                month: row.month.unwrap_or_default(),
+                month,
                 income,
                 expense,
                 net: income - expense,
-                transaction_count: row.transaction_count.unwrap_or(0),
+                transaction_count,
             }
         })
         .collect();

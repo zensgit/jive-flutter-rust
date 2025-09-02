@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+    <style>
+        body { font-family: monospace; margin: 20px; }
+        #log { border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: scroll; }
+        .sent { color: blue; }
+        .received { color: green; }
+        .error { color: red; }
+        .info { color: gray; }
+        button { margin: 5px; padding: 5px 10px; }
+        input { width: 300px; padding: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Jive API WebSocket Test</h1>
+    
+    <div>
+        <input type="text" id="token" placeholder="JWT Token (leave empty for test)" value="test-token">
+        <button onclick="connect()">Connect</button>
+        <button onclick="disconnect()">Disconnect</button>
+    </div>
+    
+    <div style="margin-top: 10px;">
+        <button onclick="sendPing()">Send Ping</button>
+        <button onclick="subscribe('family:test')">Subscribe to Family</button>
+        <button onclick="unsubscribe('family:test')">Unsubscribe from Family</button>
+    </div>
+    
+    <h3>Connection Log:</h3>
+    <div id="log"></div>
+    
+    <script>
+        let ws = null;
+        
+        function log(message, className = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function connect() {
+            if (ws) {
+                log('Already connected', 'error');
+                return;
+            }
+            
+            const token = document.getElementById('token').value || 'test-token';
+            const url = `ws://localhost:8012/ws?token=${encodeURIComponent(token)}`;
+            
+            log(`Connecting to ${url}...`, 'info');
+            
+            ws = new WebSocket(url);
+            
+            ws.onopen = function(event) {
+                log('Connected!', 'info');
+            };
+            
+            ws.onmessage = function(event) {
+                log(`Received: ${event.data}`, 'received');
+            };
+            
+            ws.onerror = function(error) {
+                log(`Error: ${error}`, 'error');
+            };
+            
+            ws.onclose = function(event) {
+                log(`Disconnected (code: ${event.code}, reason: ${event.reason})`, 'info');
+                ws = null;
+            };
+        }
+        
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+                log('Disconnected', 'info');
+            } else {
+                log('Not connected', 'error');
+            }
+        }
+        
+        function sendMessage(message) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                log('Not connected', 'error');
+                return;
+            }
+            
+            const json = JSON.stringify(message);
+            log(`Sending: ${json}`, 'sent');
+            ws.send(json);
+        }
+        
+        function sendPing() {
+            sendMessage({ command: 'Ping' });
+        }
+        
+        function subscribe(topic) {
+            sendMessage({ command: 'Subscribe', data: { topic } });
+        }
+        
+        function unsubscribe(topic) {
+            sendMessage({ command: 'Unsubscribe', data: { topic } });
+        }
+    </script>
+</body>
+</html>

@@ -152,6 +152,12 @@
       "languageVersion": "2.18"
     },
     {
+      "name": "cross_file",
+      "rootUri": "file:///Users/huazhou/.pub-cache/hosted/pub.dev/cross_file-0.3.4+2",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
       "name": "crypto",
       "rootUri": "file:///Users/huazhou/.pub-cache/hosted/pub.dev/crypto-3.0.3",
       "packageUri": "lib/",
@@ -201,9 +207,9 @@
     },
     {
       "name": "ffi",
-      "rootUri": "file:///Users/huazhou/.pub-cache/hosted/pub.dev/ffi-2.1.0",
+      "rootUri": "file:///Users/huazhou/.pub-cache/hosted/pub.dev/ffi-2.1.4",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.7"
     },
     {
       "name": "file",
@@ -213,9 +219,9 @@
     },
     {
       "name": "file_picker",
-      "rootUri": "file:///Users/huazhou/.pub-cache/hosted/pub.dev/file_picker-6.2.1",
+      "rootUri": "file:///Users/huazhou/.pub-cache/hosted/pub.dev/file_picker-8.3.7",
       "packageUri": "lib/",
-      "languageVersion": "2.19"
+      "languageVersion": "3.4"
     },
     {
       "name": "fixnum",
@@ -261,9 +267,9 @@
     },
     {
       "name": "flutter_plugin_android_lifecycle",
-      "rootUri": "file:///Users/huazhou/.pub-cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.19",
+      "rootUri": "file:///Users/huazhou/.pub-cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.30",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.7"
     },
     {
       "name": "flutter_riverpod",
@@ -464,6 +470,12 @@
       "languageVersion": "3.2"
     },
     {
+      "name": "nested",
+      "rootUri": "file:///Users/huazhou/.pub-cache/hosted/pub.dev/nested-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "octo_image",
       "rootUri": "file:///Users/huazhou/.pub-cache/hosted/pub.dev/octo_image-2.1.0",
       "packageUri": "lib/",
@@ -558,6 +570,12 @@
       "rootUri": "file:///Users/huazhou/.pub-cache/hosted/pub.dev/protobuf-3.1.0",
       "packageUri": "lib/",
       "languageVersion": "2.19"
+    },
+    {
+      "name": "provider",
+      "rootUri": "file:///Users/huazhou/.pub-cache/hosted/pub.dev/provider-6.1.5+1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "pub_semver",
@@ -837,9 +855,9 @@
     },
     {
       "name": "win32",
-      "rootUri": "file:///Users/huazhou/.pub-cache/hosted/pub.dev/win32-5.2.0",
+      "rootUri": "file:///Users/huazhou/.pub-cache/hosted/pub.dev/win32-5.14.0",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.8"
     },
     {
       "name": "xdg_directories",

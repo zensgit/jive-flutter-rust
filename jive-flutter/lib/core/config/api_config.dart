@@ -3,7 +3,7 @@ class ApiConfig {
   // API基础配置
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://localhost:8080', // 开发环境默认值
+    defaultValue: 'http://localhost:8012', // 开发环境默认值 - Jive API服务器端口
   );
   
   static const String apiVersion = 'v1';
@@ -19,7 +19,7 @@ class ApiConfig {
   
   // 请求头配置
   static Map<String, String> get defaultHeaders => {
-    'Content-Type': 'application/json',
+    // 不在这里设置Content-Type，让Dio自动处理
     'Accept': 'application/json',
     'X-App-Version': '1.0.0',
     'X-Platform': 'flutter',
@@ -109,7 +109,7 @@ class ApiEnvironmentConfig {
   
   static const development = ApiEnvironmentConfig(
     environment: ApiEnvironment.development,
-    baseUrl: 'http://localhost:8080',
+    baseUrl: 'http://localhost:8012',
     enableLogging: true,
     enableCaching: false,
   );

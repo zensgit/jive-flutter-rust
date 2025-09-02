@@ -3,7 +3,7 @@
 //! 测试版本，不连接数据库，返回模拟数据
 
 use axum::{
-    http::{header, Method, StatusCode},
+    http::{header, Method},
     response::Json,
     routing::get,
     Router,

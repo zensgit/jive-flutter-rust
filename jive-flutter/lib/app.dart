@@ -37,7 +37,7 @@ class JiveApp extends ConsumerWidget {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
@@ -92,7 +92,7 @@ class JiveApp extends ConsumerWidget {
         backgroundColor: Colors.grey.shade900,
         foregroundColor: Colors.white,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),

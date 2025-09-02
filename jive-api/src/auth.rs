@@ -3,7 +3,7 @@
 use axum::{
     async_trait,
     extract::FromRequestParts,
-    http::{request::Parts, StatusCode, HeaderMap},
+    http::{request::Parts, StatusCode},
     response::{IntoResponse, Response},
     Json,
 };
@@ -78,6 +78,7 @@ impl Claims {
 
 /// 认证错误
 #[derive(Debug)]
+#[allow(dead_code)]
 pub enum AuthError {
     WrongCredentials,
     MissingCredentials,

@@ -7,8 +7,7 @@ description = "Jive Money API Server for category template management"
 
 [dependencies]
 # Web框架
-axum = { version = "0.7", features = ["macros", "multipart"] }
-axum-extra = { version = "0.9", features = ["typed-header"] }
+axum = { version = "0.7", features = ["macros", "multipart", "ws"] }
 tokio = { version = "1.0", features = ["full"] }
 tower = { version = "0.4", features = ["full"] }
 tower-http = { version = "0.5", features = ["cors", "fs", "trace"] }
@@ -33,16 +32,19 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 # 配置管理
 config = "0.14"
 dotenv = "0.15"
+rust_decimal = { version = "1.37", features = ["serde"] }
+jsonwebtoken = "9.3.1"
+thiserror = "2.0.16"
+axum-extra = { version = "0.10.1", features = ["typed-header"] }
+anyhow = "1.0.99"
 
-# 错误处理
-thiserror = "1.0"
-anyhow = "1.0"
+# WebSocket支持
+tokio-tungstenite = "0.24"
+futures = "0.3"
+futures-util = "0.3"
 
-# 认证
-jsonwebtoken = "9.3"
-
-# 数值处理
-rust_decimal = { version = "1.35", features = ["serde"] }
+# 密码哈希
+argon2 = "0.5"
 
 [dev-dependencies]
 tokio-test = "0.4"
@@ -54,3 +56,11 @@ path = "src/main.rs"
 [[bin]]
 name = "jive-api-simple"
 path = "src/main_simple.rs"
+
+[[bin]]
+name = "jive-api-core"
+path = "src/main_simple_ws.rs"
+
+[[bin]]
+name = "jive-api-ws"
+path = "src/main_with_ws.rs"

@@ -112,7 +112,7 @@ image = { version = "0.24", optional = true }
 [features]
 default = ["wasm"]
 wasm = ["wasm-bindgen", "js-sys", "web-sys", "console_error_panic_hook", "wee_alloc"]
-server = ["sqlx", "reqwest", "tokio", "csv", "calamine", "base32", "hmac", "sha1", "qrcode", "printpdf", "image"]
+server = ["sqlx", "reqwest", "tokio", "dep:csv", "dep:calamine", "dep:base32", "dep:hmac", "dep:sha1", "dep:qrcode", "dep:printpdf", "dep:image"]
 
 # WASM 优化配置
 [profile.release]

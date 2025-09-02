@@ -111,11 +111,21 @@ pub async fn get_templates(
     Query(params): Query<TemplateQuery>,
     State(pool): State<PgPool>,
 ) -> Result<Json<TemplateResponse>, StatusCode> {
-    let mut query = sqlx::QueryBuilder::new(
-        "SELECT id, name, name_en, name_zh, description, classification, color, icon, 
+    // 根据语言参数选择名称字段
+    let name_field = match params.lang.as_deref() {
+        Some("en") => "COALESCE(name_en, name)",
+        Some("zh") => "COALESCE(name_zh, name)",
+        _ => "name",
+    };
+    
+    let query_str = format!(
+        "SELECT id, {} as name, name_en, name_zh, description, classification, color, icon, 
          category_group, is_featured, is_active, global_usage_count, tags, version, 
-         created_at, updated_at FROM system_category_templates WHERE is_active = true"
+         created_at, updated_at FROM system_category_templates WHERE is_active = true",
+        name_field
     );
+    
+    let mut query = sqlx::QueryBuilder::new(query_str);
     
     // 添加过滤条件
     if let Some(classification) = &params.r#type {

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
 import '../config/api_config.dart';
 import 'interceptors/auth_interceptor.dart';
@@ -31,7 +30,7 @@ class HttpClient {
     sendTimeout: ApiConfig.sendTimeout,
     headers: ApiConfig.defaultHeaders,
     responseType: ResponseType.json,
-    contentType: ContentType.json.toString(),
+    contentType: Headers.jsonContentType, // 使用Dio的常量
     validateStatus: (status) => status! < 500,
   );
   

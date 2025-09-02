@@ -1,49 +1,38 @@
-# Flutter Web Dockerfile
-FROM ubuntu:22.04 AS builder
+# Flutter Web Build Stage
+FROM ghcr.io/cirruslabs/flutter:stable AS web
 
-# 安装依赖
-RUN apt-get update && apt-get install -y \
-    curl \
-    git \
-    wget \
-    unzip \
-    xz-utils \
-    zip \
-    libglu1-mesa \
-    && rm -rf /var/lib/apt/lists/*
-
-# 安装 Flutter
-ENV FLUTTER_VERSION=3.16.0
-ENV FLUTTER_HOME=/flutter
-ENV PATH=$FLUTTER_HOME/bin:$PATH
-
-RUN git clone -b stable https://github.com/flutter/flutter.git $FLUTTER_HOME && \
-    flutter precache && \
-    flutter config --enable-web
-
+# Set working directory
 WORKDIR /app
 
-# 复制项目文件
+# Copy pubspec files
 COPY pubspec.yaml pubspec.lock ./
 
-# 获取依赖
+# Get dependencies
 RUN flutter pub get
 
-# 复制源代码
-COPY . .
+# Copy source code
+COPY lib ./lib
+COPY web ./web
+COPY assets ./assets
 
-# 构建 Web 应用
-RUN flutter build web --release
+# Build for web
+RUN flutter build web --release --web-renderer html
 
-# 运行时镜像
-FROM nginx:alpine
+# Production Web Server
+FROM nginx:alpine AS production
 
-# 复制构建产物
-COPY --from=builder /app/build/web /usr/share/nginx/html
+# Copy built web app
+COPY --from=web /app/build/web /usr/share/nginx/html
 
-# 复制 nginx 配置
-COPY nginx-flutter.conf /etc/nginx/conf.d/default.conf
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
 
+# Expose port
 EXPOSE 80
 
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1
+
+# Start nginx
 CMD ["nginx", "-g", "daemon off;"]
