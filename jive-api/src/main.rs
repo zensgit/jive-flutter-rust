@@ -32,7 +32,7 @@ use handlers::accounts::*;
 use handlers::transactions::*;
 use handlers::payees::*;
 use handlers::rules::*;
-use handlers::auth as auth_handlers;
+use handlers::auth_handler;
 use websocket::{WsConnectionManager, handle_websocket};
 
 /// 应用状态
@@ -57,6 +57,9 @@ impl FromRef<AppState> for std::sync::Arc<WsConnectionManager> {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // 加载环境变量
+    dotenv::dotenv().ok();
+    
     // 初始化日志
     tracing_subscriber::registry()
         .with(
@@ -68,9 +71,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     info!("🚀 Starting Jive Money API Server...");
 
-    // 数据库连接
+    // 数据库连接 - 使用 CLAUDE.md 中的配置
     let database_url = std::env::var("DATABASE_URL")
-        .unwrap_or_else(|_| "postgresql://jive:jive_password@localhost/jive_money".to_string());
+        .unwrap_or_else(|_| "postgresql://postgres:postgres@localhost:5432/jive_money".to_string());
     
     info!("📦 Connecting to database: {}", database_url.replace("jive_password", "***"));
     
@@ -167,12 +170,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/rules/execute", post(execute_rules))
         
         // 认证API
-        .route("/api/v1/auth/register", post(auth_handlers::register))
-        .route("/api/v1/auth/login", post(auth_handlers::login))
-        .route("/api/v1/auth/refresh", post(auth_handlers::refresh_token))
-        .route("/api/v1/auth/user", get(auth_handlers::get_current_user))
-        .route("/api/v1/auth/user", put(auth_handlers::update_user))
-        .route("/api/v1/auth/password", post(auth_handlers::change_password))
+        .route("/api/v1/auth/register", post(auth_handler::register))
+        .route("/api/v1/auth/login", post(auth_handler::login))
+        .route("/api/v1/auth/user", get(auth_handler::get_current_user))
         
         // WebSocket端点
         .route("/ws", get(handle_websocket))

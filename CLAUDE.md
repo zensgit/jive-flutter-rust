@@ -41,6 +41,57 @@ cd ~/jive-project && claude
    git push
    ```
 
+## Docker 容器化部署（新增）
+
+### 支持平台
+- ✅ MacBook M4 (ARM64/Apple Silicon)
+- ✅ Ubuntu/Linux (AMD64/x86_64)
+- ✅ 跨平台开发和测试
+
+### Docker 快速开始
+```bash
+# 1. 进入项目目录
+cd ~/jive-project/jive-api
+
+# 2. 启动开发环境（热重载）
+./docker-run.sh dev
+
+# 3. 启动生产环境
+./docker-run.sh prod
+
+# 4. 查看日志
+./docker-run.sh logs -f
+
+# 5. 停止服务
+./docker-run.sh down
+```
+
+### Docker 服务端口
+- **API服务**: http://localhost:8012
+- **PostgreSQL**: localhost:5432
+- **Redis**: localhost:6379
+- **Adminer** (数据库管理): http://localhost:8080 (仅开发环境)
+- **RedisInsight**: http://localhost:8001 (仅开发环境)
+
+### Docker 命令说明
+```bash
+./docker-run.sh build      # 构建镜像
+./docker-run.sh dev        # 启动开发环境
+./docker-run.sh prod       # 启动生产环境
+./docker-run.sh status     # 查看服务状态
+./docker-run.sh logs       # 查看日志
+./docker-run.sh shell      # 进入容器
+./docker-run.sh db-shell   # 进入数据库
+./docker-run.sh clean      # 清理所有容器和数据
+```
+
+### 开发环境特性
+- 🔥 热重载（代码修改自动重启）
+- 📝 源码挂载
+- 🔧 调试端口 9229
+- 🗄️ 数据库管理工具
+- 📊 Redis 可视化工具
+
 ## 常用命令
 
 ### Flutter相关
@@ -136,7 +187,25 @@ cargo test
 ### 工作笔记
 <!-- 任何需要在系统间传递的笔记 -->
 ```
-最后更新：2025-09-02
+最后更新：2025-09-03 00:30
 更新人：Claude Code (Ubuntu环境)
-状态：✅ 所有服务运行正常，编译错误已修复
+状态：✅ Docker容器化部署完成
+
+最新更新：
+- 添加Docker多架构支持（ARM64/AMD64）
+- 创建docker-compose配置
+- 实现开发环境热重载
+- 添加数据库和Redis管理工具
+- 创建一键部署脚本
+
+之前修复：
+- 端口配置统一为8012
+- 实现JWT认证中间件
+- 添加CORS安全配置
+- 创建统一错误处理
+- 实现请求限流保护
+- 修复所有编译警告
+
+详细修复报告：jive-api/FIX_REPORT.md
+Docker使用说明：见上方Docker容器化部署章节
 ```

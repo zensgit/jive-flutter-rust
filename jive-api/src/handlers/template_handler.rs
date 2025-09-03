@@ -14,6 +14,7 @@ use std::collections::HashMap;
 /// 模板查询参数
 #[derive(Debug, Deserialize)]
 pub struct TemplateQuery {
+    #[allow(dead_code)]
     pub lang: Option<String>,
     pub r#type: Option<String>,
     pub group: Option<String>,

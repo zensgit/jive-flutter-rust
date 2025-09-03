@@ -88,26 +88,43 @@ features = ["json"]
 optional = true
 
 # CSV 处理
-csv = { version = "1.2", optional = true }
+[dependencies.csv]
+version = "1.2"
+optional = true
 
 # Excel 处理
-calamine = { version = "0.24", optional = true }
+[dependencies.calamine]
+version = "0.24"
+optional = true
 
 # Base32 编码 (用于 TOTP)
-base32 = { version = "0.4", optional = true }
+[dependencies.base32]
+version = "0.4"
+optional = true
 
 # HMAC 和 SHA1 (用于 TOTP)
-hmac = { version = "0.12", optional = true }
-sha1 = { version = "0.10", optional = true }
+[dependencies.hmac]
+version = "0.12"
+optional = true
+
+[dependencies.sha1]
+version = "0.10"
+optional = true
 
 # QR 码生成
-qrcode = { version = "0.14", optional = true }
+[dependencies.qrcode]
+version = "0.14"
+optional = true
 
 # PDF 生成
-printpdf = { version = "0.6", optional = true }
+[dependencies.printpdf]
+version = "0.6"
+optional = true
 
 # 图像处理
-image = { version = "0.24", optional = true }
+[dependencies.image]
+version = "0.24"
+optional = true
 
 [features]
 default = ["wasm"]

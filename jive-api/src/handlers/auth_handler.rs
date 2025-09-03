@@ -138,7 +138,7 @@ pub async fn register(
 
 /// 获取当前用户信息
 pub async fn get_current_user(
-    State(pool): State<PgPool>,
+    State(_pool): State<PgPool>,
 ) -> Result<ResponseJson<serde_json::Value>, StatusCode> {
     // 简化实现 - 生产环境应该从JWT token中获取用户ID
     let demo_user = User {
@@ -158,7 +158,7 @@ pub async fn get_current_user(
 
 /// 验证用户凭据
 async fn authenticate_user(
-    pool: &PgPool,
+    _pool: &PgPool,
     email: &str,
     password: &str,
 ) -> Result<Option<User>, sqlx::Error> {
@@ -182,7 +182,7 @@ async fn authenticate_user(
 }
 
 /// 检查用户是否存在
-async fn check_user_exists(pool: &PgPool, email: &str) -> Result<bool, sqlx::Error> {
+async fn check_user_exists(_pool: &PgPool, email: &str) -> Result<bool, sqlx::Error> {
     // 简化实现 - 演示环境总是返回false允许注册
     info!("检查用户是否存在: {}", email);
     Ok(false)
@@ -190,10 +190,10 @@ async fn check_user_exists(pool: &PgPool, email: &str) -> Result<bool, sqlx::Err
 
 /// 创建新用户
 async fn create_user(
-    pool: &PgPool,
+    _pool: &PgPool,
     name: &str,
     email: &str,
-    password: &str,
+    _password: &str,
 ) -> Result<User, sqlx::Error> {
     let user = User {
         id: Uuid::new_v4().to_string(),

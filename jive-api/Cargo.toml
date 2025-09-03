@@ -33,7 +33,6 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 config = "0.14"
 dotenv = "0.15"
 rust_decimal = { version = "1.37", features = ["serde"] }
-jsonwebtoken = "9.3.1"
 thiserror = "2.0.16"
 axum-extra = { version = "0.10.1", features = ["typed-header"] }
 anyhow = "1.0.99"
@@ -45,6 +44,10 @@ futures-util = "0.3"
 
 # 密码哈希
 argon2 = "0.5"
+bcrypt = "0.15"
+
+# JWT认证
+jsonwebtoken = "9.3"
 
 [dev-dependencies]
 tokio-test = "0.4"

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import '../core/router/app_router.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -86,7 +88,7 @@ class WelcomeScreen extends StatelessWidget {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pushNamed('/login');
+                      context.push(AppRoutes.login);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
@@ -107,7 +109,7 @@ class WelcomeScreen extends StatelessWidget {
                   height: 50,
                   child: OutlinedButton(
                     onPressed: () {
-                      Navigator.of(context).pushNamed('/register');
+                      context.push(AppRoutes.register);
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.black,
@@ -125,7 +127,7 @@ class WelcomeScreen extends StatelessWidget {
                 // 体验按钮
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pushReplacementNamed('/home');
+                    context.go(AppRoutes.dashboard);
                   },
                   child: const Text(
                     '先体验一下',

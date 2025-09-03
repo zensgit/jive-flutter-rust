@@ -23,7 +23,13 @@ class AuthService {
         },
       );
       
-      final authResponse = AuthResponse.fromJson(response.data);
+      // 处理我们API的响应格式
+      final responseData = response.data;
+      if (responseData['success'] != true) {
+        throw ApiException(responseData['message'] ?? '登录失败');
+      }
+      
+      final authResponse = AuthResponse.fromJson(responseData);
       
       // 保存令牌
       await TokenStorage.saveTokens(
@@ -285,9 +291,13 @@ class AuthResponse {
   });
   
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
+    // 处理我们的API响应格式
+    String? accessToken = json['token'] ?? json['access_token'] ?? json['accessToken'];
+    String? refreshToken = json['refresh_token'] ?? json['refreshToken'] ?? accessToken; // 如果没有refresh token，使用access token
+    
     return AuthResponse(
-      accessToken: json['access_token'] ?? json['accessToken'],
-      refreshToken: json['refresh_token'] ?? json['refreshToken'],
+      accessToken: accessToken ?? '',
+      refreshToken: refreshToken ?? '',
       expiresAt: json['expires_at'] != null 
           ? DateTime.parse(json['expires_at'])
           : json['expiresAt'] != null

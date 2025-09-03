@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../services/auth_service.dart';
 import '../../services/storage_service.dart';
 import '../../widgets/wechat_login_button.dart';
+import '../../core/router/app_router.dart';
+import '../../providers/auth_provider.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -87,29 +91,37 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final result = await _authService.login(
-        _emailController.text.trim(),
-        _passwordController.text,
+      // 保存登录凭据
+      await _saveCredentials();
+      
+      // 使用AuthController的login方法
+      final success = await ref.read(authControllerProvider.notifier).login(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        rememberMe: _rememberMe,
       );
       
       if (mounted) {
-        if (result.success) {
-          // 保存登录凭据
-          await _saveCredentials();
+        if (success) {
+          final authState = ref.read(authControllerProvider);
           
-          // 登录成功，显示欢迎消息并导航到主页
+          // 登录成功，显示欢迎消息
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('欢迎回来，${result.userData?.username}！'),
+              content: Text('欢迎回来，${authState.user?.name ?? '用户'}！'),
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.of(context).pushReplacementNamed('/home');
+          
+          // 直接跳转到仪表板
+          context.go(AppRoutes.dashboard);
         } else {
+          final authState = ref.read(authControllerProvider);
+          
           // 登录失败，显示错误消息
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result.message ?? '登录失败'),
+              content: Text(authState.errorMessage ?? '登录失败'),
               backgroundColor: Colors.red,
             ),
           );
@@ -417,7 +429,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // 注册链接
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pushNamed('/register');
+                        context.push(AppRoutes.register);
                       },
                       child: const Text('还没有账户？点击注册'),
                     ),
@@ -468,7 +480,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               backgroundColor: Colors.green,
                             ),
                           );
-                          Navigator.of(context).pushReplacementNamed('/home');
+                          context.go(AppRoutes.dashboard);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -548,4 +560,5 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
 }

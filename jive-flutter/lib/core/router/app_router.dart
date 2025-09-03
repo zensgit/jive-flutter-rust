@@ -18,7 +18,6 @@ class AppRoutes {
   static const splash = '/';
   static const login = '/login';
   static const register = '/register';
-  static const home = '/home';
   static const dashboard = '/dashboard';
   static const transactions = '/transactions';
   static const transactionDetail = '/transactions/:id';
@@ -44,19 +43,29 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     debugLogDiagnostics: true,
     refreshListenable: _AuthStateNotifier(ref),
     redirect: (context, state) {
-      final isAuthenticated = authState.isAuthenticated;
       final currentPath = state.uri.path;
       final isAuthRoute = currentPath == AppRoutes.login || 
                          currentPath == AppRoutes.register;
+      
+      // 如果认证状态还在初始化或加载中，不进行重定向，让splash页面处理
+      if (authState.status == AuthStatus.initial || authState.status == AuthStatus.loading) {
+        // 只有在尝试访问认证页面时才重定向到splash
+        if (isAuthRoute) {
+          return AppRoutes.splash;
+        }
+        return null;
+      }
+      
+      final isAuthenticated = authState.isAuthenticated;
       
       // 如果未认证且不在认证页面，重定向到登录页
       if (!isAuthenticated && !isAuthRoute && currentPath != AppRoutes.splash) {
         return AppRoutes.login;
       }
       
-      // 如果已认证且在认证页面，重定向到主页
+      // 如果已认证且在认证页面，重定向到仪表板
       if (isAuthenticated && isAuthRoute) {
-        return AppRoutes.home;
+        return AppRoutes.dashboard;
       }
       
       return null;
@@ -216,7 +225,7 @@ class ErrorPage extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: () => context.go(AppRoutes.home),
+              onPressed: () => context.go(AppRoutes.dashboard),
               child: const Text('返回首页'),
             ),
           ],
