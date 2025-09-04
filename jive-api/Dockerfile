@@ -1,6 +1,6 @@
 # 多阶段构建，支持 ARM64 (M4 Mac) 和 AMD64 (Ubuntu) 架构
 # 构建阶段
-FROM --platform=$BUILDPLATFORM rust:1.75-bookworm as builder
+FROM --platform=$BUILDPLATFORM rust:latest as builder
 
 # 安装构建依赖
 RUN apt-get update && apt-get install -y \
@@ -15,17 +15,21 @@ WORKDIR /app
 # 复制 Cargo 文件
 COPY Cargo.toml Cargo.lock ./
 
-# 创建虚拟 main.rs 以缓存依赖
+# 创建虚拟文件以缓存依赖
 RUN mkdir src && \
     echo "fn main() {}" > src/main.rs && \
-    cargo build --release && \
+    echo "fn main() {}" > src/main_simple.rs && \
+    echo "fn main() {}" > src/main_simple_ws.rs && \
+    echo "fn main() {}" > src/main_with_ws.rs && \
+    cargo build --release --bin jive-api && \
     rm -rf src
 
 # 复制源代码
 COPY src ./src
 COPY .env .env.example ./
 
-# 构建应用
+# 构建应用（禁用SQLx编译时检查）
+ENV SQLX_OFFLINE=false
 RUN touch src/main.rs && \
     cargo build --release --bin jive-api
 

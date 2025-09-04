@@ -23,24 +23,15 @@ use tower_http::{
 use tracing::{info, warn, error};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-mod handlers;
-mod error;
-mod auth;
-mod websocket;
-use handlers::template_handler::*;
-use handlers::accounts::*;
-use handlers::transactions::*;
-use handlers::payees::*;
-use handlers::rules::*;
-use handlers::auth_handler;
-use websocket::{WsConnectionManager, handle_websocket};
-
-/// 应用状态
-#[derive(Clone)]
-pub struct AppState {
-    pub pool: PgPool,
-    pub ws_manager: std::sync::Arc<WsConnectionManager>,
-}
+use jive_money_api::*;
+use jive_money_api::handlers::template_handler::*;
+use jive_money_api::handlers::accounts::*;
+use jive_money_api::handlers::transactions::*;
+use jive_money_api::handlers::payees::*;
+use jive_money_api::handlers::rules::*;
+use jive_money_api::handlers::auth as auth_handlers;
+use jive_money_api::websocket::{WsConnectionManager, handle_websocket};
+use jive_money_api::AppState;
 
 // 实现FromRef trait以便子状态可以从AppState中提取
 impl FromRef<AppState> for PgPool {
@@ -170,9 +161,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/rules/execute", post(execute_rules))
         
         // 认证API
-        .route("/api/v1/auth/register", post(auth_handler::register))
-        .route("/api/v1/auth/login", post(auth_handler::login))
-        .route("/api/v1/auth/user", get(auth_handler::get_current_user))
+        .route("/api/v1/auth/register", post(auth_handlers::register))
+        .route("/api/v1/auth/login", post(auth_handlers::login))
+        .route("/api/v1/auth/user", get(auth_handlers::get_current_user))
         
         // WebSocket端点
         .route("/ws", get(handle_websocket))

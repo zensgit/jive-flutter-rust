@@ -18,6 +18,7 @@ use argon2::{
 
 use crate::auth::{Claims, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse};
 use crate::error::{ApiError, ApiResult};
+use crate::services::AuthService;
 
 /// 用户模型
 #[derive(Debug, Serialize, Deserialize)]
@@ -34,7 +35,37 @@ pub struct User {
     pub updated_at: DateTime<Utc>,
 }
 
-/// 用户注册
+/// 增强的注册（创建个人Family）
+pub async fn register_with_family(
+    State(pool): State<PgPool>,
+    Json(req): Json<RegisterRequest>,
+) -> ApiResult<Json<RegisterResponse>> {
+    
+    let auth_service = AuthService::new(pool.clone());
+    let register_req = crate::services::auth_service::RegisterRequest {
+        email: req.email.clone(),
+        password: req.password.clone(),
+        name: Some(req.name.clone()),
+    };
+    
+    match auth_service.register_with_family(register_req).await {
+        Ok(user_ctx) => {
+            // Generate JWT token
+            let token = crate::auth::generate_jwt(user_ctx.user_id, user_ctx.current_family_id)?;
+            
+            Ok(Json(RegisterResponse {
+                user_id: user_ctx.user_id,
+                email: user_ctx.email,
+                token,
+            }))
+        },
+        Err(e) => {
+            Err(ApiError::BadRequest(format!("Registration failed: {:?}", e)))
+        }
+    }
+}
+
+/// 用户注册（保留原版本以兼容）
 pub async fn register(
     State(pool): State<PgPool>,
     Json(req): Json<RegisterRequest>,
@@ -143,8 +174,8 @@ pub async fn login(
     // 查找用户
     let row = sqlx::query(
         r#"
-        SELECT id, email, name, password_hash, family_id,
-               is_active, is_verified, last_login_at,
+        SELECT id, email, name, password_hash,
+               is_active, email_verified, last_login_at,
                created_at, updated_at
         FROM users
         WHERE LOWER(email) = LOWER($1)
@@ -162,9 +193,9 @@ pub async fn login(
         email: row.try_get("email").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
         name: row.try_get("name").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
         password_hash: row.try_get("password_hash").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
-        family_id: row.try_get("family_id").ok(),
+        family_id: None, // Will fetch from family_members table if needed
         is_active: row.try_get("is_active").unwrap_or(false),
-        is_verified: row.try_get("is_verified").unwrap_or(false),
+        is_verified: row.try_get("email_verified").unwrap_or(false),
         last_login_at: row.try_get("last_login_at").ok(),
         created_at: row.try_get("created_at").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
         updated_at: row.try_get("updated_at").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
@@ -184,6 +215,21 @@ pub async fn login(
         .verify_password(req.password.as_bytes(), &parsed_hash)
         .map_err(|_| ApiError::Unauthorized)?;
     
+    // 获取用户的family_id（如果有）
+    let family_row = sqlx::query(
+        "SELECT family_id FROM family_members WHERE user_id = $1 LIMIT 1"
+    )
+    .bind(user.id)
+    .fetch_optional(&pool)
+    .await
+    .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+    
+    let family_id = if let Some(row) = family_row {
+        row.try_get("family_id").ok()
+    } else {
+        None
+    };
+    
     // 更新最后登录时间
     sqlx::query(
         "UPDATE users SET last_login_at = NOW() WHERE id = $1"
@@ -194,14 +240,14 @@ pub async fn login(
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
     // 生成JWT令牌
-    let claims = Claims::new(user.id, user.email.clone(), user.family_id);
+    let claims = Claims::new(user.id, user.email.clone(), family_id);
     let token = claims.to_token()?;
     
     Ok(Json(LoginResponse {
         token,
         user_id: user.id,
         email: user.email,
-        family_id: user.family_id,
+        family_id,
     }))
 }
 
@@ -344,6 +390,22 @@ pub async fn change_password(
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
     Ok(StatusCode::OK)
+}
+
+/// 获取用户上下文（包含所有Family）
+pub async fn get_user_context(
+    State(pool): State<PgPool>,
+    Extension(user_id): Extension<Uuid>,
+) -> ApiResult<Json<crate::services::auth_service::UserContext>> {
+    
+    let auth_service = AuthService::new(pool);
+    
+    match auth_service.get_user_context(user_id).await {
+        Ok(context) => Ok(Json(context)),
+        Err(e) => {
+            Err(ApiError::InternalServerError)
+        }
+    }
 }
 
 /// 用户信息响应

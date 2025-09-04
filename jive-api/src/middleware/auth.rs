@@ -13,7 +13,7 @@ use serde_json::json;
 use std::sync::Arc;
 
 /// JWT Claims
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Claims {
     pub sub: String,       // 用户ID
     pub email: String,     // 用户邮箱
@@ -135,4 +135,69 @@ pub async fn admin_middleware(
 /// 从请求中提取当前用户信息
 pub fn get_current_user(request: &Request) -> Option<Claims> {
     request.extensions().get::<Claims>().cloned()
+}
+
+/// 增强的认证中间件 - 验证JWT并提取用户信息
+pub async fn require_auth(
+    State(state): State<crate::AppState>,
+    mut request: Request,
+    next: Next,
+) -> Result<Response, StatusCode> {
+    use uuid::Uuid;
+    
+    // 从Authorization header获取token
+    let token = request
+        .headers()
+        .get(header::AUTHORIZATION)
+        .and_then(|auth_header| auth_header.to_str().ok())
+        .and_then(|auth_value| {
+            if auth_value.starts_with("Bearer ") {
+                Some(auth_value.trim_start_matches("Bearer "))
+            } else {
+                None
+            }
+        })
+        .ok_or(StatusCode::UNAUTHORIZED)?;
+    
+    // 验证JWT
+    let claims = crate::auth::decode_jwt(token).map_err(|_| StatusCode::UNAUTHORIZED)?;
+    
+    // 将用户ID和claims注入到request extensions
+    let user_id = claims.sub.clone();
+    request.extensions_mut().insert(user_id); // user_id
+    request.extensions_mut().insert(claims);
+    
+    Ok(next.run(request).await)
+}
+
+/// Family上下文中间件 - 提取并验证Family访问权限
+pub async fn family_context(
+    State(state): State<crate::AppState>,
+    axum::extract::Path(family_id): axum::extract::Path<uuid::Uuid>,
+    mut request: Request,
+    next: Next,
+) -> Result<Response, StatusCode> {
+    use uuid::Uuid;
+    use crate::services::MemberService;
+    
+    // 从extensions获取用户ID（由require_auth中间件注入）
+    let user_id = request
+        .extensions()
+        .get::<Uuid>()
+        .copied()
+        .ok_or(StatusCode::UNAUTHORIZED)?;
+    
+    // 获取成员服务
+    let member_service = MemberService::new(state.pool.clone());
+    
+    // 获取用户在此Family的上下文
+    let context = member_service
+        .get_member_context(user_id, family_id)
+        .await
+        .map_err(|_| StatusCode::FORBIDDEN)?;
+    
+    // 将ServiceContext注入到request extensions
+    request.extensions_mut().insert(context);
+    
+    Ok(next.run(request).await)
 }

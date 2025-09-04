@@ -5,6 +5,10 @@ edition = "2021"
 authors = ["Jive Money Team"]
 description = "Jive Money API Server for category template management"
 
+[lib]
+name = "jive_money_api"
+path = "src/lib.rs"
+
 [dependencies]
 # Web框架
 axum = { version = "0.7", features = ["macros", "multipart", "ws"] }
@@ -48,6 +52,9 @@ bcrypt = "0.15"
 
 # JWT认证
 jsonwebtoken = "9.3"
+
+# 随机数生成
+rand = "0.8"
 
 [dev-dependencies]
 tokio-test = "0.4"

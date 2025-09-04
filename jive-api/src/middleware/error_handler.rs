@@ -48,45 +48,45 @@ impl std::error::Error for AppError {}
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
-        let (status, error_message, error_type) = match self {
+        let (status, error_message, error_type) = match &self {
             AppError::Database(_) => (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Database operation failed",
+                "Database operation failed".to_string(),
                 "database_error",
             ),
             AppError::Authentication(msg) => (
                 StatusCode::UNAUTHORIZED,
-                msg.as_str(),
+                msg.clone(),
                 "authentication_error",
             ),
             AppError::Authorization(msg) => (
                 StatusCode::FORBIDDEN,
-                msg.as_str(),
+                msg.clone(),
                 "authorization_error",
             ),
             AppError::Validation(msg) => (
                 StatusCode::BAD_REQUEST,
-                msg.as_str(),
+                msg.clone(),
                 "validation_error",
             ),
             AppError::NotFound(msg) => (
                 StatusCode::NOT_FOUND,
-                msg.as_str(),
+                msg.clone(),
                 "not_found",
             ),
             AppError::InternalServer(msg) => (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                msg.as_str(),
+                msg.clone(),
                 "internal_error",
             ),
             AppError::RateLimited(msg) => (
                 StatusCode::TOO_MANY_REQUESTS,
-                msg.as_str(),
+                msg.clone(),
                 "rate_limited",
             ),
             AppError::BadRequest(msg) => (
                 StatusCode::BAD_REQUEST,
-                msg.as_str(),
+                msg.clone(),
                 "bad_request",
             ),
         };

@@ -173,3 +173,14 @@ pub struct RegisterResponse {
     pub email: String,
     pub token: String,
 }
+
+/// 生成JWT令牌
+pub fn generate_jwt(user_id: Uuid, family_id: Option<Uuid>) -> Result<String, AuthError> {
+    let claims = Claims::new(user_id, String::new(), family_id);
+    claims.to_token()
+}
+
+/// 解码JWT令牌
+pub fn decode_jwt(token: &str) -> Result<Claims, AuthError> {
+    Claims::from_token(token)
+}

@@ -5,3 +5,7 @@ pub mod payees;
 pub mod rules;
 pub mod auth;
 pub mod auth_handler;
+pub mod family_handler;
+pub mod member_handler;
+pub mod invitation_handler;
+pub mod audit_handler;
