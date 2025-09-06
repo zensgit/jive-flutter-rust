@@ -173,7 +173,7 @@ pub async fn get_account(
         r#"
         SELECT id, ledger_id, name, account_type, account_number, institution_name,
                currency, current_balance, available_balance, credit_limit, status,
-               is_manual, color, icon, notes, created_at, updated_at
+               is_manual, color, notes, created_at, updated_at
         FROM accounts
         WHERE id = $1 AND deleted_at IS NULL
         "#,
@@ -186,19 +186,19 @@ pub async fn get_account(
     
     let response = AccountResponse {
         id: account.id,
-        ledger_id: account.ledger_id,
-        name: account.name,
-        account_type: account.account_type,
+        ledger_id: account.ledger_id.ok_or(ApiError::DatabaseError("ledger_id is null".to_string()))?,
+        name: account.name.ok_or(ApiError::DatabaseError("name is null".to_string()))?,
+        account_type: account.account_type.unwrap_or_else(|| "checking".to_string()),
         account_number: account.account_number,
         institution_name: account.institution_name,
-        currency: account.currency,
-        current_balance: account.current_balance,
+        currency: account.currency.unwrap_or_else(|| "CNY".to_string()),
+        current_balance: account.current_balance.unwrap_or(Decimal::ZERO),
         available_balance: account.available_balance,
         credit_limit: account.credit_limit,
-        status: account.status,
-        is_manual: account.is_manual,
+        status: account.status.unwrap_or_else(|| "active".to_string()),
+        is_manual: account.is_manual.unwrap_or(true),
         color: account.color,
-        icon: account.icon,
+        icon: None,
         notes: account.notes,
         created_at: account.created_at,
         updated_at: account.updated_at,
@@ -221,13 +221,13 @@ pub async fn create_account(
         INSERT INTO accounts (
             id, ledger_id, name, account_type, account_number,
             institution_name, currency, current_balance, status,
-            is_manual, color, icon, notes, created_at, updated_at
+            is_manual, color, notes, created_at, updated_at
         ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8, 'active', true, $9, $10, $11, NOW(), NOW()
+            $1, $2, $3, $4, $5, $6, $7, $8, 'active', true, $9, $10, NOW(), NOW()
         )
         RETURNING id, ledger_id, name, account_type, account_number, institution_name,
                   currency, current_balance, available_balance, credit_limit, status,
-                  is_manual, color, icon, notes, created_at, updated_at
+                  is_manual, color, notes, created_at, updated_at
         "#,
         id,
         req.ledger_id,
@@ -238,7 +238,6 @@ pub async fn create_account(
         currency,
         initial_balance,
         req.color,
-        req.icon,
         req.notes
     )
     .fetch_one(&pool)
@@ -263,19 +262,19 @@ pub async fn create_account(
     
     let response = AccountResponse {
         id: account.id,
-        ledger_id: account.ledger_id,
-        name: account.name,
-        account_type: account.account_type,
+        ledger_id: account.ledger_id.ok_or(ApiError::DatabaseError("ledger_id is null".to_string()))?,
+        name: account.name.ok_or(ApiError::DatabaseError("name is null".to_string()))?,
+        account_type: account.account_type.unwrap_or_else(|| "checking".to_string()),
         account_number: account.account_number,
         institution_name: account.institution_name,
-        currency: account.currency,
-        current_balance: account.current_balance,
+        currency: account.currency.unwrap_or_else(|| "CNY".to_string()),
+        current_balance: account.current_balance.unwrap_or(Decimal::ZERO),
         available_balance: account.available_balance,
         credit_limit: account.credit_limit,
-        status: account.status,
-        is_manual: account.is_manual,
+        status: account.status.unwrap_or_else(|| "active".to_string()),
+        is_manual: account.is_manual.unwrap_or(true),
         color: account.color,
-        icon: account.icon,
+        icon: None,
         notes: account.notes,
         created_at: account.created_at,
         updated_at: account.updated_at,
@@ -434,7 +433,7 @@ pub async fn get_account_statistics(
     let by_type: Vec<TypeStatistics> = type_stats
         .into_iter()
         .map(|row| TypeStatistics {
-            account_type: row.account_type,
+            account_type: row.account_type.unwrap_or_else(|| "checking".to_string()),
             count: row.count.unwrap_or(0),
             total_balance: row.total_balance.unwrap_or(Decimal::ZERO),
         })

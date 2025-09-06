@@ -17,8 +17,8 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController(text: 'admin');
+  final _passwordController = TextEditingController(text: 'admin123');
   bool _isPasswordVisible = false;
   bool _isLoading = false;
   bool _rememberMe = false;
@@ -94,6 +94,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       // 保存登录凭据
       await _saveCredentials();
       
+      print('DEBUG: Starting login for ${_emailController.text.trim()}');
+      
       // 使用AuthController的login方法
       final success = await ref.read(authControllerProvider.notifier).login(
         email: _emailController.text.trim(),
@@ -101,9 +103,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         rememberMe: _rememberMe,
       );
       
+      print('DEBUG: Login result: $success');
+      
       if (mounted) {
         if (success) {
           final authState = ref.read(authControllerProvider);
+          print('DEBUG: Login successful, user: ${authState.user?.name}');
           
           // 登录成功，显示欢迎消息
           ScaffoldMessenger.of(context).showSnackBar(
@@ -114,9 +119,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           );
           
           // 直接跳转到仪表板
+          print('DEBUG: Navigating to dashboard');
           context.go(AppRoutes.dashboard);
         } else {
           final authState = ref.read(authControllerProvider);
+          print('DEBUG: Login failed: ${authState.errorMessage}');
           
           // 登录失败，显示错误消息
           ScaffoldMessenger.of(context).showSnackBar(
@@ -127,7 +134,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           );
         }
       }
-    } catch (e) {
+    } catch (e, stack) {
+      print('DEBUG: Login exception: $e');
+      print('DEBUG: Stack trace: $stack');
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -540,9 +550,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             const SizedBox(height: 4),
                             const Text(
                               '• 支持用户名或邮箱地址登录\n'
-                              '• 测试账户：demo / 密码：123456\n'
-                              '• 测试账户：test / 密码：Test123!\n'
-                              '• 管理账户：superadmin / 密码：admin123\n'
+                              '• 管理员账户：admin / 密码：admin123\n'
+                              '• 邮箱和密码请填写完整\n'
+                              '• 确保后端API服务正在运行\n'
                               '• 也可以使用微信登录（模拟）\n'
                               '• 记住功能：账号+密码（30天）或永久记住（测试用）',
                               style: TextStyle(fontSize: 12, color: Colors.blue),

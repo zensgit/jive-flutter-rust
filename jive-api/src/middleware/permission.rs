@@ -1,11 +1,9 @@
 use axum::{
-    extract::{Request, State},
+    extract::Request,
     http::StatusCode,
     middleware::Next,
-    response::{IntoResponse, Response},
-    Extension, Json,
+    response::Response,
 };
-use serde_json::json;
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
@@ -21,7 +19,7 @@ use crate::{
 pub async fn require_permission(
     required: Permission,
 ) -> impl Fn(Request, Next) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Response, StatusCode>> + Send>> + Clone {
-    move |mut request: Request, next: Next| {
+    move |request: Request, next: Next| {
         let required = required.clone();
         Box::pin(async move {
             // 从request extensions获取ServiceContext
@@ -44,7 +42,7 @@ pub async fn require_permission(
 pub async fn require_any_permission(
     permissions: Vec<Permission>,
 ) -> impl Fn(Request, Next) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Response, StatusCode>> + Send>> + Clone {
-    move |mut request: Request, next: Next| {
+    move |request: Request, next: Next| {
         let permissions = permissions.clone();
         Box::pin(async move {
             let context = request
@@ -68,7 +66,7 @@ pub async fn require_any_permission(
 pub async fn require_all_permissions(
     permissions: Vec<Permission>,
 ) -> impl Fn(Request, Next) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Response, StatusCode>> + Send>> + Clone {
-    move |mut request: Request, next: Next| {
+    move |request: Request, next: Next| {
         let permissions = permissions.clone();
         Box::pin(async move {
             let context = request
@@ -92,7 +90,7 @@ pub async fn require_all_permissions(
 pub async fn require_minimum_role(
     minimum_role: MemberRole,
 ) -> impl Fn(Request, Next) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Response, StatusCode>> + Send>> + Clone {
-    move |mut request: Request, next: Next| {
+    move |request: Request, next: Next| {
         let minimum_role = minimum_role.clone();
         Box::pin(async move {
             let context = request
@@ -126,7 +124,7 @@ pub async fn require_minimum_role(
 
 /// Owner专用中间件
 pub async fn require_owner(
-    mut request: Request,
+    request: Request,
     next: Next,
 ) -> Result<Response, StatusCode> {
     let context = request
@@ -143,7 +141,7 @@ pub async fn require_owner(
 
 /// Admin及以上中间件
 pub async fn require_admin_or_owner(
-    mut request: Request,
+    request: Request,
     next: Next,
 ) -> Result<Response, StatusCode> {
     let context = request

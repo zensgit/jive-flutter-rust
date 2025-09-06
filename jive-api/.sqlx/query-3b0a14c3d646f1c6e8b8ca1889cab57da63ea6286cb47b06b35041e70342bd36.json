@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        DELETE FROM ledgers l\n        USING family_members fm\n        WHERE l.id = $1 AND (l.family_id = fm.family_id AND fm.user_id = $2 OR l.family_id IS NULL)\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "3b0a14c3d646f1c6e8b8ca1889cab57da63ea6286cb47b06b35041e70342bd36"
+}

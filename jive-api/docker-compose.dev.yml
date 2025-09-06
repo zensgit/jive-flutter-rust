@@ -1,37 +1,62 @@
 version: '3.8'
 
 services:
-  # 开发环境的 Jive API 服务（支持热重载）
-  jive-api-dev:
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:16-alpine
+    container_name: jive-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: jive_money
+      POSTGRES_HOST_AUTH_METHOD: md5
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+    networks:
+      - jive-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: jive-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - jive-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Jive API 服务 (开发模式，使用本地代码)
+  jive-api:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: jive-api-dev
     restart: unless-stopped
     environment:
-      # 数据库配置
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/jive_money
-      DATABASE_MAX_CONNECTIONS: 10
-      # Redis配置
       REDIS_URL: redis://redis:6379
-      # API配置
       API_PORT: 8012
-      HOST: 0.0.0.0
-      RUST_LOG: debug
+      JWT_SECRET: your-secret-key-change-in-production
+      RUST_LOG: debug,sqlx=warn
       RUST_BACKTRACE: 1
-      # JWT配置
-      JWT_SECRET: dev-secret-key-for-development-only
-      JWT_EXPIRY: 86400
-      # CORS配置（开发环境允许所有源）
-      CORS_ORIGIN: "*"
-      CORS_ALLOW_CREDENTIALS: "false"
-      # 环境模式
-      ENVIRONMENT: development
-      # 开发模式
-      CARGO_WATCH: "true"
     ports:
       - "8012:8012"
-      - "9229:9229"  # 调试端口
     depends_on:
       postgres:
         condition: service_healthy
@@ -39,104 +64,26 @@ services:
         condition: service_healthy
     networks:
       - jive-network
-    volumes:
-      # 源码挂载（实现热重载）
-      - ./src:/app/src:rw
-      - ./Cargo.toml:/app/Cargo.toml:rw
-      - ./Cargo.lock:/app/Cargo.lock:rw
-      - ./.env:/app/.env:rw
-      - ./logs:/app/logs:rw
-      - ./static:/app/static:rw
-      # Cargo 缓存（加速构建）
-      - cargo-cache:/usr/local/cargo/registry
-      - cargo-target:/app/target
-    command: |
-      sh -c "
-        cargo install cargo-watch && 
-        cargo watch -x 'run --bin jive-api' -w src -w Cargo.toml
-      "
 
-  # 开发用数据库管理工具 (Adminer)
+  # Adminer (数据库管理工具) - 仅开发环境
   adminer:
-    image: adminer:4.8.1
-    container_name: jive-adminer
+    image: adminer
+    container_name: jive-adminer-dev
     restart: unless-stopped
     ports:
       - "8080:8080"
-    networks:
-      - jive-network
     environment:
       ADMINER_DEFAULT_SERVER: postgres
-      ADMINER_DESIGN: dracula
+      ADMINER_DESIGN: pepa-linha
     depends_on:
       - postgres
-
-  # Redis 管理工具 (RedisInsight)
-  redis-insight:
-    image: redislabs/redisinsight:latest
-    container_name: jive-redis-insight
-    restart: unless-stopped
-    ports:
-      - "8001:8001"
-    volumes:
-      - redis-insight-data:/db
     networks:
       - jive-network
-    depends_on:
-      - redis
-
-  # PostgreSQL 数据库
-  postgres:
-    image: postgres:15-alpine
-    container_name: jive-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: jive_money
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      PGDATA: /var/lib/postgresql/data/pgdata
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    networks:
-      - jive-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d jive_money"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Redis 缓存数据库
-  redis:
-    image: redis:7-alpine
-    container_name: jive-redis
-    restart: unless-stopped
-    command: redis-server --appendonly yes
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-    networks:
-      - jive-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-volumes:
-  cargo-cache:
-    driver: local
-  cargo-target:
-    driver: local
-  redis-insight-data:
-    driver: local
-  postgres-data:
-    driver: local
-  redis-data:
-    driver: local
 
 networks:
   jive-network:
     driver: bridge
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:

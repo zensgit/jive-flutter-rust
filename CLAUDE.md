@@ -41,29 +41,47 @@ cd ~/jive-project && claude
    git push
    ```
 
-## Docker 容器化部署（新增）
+## 🎯 最佳开发模式（推荐）
+
+### 智能混合模式 - 根据系统选择最佳方案
+
+#### 🍎 macOS (推荐本地API + Docker数据库)
+- ✅ **API本地运行** - 充分利用M4芯片性能
+- ✅ **数据库Docker** - 隔离依赖，易于管理
+- ✅ **调试方便** - 原生调试工具
+- ✅ **热重载快** - 无虚拟化开销
+
+#### 🐧 Ubuntu/Linux (推荐全Docker)
+- ✅ **全容器化** - 环境隔离完整
+- ✅ **资源优化** - Linux Docker性能好
+- ✅ **配置简单** - 一键启动所有服务
+- ✅ **易于维护** - 统一管理
 
 ### 支持平台
 - ✅ MacBook M4 (ARM64/Apple Silicon)
 - ✅ Ubuntu/Linux (AMD64/x86_64)
-- ✅ 跨平台开发和测试
+- ✅ 跨平台无缝切换
 
-### Docker 快速开始
+### 🚀 统一启动方式（推荐）
 ```bash
-# 1. 进入项目目录
+# 任何系统都执行：
+cd ~/jive-project && ./start-dev.sh
+```
+
+### Docker 服务详情
+```bash
+# 服务端口映射
+- API服务: localhost:8012 (Docker内部)
+- PostgreSQL: localhost:5433 → 5432 (容器内)
+- Redis: localhost:6380 → 6379 (容器内)
+- Adminer: localhost:8080
+
+# 管理命令
 cd ~/jive-project/jive-api
-
-# 2. 启动开发环境（热重载）
-./docker-run.sh dev
-
-# 3. 启动生产环境
-./docker-run.sh prod
-
-# 4. 查看日志
-./docker-run.sh logs -f
-
-# 5. 停止服务
-./docker-run.sh down
+docker-compose -f docker-compose.dev.yml up -d    # 启动
+docker-compose -f docker-compose.dev.yml down     # 停止
+docker-compose -f docker-compose.dev.yml logs -f  # 日志
+docker-compose -f docker-compose.dev.yml restart  # 重启
 ```
 
 ### Docker 服务端口

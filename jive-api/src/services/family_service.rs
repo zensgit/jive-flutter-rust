@@ -3,8 +3,7 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::models::{
-    family::{CreateFamilyRequest, Family, FamilySettings, UpdateFamilyRequest},
-    membership::FamilyMember,
+    family::{CreateFamilyRequest, Family, UpdateFamilyRequest},
     permission::{MemberRole, Permission},
 };
 

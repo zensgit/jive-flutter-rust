@@ -139,11 +139,11 @@ pub fn get_current_user(request: &Request) -> Option<Claims> {
 
 /// 增强的认证中间件 - 验证JWT并提取用户信息
 pub async fn require_auth(
-    State(state): State<crate::AppState>,
+    State(_state): State<crate::AppState>,
     mut request: Request,
     next: Next,
 ) -> Result<Response, StatusCode> {
-    use uuid::Uuid;
+    
     
     // 从Authorization header获取token
     let token = request

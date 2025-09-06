@@ -16,7 +16,7 @@ COPY web ./web
 COPY assets ./assets
 
 # Build for web
-RUN flutter build web --release --web-renderer html
+RUN flutter build web --release --no-tree-shake-icons
 
 # Production Web Server
 FROM nginx:alpine AS production

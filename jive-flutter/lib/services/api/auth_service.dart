@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import '../../core/network/http_client.dart';
 import '../../core/config/api_config.dart';
 import '../../core/storage/token_storage.dart';
@@ -7,29 +8,43 @@ import '../../models/user.dart';
 class AuthService {
   final _client = HttpClient.instance;
   
-  /// 登录
+  /// 登录方法 - login
   Future<AuthResponse> login({
     required String email,
     required String password,
     bool rememberMe = false,
   }) async {
+    print('DEBUG AuthService.login: Called with email=$email');
     try {
-      final response = await _client.post(
+      print('DEBUG AuthService.login: About to make POST request to ${Endpoints.login}');
+      final response = await _client.dio.post(
         Endpoints.login,
         data: {
           'email': email,
           'password': password,
           'remember_me': rememberMe,
         },
+        options: Options(
+          headers: {
+            'Origin': 'http://localhost:3021',
+            'Content-Type': 'application/json',
+          },
+        ),
       );
       
       // 处理我们API的响应格式
       final responseData = response.data;
+      print('DEBUG AuthService: Response data = $responseData');
+      
       if (responseData['success'] != true) {
+        print('DEBUG AuthService: Success field is not true: ${responseData['success']}');
         throw ApiException(responseData['message'] ?? '登录失败');
       }
       
+      print('DEBUG AuthService: Creating AuthResponse from JSON');
       final authResponse = AuthResponse.fromJson(responseData);
+      print('DEBUG AuthService: AuthResponse user = ${authResponse.user}');
+      print('DEBUG AuthService: AuthResponse token = ${authResponse.accessToken?.substring(0, 20) ?? 'null'}...');
       
       // 保存令牌
       await TokenStorage.saveTokens(
@@ -52,6 +67,17 @@ class AuthService {
       
       return authResponse;
     } catch (e) {
+      print('DEBUG AuthService: Login error caught: $e');
+      print('DEBUG AuthService: Error type: ${e.runtimeType}');
+      if (e is DioException) {
+        print('DEBUG AuthService: DioException type: ${e.type}');
+        print('DEBUG AuthService: DioException message: ${e.message}');
+        print('DEBUG AuthService: Response: ${e.response}');
+        print('DEBUG AuthService: Response data: ${e.response?.data}');
+        print('DEBUG AuthService: Response status: ${e.response?.statusCode}');
+        print('DEBUG AuthService: Request data: ${e.requestOptions.data}');
+        print('DEBUG AuthService: Request URL: ${e.requestOptions.uri}');
+      }
       throw _handleError(e);
     }
   }

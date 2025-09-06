@@ -8,6 +8,7 @@ use axum::{
     Extension,
 };
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use sqlx::PgPool;
 use uuid::Uuid;
 use chrono::{DateTime, Utc};
@@ -170,7 +171,7 @@ pub async fn register(
 pub async fn login(
     State(pool): State<PgPool>,
     Json(req): Json<LoginRequest>,
-) -> ApiResult<Json<LoginResponse>> {
+) -> ApiResult<Json<Value>> {
     // 查找用户
     let row = sqlx::query(
         r#"
@@ -207,13 +208,22 @@ pub async fn login(
     }
     
     // 验证密码
+    println!("DEBUG: Attempting to verify password for user: {}", user.email);
+    println!("DEBUG: Password hash from DB: {}", &user.password_hash[..50.min(user.password_hash.len())]);
+    
     let parsed_hash = PasswordHash::new(&user.password_hash)
-        .map_err(|_| ApiError::InternalServerError)?;
+        .map_err(|e| {
+            println!("DEBUG: Failed to parse password hash: {:?}", e);
+            ApiError::InternalServerError
+        })?;
     
     let argon2 = Argon2::default();
     argon2
         .verify_password(req.password.as_bytes(), &parsed_hash)
-        .map_err(|_| ApiError::Unauthorized)?;
+        .map_err(|e| {
+            println!("DEBUG: Password verification failed: {:?}", e);
+            ApiError::Unauthorized
+        })?;
     
     // 获取用户的family_id（如果有）
     let family_row = sqlx::query(
@@ -243,23 +253,42 @@ pub async fn login(
     let claims = Claims::new(user.id, user.email.clone(), family_id);
     let token = claims.to_token()?;
     
-    Ok(Json(LoginResponse {
-        token,
-        user_id: user.id,
-        email: user.email,
-        family_id,
-    }))
+    // 构建用户响应对象以兼容Flutter
+    let user_response = serde_json::json!({
+        "id": user.id.to_string(),
+        "email": user.email,
+        "name": user.name,
+        "family_id": family_id,
+        "is_active": user.is_active,
+        "email_verified": user.is_verified,
+        "phone_verified": false,
+        "role": "user",
+        "created_at": user.created_at.to_rfc3339(),
+        "updated_at": user.updated_at.to_rfc3339(),
+    });
+    
+    // 返回兼容Flutter的响应格式 - 包含完整的user对象
+    let response = serde_json::json!({
+        "success": true,
+        "token": token,
+        "user": user_response,
+        "user_id": user.id,
+        "email": user.email, 
+        "family_id": family_id,
+    });
+    
+    Ok(Json(response))
 }
 
 /// 刷新令牌
 pub async fn refresh_token(
-    Extension(claims): Extension<Claims>,
+    claims: Claims,
     State(pool): State<PgPool>,
 ) -> ApiResult<Json<LoginResponse>> {
     let user_id = claims.user_id()?;
     
     // 验证用户是否仍然有效
-    let user = sqlx::query("SELECT email, family_id, is_active FROM users WHERE id = $1")
+    let user = sqlx::query("SELECT email, current_family_id, is_active FROM users WHERE id = $1")
         .bind(user_id)
         .fetch_optional(&pool)
         .await
@@ -274,7 +303,7 @@ pub async fn refresh_token(
     }
     
     let email: String = user.try_get("email").map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    let family_id: Option<Uuid> = user.try_get("family_id").ok();
+    let family_id: Option<Uuid> = user.try_get("current_family_id").ok();
     
     // 生成新令牌
     let new_claims = Claims::new(user_id, email.clone(), family_id);
@@ -290,7 +319,7 @@ pub async fn refresh_token(
 
 /// 获取当前用户信息
 pub async fn get_current_user(
-    Extension(claims): Extension<Claims>,
+    claims: Claims,
     State(pool): State<PgPool>,
 ) -> ApiResult<Json<UserProfile>> {
     let user_id = claims.user_id()?;
@@ -299,7 +328,7 @@ pub async fn get_current_user(
         r#"
         SELECT u.*, f.name as family_name
         FROM users u
-        LEFT JOIN families f ON u.family_id = f.id
+        LEFT JOIN families f ON u.current_family_id = f.id
         WHERE u.id = $1
         "#
     )
@@ -315,16 +344,16 @@ pub async fn get_current_user(
         id: user.try_get("id").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
         email: user.try_get("email").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
         name: user.try_get("name").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
-        family_id: user.try_get("family_id").ok(),
+        family_id: user.try_get("current_family_id").ok(),
         family_name: user.try_get("family_name").ok(),
-        is_verified: user.try_get("is_verified").unwrap_or(false),
+        is_verified: user.try_get("email_verified").unwrap_or(false),
         created_at: user.try_get("created_at").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
     }))
 }
 
 /// 更新用户信息
 pub async fn update_user(
-    Extension(claims): Extension<Claims>,
+    claims: Claims,
     State(pool): State<PgPool>,
     Json(req): Json<UpdateUserRequest>,
 ) -> ApiResult<StatusCode> {
@@ -346,7 +375,7 @@ pub async fn update_user(
 
 /// 修改密码
 pub async fn change_password(
-    Extension(claims): Extension<Claims>,
+    claims: Claims,
     State(pool): State<PgPool>,
     Json(req): Json<ChangePasswordRequest>,
 ) -> ApiResult<StatusCode> {
@@ -402,7 +431,7 @@ pub async fn get_user_context(
     
     match auth_service.get_user_context(user_id).await {
         Ok(context) => Ok(Json(context)),
-        Err(e) => {
+        Err(_e) => {
             Err(ApiError::InternalServerError)
         }
     }

@@ -1,6 +1,6 @@
 # 多阶段构建，支持 ARM64 (M4 Mac) 和 AMD64 (Ubuntu) 架构
 # 构建阶段
-FROM --platform=$BUILDPLATFORM rust:latest as builder
+FROM rust:latest as builder
 
 # 安装构建依赖
 RUN apt-get update && apt-get install -y \
@@ -16,25 +16,21 @@ WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 
 # 创建虚拟文件以缓存依赖
-RUN mkdir src && \
-    echo "fn main() {}" > src/main.rs && \
-    echo "fn main() {}" > src/main_simple.rs && \
-    echo "fn main() {}" > src/main_simple_ws.rs && \
-    echo "fn main() {}" > src/main_with_ws.rs && \
-    cargo build --release --bin jive-api && \
-    rm -rf src
+RUN mkdir src &&     echo "fn main() {}" > src/main.rs &&     echo "" > src/lib.rs &&     echo "fn main() {}" > src/main_simple.rs &&     echo "fn main() {}" > src/main_simple_ws.rs &&     echo "fn main() {}" > src/main_with_ws.rs &&     cargo build --release --bin jive-api &&     rm -rf src
 
-# 复制源代码
+# 复制源代码和SQLx缓存
 COPY src ./src
 COPY .env .env.example ./
+# 复制SQLx离线缓存（如果存在）
+COPY .sqlx ./.sqlx
 
-# 构建应用（禁用SQLx编译时检查）
-ENV SQLX_OFFLINE=false
-RUN touch src/main.rs && \
-    cargo build --release --bin jive-api
+# 构建应用（使用SQLx离线模式）
+ENV SQLX_OFFLINE=true
+RUN cargo build --release --bin jive-api || \
+    (echo "如果编译失败，请先运行: cargo sqlx prepare" && exit 1)
 
 # 运行阶段
-FROM --platform=$TARGETPLATFORM debian:bookworm-slim
+FROM debian:bookworm-slim
 
 # 安装运行时依赖
 RUN apt-get update && apt-get install -y \

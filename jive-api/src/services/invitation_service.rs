@@ -3,8 +3,8 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::models::{
-    invitation::{CreateInvitationRequest, Invitation, InvitationResponse, InvitationStatus},
-    permission::{MemberRole, Permission},
+    invitation::{CreateInvitationRequest, Invitation, InvitationResponse},
+    permission::Permission,
 };
 
 use super::{ServiceContext, ServiceError};

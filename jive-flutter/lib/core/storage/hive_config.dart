@@ -54,13 +54,13 @@ class HiveConfig {
     
     // 打开常用的 Box
     await Future.wait([
-      Hive.openBox(userBox),
+      Hive.openBox<User>(userBox),
       Hive.openBox(settingsBox), 
       Hive.openBox(cacheBox),
-      Hive.openBox(accountsBox),
-      Hive.openBox(transactionsBox),
-      Hive.openBox(ledgersBox),
-      Hive.openBox(categoriesBox),
+      Hive.openBox<Account>(accountsBox),
+      Hive.openBox<Transaction>(transactionsBox),
+      Hive.openBox<Ledger>(ledgersBox),
+      Hive.openBox<TransactionCategory>(categoriesBox),
     ]);
   }
   

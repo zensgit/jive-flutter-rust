@@ -1,3 +1,36 @@
+-- 创建默认用户和Family
+-- 注意: password_hash 是 'admin123' 的 Argon2 哈希值.
+-- 在生产环境中, 您应该使用安全的哈希生成方法.
+-- 例如:
+-- let salt = SaltString::generate(&mut OsRng);
+-- let password_hash = Argon2::default().hash_password("admin123".as_bytes(), &salt).unwrap().to_string();
+DO $
+DECLARE
+    superadmin_id UUID := '00000000-0000-0000-0000-000000000001';
+    superadmin_family_id UUID := '00000000-0000-0000-0000-000000000001';
+    superadmin_ledger_id UUID := '00000000-0000-0000-0000-000000000001';
+BEGIN
+    -- 创建 Family
+    INSERT INTO families (id, name, created_at, updated_at)
+    VALUES (superadmin_family_id, 'SuperAdmin Family', NOW(), NOW())
+    ON CONFLICT (id) DO NOTHING;
+
+    -- 创建 User
+    INSERT INTO users (id, email, name, password_hash, family_id, is_active, is_verified, created_at, updated_at)
+    VALUES (superadmin_id, 'superadmin', 'Super Admin', '$argon2id$v=19$m=19456,t=2,p=1$RA+i2GXLhD7d/gWn4de2GA$Vqj2isyR5cy5fbrGf1tB+iYpB2k4RIL3+HkK5j4g5s4', superadmin_family_id, true, true, NOW(), NOW())
+    ON CONFLICT (id) DO NOTHING;
+
+    -- 创建 Ledger
+    INSERT INTO ledgers (id, family_id, name, currency, created_at, updated_at)
+    VALUES (superadmin_ledger_id, superadmin_family_id, '默认账本', 'CNY', NOW(), NOW())
+    ON CONFLICT (id) DO NOTHING;
+    
+    -- 将用户与 Family 关联
+    INSERT INTO family_members (user_id, family_id, role, created_at, updated_at)
+    VALUES (superadmin_id, superadmin_family_id, 'owner', NOW(), NOW())
+    ON CONFLICT (user_id, family_id) DO NOTHING;
+END $;
+
 -- 清理现有测试数据
 TRUNCATE TABLE rule_matches CASCADE;
 TRUNCATE TABLE rules CASCADE;

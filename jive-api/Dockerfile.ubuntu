@@ -17,14 +17,14 @@ COPY Cargo.toml Cargo.lock ./
 COPY src ./src
 COPY .env.example ./
 
+# 复制SQLx离线缓存（如果存在）
+COPY .sqlx ./.sqlx
+
 # Ubuntu上构建时的环境变量
-# 如果有本地PostgreSQL，使用它；否则禁用SQLx检查
-ENV SQLX_OFFLINE=false
+ENV SQLX_OFFLINE=true
 
 # 构建应用
-RUN cargo build --release --bin jive-api || \
-    (echo "如果编译失败，尝试设置SQLX_OFFLINE=true" && \
-     SQLX_OFFLINE=true cargo build --release --bin jive-api)
+RUN cargo build --release --bin jive-api
 
 # 运行阶段
 FROM debian:bookworm-slim

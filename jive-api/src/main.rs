@@ -4,47 +4,31 @@
 //! 监听地址: 127.0.0.1:8012
 
 use axum::{
-    extract::FromRef,
-    http::{header, Method, StatusCode},
+    http::StatusCode,
     response::Json,
     routing::{get, post, put, delete},
     serve,
     Router,
 };
 use serde_json::json;
-use sqlx::{postgres::PgPoolOptions, PgPool};
+use sqlx::postgres::PgPoolOptions;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
 use tower::ServiceBuilder;
-use tower_http::{
-    cors::{Any, CorsLayer},
-    trace::TraceLayer,
-};
+use tower_http::trace::TraceLayer;
 use tracing::{info, warn, error};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use jive_money_api::*;
 use jive_money_api::handlers::template_handler::*;
 use jive_money_api::handlers::accounts::*;
 use jive_money_api::handlers::transactions::*;
 use jive_money_api::handlers::payees::*;
 use jive_money_api::handlers::rules::*;
 use jive_money_api::handlers::auth as auth_handlers;
+use jive_money_api::handlers::ledgers::*;
 use jive_money_api::websocket::{WsConnectionManager, handle_websocket};
+use jive_money_api::middleware::cors::create_cors_layer;
 use jive_money_api::AppState;
-
-// 实现FromRef trait以便子状态可以从AppState中提取
-impl FromRef<AppState> for PgPool {
-    fn from_ref(app_state: &AppState) -> PgPool {
-        app_state.pool.clone()
-    }
-}
-
-impl FromRef<AppState> for std::sync::Arc<WsConnectionManager> {
-    fn from_ref(app_state: &AppState) -> std::sync::Arc<WsConnectionManager> {
-        app_state.ws_manager.clone()
-    }
-}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -102,11 +86,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         ws_manager: ws_manager.clone(),
     };
 
-    // CORS配置
-    let cors = CorsLayer::new()
-        .allow_origin(Any)
-        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
-        .allow_headers([header::CONTENT_TYPE, header::AUTHORIZATION]);
+    // 使用CORS中间件
+    let cors = create_cors_layer();
 
     // 路由配置
     let app = Router::new()
@@ -164,6 +145,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/auth/register", post(auth_handlers::register))
         .route("/api/v1/auth/login", post(auth_handlers::login))
         .route("/api/v1/auth/user", get(auth_handlers::get_current_user))
+        .route("/api/v1/auth/profile", get(auth_handlers::get_current_user))
+        .route("/api/v1/auth/refresh", post(auth_handlers::refresh_token))
+        
+        // 账本API (Ledgers)
+        .route("/api/v1/ledgers", get(list_ledgers))
+        .route("/api/v1/ledgers", post(create_ledger))
+        .route("/api/v1/ledgers/current", get(get_current_ledger))
+        .route("/api/v1/ledgers/:id", get(get_ledger))
+        .route("/api/v1/ledgers/:id", put(update_ledger))
+        .route("/api/v1/ledgers/:id", delete(delete_ledger))
         
         // WebSocket端点
         .route("/ws", get(handle_websocket))
@@ -179,8 +170,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with_state(app_state);
 
     // 启动服务器
+    let host = std::env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
     let port = std::env::var("API_PORT").unwrap_or_else(|_| "8012".to_string());
-    let addr: SocketAddr = format!("127.0.0.1:{}", port).parse()?;
+    let addr: SocketAddr = format!("{}:{}", host, port).parse()?;
     let listener = TcpListener::bind(addr).await?;
     
     info!("🌐 Server running at http://{}", addr);

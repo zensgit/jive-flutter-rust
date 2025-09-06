@@ -4,7 +4,7 @@ use axum::{
     response::Json,
     Extension,
 };
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use uuid::Uuid;
 
 use crate::models::invitation::{AcceptInvitationRequest, CreateInvitationRequest, InvitationResponse};

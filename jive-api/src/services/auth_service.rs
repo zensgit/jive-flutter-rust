@@ -317,7 +317,7 @@ impl AuthService {
         argon2
             .hash_password(password.as_bytes(), &salt)
             .map(|hash| hash.to_string())
-            .map_err(|e| ServiceError::InternalError)
+            .map_err(|_e| ServiceError::InternalError)
     }
     
     fn verify_password(&self, password: &str, hash: &str) -> Result<(), ServiceError> {

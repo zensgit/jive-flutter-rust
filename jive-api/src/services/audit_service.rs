@@ -102,7 +102,7 @@ impl AuditService {
         if let Some(to_date) = filter.to_date {
             query.push_str(&format!(" AND created_at <= ${}", bind_idx));
             binds.push(to_date.to_rfc3339());
-            bind_idx += 1;
+            // bind_idx += 1;  // Last increment not needed
         }
         
         query.push_str(" ORDER BY created_at DESC");

@@ -1,7 +1,7 @@
 use axum::{
     extract::{Path, Query, State},
     http::{header, StatusCode},
-    response::{IntoResponse, Response},
+    response::Response,
     Extension, Json,
 };
 use chrono::{DateTime, Utc};
@@ -9,7 +9,7 @@ use serde::Deserialize;
 use uuid::Uuid;
 
 use crate::models::audit::{AuditLog, AuditLogFilter};
-use crate::services::{AuditService, ServiceContext, ServiceError};
+use crate::services::{AuditService, ServiceContext};
 use crate::AppState;
 
 use super::family_handler::ApiResponse;
