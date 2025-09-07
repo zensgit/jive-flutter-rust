@@ -115,41 +115,76 @@ class Ledger {
   }
 }
 
+// 账本角色枚举
+enum LedgerRole {
+  owner('owner', '所有者'),
+  admin('admin', '管理员'),
+  editor('editor', '编辑者'),
+  viewer('viewer', '查看者');
+  
+  final String value;
+  final String label;
+  
+  const LedgerRole(this.value, this.label);
+  
+  static LedgerRole fromString(String? value) {
+    return LedgerRole.values.firstWhere(
+      (role) => role.value == value,
+      orElse: () => LedgerRole.viewer,
+    );
+  }
+}
+
 // 账本统计信息
 class LedgerStatistics {
   final String ledgerId;
+  final int accountCount;
+  final int transactionCount;
+  final double totalAssets;
+  final double totalLiabilities;
+  final double netWorth;
   final double totalIncome;
   final double totalExpense;
   final double balance;
-  final int transactionCount;
-  final int accountCount;
-  final DateTime? lastTransactionDate;
+  final Map<String, double> accountTypeBreakdown;
+  final Map<String, double> monthlyTrend;
   final Map<String, double>? categoryBreakdown;
-
+  final DateTime? lastTransactionDate;
+  
   LedgerStatistics({
     required this.ledgerId,
+    required this.accountCount,
+    required this.transactionCount,
+    required this.totalAssets,
+    required this.totalLiabilities,
+    required this.netWorth,
     required this.totalIncome,
     required this.totalExpense,
     required this.balance,
-    required this.transactionCount,
-    required this.accountCount,
-    this.lastTransactionDate,
+    required this.accountTypeBreakdown,
+    required this.monthlyTrend,
     this.categoryBreakdown,
+    this.lastTransactionDate,
   });
-
+  
   factory LedgerStatistics.fromJson(Map<String, dynamic> json) {
     return LedgerStatistics(
       ledgerId: json['ledger_id'],
+      accountCount: json['account_count'] ?? 0,
+      transactionCount: json['transaction_count'] ?? 0,
+      totalAssets: (json['total_assets'] ?? 0).toDouble(),
+      totalLiabilities: (json['total_liabilities'] ?? 0).toDouble(),
+      netWorth: (json['net_worth'] ?? 0).toDouble(),
       totalIncome: (json['total_income'] ?? 0).toDouble(),
       totalExpense: (json['total_expense'] ?? 0).toDouble(),
       balance: (json['balance'] ?? 0).toDouble(),
-      transactionCount: json['transaction_count'] ?? 0,
-      accountCount: json['account_count'] ?? 0,
-      lastTransactionDate: json['last_transaction_date'] != null
-          ? DateTime.parse(json['last_transaction_date'])
-          : null,
+      accountTypeBreakdown: Map<String, double>.from(json['account_type_breakdown'] ?? {}),
+      monthlyTrend: Map<String, double>.from(json['monthly_trend'] ?? {}),
       categoryBreakdown: json['category_breakdown'] != null
           ? Map<String, double>.from(json['category_breakdown'])
+          : null,
+      lastTransactionDate: json['last_transaction_date'] != null
+          ? DateTime.parse(json['last_transaction_date'])
           : null,
     );
   }
@@ -158,29 +193,55 @@ class LedgerStatistics {
 // 账本成员
 class LedgerMember {
   final String userId;
-  final String userName;
-  final String? userEmail;
-  final String? userAvatar;
-  final String role; // owner, editor, viewer
+  final String name;
+  final String email;
+  final String? avatar;
+  final LedgerRole role;
+  final Map<String, bool> permissions;
   final DateTime joinedAt;
-
+  final DateTime? lastAccessedAt;
+  
+  // 兼容旧版本的别名getters
+  String get userName => name;
+  String? get userEmail => email;
+  String? get userAvatar => avatar;
+  
   LedgerMember({
     required this.userId,
-    required this.userName,
-    this.userEmail,
-    this.userAvatar,
+    required this.name,
+    required this.email,
+    this.avatar,
     required this.role,
+    required this.permissions,
     required this.joinedAt,
+    this.lastAccessedAt,
   });
-
+  
   factory LedgerMember.fromJson(Map<String, dynamic> json) {
     return LedgerMember(
       userId: json['user_id'],
-      userName: json['user_name'],
-      userEmail: json['user_email'],
-      userAvatar: json['user_avatar'],
-      role: json['role'],
+      name: json['name'] ?? json['user_name'] ?? '',
+      email: json['email'] ?? json['user_email'] ?? '',
+      avatar: json['avatar'] ?? json['user_avatar'],
+      role: LedgerRole.fromString(json['role']),
+      permissions: Map<String, bool>.from(json['permissions'] ?? {}),
       joinedAt: DateTime.parse(json['joined_at']),
+      lastAccessedAt: json['last_accessed_at'] != null
+          ? DateTime.parse(json['last_accessed_at'])
+          : null,
     );
+  }
+  
+  Map<String, dynamic> toJson() {
+    return {
+      'user_id': userId,
+      'name': name,
+      'email': email,
+      'avatar': avatar,
+      'role': role.value,
+      'permissions': permissions,
+      'joined_at': joinedAt.toIso8601String(),
+      'last_accessed_at': lastAccessedAt?.toIso8601String(),
+    };
   }
 }

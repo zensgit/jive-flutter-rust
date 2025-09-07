@@ -7,8 +7,6 @@ use uuid::Uuid;
 pub struct Family {
     pub id: Uuid,
     pub name: String,
-    pub owner_id: Uuid,
-    pub invite_code: Option<String>,
     #[sqlx(default)]
     pub currency: String,
     #[sqlx(default)]
@@ -16,7 +14,15 @@ pub struct Family {
     #[sqlx(default)]
     pub locale: String,
     #[sqlx(default)]
-    pub date_format: String,
+    pub fiscal_year_start: Option<i32>,
+    #[sqlx(default)]
+    pub invite_code: Option<String>,
+    #[sqlx(default)]
+    pub settings: Option<serde_json::Value>,
+    #[sqlx(default)]
+    pub member_count: Option<i32>,
+    #[sqlx(default)]
+    pub deleted_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -42,7 +48,7 @@ impl Default for FamilySettings {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateFamilyRequest {
-    pub name: String,
+    pub name: Option<String>,
     pub currency: Option<String>,
     pub timezone: Option<String>,
     pub locale: Option<String>,
@@ -58,17 +64,19 @@ pub struct UpdateFamilyRequest {
 }
 
 impl Family {
-    pub fn new(name: String, owner_id: Uuid) -> Self {
+    pub fn new(name: String) -> Self {
         let now = Utc::now();
         Self {
             id: Uuid::new_v4(),
             name,
-            owner_id,
-            invite_code: Some(Self::generate_invite_code()),
             currency: "CNY".to_string(),
             timezone: "Asia/Shanghai".to_string(),
             locale: "zh-CN".to_string(),
-            date_format: "YYYY-MM-DD".to_string(),
+            fiscal_year_start: Some(1),
+            invite_code: Some(Self::generate_invite_code()),
+            settings: Some(serde_json::json!({})),
+            member_count: Some(1),
+            deleted_at: None,
             created_at: now,
             updated_at: now,
         }
@@ -92,7 +100,7 @@ impl Family {
             currency: self.currency.clone(),
             timezone: self.timezone.clone(),
             locale: self.locale.clone(),
-            date_format: self.date_format.clone(),
+            date_format: "YYYY-MM-DD".to_string(),
         }
     }
 
@@ -100,21 +108,6 @@ impl Family {
         self.currency = settings.currency;
         self.timezone = settings.timezone;
         self.locale = settings.locale;
-        self.date_format = settings.date_format;
-        self.updated_at = Utc::now();
-    }
-
-    pub fn can_be_deleted_by(&self, user_id: Uuid) -> bool {
-        self.owner_id == user_id
-    }
-
-    pub fn transfer_ownership(&mut self, new_owner_id: Uuid) {
-        self.owner_id = new_owner_id;
-        self.updated_at = Utc::now();
-    }
-
-    pub fn regenerate_invite_code(&mut self) {
-        self.invite_code = Some(Self::generate_invite_code());
         self.updated_at = Utc::now();
     }
 }
@@ -125,13 +118,12 @@ mod tests {
 
     #[test]
     fn test_new_family() {
-        let owner_id = Uuid::new_v4();
-        let family = Family::new("Test Family".to_string(), owner_id);
+        let family = Family::new("Test Family".to_string());
         
         assert_eq!(family.name, "Test Family");
-        assert_eq!(family.owner_id, owner_id);
-        assert!(family.invite_code.is_some());
         assert_eq!(family.currency, "CNY");
+        assert_eq!(family.timezone, "Asia/Shanghai");
+        assert_eq!(family.locale, "zh-CN");
     }
 
     #[test]
@@ -139,15 +131,5 @@ mod tests {
         let code = Family::generate_invite_code();
         assert_eq!(code.len(), 8);
         assert!(code.chars().all(|c| c.is_ascii_alphanumeric()));
-    }
-
-    #[test]
-    fn test_can_be_deleted_by() {
-        let owner_id = Uuid::new_v4();
-        let other_id = Uuid::new_v4();
-        let family = Family::new("Test Family".to_string(), owner_id);
-        
-        assert!(family.can_be_deleted_by(owner_id));
-        assert!(!family.can_be_deleted_by(other_id));
     }
 }

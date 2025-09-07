@@ -13,6 +13,7 @@ use crate::models::{
 };
 use crate::services::{MemberService, ServiceContext, ServiceError};
 use crate::AppState;
+use sqlx;
 
 use super::family_handler::ApiResponse;
 
@@ -39,36 +40,86 @@ pub struct UpdatePermissionsRequest {
 pub async fn get_family_members(
     State(state): State<AppState>,
     Path(family_id): Path<Uuid>,
-    Extension(ctx): Extension<ServiceContext>,
-) -> Result<Json<ApiResponse<Vec<MemberWithUserInfo>>>, StatusCode> {
-    if ctx.family_id != family_id {
+    claims: crate::auth::Claims,
+) -> Result<Json<ApiResponse<Vec<serde_json::Value>>>, StatusCode> {
+    let user_id = match claims.user_id() {
+        Ok(id) => id,
+        Err(_) => return Err(StatusCode::UNAUTHORIZED),
+    };
+    
+    // Verify user is member of the family
+    let is_member: bool = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM family_members WHERE family_id = $1 AND user_id = $2)"
+    )
+    .bind(family_id)
+    .bind(user_id)
+    .fetch_one(&state.pool)
+    .await
+    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    
+    if !is_member {
         return Err(StatusCode::FORBIDDEN);
     }
     
-    let service = MemberService::new(state.pool.clone());
+    // Get all members with user info
+    let members: Vec<serde_json::Value> = sqlx::query_as::<_, (Uuid, String, String, chrono::DateTime<chrono::Utc>, Option<String>, Option<String>)>(
+        r#"
+        SELECT 
+            fm.user_id,
+            fm.role,
+            COALESCE(u.full_name, u.email) as display_name,
+            fm.joined_at,
+            u.email,
+            u.avatar_url
+        FROM family_members fm
+        JOIN users u ON fm.user_id = u.id
+        WHERE fm.family_id = $1
+        ORDER BY fm.joined_at ASC
+        "#
+    )
+    .bind(family_id)
+    .fetch_all(&state.pool)
+    .await
+    .map_err(|e| {
+        eprintln!("Error getting family members: {:?}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?
+    .into_iter()
+    .map(|(user_id, role, display_name, joined_at, email, avatar_url)| {
+        serde_json::json!({
+            "user_id": user_id,
+            "role": role,
+            "display_name": display_name,
+            "joined_at": joined_at,
+            "email": email,
+            "avatar_url": avatar_url
+        })
+    })
+    .collect();
     
-    match service.get_family_members(&ctx).await {
-        Ok(members) => Ok(Json(ApiResponse::success(members))),
-        Err(ServiceError::PermissionDenied) => Err(StatusCode::FORBIDDEN),
-        Err(e) => {
-            eprintln!("Error getting members: {:?}", e);
-            Err(StatusCode::INTERNAL_SERVER_ERROR)
-        }
-    }
+    Ok(Json(ApiResponse::success(members)))
 }
 
 // Add member to family
 pub async fn add_member(
     State(state): State<AppState>,
     Path(family_id): Path<Uuid>,
-    Extension(ctx): Extension<ServiceContext>,
+    claims: crate::auth::Claims,
     Json(request): Json<AddMemberRequest>,
 ) -> Result<Json<ApiResponse<FamilyMember>>, StatusCode> {
-    if ctx.family_id != family_id {
-        return Err(StatusCode::FORBIDDEN);
-    }
+    let user_id = match claims.user_id() {
+        Ok(id) => id,
+        Err(_) => return Err(StatusCode::UNAUTHORIZED),
+    };
     
+    // Verify user is member of the family and get their context
     let service = MemberService::new(state.pool.clone());
+    
+    // Get member context to check permissions
+    let ctx = match service.get_member_context(user_id, family_id).await {
+        Ok(context) => context,
+        Err(_) => return Err(StatusCode::FORBIDDEN),
+    };
     
     match service.add_member(&ctx, request.user_id, request.role).await {
         Ok(member) => Ok(Json(ApiResponse::success(member))),
@@ -84,16 +135,23 @@ pub async fn add_member(
 // Remove member from family
 pub async fn remove_member(
     State(state): State<AppState>,
-    Path((family_id, user_id)): Path<(Uuid, Uuid)>,
-    Extension(ctx): Extension<ServiceContext>,
+    Path((family_id, member_id)): Path<(Uuid, Uuid)>,
+    claims: crate::auth::Claims,
 ) -> Result<StatusCode, StatusCode> {
-    if ctx.family_id != family_id {
-        return Err(StatusCode::FORBIDDEN);
-    }
+    let user_id = match claims.user_id() {
+        Ok(id) => id,
+        Err(_) => return Err(StatusCode::UNAUTHORIZED),
+    };
     
     let service = MemberService::new(state.pool.clone());
     
-    match service.remove_member(&ctx, user_id).await {
+    // Get member context to check permissions
+    let ctx = match service.get_member_context(user_id, family_id).await {
+        Ok(context) => context,
+        Err(_) => return Err(StatusCode::FORBIDDEN),
+    };
+    
+    match service.remove_member(&ctx, member_id).await {
         Ok(()) => Ok(StatusCode::NO_CONTENT),
         Err(ServiceError::PermissionDenied) => Err(StatusCode::FORBIDDEN),
         Err(ServiceError::NotFound { .. }) => Err(StatusCode::NOT_FOUND),
@@ -108,17 +166,24 @@ pub async fn remove_member(
 // Update member role
 pub async fn update_member_role(
     State(state): State<AppState>,
-    Path((family_id, user_id)): Path<(Uuid, Uuid)>,
-    Extension(ctx): Extension<ServiceContext>,
+    Path((family_id, member_id)): Path<(Uuid, Uuid)>,
+    claims: crate::auth::Claims,
     Json(request): Json<UpdateRoleRequest>,
 ) -> Result<Json<ApiResponse<FamilyMember>>, StatusCode> {
-    if ctx.family_id != family_id {
-        return Err(StatusCode::FORBIDDEN);
-    }
+    let user_id = match claims.user_id() {
+        Ok(id) => id,
+        Err(_) => return Err(StatusCode::UNAUTHORIZED),
+    };
     
     let service = MemberService::new(state.pool.clone());
     
-    match service.update_member_role(&ctx, user_id, request.role).await {
+    // Get member context to check permissions
+    let ctx = match service.get_member_context(user_id, family_id).await {
+        Ok(context) => context,
+        Err(_) => return Err(StatusCode::FORBIDDEN),
+    };
+    
+    match service.update_member_role(&ctx, member_id, request.role).await {
         Ok(member) => Ok(Json(ApiResponse::success(member))),
         Err(ServiceError::PermissionDenied) => Err(StatusCode::FORBIDDEN),
         Err(ServiceError::NotFound { .. }) => Err(StatusCode::NOT_FOUND),
@@ -133,17 +198,24 @@ pub async fn update_member_role(
 // Update member permissions
 pub async fn update_member_permissions(
     State(state): State<AppState>,
-    Path((family_id, user_id)): Path<(Uuid, Uuid)>,
-    Extension(ctx): Extension<ServiceContext>,
+    Path((family_id, member_id)): Path<(Uuid, Uuid)>,
+    claims: crate::auth::Claims,
     Json(request): Json<UpdatePermissionsRequest>,
 ) -> Result<Json<ApiResponse<FamilyMember>>, StatusCode> {
-    if ctx.family_id != family_id {
-        return Err(StatusCode::FORBIDDEN);
-    }
+    let user_id = match claims.user_id() {
+        Ok(id) => id,
+        Err(_) => return Err(StatusCode::UNAUTHORIZED),
+    };
     
     let service = MemberService::new(state.pool.clone());
     
-    match service.update_member_permissions(&ctx, user_id, request.permissions).await {
+    // Get member context to check permissions
+    let ctx = match service.get_member_context(user_id, family_id).await {
+        Ok(context) => context,
+        Err(_) => return Err(StatusCode::FORBIDDEN),
+    };
+    
+    match service.update_member_permissions(&ctx, member_id, request.permissions).await {
         Ok(member) => Ok(Json(ApiResponse::success(member))),
         Err(ServiceError::PermissionDenied) => Err(StatusCode::FORBIDDEN),
         Err(ServiceError::NotFound { .. }) => Err(StatusCode::NOT_FOUND),

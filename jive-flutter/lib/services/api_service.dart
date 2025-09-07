@@ -18,6 +18,67 @@ class ApiService {
     'Accept': 'application/json',
   };
 
+  // ==================== Generic HTTP Methods ====================
+  
+  /// Generic GET request
+  Future<dynamic> get(String endpoint) async {
+    final uri = Uri.parse('$baseUrl$endpoint');
+    final response = await http.get(uri, headers: headers);
+    
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('GET request failed: ${response.body}');
+    }
+  }
+  
+  /// Generic POST request
+  Future<dynamic> post(String endpoint, Map<String, dynamic> body) async {
+    final uri = Uri.parse('$baseUrl$endpoint');
+    final response = await http.post(
+      uri,
+      headers: headers,
+      body: json.encode(body),
+    );
+    
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('POST request failed: ${response.body}');
+    }
+  }
+  
+  /// Generic PUT request
+  Future<dynamic> put(String endpoint, Map<String, dynamic> body) async {
+    final uri = Uri.parse('$baseUrl$endpoint');
+    final response = await http.put(
+      uri,
+      headers: headers,
+      body: json.encode(body),
+    );
+    
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('PUT request failed: ${response.body}');
+    }
+  }
+  
+  /// Generic DELETE request
+  Future<dynamic> delete(String endpoint) async {
+    final uri = Uri.parse('$baseUrl$endpoint');
+    final response = await http.delete(uri, headers: headers);
+    
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      if (response.body.isNotEmpty) {
+        return json.decode(response.body);
+      }
+      return null;
+    } else {
+      throw Exception('DELETE request failed: ${response.body}');
+    }
+  }
+
   // ==================== Payee管理 ====================
   
   /// 获取收款人列表

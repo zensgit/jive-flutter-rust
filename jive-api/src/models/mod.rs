@@ -3,6 +3,7 @@ pub mod family;
 pub mod invitation;
 pub mod membership;
 pub mod permission;
+pub mod transaction;
 
 pub use audit::{AuditAction, AuditLog, AuditLogFilter, CreateAuditLogRequest};
 pub use family::{CreateFamilyRequest, Family, FamilySettings, UpdateFamilyRequest};

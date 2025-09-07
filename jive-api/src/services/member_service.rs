@@ -51,9 +51,9 @@ impl MemberService {
         let member = sqlx::query_as::<_, FamilyMember>(
             r#"
             INSERT INTO family_members (
-                family_id, user_id, role, permissions, invited_by, is_active, joined_at
+                family_id, user_id, role, permissions, invited_by, joined_at
             )
-            VALUES ($1, $2, $3, $4, $5, true, $6)
+            VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *
             "#
         )
@@ -217,11 +217,10 @@ impl MemberService {
             SELECT 
                 fm.family_id,
                 fm.user_id,
-                u.name as user_name,
+                u.full_name as user_name,
                 u.email as user_email,
                 fm.role,
                 fm.permissions,
-                fm.is_active,
                 fm.joined_at,
                 fm.last_active_at
             FROM family_members fm
@@ -246,7 +245,7 @@ impl MemberService {
         let permissions_json = sqlx::query_scalar::<_, serde_json::Value>(
             r#"
             SELECT permissions FROM family_members
-            WHERE family_id = $1 AND user_id = $2 AND is_active = true
+            WHERE family_id = $1 AND user_id = $2
             "#
         )
         .bind(family_id)
@@ -272,7 +271,7 @@ impl MemberService {
             role: String,
             permissions: serde_json::Value,
             email: String,
-            name: Option<String>,
+            full_name: Option<String>,
         }
         
         let row = sqlx::query_as::<_, MemberContextRow>(
@@ -281,10 +280,10 @@ impl MemberService {
                 fm.role,
                 fm.permissions,
                 u.email,
-                u.name
+                u.full_name
             FROM family_members fm
             JOIN users u ON fm.user_id = u.id
-            WHERE fm.family_id = $1 AND fm.user_id = $2 AND fm.is_active = true
+            WHERE fm.family_id = $1 AND fm.user_id = $2
             "#
         )
         .bind(family_id)
@@ -304,7 +303,7 @@ impl MemberService {
             role,
             permissions,
             row.email,
-            row.name,
+            row.full_name,
         ))
     }
 }

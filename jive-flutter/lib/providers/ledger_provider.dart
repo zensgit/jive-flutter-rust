@@ -145,13 +145,13 @@ final currentLedgerProvider = StateNotifierProvider<CurrentLedgerNotifier, Ledge
 });
 
 // 账本统计信息
-final ledgerStatisticsProvider = FutureProvider.family<api.LedgerStatistics, String>((ref, ledgerId) async {
+final ledgerStatisticsProvider = FutureProvider.family<LedgerStatistics, String>((ref, ledgerId) async {
   final service = ref.watch(ledgerServiceProvider);
   return await service.getLedgerStatistics(ledgerId);
 });
 
 // 账本共享成员
-final ledgerMembersProvider = FutureProvider.family<List<api.LedgerMember>, String>((ref, ledgerId) async {
+final ledgerMembersProvider = FutureProvider.family<List<LedgerMember>, String>((ref, ledgerId) async {
   final service = ref.watch(ledgerServiceProvider);
   return await service.getLedgerMembers(ledgerId);
 });
@@ -169,3 +169,18 @@ final ledgerBudgetsProvider = FutureProvider<List<dynamic>>((ref) async {
   // TODO: 实现预算数据获取
   return [];
 });
+
+// ========== Family 架构别名（向后兼容） ==========
+// 这些别名让代码可以使用 Family 概念，但底层使用 Ledger 实现
+
+/// 当前 Family Provider（底层使用 Ledger）
+final currentFamilyProvider = currentLedgerProvider;
+
+/// 所有 Family 列表 Provider（底层使用 Ledger）
+final familiesProvider = ledgersProvider;
+
+/// Family 统计信息 Provider（底层使用 Ledger）
+final familyStatisticsProvider = ledgerStatisticsProvider;
+
+/// Family 成员 Provider（底层使用 Ledger）
+final familyMembersProvider = ledgerMembersProvider;

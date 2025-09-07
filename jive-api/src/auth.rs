@@ -164,7 +164,24 @@ pub struct RegisterRequest {
     pub email: String,
     pub password: String,
     pub name: String,
+    #[serde(default = "default_country")]
+    pub country: String,
+    #[serde(default = "default_currency")]
+    pub currency: String,
+    #[serde(default = "default_language")]
+    pub language: String,
+    #[serde(default = "default_timezone")]
+    pub timezone: String,
+    #[serde(default = "default_date_format")]
+    pub date_format: String,
 }
+
+// Default values for registration
+fn default_country() -> String { "CN".to_string() }
+fn default_currency() -> String { "CNY".to_string() }
+fn default_language() -> String { "zh-CN".to_string() }
+fn default_timezone() -> String { "Asia/Shanghai".to_string() }
+fn default_date_format() -> String { "YYYY-MM-DD".to_string() }
 
 /// 注册响应
 #[derive(Debug, Serialize)]

@@ -48,6 +48,9 @@ futures-util = "0.3"
 
 # 密码哈希
 argon2 = "0.5"
+
+# Redis缓存
+redis = { version = "0.27", features = ["tokio-comp", "connection-manager", "json"] }
 bcrypt = "0.15"
 
 # JWT认证
@@ -70,7 +73,3 @@ path = "src/main_simple.rs"
 [[bin]]
 name = "jive-api-core"
 path = "src/main_simple_ws.rs"
-
-[[bin]]
-name = "jive-api-ws"
-path = "src/main_with_ws.rs"

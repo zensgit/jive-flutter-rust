@@ -17,8 +17,11 @@ pub struct Ledger {
     pub name: String,
     #[serde(rename = "type")]
     pub ledger_type: String,
+    pub description: Option<String>,
     pub currency: Option<String>,
     pub is_default: Option<bool>,
+    pub settings: Option<serde_json::Value>,
+    pub owner_id: Option<Uuid>,
     pub created_at: Option<DateTime<Utc>>,
     pub updated_at: Option<DateTime<Utc>>,
 }
@@ -26,6 +29,9 @@ pub struct Ledger {
 #[derive(Debug, Deserialize)]
 pub struct CreateLedgerRequest {
     pub name: String,
+    #[serde(rename = "type")]
+    pub ledger_type: Option<String>,
+    pub description: Option<String>,
     pub currency: String,
     pub is_default: Option<bool>,
 }
@@ -76,9 +82,12 @@ pub async fn list_ledgers(
         id: row.id,
         family_id: row.family_id,
         name: row.name,
-        ledger_type: "personal".to_string(),  // Default type
+        ledger_type: "family".to_string(),  // Default to family type
+        description: None,
         currency: row.currency,
         is_default: row.is_default,
+        settings: None,
+        owner_id: None,
         created_at: row.created_at,
         updated_at: row.updated_at,
     }).collect();
@@ -97,12 +106,11 @@ pub async fn list_ledgers(
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
     Ok(Json(json!({
-        "items": ledgers,
+        "data": ledgers,
         "pagination": {
             "page": page,
             "limit": limit,
-            "total": total,
-            "total_pages": (total as f64 / limit as f64).ceil() as u32,
+            "total": total
         }
     })))
 }
@@ -112,7 +120,8 @@ pub async fn get_current_ledger(
     claims: Claims,
 ) -> ApiResult<Json<Ledger>> {
     let user_id = claims.user_id()?;
-
+    
+    // First try to get the default ledger for the user's current family
     let row = sqlx::query!(
         r#"
         SELECT l.id, l.family_id, l.name, l.currency, 
@@ -120,7 +129,7 @@ pub async fn get_current_ledger(
                l.created_at, l.updated_at
         FROM ledgers l
         LEFT JOIN family_members fm ON l.family_id = fm.family_id
-        WHERE (fm.user_id = $1 OR l.family_id IS NULL) AND COALESCE(l.is_default, false) = true
+        WHERE (fm.user_id = $1 OR l.family_id IS NULL) AND l.is_default = true
         LIMIT 1
         "#,
         user_id,
@@ -133,9 +142,12 @@ pub async fn get_current_ledger(
         id: r.id,
         family_id: r.family_id,
         name: r.name,
-        ledger_type: "personal".to_string(),
+        ledger_type: "family".to_string(),
+        description: None,
         currency: r.currency,
         is_default: r.is_default,
+        settings: None,
+        owner_id: None,
         created_at: r.created_at,
         updated_at: r.updated_at,
     });
@@ -154,7 +166,7 @@ pub async fn create_ledger(
     claims: Claims,
     Json(req): Json<CreateLedgerRequest>,
 ) -> ApiResult<Json<Ledger>> {
-    let _user_id = claims.user_id()?;
+    let user_id = claims.user_id()?;
     let ledger_id = Uuid::new_v4();
 
     // If this is marked as default, unset other defaults
@@ -194,9 +206,12 @@ pub async fn create_ledger(
         id: row.id,
         family_id: row.family_id,
         name: row.name,
-        ledger_type: "personal".to_string(),
+        ledger_type: req.ledger_type.unwrap_or_else(|| "family".to_string()),
+        description: req.description,
         currency: row.currency,
         is_default: row.is_default,
+        settings: None,
+        owner_id: Some(user_id),
         created_at: row.created_at,
         updated_at: row.updated_at,
     };
@@ -232,9 +247,12 @@ pub async fn get_ledger(
         id: row.id,
         family_id: row.family_id,
         name: row.name,
-        ledger_type: "personal".to_string(),
+        ledger_type: "family".to_string(),
+        description: None,
         currency: row.currency,
         is_default: row.is_default,
+        settings: None,
+        owner_id: None,
         created_at: row.created_at,
         updated_at: row.updated_at,
     };
@@ -307,9 +325,12 @@ pub async fn update_ledger(
         id: row.id,
         family_id: row.family_id,
         name: row.name,
-        ledger_type: "personal".to_string(),
+        ledger_type: "family".to_string(),
+        description: None,
         currency: row.currency,
         is_default: row.is_default,
+        settings: None,
+        owner_id: None,
         created_at: row.created_at,
         updated_at: row.updated_at,
     };
@@ -364,7 +385,7 @@ pub async fn delete_ledger(
 
 async fn create_default_ledger(
     pool: &PgPool,
-    _user_id: Uuid,
+    user_id: Uuid,
     family_id: Option<Uuid>,
 ) -> ApiResult<Ledger> {
     let ledger_id = Uuid::new_v4();
@@ -372,7 +393,7 @@ async fn create_default_ledger(
     let row = sqlx::query!(
         r#"
         INSERT INTO ledgers (id, family_id, name, currency, is_default, created_at, updated_at)
-        VALUES ($1, $2, '默认账本', 'CNY', true, NOW(), NOW())
+        VALUES ($1, $2, '默认家庭', 'CNY', true, NOW(), NOW())
         RETURNING id, family_id, name, currency, 
                   is_default,
                   created_at, updated_at
@@ -388,12 +409,172 @@ async fn create_default_ledger(
         id: row.id,
         family_id: row.family_id,
         name: row.name,
-        ledger_type: "personal".to_string(),
+        ledger_type: "family".to_string(),
+        description: Some("默认的家庭账本".to_string()),
         currency: row.currency,
         is_default: row.is_default,
+        settings: None,
+        owner_id: Some(user_id),
         created_at: row.created_at,
         updated_at: row.updated_at,
     };
 
     Ok(ledger)
+}
+
+// Get ledger statistics
+pub async fn get_ledger_statistics(
+    State(state): State<AppState>,
+    claims: Claims,
+    Path(id): Path<Uuid>,
+) -> ApiResult<Json<serde_json::Value>> {
+    let user_id = claims.user_id()?;
+    
+    // Verify user has access to this ledger
+    let _ledger = sqlx::query!(
+        r#"
+        SELECT l.id
+        FROM ledgers l
+        LEFT JOIN family_members fm ON l.family_id = fm.family_id
+        WHERE l.id = $1 AND (fm.user_id = $2 OR l.family_id IS NULL)
+        "#,
+        id,
+        user_id,
+    )
+    .fetch_optional(&state.pool)
+    .await
+    .map_err(|e| ApiError::DatabaseError(e.to_string()))?
+    .ok_or(ApiError::NotFound("Ledger not found".to_string()))?;
+    
+    // Get transaction statistics
+    let stats = sqlx::query!(
+        r#"
+        SELECT 
+            COUNT(*) as "total_transactions!",
+            COALESCE(SUM(CASE WHEN amount > 0 THEN amount ELSE 0 END), 0) as "total_income!",
+            COALESCE(SUM(CASE WHEN amount < 0 THEN ABS(amount) ELSE 0 END), 0) as "total_expense!",
+            COUNT(DISTINCT account_id) as "total_accounts!"
+        FROM transactions
+        WHERE ledger_id = $1
+        "#,
+        id
+    )
+    .fetch_one(&state.pool)
+    .await
+    .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+    
+    // Get account count
+    let account_count = sqlx::query_scalar!(
+        r#"
+        SELECT COUNT(*) as "count!"
+        FROM accounts
+        WHERE ledger_id = $1
+        "#,
+        id
+    )
+    .fetch_one(&state.pool)
+    .await
+    .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+    
+    Ok(Json(json!({
+        "ledger_id": id,
+        "total_transactions": stats.total_transactions,
+        "total_income": stats.total_income,
+        "total_expense": stats.total_expense,
+        "balance": stats.total_income - stats.total_expense,
+        "total_accounts": account_count,
+        "currency": "CNY"
+    })))
+}
+
+// Get ledger members
+pub async fn get_ledger_members(
+    State(state): State<AppState>,
+    claims: Claims,
+    Path(id): Path<Uuid>,
+) -> ApiResult<Json<serde_json::Value>> {
+    let user_id = claims.user_id()?;
+    
+    // First verify the ledger exists and user has access
+    let ledger = sqlx::query!(
+        r#"
+        SELECT l.id, l.family_id
+        FROM ledgers l
+        LEFT JOIN family_members fm ON l.family_id = fm.family_id
+        WHERE l.id = $1 AND (fm.user_id = $2 OR l.family_id IS NULL)
+        "#,
+        id,
+        user_id,
+    )
+    .fetch_optional(&state.pool)
+    .await
+    .map_err(|e| ApiError::DatabaseError(e.to_string()))?
+    .ok_or(ApiError::NotFound("Ledger not found".to_string()))?;
+    
+    // If ledger has a family_id, get family members
+    if let Some(family_id) = ledger.family_id {
+        let members = sqlx::query!(
+            r#"
+            SELECT 
+                u.id,
+                u.name as full_name,
+                u.email,
+                fm.role,
+                fm.joined_at as "joined_at!"
+            FROM family_members fm
+            JOIN users u ON fm.user_id = u.id
+            WHERE fm.family_id = $1
+            ORDER BY fm.joined_at
+            "#,
+            family_id
+        )
+        .fetch_all(&state.pool)
+        .await
+        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+        
+        let member_list: Vec<serde_json::Value> = members.into_iter().map(|m| {
+            json!({
+                "user_id": m.id,
+                "name": if !m.full_name.is_empty() { m.full_name.clone() } else { m.email.clone() },
+                "email": m.email,
+                "role": m.role.unwrap_or_else(|| "member".to_string()),
+                "joined_at": m.joined_at,
+                "is_active": true
+            })
+        }).collect();
+        
+        Ok(Json(json!({
+            "ledger_id": id,
+            "family_id": family_id,
+            "members": member_list,
+            "total": member_list.len()
+        })))
+    } else {
+        // Personal ledger, only has the owner
+        let owner = sqlx::query!(
+            r#"
+            SELECT id, name as full_name, email
+            FROM users
+            WHERE id = $1
+            "#,
+            user_id
+        )
+        .fetch_one(&state.pool)
+        .await
+        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+        
+        Ok(Json(json!({
+            "ledger_id": id,
+            "family_id": null,
+            "members": [{
+                "user_id": owner.id,
+                "name": if !owner.full_name.is_empty() { owner.full_name.clone() } else { owner.email.clone() },
+                "email": owner.email,
+                "role": "owner",
+                "joined_at": chrono::Utc::now(),
+                "is_active": true
+            }],
+            "total": 1
+        })))
+    }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/category.dart';
+import '../../providers/category_management_provider.dart';
 
 /// 增强版分类管理页面
 /// 实现设计文档中的所有交互功能
@@ -1007,8 +1009,8 @@ class _CategoryToTagDialogState extends State<_CategoryToTagDialog> {
               return;
             }
             
-            // TODO: 执行转换
-            context.read<CategoryProvider>().convertCategoryToTag(
+            // 执行转换
+            context.read(categoryManagementProvider).convertCategoryToTag(
               widget.category.id,
               _tagNameController.text.trim(),
               applyToTransactions: _applyToTransactions,
@@ -1022,7 +1024,7 @@ class _CategoryToTagDialogState extends State<_CategoryToTagDialog> {
                 action: SnackBarAction(
                   label: '撤销',
                   onPressed: () {
-                    context.read<CategoryProvider>().undoLastAction();
+                    context.read(categoryManagementProvider).undoLastAction();
                   },
                 ),
               ),
@@ -1086,7 +1088,7 @@ class _DuplicateCategoryDialogState extends State<_DuplicateCategoryDialog> {
               return;
             }
             
-            context.read<CategoryProvider>().duplicateCategory(
+            context.read(categoryManagementProvider).duplicateCategory(
               widget.category.id,
               _nameController.text.trim(),
             );

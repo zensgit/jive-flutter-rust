@@ -1,0 +1,28 @@
+{
+  "name": "jive-flutter-rust",
+  "version": "1.0.0",
+  "description": "一个全功能的个人财务管理系统，采用 Flutter 前端和 Rust 后端架构。",
+  "main": "mock-api.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zensgit/jive-flutter-rust.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/zensgit/jive-flutter-rust/issues"
+  },
+  "homepage": "https://github.com/zensgit/jive-flutter-rust#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  }
+}

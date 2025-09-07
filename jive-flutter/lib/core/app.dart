@@ -8,13 +8,49 @@ import 'router/app_router.dart';
 import 'localization/app_localizations.dart';
 import '../features/auth/providers/auth_provider.dart';
 import '../features/settings/providers/settings_provider.dart';
+import '../providers/currency_provider.dart';
+import '../providers/settings_provider.dart' as global_settings;
 
 /// 主应用类
-class JiveApp extends ConsumerWidget {
-  const JiveApp({super.key});
+class JiveApp extends ConsumerStatefulWidget {
+  final ProviderContainer? container;
+  
+  const JiveApp({super.key, this.container});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<JiveApp> createState() => _JiveAppState();
+}
+
+class _JiveAppState extends ConsumerState<JiveApp> {
+  @override
+  void initState() {
+    super.initState();
+    // 在应用启动时自动更新汇率
+    _initializeApp();
+  }
+  
+  Future<void> _initializeApp() async {
+    // 延迟执行，确保应用完全初始化
+    await Future.delayed(const Duration(seconds: 2));
+    
+    try {
+      // 获取设置
+      final settings = ref.read(global_settings.settingsProvider);
+      final autoUpdateRates = settings.autoUpdateRates ?? true;
+      
+      if (autoUpdateRates && mounted) {
+        // 自动更新汇率
+        await ref.read(currencyProvider.notifier).refreshExchangeRates();
+        print('✅ Exchange rates updated successfully');
+      }
+    } catch (e) {
+      print('⚠️ Failed to update exchange rates: $e');
+      // 不影响应用启动
+    }
+  }
+  
+  @override
+  Widget build(BuildContext context) {
     final router = ref.watch(appRouterProvider);
     final themeMode = ref.watch(themeModeProvider);
     final locale = ref.watch(localeProvider);

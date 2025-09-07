@@ -47,6 +47,9 @@ dependencies:
   # 图表和可视化
   fl_chart: ^0.66.2
   
+  # 图片选择
+  image_picker: ^1.0.7
+  
   # 图标和字体
   flutter_svg: ^2.0.10+1
   google_fonts: ^6.2.0

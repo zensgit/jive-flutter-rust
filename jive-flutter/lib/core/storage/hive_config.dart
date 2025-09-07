@@ -23,6 +23,7 @@ class HiveConfig {
   static const String transactionsBox = 'transactions_box';
   static const String ledgersBox = 'ledgers_box';
   static const String categoriesBox = 'categories_box';
+  static const String preferencesBox = 'preferences'; // For currency preferences
 
   // 类型ID常量
   static const int userTypeId = 0;
@@ -57,6 +58,7 @@ class HiveConfig {
       Hive.openBox<User>(userBox),
       Hive.openBox(settingsBox), 
       Hive.openBox(cacheBox),
+      Hive.openBox(preferencesBox), // Open preferences box for currency
       Hive.openBox<Account>(accountsBox),
       Hive.openBox<Transaction>(transactionsBox),
       Hive.openBox<Ledger>(ledgersBox),
@@ -97,6 +99,9 @@ class HiveConfig {
   
   /// 获取设置数据 Box  
   static Box getSettingsBox() => Hive.box(settingsBox);
+  
+  /// 获取偏好设置数据 Box
+  static Box getPreferencesBox() => Hive.box(preferencesBox);
   
   /// 获取缓存数据 Box
   static Box getCacheBox() => Hive.box(cacheBox);

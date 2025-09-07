@@ -8,6 +8,7 @@ class User {
   final bool emailVerified;
   final bool phoneVerified;
   final UserRole role;
+  final String? currentFamilyId;  // 当前选中的Family
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final Map<String, dynamic>? preferences;
@@ -21,6 +22,7 @@ class User {
     this.emailVerified = false,
     this.phoneVerified = false,
     this.role = UserRole.user,
+    this.currentFamilyId,
     this.createdAt,
     this.updatedAt,
     this.preferences,
@@ -36,6 +38,7 @@ class User {
       emailVerified: json['email_verified'] ?? false,
       phoneVerified: json['phone_verified'] ?? false,
       role: UserRole.fromString(json['role']),
+      currentFamilyId: json['current_family_id'] ?? json['family_id'],
       createdAt: json['created_at'] != null 
           ? DateTime.parse(json['created_at']) 
           : null,
@@ -56,6 +59,7 @@ class User {
       'email_verified': emailVerified,
       'phone_verified': phoneVerified,
       'role': role.value,
+      'current_family_id': currentFamilyId,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
       'preferences': preferences,
@@ -71,6 +75,7 @@ class User {
     bool? emailVerified,
     bool? phoneVerified,
     UserRole? role,
+    String? currentFamilyId,
     DateTime? createdAt,
     DateTime? updatedAt,
     Map<String, dynamic>? preferences,
@@ -84,6 +89,7 @@ class User {
       emailVerified: emailVerified ?? this.emailVerified,
       phoneVerified: phoneVerified ?? this.phoneVerified,
       role: role ?? this.role,
+      currentFamilyId: currentFamilyId ?? this.currentFamilyId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       preferences: preferences ?? this.preferences,

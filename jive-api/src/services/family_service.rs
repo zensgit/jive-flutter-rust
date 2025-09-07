@@ -25,24 +25,58 @@ impl FamilyService {
     ) -> Result<Family, ServiceError> {
         let mut tx = self.pool.begin().await?;
         
+        // Check if user already owns a family by checking if they are an owner in any family
+        let existing_family_count = sqlx::query_scalar::<_, i64>(
+            r#"
+            SELECT COUNT(*) 
+            FROM family_members 
+            WHERE user_id = $1 AND role = 'owner'
+            "#
+        )
+        .bind(user_id)
+        .fetch_one(&mut *tx)
+        .await?;
+        
+        if existing_family_count > 0 {
+            return Err(ServiceError::Conflict("用户已创建家庭，每个用户只能创建一个家庭".to_string()));
+        }
+        
+        // Get user's name for default family name
+        let user_name: Option<String> = sqlx::query_scalar(
+            "SELECT COALESCE(full_name, email) FROM users WHERE id = $1"
+        )
+        .bind(user_id)
+        .fetch_one(&mut *tx)
+        .await?;
+        
+        // Use provided name or default to "用户名的家庭"
+        let family_name = if let Some(name) = request.name {
+            if name.trim().is_empty() {
+                format!("{}的家庭", user_name.unwrap_or_else(|| "我".to_string()))
+            } else {
+                name
+            }
+        } else {
+            format!("{}的家庭", user_name.unwrap_or_else(|| "我".to_string()))
+        };
+        
         // Create family
         let family_id = Uuid::new_v4();
         let invite_code = Family::generate_invite_code();
         
         let family = sqlx::query_as::<_, Family>(
             r#"
-            INSERT INTO families (id, name, owner_id, invite_code, currency, timezone, locale, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            INSERT INTO families (id, name, currency, timezone, locale, invite_code, member_count, created_at, updated_at)
+            VALUES ($1, $2, $3, $4, $5, $6, 1, $7, $8)
             RETURNING *
             "#
         )
         .bind(family_id)
-        .bind(&request.name)
-        .bind(user_id)
-        .bind(&invite_code)
+        .bind(&family_name)
         .bind(request.currency.as_deref().unwrap_or("CNY"))
         .bind(request.timezone.as_deref().unwrap_or("Asia/Shanghai"))
         .bind(request.locale.as_deref().unwrap_or("zh-CN"))
+        .bind(&invite_code)
         .bind(Utc::now())
         .bind(Utc::now())
         .fetch_one(&mut *tx)
@@ -54,8 +88,8 @@ impl FamilyService {
         
         sqlx::query(
             r#"
-            INSERT INTO family_members (family_id, user_id, role, permissions, is_active, joined_at)
-            VALUES ($1, $2, $3, $4, true, $5)
+            INSERT INTO family_members (family_id, user_id, role, permissions, joined_at)
+            VALUES ($1, $2, $3, $4, $5)
             "#
         )
         .bind(family_id)
@@ -69,8 +103,8 @@ impl FamilyService {
         // Create default ledger
         sqlx::query(
             r#"
-            INSERT INTO ledgers (id, family_id, name, currency, created_by, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            INSERT INTO ledgers (id, family_id, name, currency, owner_id, is_default, created_at, updated_at)
+            VALUES ($1, $2, $3, $4, $5, true, $6, $7)
             "#
         )
         .bind(Uuid::new_v4())
@@ -96,7 +130,7 @@ impl FamilyService {
         ctx.require_permission(Permission::ViewFamilyInfo)?;
         
         let family = sqlx::query_as::<_, Family>(
-            "SELECT * FROM families WHERE id = $1"
+            "SELECT * FROM families WHERE id = $1 AND deleted_at IS NULL"
         )
         .bind(family_id)
         .fetch_optional(&self.pool)
@@ -179,29 +213,23 @@ impl FamilyService {
         ctx.require_permission(Permission::DeleteFamily)?;
         ctx.require_owner()?;
         
-        // Check if user has other families
-        let count = sqlx::query_scalar::<_, i64>(
-            r#"
-            SELECT COUNT(*) FROM family_members
-            WHERE user_id = $1 AND family_id != $2 AND is_active = true
-            "#
+        // Soft delete - just mark as deleted
+        sqlx::query(
+            "UPDATE families SET deleted_at = $1, updated_at = $1 WHERE id = $2"
         )
-        .bind(ctx.user_id)
+        .bind(Utc::now())
         .bind(family_id)
-        .fetch_one(&self.pool)
+        .execute(&self.pool)
         .await?;
         
-        if count == 0 {
-            return Err(ServiceError::BusinessRuleViolation(
-                "Cannot delete your only family".to_string()
-            ));
-        }
-        
-        // Delete family (cascade will handle related records)
-        sqlx::query("DELETE FROM families WHERE id = $1")
-            .bind(family_id)
-            .execute(&self.pool)
-            .await?;
+        // Update user's current family if this was their current one
+        sqlx::query(
+            "UPDATE users SET current_family_id = NULL 
+             WHERE current_family_id = $1"
+        )
+        .bind(family_id)
+        .execute(&self.pool)
+        .await?;
         
         Ok(())
     }
@@ -210,11 +238,17 @@ impl FamilyService {
         &self,
         user_id: Uuid,
     ) -> Result<Vec<Family>, ServiceError> {
+        // Only show families that:
+        // 1. Have more than 1 member (multi-person families)
+        // 2. Or the user is the owner (even if single-person)
+        // 3. Not deleted
         let families = sqlx::query_as::<_, Family>(
             r#"
             SELECT f.* FROM families f
             JOIN family_members fm ON f.id = fm.family_id
-            WHERE fm.user_id = $1 AND fm.is_active = true
+            WHERE fm.user_id = $1
+                AND f.deleted_at IS NULL
+                AND (f.member_count > 1 OR fm.role = 'owner')
             ORDER BY fm.joined_at DESC
             "#
         )
@@ -235,7 +269,7 @@ impl FamilyService {
             r#"
             SELECT EXISTS(
                 SELECT 1 FROM family_members
-                WHERE user_id = $1 AND family_id = $2 AND is_active = true
+                WHERE user_id = $1 AND family_id = $2
             )
             "#
         )
@@ -260,6 +294,121 @@ impl FamilyService {
         Ok(())
     }
     
+    pub async fn join_family_by_invite_code(
+        &self,
+        user_id: Uuid,
+        invite_code: String,
+    ) -> Result<Family, ServiceError> {
+        let mut tx = self.pool.begin().await?;
+        
+        // Find family by invite code
+        let family = sqlx::query_as::<_, Family>(
+            "SELECT * FROM families WHERE invite_code = $1"
+        )
+        .bind(&invite_code)
+        .fetch_optional(&mut *tx)
+        .await?
+        .ok_or_else(|| ServiceError::InvalidInvitation)?;
+        
+        // Check if user is already a member
+        let existing_member: Option<i64> = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM family_members WHERE family_id = $1 AND user_id = $2"
+        )
+        .bind(family.id)
+        .bind(user_id)
+        .fetch_one(&mut *tx)
+        .await?;
+        
+        if existing_member.unwrap_or(0) > 0 {
+            return Err(ServiceError::Conflict("您已经是该家庭的成员".to_string()));
+        }
+        
+        // Add user as a member
+        let member_permissions = MemberRole::Member.default_permissions();
+        let permissions_json = serde_json::to_value(&member_permissions)?;
+        
+        sqlx::query(
+            r#"
+            INSERT INTO family_members (family_id, user_id, role, permissions, joined_at)
+            VALUES ($1, $2, $3, $4, $5)
+            "#
+        )
+        .bind(family.id)
+        .bind(user_id)
+        .bind("member")
+        .bind(permissions_json)
+        .bind(Utc::now())
+        .execute(&mut *tx)
+        .await?;
+        
+        // Update member count
+        sqlx::query(
+            "UPDATE families SET member_count = member_count + 1 WHERE id = $1"
+        )
+        .bind(family.id)
+        .execute(&mut *tx)
+        .await?;
+        
+        tx.commit().await?;
+        
+        Ok(family)
+    }
+    
+    pub async fn get_family_statistics(
+        &self,
+        family_id: Uuid,
+    ) -> Result<serde_json::Value, ServiceError> {
+        // Get member count
+        let member_count: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM family_members WHERE family_id = $1"
+        )
+        .bind(family_id)
+        .fetch_one(&self.pool)
+        .await?;
+        
+        // Get ledger count
+        let ledger_count: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM ledgers WHERE family_id = $1"
+        )
+        .bind(family_id)
+        .fetch_one(&self.pool)
+        .await?;
+        
+        // Get account count
+        let account_count: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM accounts WHERE family_id = $1"
+        )
+        .bind(family_id)
+        .fetch_one(&self.pool)
+        .await?;
+        
+        // Get transaction count
+        let transaction_count: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM transactions WHERE family_id = $1"
+        )
+        .bind(family_id)
+        .fetch_one(&self.pool)
+        .await?;
+        
+        // Get total balance
+        let total_balance: Option<rust_decimal::Decimal> = sqlx::query_scalar(
+            "SELECT SUM(current_balance) FROM accounts a 
+             JOIN ledgers l ON a.ledger_id = l.id 
+             WHERE l.family_id = $1"
+        )
+        .bind(family_id)
+        .fetch_one(&self.pool)
+        .await?;
+        
+        Ok(serde_json::json!({
+            "member_count": member_count,
+            "ledger_count": ledger_count,
+            "account_count": account_count,
+            "transaction_count": transaction_count,
+            "total_balance": total_balance.unwrap_or_else(|| rust_decimal::Decimal::ZERO),
+        }))
+    }
+    
     pub async fn regenerate_invite_code(
         &self,
         ctx: &ServiceContext,
@@ -279,5 +428,68 @@ impl FamilyService {
         .await?;
         
         Ok(new_code)
+    }
+    
+    pub async fn leave_family(
+        &self,
+        user_id: Uuid,
+        family_id: Uuid,
+    ) -> Result<(), ServiceError> {
+        let mut tx = self.pool.begin().await?;
+        
+        // Check if user is the owner
+        let role: Option<String> = sqlx::query_scalar(
+            "SELECT role FROM family_members WHERE family_id = $1 AND user_id = $2"
+        )
+        .bind(family_id)
+        .bind(user_id)
+        .fetch_optional(&mut *tx)
+        .await?;
+        
+        match role.as_deref() {
+            Some("owner") => {
+                // Owner cannot leave, must transfer ownership or delete family
+                return Err(ServiceError::BusinessRuleViolation(
+                    "家庭所有者不能退出家庭，请先转让所有权或删除家庭".to_string()
+                ));
+            }
+            Some(_) => {
+                // Remove member from family
+                sqlx::query(
+                    "DELETE FROM family_members WHERE family_id = $1 AND user_id = $2"
+                )
+                .bind(family_id)
+                .bind(user_id)
+                .execute(&mut *tx)
+                .await?;
+                
+                // Update member count
+                sqlx::query(
+                    "UPDATE families SET member_count = GREATEST(member_count - 1, 0) WHERE id = $1"
+                )
+                .bind(family_id)
+                .execute(&mut *tx)
+                .await?;
+                
+                // Update user's current family if this was their current one
+                sqlx::query(
+                    "UPDATE users SET current_family_id = NULL 
+                     WHERE id = $1 AND current_family_id = $2"
+                )
+                .bind(user_id)
+                .bind(family_id)
+                .execute(&mut *tx)
+                .await?;
+                
+                tx.commit().await?;
+                Ok(())
+            }
+            None => {
+                Err(ServiceError::NotFound {
+                    resource_type: "FamilyMember".to_string(),
+                    id: user_id.to_string(),
+                })
+            }
+        }
     }
 }

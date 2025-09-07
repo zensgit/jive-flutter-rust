@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/ledger_provider.dart';
 import '../../providers/settings_provider.dart' hide currentUserProvider;
+import '../../providers/currency_provider.dart';
+import '../../widgets/dialogs/create_family_dialog.dart';
+import '../../widgets/dialogs/invite_member_dialog.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -22,30 +25,37 @@ class SettingsScreen extends ConsumerWidget {
           // 用户信息卡片
           if (user != null) _buildUserCard(context, user),
           
-          // 账本管理
+          // 家庭管理
           _buildSection(
-            title: '账本管理',
+            title: '家庭管理',
             children: [
               ListTile(
-                leading: const Icon(Icons.book),
-                title: const Text('账本管理'),
-                subtitle: const Text('创建和管理多个账本'),
+                leading: const Icon(Icons.settings),
+                title: const Text('家庭设置'),
+                subtitle: const Text('管理当前家庭设置'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () => _navigateToLedgerManagement(context),
+                onTap: () => context.go('/family/settings'),
               ),
               ListTile(
                 leading: const Icon(Icons.swap_horiz),
-                title: const Text('账本切换'),
-                subtitle: Text(ref.watch(currentLedgerProvider)?.name ?? '默认账本'),
+                title: const Text('家庭切换'),
+                subtitle: Text(ref.watch(currentLedgerProvider)?.name ?? '默认家庭'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () => _showLedgerSwitcher(context, ref),
               ),
               ListTile(
-                leading: const Icon(Icons.share),
-                title: const Text('账本共享'),
-                subtitle: const Text('与家人或团队共享账本'),
+                leading: const Icon(Icons.people),
+                title: const Text('家庭成员'),
+                subtitle: const Text('管理家庭成员和权限'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () => _navigateToLedgerSharing(context),
+                onTap: () => context.go('/family/members'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.dashboard),
+                title: const Text('家庭统计'),
+                subtitle: const Text('查看家庭财务统计'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () => context.go('/family/dashboard'),
               ),
             ],
           ),
@@ -73,26 +83,78 @@ class SettingsScreen extends ConsumerWidget {
           
           // 货币设置
           _buildSection(
-            title: '货币设置',
+            title: '多币种设置',
             children: [
               ListTile(
-                leading: const Icon(Icons.attach_money),
-                title: const Text('默认货币'),
-                subtitle: Text(settings.defaultCurrency ?? 'CNY - 人民币'),
+                leading: const Icon(Icons.language),
+                title: const Text('多币种管理'),
+                subtitle: const Text('设置货币、汇率和转换'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () => _showCurrencySelector(context, ref),
               ),
+              Consumer(
+                builder: (context, ref, _) {
+                  final currencyPrefs = ref.watch(currencyProvider);
+                  return SwitchListTile(
+                    secondary: const Icon(Icons.attach_money),
+                    title: const Text('启用多币种'),
+                    subtitle: Text(currencyPrefs.multiCurrencyEnabled 
+                        ? '支持多种货币记账' 
+                        : '仅使用单一货币'),
+                    value: currencyPrefs.multiCurrencyEnabled,
+                    onChanged: (value) {
+                      ref.read(currencyProvider.notifier).setMultiCurrencyMode(value);
+                    },
+                  );
+                },
+              ),
+              Consumer(
+                builder: (context, ref, _) {
+                  final currencyPrefs = ref.watch(currencyProvider);
+                  final baseCurrency = ref.watch(baseCurrencyProvider);
+                  return ListTile(
+                    leading: const Icon(Icons.account_balance),
+                    title: const Text('基础货币'),
+                    subtitle: Text('${baseCurrency.code} - ${baseCurrency.nameZh}'),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () => _showBaseCurrencyPicker(context, ref),
+                  );
+                },
+              ),
+              Consumer(
+                builder: (context, ref, _) {
+                  final isCryptoSupported = ref.watch(isCryptoSupportedProvider);
+                  if (!isCryptoSupported) {
+                    return ListTile(
+                      leading: Icon(Icons.currency_bitcoin, color: Colors.grey[400]),
+                      title: Text('加密货币', style: TextStyle(color: Colors.grey[600])),
+                      subtitle: Text('您所在地区不支持', style: TextStyle(color: Colors.grey[500])),
+                      enabled: false,
+                    );
+                  }
+                  final currencyPrefs = ref.watch(currencyProvider);
+                  return SwitchListTile(
+                    secondary: const Icon(Icons.currency_bitcoin),
+                    title: const Text('启用加密货币'),
+                    subtitle: const Text('支持BTC、ETH等数字货币'),
+                    value: currencyPrefs.cryptoEnabled,
+                    onChanged: (value) {
+                      ref.read(currencyProvider.notifier).setCryptoMode(value);
+                    },
+                  );
+                },
+              ),
               ListTile(
                 leading: const Icon(Icons.currency_exchange),
-                title: const Text('汇率管理'),
-                subtitle: const Text('管理多币种汇率'),
+                title: const Text('汇率转换'),
+                subtitle: const Text('查看实时汇率并转换'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () => _navigateToExchangeRates(context),
+                onTap: () => context.go('/settings/exchange-rate'),
               ),
               SwitchListTile(
                 secondary: const Icon(Icons.autorenew),
-                title: const Text('自动更新汇率'),
-                subtitle: const Text('每日自动更新汇率'),
+                title: const Text('智能汇率更新'),
+                subtitle: const Text('在需要时自动更新汇率'),
                 value: settings.autoUpdateRates ?? true,
                 onChanged: (value) {
                   ref.read(settingsProvider.notifier).updateSetting('autoUpdateRates', value);
@@ -312,18 +374,67 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _showCurrencySelector(BuildContext context, WidgetRef ref) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const CurrencySelectionScreen()),
+    // Navigate to currency settings in settings screen
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('请在设置中管理货币')),
     );
   }
 
   void _navigateToExchangeRates(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ExchangeRatesScreen()),
+    // Navigate to exchange rate screen
+    context.go('/settings/exchange-rate');
+  }
+  
+  void _showBaseCurrencyPicker(BuildContext context, WidgetRef ref) {
+    final currencies = ref.read(availableCurrenciesProvider);
+    final currentBase = ref.read(baseCurrencyProvider);
+    
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.only(top: 16),
+        child: Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                '选择基础货币',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: currencies.length,
+                itemBuilder: (context, index) {
+                  final currency = currencies[index];
+                  final isSelected = currency.code == currentBase.code;
+                  return ListTile(
+                    leading: Text(
+                      currency.flag ?? currency.symbol,
+                      style: const TextStyle(fontSize: 24),
+                    ),
+                    title: Text(currency.nameZh),
+                    subtitle: Text(currency.code),
+                    trailing: isSelected
+                        ? const Icon(Icons.check, color: Colors.green)
+                        : null,
+                    onTap: () {
+                      ref.read(currencyProvider.notifier).setBaseCurrency(currency.code);
+                      Navigator.pop(context);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
+  
 
   void _navigateToBudgetTemplates(BuildContext context) {
     // TODO: 实现预算模板页面
@@ -406,7 +517,7 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
-// 账本管理页面
+// 家庭管理页面
 class LedgerManagementScreen extends ConsumerWidget {
   const LedgerManagementScreen({super.key});
 
@@ -416,11 +527,19 @@ class LedgerManagementScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('账本管理'),
+        title: const Text('家庭管理'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () => _createLedger(context),
+            onPressed: () async {
+              final result = await showDialog<bool>(
+                context: context,
+                builder: (context) => const CreateFamilyDialog(),
+              );
+              if (result == true) {
+                ref.invalidate(ledgersProvider);
+              }
+            },
           ),
         ],
       ),
@@ -502,29 +621,30 @@ class LedgerManagementScreen extends ConsumerWidget {
     }
   }
 
-  void _createLedger(BuildContext context) {
-    // TODO: 实现创建账本
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('创建账本功能开发中')),
+  void _createLedger(BuildContext context) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => const CreateFamilyDialog(),
     );
+    // Note: Need to pass ref from the widget context
   }
 
   void _editLedger(BuildContext context, dynamic ledger) {
-    // TODO: 实现编辑账本
+    // TODO: 实现编辑家庭
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('编辑账本功能开发中')),
+      const SnackBar(content: Text('编辑家庭功能开发中')),
     );
   }
 
   void _deleteLedger(BuildContext context, WidgetRef ref, dynamic ledger) {
-    // TODO: 实现删除账本
+    // TODO: 实现删除家庭
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('删除账本功能开发中')),
+      const SnackBar(content: Text('删除家庭功能开发中')),
     );
   }
 }
 
-// 账本切换底部弹窗
+// 家庭切换底部弹窗
 class LedgerSwitcherSheet extends ConsumerWidget {
   const LedgerSwitcherSheet({super.key});
 

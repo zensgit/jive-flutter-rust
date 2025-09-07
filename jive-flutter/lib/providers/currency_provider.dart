@@ -176,14 +176,12 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   }
   
   /// Refresh exchange rates from API
+  /// Called when:
+  /// 1. App starts up
+  /// 2. User opens currency/exchange rate page
+  /// 3. User performs currency conversion in transaction
   Future<void> refreshExchangeRates() async {
     await _loadExchangeRates();
-  }
-  
-  /// Check if rates need update (older than 15 minutes)
-  bool get ratesNeedUpdate {
-    if (_lastRateUpdate == null) return true;
-    return DateTime.now().difference(_lastRateUpdate!) > const Duration(minutes: 15);
   }
 
   /// Get all available currencies based on settings
@@ -278,8 +276,7 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     // Save preferences first
     await _savePreferences();
     
-    // Then reload exchange rates with new base currency (auto-fetch from network)
-    _lastRateUpdate = null; // Force refresh when base currency changes
+    // Then reload exchange rates with new base currency
     await _loadExchangeRates();
   }
 
@@ -310,7 +307,8 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   }
 
   /// Get exchange rate between two currencies
-  Future<ExchangeRate?> getExchangeRate(String from, String to) async {
+  /// Auto-refreshes rates when called (for transaction conversions)
+  Future<ExchangeRate?> getExchangeRate(String from, String to, {bool autoRefresh = true}) async {
     if (from == to) {
       return ExchangeRate(
         fromCurrency: from,
@@ -321,8 +319,8 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       );
     }
     
-    // Check if we need to refresh rates
-    if (ratesNeedUpdate) {
+    // Auto-refresh rates when performing conversion
+    if (autoRefresh) {
       await refreshExchangeRates();
     }
     
@@ -396,8 +394,10 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   }
 
   /// Convert amount between currencies
+  /// Auto-refreshes exchange rates before conversion
   Future<double?> convertAmount(double amount, String from, String to) async {
-    final rate = await getExchangeRate(from, to);
+    // Always refresh rates when converting (for transactions)
+    final rate = await getExchangeRate(from, to, autoRefresh: true);
     return rate?.convert(amount);
   }
 

@@ -7,6 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'core/app.dart';
 import 'core/storage/hive_config.dart';
 import 'core/utils/logger.dart';
+import 'providers/currency_provider.dart';
+import 'providers/settings_provider.dart';
 
 void main() async {
   // 确保 Flutter 绑定初始化
@@ -23,10 +25,14 @@ void main() async {
     // 设置系统UI样式
     await _setupSystemUI();
     
+    // 创建ProviderContainer来访问providers
+    final container = ProviderContainer();
+    
     // 运行应用
     runApp(
-      ProviderScope(
-        child: JiveApp(),
+      UncontrolledProviderScope(
+        container: container,
+        child: JiveApp(container: container),
       ),
     );
     

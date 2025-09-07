@@ -79,7 +79,7 @@ impl AuthService {
         
         sqlx::query(
             r#"
-            INSERT INTO users (id, email, name, password_hash, created_at, updated_at)
+            INSERT INTO users (id, email, full_name, password_hash, created_at, updated_at)
             VALUES ($1, $2, $3, $4, $5, $6)
             "#
         )
@@ -95,7 +95,7 @@ impl AuthService {
         // Create personal family
         let family_service = FamilyService::new(self.pool.clone());
         let family_request = CreateFamilyRequest {
-            name: format!("{}的账本", user_name),
+            name: Some(format!("{}的家庭", user_name)),
             currency: Some("CNY".to_string()),
             timezone: Some("Asia/Shanghai".to_string()),
             locale: Some("zh-CN".to_string()),
@@ -137,14 +137,14 @@ impl AuthService {
         struct UserRow {
             id: Uuid,
             email: String,
-            name: Option<String>,
+            full_name: Option<String>,
             password_hash: String,
             current_family_id: Option<Uuid>,
         }
         
         let user = sqlx::query_as::<_, UserRow>(
             r#"
-            SELECT id, email, name, password_hash, current_family_id
+            SELECT id, email, full_name, password_hash, current_family_id
             FROM users
             WHERE email = $1
             "#
@@ -173,7 +173,7 @@ impl AuthService {
                 fm.role
             FROM families f
             JOIN family_members fm ON f.id = fm.family_id
-            WHERE fm.user_id = $1 AND fm.is_active = true
+            WHERE fm.user_id = $1
             ORDER BY fm.joined_at DESC
             "#
         )
@@ -193,7 +193,7 @@ impl AuthService {
         Ok(UserContext {
             user_id: user.id,
             email: user.email,
-            name: user.name,
+            name: user.full_name,
             current_family_id: user.current_family_id,
             families: family_info,
         })
@@ -207,13 +207,13 @@ impl AuthService {
         struct UserInfoRow {
             id: Uuid,
             email: String,
-            name: Option<String>,
+            full_name: Option<String>,
             current_family_id: Option<Uuid>,
         }
         
         let user = sqlx::query_as::<_, UserInfoRow>(
             r#"
-            SELECT id, email, name, current_family_id
+            SELECT id, email, full_name, current_family_id
             FROM users
             WHERE id = $1
             "#
@@ -238,7 +238,7 @@ impl AuthService {
                 fm.role
             FROM families f
             JOIN family_members fm ON f.id = fm.family_id
-            WHERE fm.user_id = $1 AND fm.is_active = true
+            WHERE fm.user_id = $1
             ORDER BY fm.joined_at DESC
             "#
         )
@@ -258,7 +258,7 @@ impl AuthService {
         Ok(UserContext {
             user_id: user.id,
             email: user.email,
-            name: user.name,
+            name: user.full_name,
             current_family_id: user.current_family_id,
             families: family_info,
         })
@@ -274,7 +274,7 @@ impl AuthService {
             role: String,
             permissions: serde_json::Value,
             email: String,
-            name: Option<String>,
+            full_name: Option<String>,
         }
         
         let row = sqlx::query_as::<_, AccessRow>(
@@ -283,10 +283,10 @@ impl AuthService {
                 fm.role,
                 fm.permissions,
                 u.email,
-                u.name
+                u.full_name
             FROM family_members fm
             JOIN users u ON fm.user_id = u.id
-            WHERE fm.family_id = $1 AND fm.user_id = $2 AND fm.is_active = true
+            WHERE fm.family_id = $1 AND fm.user_id = $2
             "#
         )
         .bind(family_id)
@@ -306,7 +306,7 @@ impl AuthService {
             role,
             permissions,
             row.email,
-            row.name,
+            row.full_name,
         ))
     }
     

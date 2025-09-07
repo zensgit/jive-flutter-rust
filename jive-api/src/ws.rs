@@ -10,7 +10,39 @@ use axum::{
 use futures_util::{sink::SinkExt, stream::StreamExt};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
+use std::collections::HashMap;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 use tracing::{info, error};
+
+/// WebSocket连接管理器
+pub struct WsConnectionManager {
+    connections: Arc<RwLock<HashMap<String, tokio::sync::mpsc::UnboundedSender<String>>>>,
+}
+
+impl WsConnectionManager {
+    pub fn new() -> Self {
+        Self {
+            connections: Arc::new(RwLock::new(HashMap::new())),
+        }
+    }
+    
+    pub async fn add_connection(&self, id: String, tx: tokio::sync::mpsc::UnboundedSender<String>) {
+        self.connections.write().await.insert(id, tx);
+    }
+    
+    pub async fn remove_connection(&self, id: &str) {
+        self.connections.write().await.remove(id);
+    }
+    
+    pub async fn send_message(&self, id: &str, message: String) -> Result<(), String> {
+        if let Some(tx) = self.connections.read().await.get(id) {
+            tx.send(message).map_err(|e| e.to_string())
+        } else {
+            Err("Connection not found".to_string())
+        }
+    }
+}
 
 /// WebSocket查询参数
 #[derive(Debug, Deserialize)]
@@ -50,7 +82,7 @@ pub async fn ws_handler(
 }
 
 /// 处理WebSocket连接
-async fn handle_socket(socket: WebSocket, token: String, _pool: PgPool) {
+pub async fn handle_socket(socket: WebSocket, token: String, _pool: PgPool) {
     let (mut sender, mut receiver) = socket.split();
     
     // 发送连接成功消息

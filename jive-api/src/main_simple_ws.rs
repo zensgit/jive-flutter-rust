@@ -22,6 +22,8 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 mod handlers;
 mod error;
 mod auth;
+mod services;
+mod models;
 // WebSocket模块暂时不包含，避免编译错误
 
 use handlers::template_handler::*;

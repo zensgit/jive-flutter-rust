@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/category.dart';
+import '../models/category.dart' as category_model;
 import '../models/category_template.dart';
 import '../services/api/category_service_integrated.dart';
 
@@ -117,7 +117,7 @@ class UserCategoriesNotifier extends StateNotifier<List<Category>> {
   }
 
   /// 更新分类
-  Future<void> updateCategory(Category category) async {
+  Future<void> updateCategory(category_model.Category category) async {
     try {
       await _service.updateCategory(category);
       final index = state.indexWhere((c) => c.id == category.id);
@@ -155,12 +155,12 @@ class UserCategoriesNotifier extends StateNotifier<List<Category>> {
   }
 
   /// 按账本ID获取分类
-  List<Category> getCategoriesByLedger(String ledgerId) {
+  List<category_model.Category> getCategoriesByLedger(String ledgerId) {
     return state.where((c) => c.ledgerId == ledgerId).toList();
   }
 
   /// 按分类类型获取分类
-  List<Category> getCategoriesByClassification(CategoryClassification classification) {
+  List<category_model.Category> getCategoriesByClassification(CategoryClassification classification) {
     return state.where((c) => c.classification == classification).toList();
   }
 }

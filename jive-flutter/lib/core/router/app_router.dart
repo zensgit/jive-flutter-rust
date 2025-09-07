@@ -6,18 +6,30 @@ import '../../providers/auth_provider.dart';
 import '../../screens/splash_screen.dart';
 import '../../screens/auth/login_screen.dart';
 import '../../screens/auth/register_screen.dart';
+import '../../screens/auth/registration_wizard.dart';
 import '../../screens/home/home_screen.dart';
 import '../../screens/dashboard/dashboard_screen.dart';
 import '../../screens/transactions/transactions_screen.dart';
+import '../../screens/transactions/transaction_add_screen.dart';
+import '../../screens/transactions/transaction_detail_screen.dart';
 import '../../screens/accounts/accounts_screen.dart';
+import '../../screens/accounts/account_add_screen.dart';
+import '../../screens/accounts/account_detail_screen.dart';
 import '../../screens/budgets/budgets_screen.dart';
 import '../../screens/settings/settings_screen.dart';
+import '../../screens/settings/profile_settings_screen.dart';
+import '../../screens/currency/exchange_rate_screen.dart';
+import '../../screens/family/family_members_screen.dart';
+import '../../screens/family/family_settings_screen.dart';
+import '../../screens/family/family_dashboard_screen.dart';
+import '../../providers/ledger_provider.dart';
 
 /// 路由路径常量
 class AppRoutes {
   static const splash = '/';
   static const login = '/login';
   static const register = '/register';
+  static const registerWizard = '/register-wizard';
   static const dashboard = '/dashboard';
   static const transactions = '/transactions';
   static const transactionDetail = '/transactions/:id';
@@ -32,6 +44,12 @@ class AppRoutes {
   static const profile = '/settings/profile';
   static const security = '/settings/security';
   static const preferences = '/settings/preferences';
+  static const exchangeRate = '/settings/exchange-rate';
+  
+  // 家庭管理路由
+  static const familyMembers = '/family/members';
+  static const familySettings = '/family/settings';  
+  static const familyDashboard = '/family/dashboard';
 }
 
 /// 路由Provider
@@ -85,6 +103,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.register,
         builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.registerWizard,
+        builder: (context, state) => const RegistrationWizard(),
       ),
       
       // 主页（带底部导航）
@@ -161,19 +183,56 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: 'profile',
-                builder: (context, state) => const ProfileScreen(),
+                builder: (context, state) => const ProfileSettingsScreen(),
               ),
               GoRoute(
                 path: 'security',
-                builder: (context, state) => const SecurityScreen(),
+                builder: (context, state) => const Scaffold(body: Center(child: Text('Security Settings'))),  // TODO: Create SecurityScreen
               ),
               GoRoute(
                 path: 'preferences',
-                builder: (context, state) => const PreferencesScreen(),
+                builder: (context, state) => const Scaffold(body: Center(child: Text('Preferences'))),  // TODO: Create PreferencesScreen
+              ),
+              GoRoute(
+                path: 'exchange-rate',
+                builder: (context, state) => const ExchangeRateScreen(),
               ),
             ],
           ),
         ],
+      ),
+      
+      // 家庭管理路由（独立页面，不在底部导航内）
+      GoRoute(
+        path: AppRoutes.familyMembers,
+        builder: (context, state) {
+          // 获取当前选中的账本
+          final currentLedger = ref.read(currentLedgerProvider);
+          if (currentLedger == null) {
+            return Scaffold(body: Center(child: Text('错误: 未选择家庭')));
+          }
+          return FamilyMembersScreen(ledger: currentLedger);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.familySettings,
+        builder: (context, state) {
+          final currentLedger = ref.read(currentLedgerProvider);
+          if (currentLedger == null) {
+            return Scaffold(body: Center(child: Text('错误: 未选择家庭')));
+          }
+          return FamilySettingsScreen(ledger: currentLedger);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.familyDashboard,
+        builder: (context, state) {
+          final currentLedger = ref.read(currentLedgerProvider);
+          if (currentLedger == null) {
+            return Scaffold(body: Center(child: Text('错误: 未选择家庭')));
+          }
+          return FamilyDashboardScreen(ledger: currentLedger);
+        },
       ),
     ],
     

@@ -9,7 +9,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use sqlx::{PgPool, Row, QueryBuilder};
 use uuid::Uuid;
-use rust_decimal::Decimal;
+use rust_decimal::{Decimal, prelude::Zero};
 use chrono::{DateTime, Utc};
 
 use crate::error::{ApiError, ApiResult};
@@ -186,13 +186,13 @@ pub async fn get_account(
     
     let response = AccountResponse {
         id: account.id,
-        ledger_id: account.ledger_id.ok_or(ApiError::DatabaseError("ledger_id is null".to_string()))?,
-        name: account.name.ok_or(ApiError::DatabaseError("name is null".to_string()))?,
-        account_type: account.account_type.unwrap_or_else(|| "checking".to_string()),
+        ledger_id: account.ledger_id,
+        name: account.name,
+        account_type: account.account_type,
         account_number: account.account_number,
         institution_name: account.institution_name,
         currency: account.currency.unwrap_or_else(|| "CNY".to_string()),
-        current_balance: account.current_balance.unwrap_or(Decimal::ZERO),
+        current_balance: account.current_balance.unwrap_or_else(|| Decimal::ZERO),
         available_balance: account.available_balance,
         credit_limit: account.credit_limit,
         status: account.status.unwrap_or_else(|| "active".to_string()),
@@ -200,8 +200,8 @@ pub async fn get_account(
         color: account.color,
         icon: None,
         notes: account.notes,
-        created_at: account.created_at,
-        updated_at: account.updated_at,
+        created_at: account.created_at.unwrap_or_else(|| chrono::Utc::now()),
+        updated_at: account.updated_at.unwrap_or_else(|| chrono::Utc::now()),
     };
     
     Ok(Json(response))
@@ -262,13 +262,13 @@ pub async fn create_account(
     
     let response = AccountResponse {
         id: account.id,
-        ledger_id: account.ledger_id.ok_or(ApiError::DatabaseError("ledger_id is null".to_string()))?,
-        name: account.name.ok_or(ApiError::DatabaseError("name is null".to_string()))?,
-        account_type: account.account_type.unwrap_or_else(|| "checking".to_string()),
+        ledger_id: account.ledger_id,
+        name: account.name,
+        account_type: account.account_type,
         account_number: account.account_number,
         institution_name: account.institution_name,
         currency: account.currency.unwrap_or_else(|| "CNY".to_string()),
-        current_balance: account.current_balance.unwrap_or(Decimal::ZERO),
+        current_balance: account.current_balance.unwrap_or_else(|| Decimal::ZERO),
         available_balance: account.available_balance,
         credit_limit: account.credit_limit,
         status: account.status.unwrap_or_else(|| "active".to_string()),
@@ -276,8 +276,8 @@ pub async fn create_account(
         color: account.color,
         icon: None,
         notes: account.notes,
-        created_at: account.created_at,
-        updated_at: account.updated_at,
+        created_at: account.created_at.unwrap_or_else(|| chrono::Utc::now()),
+        updated_at: account.updated_at.unwrap_or_else(|| chrono::Utc::now()),
     };
     
     Ok(Json(response))
@@ -433,7 +433,7 @@ pub async fn get_account_statistics(
     let by_type: Vec<TypeStatistics> = type_stats
         .into_iter()
         .map(|row| TypeStatistics {
-            account_type: row.account_type.unwrap_or_else(|| "checking".to_string()),
+            account_type: row.account_type,
             count: row.count.unwrap_or(0),
             total_balance: row.total_balance.unwrap_or(Decimal::ZERO),
         })

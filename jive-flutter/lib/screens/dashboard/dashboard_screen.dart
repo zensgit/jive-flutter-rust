@@ -8,6 +8,7 @@ import '../../providers/ledger_provider.dart';
 import '../../providers/account_provider.dart';
 import '../../providers/transaction_provider.dart';
 import '../../models/account.dart';
+import '../../widgets/family_switcher.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -32,11 +33,10 @@ class DashboardScreen extends ConsumerWidget {
           ],
         ),
         actions: [
-          // 账本切换按钮
-          IconButton(
-            icon: const Icon(Icons.book),
-            onPressed: () => _showLedgerSwitcher(context, ref),
-            tooltip: '切换账本',
+          // 使用新的家庭切换器组件
+          const Padding(
+            padding: EdgeInsets.only(right: 8),
+            child: FamilySwitcher(),
           ),
           // 通知按钮
           IconButton(

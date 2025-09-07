@@ -20,6 +20,7 @@ use argon2::{
 use crate::auth::{Claims, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse};
 use crate::error::{ApiError, ApiResult};
 use crate::services::AuthService;
+use super::family_handler::{ApiResponse, ApiError as FamilyApiError};
 
 /// 用户模型
 #[derive(Debug, Serialize, Deserialize)]
@@ -175,8 +176,8 @@ pub async fn login(
     // 查找用户
     let row = sqlx::query(
         r#"
-        SELECT id, email, name, password_hash,
-               is_active, email_verified, last_login_at,
+        SELECT id, email, full_name as name, password_hash,
+               status, email_verified, last_login_at,
                created_at, updated_at
         FROM users
         WHERE LOWER(email) = LOWER($1)
@@ -192,10 +193,10 @@ pub async fn login(
     let user = User {
         id: row.try_get("id").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
         email: row.try_get("email").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
-        name: row.try_get("name").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
+        name: row.try_get("name").unwrap_or_else(|_| "".to_string()),
         password_hash: row.try_get("password_hash").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
         family_id: None, // Will fetch from family_members table if needed
-        is_active: row.try_get("is_active").unwrap_or(false),
+        is_active: row.try_get::<String, _>("status").unwrap_or_else(|_| "pending".to_string()) == "active",
         is_verified: row.try_get("email_verified").unwrap_or(false),
         last_login_at: row.try_get("last_login_at").ok(),
         created_at: row.try_get("created_at").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
@@ -343,7 +344,7 @@ pub async fn get_current_user(
     Ok(Json(UserProfile {
         id: user.try_get("id").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
         email: user.try_get("email").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
-        name: user.try_get("name").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
+        name: user.try_get("full_name").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
         family_id: user.try_get("current_family_id").ok(),
         family_name: user.try_get("family_name").ok(),
         is_verified: user.try_get("email_verified").unwrap_or(false),
@@ -361,7 +362,7 @@ pub async fn update_user(
     
     if let Some(name) = req.name {
         sqlx::query(
-            "UPDATE users SET name = $1, updated_at = NOW() WHERE id = $2"
+            "UPDATE users SET full_name = $1, updated_at = NOW() WHERE id = $2"
         )
         .bind(name)
         .bind(user_id)
@@ -460,4 +461,168 @@ pub struct UpdateUserRequest {
 pub struct ChangePasswordRequest {
     pub old_password: String,
     pub new_password: String,
+}
+
+// Delete user account with verification
+#[derive(Debug, Deserialize)]
+pub struct DeleteAccountRequest {
+    pub verification_code: String,
+    pub confirm_delete: bool, // Extra confirmation
+}
+
+pub async fn delete_account(
+    State(state): State<crate::AppState>,
+    claims: Claims,
+    Json(request): Json<DeleteAccountRequest>,
+) -> Result<Json<ApiResponse<()>>, StatusCode> {
+    let user_id = match claims.user_id() {
+        Ok(id) => id,
+        Err(_) => return Err(StatusCode::UNAUTHORIZED),
+    };
+    
+    if !request.confirm_delete {
+        return Ok(Json(ApiResponse::<()> {
+            success: false,
+            data: None,
+            error: Some(FamilyApiError {
+                code: "CONFIRMATION_REQUIRED".to_string(),
+                message: "请确认删除操作".to_string(),
+                details: None,
+            }),
+            timestamp: chrono::Utc::now(),
+        }));
+    }
+    
+    // Verify the code first
+    let verification_service = crate::services::VerificationService::new(state.redis.clone());
+    
+    match verification_service.verify_code(
+        &user_id.to_string(),
+        "delete_user",
+        &request.verification_code
+    ).await {
+        Ok(true) => {
+            // Code is valid, proceed with account deletion
+            let mut tx = state.pool.begin().await.map_err(|e| {
+                eprintln!("Database error: {:?}", e);
+                StatusCode::INTERNAL_SERVER_ERROR
+            })?;
+            
+            // Check if user owns any families
+            let owned_families: i64 = sqlx::query_scalar(
+                "SELECT COUNT(*) FROM family_members WHERE user_id = $1 AND role = 'owner'"
+            )
+            .bind(user_id)
+            .fetch_one(&mut *tx)
+            .await
+            .map_err(|e| {
+                eprintln!("Database error: {:?}", e);
+                StatusCode::INTERNAL_SERVER_ERROR
+            })?;
+            
+            if owned_families > 0 {
+                return Ok(Json(ApiResponse::<()> {
+                    success: false,
+                    data: None,
+                    error: Some(FamilyApiError {
+                        code: "OWNS_FAMILIES".to_string(),
+                        message: "请先转让或删除您拥有的家庭后再删除账户".to_string(),
+                        details: None,
+                    }),
+                    timestamp: chrono::Utc::now(),
+                }));
+            }
+            
+            // Remove user from all families
+            sqlx::query("DELETE FROM family_members WHERE user_id = $1")
+                .bind(user_id)
+                .execute(&mut *tx)
+                .await
+                .map_err(|e| {
+                    eprintln!("Database error: {:?}", e);
+                    StatusCode::INTERNAL_SERVER_ERROR
+                })?;
+            
+            // Delete user account
+            sqlx::query("DELETE FROM users WHERE id = $1")
+                .bind(user_id)
+                .execute(&mut *tx)
+                .await
+                .map_err(|e| {
+                    eprintln!("Database error: {:?}", e);
+                    StatusCode::INTERNAL_SERVER_ERROR
+                })?;
+            
+            tx.commit().await.map_err(|e| {
+                eprintln!("Database error: {:?}", e);
+                StatusCode::INTERNAL_SERVER_ERROR
+            })?;
+            
+            Ok(Json(ApiResponse::success(())))
+        }
+        Ok(false) => {
+            Ok(Json(ApiResponse::<()> {
+                success: false,
+                data: None,
+                error: Some(FamilyApiError {
+                    code: "INVALID_VERIFICATION_CODE".to_string(),
+                    message: "验证码错误或已过期".to_string(),
+                    details: None,
+                }),
+                timestamp: chrono::Utc::now(),
+            }))
+        }
+        Err(_) => {
+            Ok(Json(ApiResponse::<()> {
+                success: false,
+                data: None,
+                error: Some(FamilyApiError {
+                    code: "VERIFICATION_SERVICE_ERROR".to_string(),
+                    message: "验证码服务暂时不可用".to_string(),
+                    details: None,
+                }),
+                timestamp: chrono::Utc::now(),
+            }))
+        }
+    }
+}
+
+/// Update avatar request
+#[derive(Debug, Deserialize)]
+pub struct UpdateAvatarRequest {
+    pub avatar_type: String,
+    pub avatar_data: Option<String>,
+    pub avatar_color: Option<String>,
+    pub avatar_background: Option<String>,
+}
+
+/// Update user avatar
+pub async fn update_avatar(
+    State(pool): State<PgPool>,
+    claims: Claims,
+    Json(req): Json<UpdateAvatarRequest>,
+) -> ApiResult<Json<ApiResponse<()>>> {
+    let user_id = claims.user_id()?;
+    
+    // Update avatar fields in database
+    sqlx::query(
+        r#"
+        UPDATE users 
+        SET 
+            avatar_style = $2,
+            avatar_color = $3,
+            avatar_background = $4,
+            updated_at = NOW()
+        WHERE id = $1
+        "#
+    )
+    .bind(user_id)
+    .bind(&req.avatar_type)
+    .bind(&req.avatar_color)
+    .bind(&req.avatar_background)
+    .execute(&pool)
+    .await
+    .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+    
+    Ok(Json(ApiResponse::success(())))
 }

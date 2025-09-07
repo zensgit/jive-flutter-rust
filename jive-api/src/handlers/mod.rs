@@ -10,3 +10,6 @@ pub mod member_handler;
 pub mod invitation_handler;
 pub mod audit_handler;
 pub mod ledgers;
+pub mod placeholder;
+pub mod enhanced_profile;
+pub mod currency_handler;

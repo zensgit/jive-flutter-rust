@@ -38,7 +38,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .layer(cors);
 
     // 启动服务器
-    let addr: SocketAddr = "127.0.0.1:8080".parse()?;
+    let port = std::env::var("API_PORT").unwrap_or_else(|_| "8012".to_string());
+    let addr: SocketAddr = format!("127.0.0.1:{}", port).parse()?;
     let listener = TcpListener::bind(addr).await?;
     
     info!("🌐 Server running at http://{}", addr);
@@ -46,7 +47,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     info!("  GET  /health                   - 健康检查");
     info!("  GET  /api/v1/templates/list    - 获取模板列表");
     info!("  GET  /api/v1/icons/list        - 获取图标列表");
-    info!("💡 Test with: curl http://127.0.0.1:8080/api/v1/templates/list");
+    info!("💡 Test with: curl http://{}/api/v1/templates/list", addr);
     
     axum::serve(listener, app).await?;
     
