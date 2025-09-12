@@ -173,9 +173,9 @@ class Transaction {
   
   /// 获取显示金额（带符号）
   String get displayAmount {
-    final sign = type == TransactionType.expense ? '-' : 
-                 type == TransactionType.income ? '+' : '';
-    return '$sign¥${amount.toStringAsFixed(2)}';
+    // Legacy helper; UI should prefer currencyProvider.formatCurrency
+    final sign = type == TransactionType.expense ? '-' : type == TransactionType.income ? '+' : '';
+    return '$sign${amount.toStringAsFixed(2)}';
   }
   
   /// 获取图标

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../utils/string_utils.dart';
+import '../../utils/string_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/ledger.dart';
 import '../../providers/ledger_provider.dart';
@@ -200,7 +202,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                     : null,
                 child: member.avatar == null
                     ? Text(
-                        member.name[0].toUpperCase(),
+                        StringUtils.safeInitial(member.name),
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -610,7 +612,7 @@ class _MemberDetailsSheet extends StatelessWidget {
                 : null,
             child: member.avatar == null
                 ? Text(
-                    member.name[0].toUpperCase(),
+                    StringUtils.safeInitial(member.name),
                     style: const TextStyle(fontSize: 32),
                   )
                 : null,

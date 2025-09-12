@@ -1,19 +1,23 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'package:dio/dio.dart';
 import '../models/exchange_rate.dart';
+import '../utils/constants.dart';
+import '../core/network/http_client.dart';
+import '../core/network/api_readiness.dart';
+import '../core/storage/token_storage.dart';
 
-/// Service for fetching real exchange rates from various APIs
+/// Service for fetching real exchange rates from backend API
 class ExchangeRateService {
-  // Free tier APIs that don't require API keys for basic usage
-  static const String _exchangeRateApiUrl = 'https://api.exchangerate-api.com/v4/latest/';
-  static const String _frankfurterApiUrl = 'https://api.frankfurter.app/latest';
-  static const String _fxRatesApiUrl = 'https://api.fxratesapi.com/latest';
   
   // Cache duration
   static const Duration _cacheDuration = Duration(minutes: 15);
   
   // Cache storage
   final Map<String, CachedExchangeRates> _cache = {};
+  bool _lastWasFallback = false;
+
+  bool get lastWasFallback => _lastWasFallback;
 
   /// Get exchange rates for a base currency
   Future<Map<String, ExchangeRate>> getExchangeRates(String baseCurrency) async {
@@ -25,70 +29,139 @@ class ExchangeRateService {
       return cached.rates;
     }
 
-    // Try to fetch from multiple sources for reliability
+    // Fetch from backend API
     Map<String, ExchangeRate>? rates;
     
-    // Try primary API
-    rates = await _fetchFromExchangeRateApi(baseCurrency);
-    
-    // Fallback to secondary API if primary fails
+    // Try backend API
+    rates = await _fetchFromBackendApi(baseCurrency);
+    bool usedFallback = false;
     if (rates == null || rates.isEmpty) {
-      rates = await _fetchFromFrankfurterApi(baseCurrency);
-    }
-    
-    // Fallback to tertiary API
-    if (rates == null || rates.isEmpty) {
-      rates = await _fetchFromFxRatesApi(baseCurrency);
-    }
-    
-    // If all APIs fail, use fallback rates
-    if (rates == null || rates.isEmpty) {
+      usedFallback = true;
       rates = _getFallbackRates(baseCurrency);
+      _lastWasFallback = true;
+      print('⚠️ Using fallback exchange rates (backend unavailable)');
+    } else {
+      _lastWasFallback = false;
+      print('✅ Live exchange rates fetched');
     }
-    
-    // Cache the results
-    _cache[cacheKey] = CachedExchangeRates(
-      rates: rates,
-      timestamp: DateTime.now(),
-    );
-    
+    _cache[cacheKey] = CachedExchangeRates(rates: rates, timestamp: DateTime.now());
     return rates;
   }
 
-  /// Fetch from exchangerate-api.com (no API key needed for basic usage)
-  Future<Map<String, ExchangeRate>?> _fetchFromExchangeRateApi(String baseCurrency) async {
-    try {
-      final response = await http
-          .get(Uri.parse('$_exchangeRateApiUrl$baseCurrency'))
-          .timeout(const Duration(seconds: 10));
+  /// Get exchange rates for a base currency with explicit targets (server-detailed, includes source)
+  Future<Map<String, ExchangeRate>> getExchangeRatesForTargets(
+    String baseCurrency,
+    List<String> targets,
+  ) async {
+    final cacheKey = '${baseCurrency.toUpperCase()}::${targets.map((e)=>e.toUpperCase()).toList()..sort()}';
+    final cached = _cache[cacheKey];
+    if (cached != null && !cached.isExpired) return cached.rates;
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final rates = data['rates'] as Map<String, dynamic>;
-        final date = DateTime.parse(data['date']);
-        
-        final Map<String, ExchangeRate> exchangeRates = {};
-        
-        for (final entry in rates.entries) {
-          exchangeRates[entry.key] = ExchangeRate(
-            fromCurrency: baseCurrency,
-            toCurrency: entry.key,
-            rate: (entry.value as num).toDouble(),
-            date: date,
-            source: 'exchangerate-api',
-          );
-        }
-        
-        return exchangeRates;
+    try {
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      final resp = await dio.post(
+        '/currencies/rates-detailed',
+        data: {
+          'base_currency': baseCurrency,
+          'target_currencies': targets,
+        },
+      );
+      if (resp.statusCode == 200 && resp.data != null) {
+        final data = resp.data;
+        final payload = data['data'] ?? data;
+        final ratesMap = payload['rates'] as Map<String, dynamic>?;
+        if (ratesMap == null) throw Exception('Invalid response format');
+        final now = DateTime.now();
+        final Map<String, ExchangeRate> result = {};
+        ratesMap.forEach((code, item) {
+          if (item is Map && item['rate'] != null) {
+            final rate = (item['rate'] is num)
+                ? (item['rate'] as num).toDouble()
+                : double.tryParse(item['rate'].toString()) ?? 0.0;
+            final source = item['source']?.toString();
+            result[code] = ExchangeRate(
+              fromCurrency: baseCurrency,
+              toCurrency: code,
+              rate: rate,
+              date: now,
+              source: source,
+            );
+          }
+        });
+        _lastWasFallback = false;
+        _cache[cacheKey] = CachedExchangeRates(rates: result, timestamp: now);
+        return result;
       }
+      throw Exception('Server returned ${resp.statusCode}');
     } catch (e) {
-      print('Error fetching from exchangerate-api: $e');
+      // If server fails, do not fabricate mock here; let UI indicate missing
+      _lastWasFallback = true;
+      return {};
     }
-    
+  }
+
+  /// Fetch from backend API
+  Future<Map<String, ExchangeRate>?> _fetchFromBackendApi(
+    String baseCurrency, { List<String>? targets }
+  ) async {
+    final dio = HttpClient.instance.dio;
+    await ApiReadiness.ensureReady(dio);
+    final targetCurrencies = (targets == null || targets.isEmpty)
+        ? ['USD', 'EUR', 'GBP', 'JPY', 'CNY', 'HKD', 'AUD', 'CAD', 'SGD', 'CHF']
+        : targets.map((e) => e.toUpperCase()).toSet().toList();
+    int attempt = 0;
+    while (attempt < 2) {
+      try {
+        final token = await TokenStorage.getAccessToken();
+        final resp = await dio.post(
+          '/currencies/rates',
+          data: {
+            'base_currency': baseCurrency,
+            'target_currencies': targetCurrencies,
+          },
+          options: Options(headers: {
+            if (token != null) 'Authorization': 'Bearer $token',
+          }),
+        );
+        if (resp.statusCode == 200 && resp.data != null) {
+          final data = resp.data;
+          final ratesMap = (data['data'] ?? data) as Map<String, dynamic>;
+          final now = DateTime.now();
+          final Map<String, ExchangeRate> result = {};
+          for (final e in ratesMap.entries) {
+            final v = e.value;
+            final rate = v is num ? v.toDouble() : double.tryParse(v.toString()) ?? 0.0;
+            result[e.key] = ExchangeRate(
+              fromCurrency: baseCurrency,
+              toCurrency: e.key,
+              rate: rate,
+              date: now,
+              source: 'backend-api',
+            );
+          }
+          return result;
+        }
+        break; // 非 200 不重复重试
+      } catch (e) {
+        if (e is DioException && (e.error is SocketException)) {
+          // backoff
+          await Future.delayed(Duration(milliseconds: 300 * (attempt + 1)));
+          attempt++;
+          continue;
+        }
+        print('Error fetching from backend API: $e');
+        break;
+      }
+    }
     return null;
   }
 
-  /// Fetch from frankfurter.app (European Central Bank data, completely free)
+  // The following methods are kept for reference but not used anymore
+  // as we now use the backend API
+  
+  /*
+  /// Fetch from frankfurter.app (European Central Bank data, completely free) 
   Future<Map<String, ExchangeRate>?> _fetchFromFrankfurterApi(String baseCurrency) async {
     try {
       final uri = Uri.parse(_frankfurterApiUrl).replace(
@@ -170,6 +243,7 @@ class ExchangeRateService {
     
     return null;
   }
+  */
 
   /// Get fallback rates when APIs are unavailable
   Map<String, ExchangeRate> _getFallbackRates(String baseCurrency) {

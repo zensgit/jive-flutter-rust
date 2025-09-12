@@ -17,7 +17,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: 'superadmin');
+  final _emailController = TextEditingController(text: 'superadmin@jive.money');
   final _passwordController = TextEditingController(text: 'admin123');
   bool _isPasswordVisible = false;
   bool _isLoading = false;

@@ -63,10 +63,21 @@ cargo run --bin jive-api
 # 或指定环境变量
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/jive_money \
 REDIS_URL=redis://localhost:6379 \
+FIAT_PROVIDER_ORDER=frankfurter,exchangerate-api \
+CRYPTO_PROVIDER_ORDER=coingecko,coincap \
 cargo run --bin jive-api
 ```
 
 服务将在 http://localhost:8012 启动
+
+### 新增可配置项（017）
+
+- `FIAT_PROVIDER_ORDER`: 以逗号分隔的法币汇率提供商顺序，默认 `frankfurter,exchangerate-api`
+- `CRYPTO_PROVIDER_ORDER`: 以逗号分隔的加密价格提供商顺序，默认 `coingecko,coincap`
+
+017 迁移还会：
+- 为 `currencies` 表添加 `country_code`, `is_popular`, `display_order`, `min_amount`, `max_amount` 列（若不存在）
+- 预置 150+ 法币和更多主流加密货币
 
 ### Docker部署
 

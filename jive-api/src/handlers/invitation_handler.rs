@@ -9,17 +9,17 @@ use uuid::Uuid;
 
 use crate::models::invitation::{AcceptInvitationRequest, CreateInvitationRequest, InvitationResponse};
 use crate::services::{InvitationService, ServiceContext, ServiceError};
-use crate::AppState;
+use sqlx::PgPool;
 
 use super::family_handler::ApiResponse;
 
 // Create invitation
 pub async fn create_invitation(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Extension(ctx): Extension<ServiceContext>,
     Json(request): Json<CreateInvitationRequest>,
 ) -> Result<Json<ApiResponse<InvitationResponse>>, StatusCode> {
-    let service = InvitationService::new(state.pool.clone());
+    let service = InvitationService::new(pool.clone());
     
     match service.create_invitation(&ctx, request).await {
         Ok(invitation) => Ok(Json(ApiResponse::success(invitation))),
@@ -34,10 +34,10 @@ pub async fn create_invitation(
 
 // Get pending invitations
 pub async fn get_pending_invitations(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Extension(ctx): Extension<ServiceContext>,
 ) -> Result<Json<ApiResponse<Vec<InvitationResponse>>>, StatusCode> {
-    let service = InvitationService::new(state.pool.clone());
+    let service = InvitationService::new(pool.clone());
     
     match service.get_pending_invitations(&ctx).await {
         Ok(invitations) => Ok(Json(ApiResponse::success(invitations))),
@@ -58,11 +58,11 @@ pub struct AcceptInvitationResponse {
 
 // Accept invitation
 pub async fn accept_invitation(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Extension(user_id): Extension<Uuid>,
     Json(request): Json<AcceptInvitationRequest>,
 ) -> Result<Json<ApiResponse<AcceptInvitationResponse>>, StatusCode> {
-    let service = InvitationService::new(state.pool.clone());
+    let service = InvitationService::new(pool.clone());
     
     match service.accept_invitation(request.invite_code, request.invite_token, user_id).await {
         Ok(family_id) => {
@@ -83,11 +83,11 @@ pub async fn accept_invitation(
 
 // Cancel invitation
 pub async fn cancel_invitation(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Path(invitation_id): Path<Uuid>,
     Extension(ctx): Extension<ServiceContext>,
 ) -> Result<StatusCode, StatusCode> {
-    let service = InvitationService::new(state.pool.clone());
+    let service = InvitationService::new(pool.clone());
     
     match service.cancel_invitation(&ctx, invitation_id).await {
         Ok(()) => Ok(StatusCode::NO_CONTENT),
@@ -102,10 +102,10 @@ pub async fn cancel_invitation(
 
 // Validate invite code
 pub async fn validate_invite_code(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Path(code): Path<String>,
 ) -> Result<Json<ApiResponse<InvitationResponse>>, StatusCode> {
-    let service = InvitationService::new(state.pool.clone());
+    let service = InvitationService::new(pool.clone());
     
     match service.validate_invite_code(&code).await {
         Ok(invitation) => Ok(Json(ApiResponse::success(invitation))),

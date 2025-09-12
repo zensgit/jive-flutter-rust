@@ -6,6 +6,10 @@
 echo "=== 启动 Jive Money 服务 ==="
 echo ""
 
+# 确保日志目录存在（脚本中会将日志写到 ./logs）
+mkdir -p logs
+echo ""
+
 # 颜色定义
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -31,12 +35,22 @@ echo ""
 echo "🚀 启动 Rust API 服务 (端口 8012)..."
 cd jive-api
 if [ -f "target/release/jive-api" ]; then
+    DATABASE_URL="${DATABASE_URL:-postgresql://postgres:postgres@localhost:5433/jive_money}" \
+    REDIS_URL="${REDIS_URL:-redis://localhost:6380}" \
+    API_PORT="${API_PORT:-8012}" \
     ./target/release/jive-api > ../logs/api.log 2>&1 &
     API_PID=$!
     echo -e "${GREEN}✓ API 服务已启动 (PID: $API_PID)${NC}"
 else
     echo -e "${YELLOW}⚠️  Release 版本不存在，正在编译...${NC}"
+    if ! command -v cargo >/dev/null 2>&1; then
+        echo -e "${RED}✗ 未检测到 Rust/cargo，请先安装 Rust 或在 docker 环境中运行${NC}"
+        exit 1
+    fi
     cargo build --release
+    DATABASE_URL="${DATABASE_URL:-postgresql://postgres:postgres@localhost:5433/jive_money}" \
+    REDIS_URL="${REDIS_URL:-redis://localhost:6380}" \
+    API_PORT="${API_PORT:-8012}" \
     ./target/release/jive-api > ../logs/api.log 2>&1 &
     API_PID=$!
     echo -e "${GREEN}✓ API 服务已启动 (PID: $API_PID)${NC}"
@@ -60,13 +74,44 @@ echo "🌐 启动 Flutter Web 服务 (端口 3021)..."
 cd jive-flutter
 
 # 检查是否需要构建
-if [ ! -d "build/web" ]; then
-    echo -e "${YELLOW}⚠️  Web 构建不存在，正在构建...${NC}"
-    flutter build web --release
+NEED_BUILD=0
+FORCE_REBUILD=0
+if [ "$1" = "--rebuild" ]; then
+  FORCE_REBUILD=1
 fi
 
-# 使用 Python HTTP 服务器
-python3 -m http.server 3021 --directory build/web > ../logs/web.log 2>&1 &
+if [ ! -f "build/web/index.html" ] || [ ! -f "build/web/main.dart.js" ]; then
+  NEED_BUILD=1
+fi
+
+if [ $FORCE_REBUILD -eq 1 ] || [ $NEED_BUILD -eq 1 ]; then
+  echo -e "${YELLOW}⚠️  触发 Web 构建...${NC}"
+  if ! command -v flutter >/dev/null 2>&1; then
+    echo -e "${RED}✗ 未检测到 Flutter，请先安装并配置 Flutter 环境${NC}"
+    exit 1
+  fi
+  flutter clean
+  # Disable PWA + wasm dry run + icon tree-shaking (workaround dynamic IconData)
+  flutter build web --release \
+    --no-wasm-dry-run \
+    --pwa-strategy=none \
+    --no-tree-shake-icons
+else
+  echo -e "${GREEN}✓ 发现现有 Web 构建，跳过构建${NC}"
+fi
+
+# 使用 Python HTTP 服务器（优先 python3，不存在则回退 python）
+PY_BIN="python3"
+if ! command -v python3 >/dev/null 2>&1; then
+  if command -v python >/dev/null 2>&1; then
+    PY_BIN="python"
+  else
+    echo -e "${RED}✗ 未检测到 Python，请安装 python3 或 python${NC}"
+    exit 1
+  fi
+fi
+
+$PY_BIN -m http.server 3021 --directory build/web > ../logs/web.log 2>&1 &
 WEB_PID=$!
 echo -e "${GREEN}✓ Web 服务已启动 (PID: $WEB_PID)${NC}"
 cd ..

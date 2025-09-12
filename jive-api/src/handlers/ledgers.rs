@@ -8,7 +8,7 @@ use serde_json::json;
 use sqlx::PgPool;
 use uuid::Uuid;
 use chrono::{DateTime, Utc};
-use crate::{AppState, auth::Claims, error::{ApiError, ApiResult}};
+use crate::{auth::Claims, error::{ApiError, ApiResult}};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Ledger {
@@ -50,7 +50,7 @@ pub struct ListLedgersQuery {
 }
 
 pub async fn list_ledgers(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     claims: Claims,
     Query(query): Query<ListLedgersQuery>,
 ) -> ApiResult<Json<serde_json::Value>> {
@@ -74,7 +74,7 @@ pub async fn list_ledgers(
         limit as i64,
         offset as i64,
     )
-    .fetch_all(&state.pool)
+    .fetch_all(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
@@ -101,7 +101,7 @@ pub async fn list_ledgers(
         "#,
         user_id,
     )
-    .fetch_one(&state.pool)
+    .fetch_one(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
@@ -116,7 +116,7 @@ pub async fn list_ledgers(
 }
 
 pub async fn get_current_ledger(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     claims: Claims,
 ) -> ApiResult<Json<Ledger>> {
     let user_id = claims.user_id()?;
@@ -134,7 +134,7 @@ pub async fn get_current_ledger(
         "#,
         user_id,
     )
-    .fetch_optional(&state.pool)
+    .fetch_optional(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
@@ -156,13 +156,13 @@ pub async fn get_current_ledger(
         Ok(Json(ledger))
     } else {
         // Create a default ledger if none exists
-        let new_ledger = create_default_ledger(&state.pool, user_id, claims.family_id).await?;
+        let new_ledger = create_default_ledger(&pool, user_id, claims.family_id).await?;
         Ok(Json(new_ledger))
     }
 }
 
 pub async fn create_ledger(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     claims: Claims,
     Json(req): Json<CreateLedgerRequest>,
 ) -> ApiResult<Json<Ledger>> {
@@ -179,7 +179,7 @@ pub async fn create_ledger(
             "#,
             claims.family_id
         )
-        .execute(&state.pool)
+        .execute(&pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     }
@@ -198,7 +198,7 @@ pub async fn create_ledger(
         req.currency,
         req.is_default.unwrap_or(false)
     )
-    .fetch_one(&state.pool)
+    .fetch_one(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
@@ -220,7 +220,7 @@ pub async fn create_ledger(
 }
 
 pub async fn get_ledger(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     claims: Claims,
     Path(id): Path<Uuid>,
 ) -> ApiResult<Json<Ledger>> {
@@ -238,7 +238,7 @@ pub async fn get_ledger(
         id,
         user_id,
     )
-    .fetch_optional(&state.pool)
+    .fetch_optional(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     .ok_or(ApiError::NotFound("Ledger not found".to_string()))?;
@@ -261,7 +261,7 @@ pub async fn get_ledger(
 }
 
 pub async fn update_ledger(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     claims: Claims,
     Path(id): Path<Uuid>,
     Json(req): Json<UpdateLedgerRequest>,
@@ -279,7 +279,7 @@ pub async fn update_ledger(
         id,
         user_id,
     )
-    .fetch_optional(&state.pool)
+    .fetch_optional(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     .ok_or(ApiError::NotFound("Ledger not found".to_string()))?;
@@ -294,7 +294,7 @@ pub async fn update_ledger(
             "#,
             claims.family_id
         )
-        .execute(&state.pool)
+        .execute(&pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     }
@@ -317,7 +317,7 @@ pub async fn update_ledger(
         req.currency,
         req.is_default
     )
-    .fetch_one(&state.pool)
+    .fetch_one(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
@@ -339,7 +339,7 @@ pub async fn update_ledger(
 }
 
 pub async fn delete_ledger(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     claims: Claims,
     Path(id): Path<Uuid>,
 ) -> ApiResult<StatusCode> {
@@ -355,7 +355,7 @@ pub async fn delete_ledger(
         "#,
         user_id
     )
-    .fetch_one(&state.pool)
+    .fetch_one(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
@@ -372,7 +372,7 @@ pub async fn delete_ledger(
         id,
         user_id,
     )
-    .execute(&state.pool)
+    .execute(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
@@ -424,7 +424,7 @@ async fn create_default_ledger(
 
 // Get ledger statistics
 pub async fn get_ledger_statistics(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     claims: Claims,
     Path(id): Path<Uuid>,
 ) -> ApiResult<Json<serde_json::Value>> {
@@ -441,7 +441,7 @@ pub async fn get_ledger_statistics(
         id,
         user_id,
     )
-    .fetch_optional(&state.pool)
+    .fetch_optional(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     .ok_or(ApiError::NotFound("Ledger not found".to_string()))?;
@@ -459,7 +459,7 @@ pub async fn get_ledger_statistics(
         "#,
         id
     )
-    .fetch_one(&state.pool)
+    .fetch_one(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
@@ -472,7 +472,7 @@ pub async fn get_ledger_statistics(
         "#,
         id
     )
-    .fetch_one(&state.pool)
+    .fetch_one(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
@@ -489,7 +489,7 @@ pub async fn get_ledger_statistics(
 
 // Get ledger members
 pub async fn get_ledger_members(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     claims: Claims,
     Path(id): Path<Uuid>,
 ) -> ApiResult<Json<serde_json::Value>> {
@@ -506,13 +506,14 @@ pub async fn get_ledger_members(
         id,
         user_id,
     )
-    .fetch_optional(&state.pool)
+    .fetch_optional(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     .ok_or(ApiError::NotFound("Ledger not found".to_string()))?;
     
-    // If ledger has a family_id, get family members
-    if let Some(family_id) = ledger.family_id {
+    // Get family members (ledger always has family_id in the database)
+    let family_id = ledger.family_id;
+    {
         let members = sqlx::query!(
             r#"
             SELECT 
@@ -528,7 +529,7 @@ pub async fn get_ledger_members(
             "#,
             family_id
         )
-        .fetch_all(&state.pool)
+        .fetch_all(&pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
         
@@ -548,33 +549,6 @@ pub async fn get_ledger_members(
             "family_id": family_id,
             "members": member_list,
             "total": member_list.len()
-        })))
-    } else {
-        // Personal ledger, only has the owner
-        let owner = sqlx::query!(
-            r#"
-            SELECT id, name as full_name, email
-            FROM users
-            WHERE id = $1
-            "#,
-            user_id
-        )
-        .fetch_one(&state.pool)
-        .await
-        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-        
-        Ok(Json(json!({
-            "ledger_id": id,
-            "family_id": null,
-            "members": [{
-                "user_id": owner.id,
-                "name": if !owner.full_name.is_empty() { owner.full_name.clone() } else { owner.email.clone() },
-                "email": owner.email,
-                "role": "owner",
-                "joined_at": chrono::Utc::now(),
-                "is_active": true
-            }],
-            "total": 1
         })))
     }
 }

@@ -1,13 +1,12 @@
 use axum::{
-    extract::{Path, Query, State},
-    http::StatusCode,
+    extract::{Query, State},
     response::Json,
 };
 use chrono::NaiveDate;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use uuid::Uuid;
+// use uuid::Uuid; // 未使用
 use std::collections::HashMap;
 
 use crate::auth::Claims;
@@ -22,7 +21,7 @@ pub async fn get_supported_currencies(
 ) -> ApiResult<Json<ApiResponse<Vec<Currency>>>> {
     let service = CurrencyService::new(pool);
     let currencies = service.get_supported_currencies().await
-        .map_err(|e| ApiError::InternalServerError)?;
+        .map_err(|_e| ApiError::InternalServerError)?;
     
     Ok(Json(ApiResponse::success(currencies)))
 }
@@ -36,7 +35,7 @@ pub async fn get_user_currency_preferences(
     let service = CurrencyService::new(pool);
     
     let preferences = service.get_user_currency_preferences(user_id).await
-        .map_err(|e| ApiError::InternalServerError)?;
+        .map_err(|_e| ApiError::InternalServerError)?;
     
     Ok(Json(ApiResponse::success(preferences)))
 }
@@ -58,7 +57,7 @@ pub async fn set_user_currency_preferences(
     
     service.set_user_currency_preferences(user_id, req.currencies, req.primary_currency)
         .await
-        .map_err(|e| ApiError::InternalServerError)?;
+        .map_err(|_e| ApiError::InternalServerError)?;
     
     Ok(Json(ApiResponse::success(())))
 }
@@ -73,7 +72,7 @@ pub async fn get_family_currency_settings(
     
     let service = CurrencyService::new(pool);
     let settings = service.get_family_currency_settings(family_id).await
-        .map_err(|e| ApiError::InternalServerError)?;
+        .map_err(|_e| ApiError::InternalServerError)?;
     
     Ok(Json(ApiResponse::success(settings)))
 }
@@ -89,7 +88,7 @@ pub async fn update_family_currency_settings(
     
     let service = CurrencyService::new(pool);
     let settings = service.update_family_currency_settings(family_id, req).await
-        .map_err(|e| ApiError::InternalServerError)?;
+        .map_err(|_e| ApiError::InternalServerError)?;
     
     Ok(Json(ApiResponse::success(settings)))
 }
@@ -108,7 +107,7 @@ pub async fn get_exchange_rate(
 ) -> ApiResult<Json<ApiResponse<ExchangeRateResponse>>> {
     let service = CurrencyService::new(pool);
     let rate = service.get_exchange_rate(&query.from, &query.to, query.date).await
-        .map_err(|e| ApiError::NotFound(format!("Exchange rate not found: {}", e)))?;
+        .map_err(|_e| ApiError::NotFound("Exchange rate not found".to_string()))?;
     
     Ok(Json(ApiResponse::success(ExchangeRateResponse {
         from_currency: query.from,
@@ -141,7 +140,7 @@ pub async fn get_batch_exchange_rates(
     let service = CurrencyService::new(pool);
     let rates = service.get_exchange_rates(&req.base_currency, req.target_currencies, req.date)
         .await
-        .map_err(|e| ApiError::InternalServerError)?;
+        .map_err(|_e| ApiError::InternalServerError)?;
     
     Ok(Json(ApiResponse::success(rates)))
 }
@@ -154,7 +153,7 @@ pub async fn add_exchange_rate(
 ) -> ApiResult<Json<ApiResponse<ExchangeRate>>> {
     let service = CurrencyService::new(pool);
     let rate = service.add_exchange_rate(req).await
-        .map_err(|e| ApiError::InternalServerError)?;
+        .map_err(|_e| ApiError::InternalServerError)?;
     
     Ok(Json(ApiResponse::success(rate)))
 }
@@ -186,11 +185,11 @@ pub async fn convert_amount(
     // 获取汇率
     let rate = service.get_exchange_rate(&req.from_currency, &req.to_currency, req.date)
         .await
-        .map_err(|e| ApiError::NotFound(format!("Exchange rate not found: {}", e)))?;
+        .map_err(|_e| ApiError::NotFound("Exchange rate not found".to_string()))?;
     
     // 获取货币信息以确定小数位数
     let currencies = service.get_supported_currencies().await
-        .map_err(|e| ApiError::InternalServerError)?;
+        .map_err(|_e| ApiError::InternalServerError)?;
     
     let from_currency_info = currencies.iter()
         .find(|c| c.code == req.from_currency)
@@ -234,7 +233,7 @@ pub async fn get_exchange_rate_history(
     
     let history = service.get_exchange_rate_history(&query.from, &query.to, days)
         .await
-        .map_err(|e| ApiError::InternalServerError)?;
+        .map_err(|_e| ApiError::InternalServerError)?;
     
     Ok(Json(ApiResponse::success(history)))
 }
@@ -299,7 +298,7 @@ pub async fn refresh_exchange_rates(
     
     for base in base_currencies {
         service.fetch_latest_rates(base).await
-            .map_err(|e| ApiError::InternalServerError)?;
+            .map_err(|_e| ApiError::InternalServerError)?;
     }
     
     Ok(Json(ApiResponse::success(())))

@@ -1,10 +1,11 @@
 # Jive Money 服务端口配置
 
-## 服务状态
-- ✅ **Rust API**: 运行中 (PID: 155201, 端口: 8012)
-- ✅ **Flutter Web**: 运行中 (PID: 155801, 端口: 3021)  
-- ✅ **PostgreSQL**: 运行中 (端口: 5432)
-- ✅ **Redis**: 运行中 (端口: 6379)
+## 服务状态 (示例)
+- ✅ **Rust API**: 运行中 (端口: 8012)
+- ✅ **Flutter Web**: 运行中 (端口: 3021)  
+- ✅ **PostgreSQL**: 运行中 (主机端口: 5433 → 容器 5432)
+- ✅ **Redis**: 运行中 (主机端口: 6380 → 容器 6379)
+- ✅ **Adminer**: 运行中 (端口: 9080 → 容器 8080)
 
 ## 端口配置详情
 
@@ -23,13 +24,13 @@
 - **配置**: `lib/core/config/environment_config.dart`
 
 ### PostgreSQL 数据库
-- **端口**: 5432
+- **主机端口**: 5433 (容器内部: 5432)
 - **数据库**: jive_money
 - **用户**: postgres
 - **连接字符串**: postgresql://postgres:postgres@localhost:5432/jive_money
 
 ### Redis 缓存
-- **端口**: 6379
+- **主机端口**: 6380 (容器内部: 6379)
 - **主机**: localhost
 - **用途**: 会话管理、缓存
 
@@ -111,3 +112,14 @@ redis-cli -h localhost -p 6379 ping
 - 2025-09-02: 配置端口从8080更改为8012 (Rust API)
 - 2025-09-02: Flutter Web端口设置为3021
 - 2025-09-02: 添加环境配置管理和健康检查工具
+### Adminer (数据库管理)
+- **端口**: 9080 (映射自容器 8080)
+- **URL**: http://localhost:9080
+- **登录建议**:
+  - System: PostgreSQL
+  - Server: postgres (或 localhost)
+  - Port: 5433
+  - Username: postgres
+  - Password: postgres
+  - Database: jive_money
+  

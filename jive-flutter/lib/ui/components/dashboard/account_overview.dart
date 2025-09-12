@@ -112,35 +112,38 @@ class AccountOverview extends ConsumerWidget {
   Widget _buildAssetLiabilityOverview(double assets, double liabilities) {
     final netWorth = assets - liabilities;
     
-    return Row(
-      children: [
-        Expanded(
-          child: _buildOverviewCard(
-            '资产',
-            assets,
-            Colors.green,
-            Icons.trending_up,
+    return SizedBox(
+      width: double.infinity,
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildOverviewCard(
+              '资产',
+              assets,
+              Colors.green,
+              Icons.trending_up,
+            ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildOverviewCard(
-            '负债',
-            liabilities,
-            Colors.red,
-            Icons.trending_down,
+          const SizedBox(width: 12),
+          Expanded(
+            child: _buildOverviewCard(
+              '负债',
+              liabilities,
+              Colors.red,
+              Icons.trending_down,
+            ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildOverviewCard(
-            '净值',
-            netWorth,
-            netWorth >= 0 ? Colors.blue : Colors.orange,
-            Icons.account_balance,
+          const SizedBox(width: 12),
+          Expanded(
+            child: _buildOverviewCard(
+              '净值',
+              netWorth,
+              netWorth >= 0 ? Colors.blue : Colors.orange,
+              Icons.account_balance,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

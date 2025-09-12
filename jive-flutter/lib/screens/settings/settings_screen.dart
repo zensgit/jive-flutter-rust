@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../utils/string_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
@@ -81,84 +82,16 @@ class SettingsScreen extends ConsumerWidget {
             ],
           ),
           
-          // 货币设置
+          // 货币设置（精简为统一入口，直接进入 V2 管理页）
           _buildSection(
             title: '多币种设置',
             children: [
               ListTile(
                 leading: const Icon(Icons.language),
-                title: const Text('多币种管理'),
-                subtitle: const Text('设置货币、汇率和转换'),
+                title: const Text('打开多币种管理'),
+                subtitle: const Text('基础货币、多币种/加密开关、选择货币、手动/自动汇率'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () => _showCurrencySelector(context, ref),
-              ),
-              Consumer(
-                builder: (context, ref, _) {
-                  final currencyPrefs = ref.watch(currencyProvider);
-                  return SwitchListTile(
-                    secondary: const Icon(Icons.attach_money),
-                    title: const Text('启用多币种'),
-                    subtitle: Text(currencyPrefs.multiCurrencyEnabled 
-                        ? '支持多种货币记账' 
-                        : '仅使用单一货币'),
-                    value: currencyPrefs.multiCurrencyEnabled,
-                    onChanged: (value) {
-                      ref.read(currencyProvider.notifier).setMultiCurrencyMode(value);
-                    },
-                  );
-                },
-              ),
-              Consumer(
-                builder: (context, ref, _) {
-                  final currencyPrefs = ref.watch(currencyProvider);
-                  final baseCurrency = ref.watch(baseCurrencyProvider);
-                  return ListTile(
-                    leading: const Icon(Icons.account_balance),
-                    title: const Text('基础货币'),
-                    subtitle: Text('${baseCurrency.code} - ${baseCurrency.nameZh}'),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () => _showBaseCurrencyPicker(context, ref),
-                  );
-                },
-              ),
-              Consumer(
-                builder: (context, ref, _) {
-                  final isCryptoSupported = ref.watch(isCryptoSupportedProvider);
-                  if (!isCryptoSupported) {
-                    return ListTile(
-                      leading: Icon(Icons.currency_bitcoin, color: Colors.grey[400]),
-                      title: Text('加密货币', style: TextStyle(color: Colors.grey[600])),
-                      subtitle: Text('您所在地区不支持', style: TextStyle(color: Colors.grey[500])),
-                      enabled: false,
-                    );
-                  }
-                  final currencyPrefs = ref.watch(currencyProvider);
-                  return SwitchListTile(
-                    secondary: const Icon(Icons.currency_bitcoin),
-                    title: const Text('启用加密货币'),
-                    subtitle: const Text('支持BTC、ETH等数字货币'),
-                    value: currencyPrefs.cryptoEnabled,
-                    onChanged: (value) {
-                      ref.read(currencyProvider.notifier).setCryptoMode(value);
-                    },
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.currency_exchange),
-                title: const Text('汇率转换'),
-                subtitle: const Text('查看实时汇率并转换'),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () => context.go('/settings/exchange-rate'),
-              ),
-              SwitchListTile(
-                secondary: const Icon(Icons.autorenew),
-                title: const Text('智能汇率更新'),
-                subtitle: const Text('在需要时自动更新汇率'),
-                value: settings.autoUpdateRates ?? true,
-                onChanged: (value) {
-                  ref.read(settingsProvider.notifier).updateSetting('autoUpdateRates', value);
-                },
+                onTap: () => context.go('/settings/currency'),
               ),
             ],
           ),
@@ -283,32 +216,43 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildUserCard(BuildContext context, dynamic user) {
+    // Safely extract user data with fallbacks
+    final userName = user?.name?.toString().isNotEmpty == true ? user.name.toString() : '用户';
+    final userEmail = user?.email?.toString() ?? '';
+    final userAvatar = user?.avatar?.toString();
+    
+    // Get safe initial for avatar
+    final initial = StringUtils.safeInitial(userName);
+    
     return Card(
       margin: const EdgeInsets.all(16),
-      child: ListTile(
-        leading: CircleAvatar(
-          radius: 30,
-          backgroundImage: user.avatar != null
-              ? NetworkImage(user.avatar)
-              : null,
-          child: user.avatar == null
-              ? Text(
-                  (user.name ?? 'U')[0].toUpperCase(),
-                  style: const TextStyle(fontSize: 24),
-                )
-              : null,
-        ),
-        title: Text(
-          user.name ?? '用户',
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+      child: Material(
+        type: MaterialType.transparency,
+        child: ListTile(
+          leading: CircleAvatar(
+            radius: 30,
+            backgroundImage: userAvatar != null && userAvatar.isNotEmpty
+                ? NetworkImage(userAvatar)
+                : null,
+            child: userAvatar == null || userAvatar.isEmpty
+                ? Text(
+                    initial,
+                    style: const TextStyle(fontSize: 24),
+                  )
+                : null,
           ),
-        ),
-        subtitle: Text(user.email ?? ''),
-        trailing: IconButton(
-          icon: const Icon(Icons.edit),
-          onPressed: () => context.go('/settings/profile'),
+          title: Text(
+            userName,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          subtitle: userEmail.isNotEmpty ? Text(userEmail) : null,
+          trailing: IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () => context.go('/settings/profile'),
+          ),
         ),
       ),
     );
@@ -421,9 +365,43 @@ class SettingsScreen extends ConsumerWidget {
                     trailing: isSelected
                         ? const Icon(Icons.check, color: Colors.green)
                         : null,
-                    onTap: () {
-                      ref.read(currencyProvider.notifier).setBaseCurrency(currency.code);
-                      Navigator.pop(context);
+                    onTap: () async {
+                      if (currency.code == currentBase.code) {
+                        Navigator.pop(context);
+                        return;
+                      }
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('更换基础货币'),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text('1. 旧账单若有币种转换，将保留原转换单位'),
+                              SizedBox(height: 8),
+                              Text('2. 旧账单若无币种转换，将以新币种显示'),
+                              SizedBox(height: 8),
+                              Text('3. 所有统计将以新基础货币汇总，请谨慎更换'),
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, false),
+                              child: const Text('取消'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(ctx, true),
+                              style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                              child: const Text('确定更换'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirmed == true) {
+                        await ref.read(currencyProvider.notifier).setBaseCurrency(currency.code);
+                        if (context.mounted) Navigator.pop(context);
+                      }
                     },
                   );
                 },

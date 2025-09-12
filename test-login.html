@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API登录测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Jive API 登录测试</h1>
+    <button onclick="testLogin()">测试登录 (superadmin/admin123)</button>
+    <div id="result"></div>
+
+    <script>
+        async function testLogin() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '正在连接...';
+            
+            try {
+                const response = await fetch('http://localhost:8012/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-App-Version': '1.0.0',
+                        'X-Platform': 'flutter'
+                    },
+                    body: JSON.stringify({
+                        email: 'superadmin',
+                        password: 'admin123',
+                        remember_me: false
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = '<span class="success">✅ 登录成功!</span>\n\n' + 
+                        'Response:\n' + JSON.stringify(data, null, 2);
+                } else {
+                    resultDiv.innerHTML = '<span class="error">❌ 登录失败</span>\n\n' + 
+                        'Status: ' + response.status + '\n' +
+                        'Response:\n' + JSON.stringify(data, null, 2);
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<span class="error">❌ 连接错误</span>\n\n' + 
+                    'Error: ' + error.message + '\n\n' +
+                    '可能的原因:\n' +
+                    '1. API服务未运行在 http://localhost:8012\n' +
+                    '2. CORS问题\n' +
+                    '3. 网络连接问题';
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -210,10 +210,14 @@ pub async fn list_transactions(
         query.push(")");
     }
     
-    // 排序
+    // 排序 - 处理字段名映射
     let sort_by = params.sort_by.unwrap_or_else(|| "transaction_date".to_string());
+    let sort_column = match sort_by.as_str() {
+        "date" => "transaction_date",
+        other => other,
+    };
     let sort_order = params.sort_order.unwrap_or_else(|| "DESC".to_string());
-    query.push(format!(" ORDER BY t.{} {}", sort_by, sort_order));
+    query.push(format!(" ORDER BY t.{} {}", sort_column, sort_order));
     
     // 分页
     let page = params.page.unwrap_or(1);

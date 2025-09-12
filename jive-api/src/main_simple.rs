@@ -11,7 +11,7 @@ use axum::{
 use serde_json::json;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
-use tower_http::cors::{Any, CorsLayer};
+use jive_money_api::middleware::cors::create_cors_layer;
 use tracing::info;
 use tracing_subscriber;
 use chrono;
@@ -23,11 +23,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     info!("🚀 Starting Jive Money API Server (Simple Version)...");
 
-    // CORS配置
-    let cors = CorsLayer::new()
-        .allow_origin(Any)
-        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
-        .allow_headers([header::CONTENT_TYPE, header::AUTHORIZATION]);
+    // 统一使用中间件 CORS（支持 CORS_DEV=1）
+    let cors = create_cors_layer();
 
     // 路由配置
     let app = Router::new()

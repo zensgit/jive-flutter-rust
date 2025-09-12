@@ -19,6 +19,7 @@ import '../../screens/budgets/budgets_screen.dart';
 import '../../screens/settings/settings_screen.dart';
 import '../../screens/settings/profile_settings_screen.dart';
 import '../../screens/currency/exchange_rate_screen.dart';
+import '../../screens/management/currency_management_page_v2.dart';
 import '../../screens/family/family_members_screen.dart';
 import '../../screens/family/family_settings_screen.dart';
 import '../../screens/family/family_dashboard_screen.dart';
@@ -45,6 +46,8 @@ class AppRoutes {
   static const security = '/settings/security';
   static const preferences = '/settings/preferences';
   static const exchangeRate = '/settings/exchange-rate';
+  static const currencyManagement = '/settings/currency';
+  static const cryptoManagement = '/settings/crypto';
   
   // 家庭管理路由
   static const familyMembers = '/family/members';
@@ -196,6 +199,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'exchange-rate',
                 builder: (context, state) => const ExchangeRateScreen(),
+              ),
+              GoRoute(
+                path: 'currency',
+                builder: (context, state) => const CurrencyManagementPageV2(),
+              ),
+              GoRoute(
+                path: 'crypto',
+                builder: (context, state) => const CurrencyManagementPageV2(), // reuses V2; inside page navigates to crypto
               ),
             ],
           ),

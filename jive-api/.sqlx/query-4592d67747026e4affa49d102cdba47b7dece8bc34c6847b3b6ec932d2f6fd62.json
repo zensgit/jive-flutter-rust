@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT DISTINCT a.currency\n            FROM accounts a\n            JOIN ledgers l ON a.ledger_id = l.id\n            WHERE l.family_id = $1 AND a.currency IS NOT NULL\n            ORDER BY a.currency\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "currency",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "4592d67747026e4affa49d102cdba47b7dece8bc34c6847b3b6ec932d2f6fd62"
+}

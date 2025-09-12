@@ -1,30 +1,34 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import '../core/network/http_client.dart';
+import '../core/network/api_readiness.dart';
+import '../core/storage/token_storage.dart';
 import '../models/currency.dart';
 import '../models/currency_api.dart';
 import '../utils/constants.dart';
 
 class CurrencyService {
   final String? token;
-  final String baseUrl = ApiConstants.baseUrl;
+  final String baseUrl = ApiConstants.baseUrl; // 仍保留用于兼容旧逻辑的字段
   
   CurrencyService(this.token);
   
-  Map<String, String> get _headers => {
-    'Content-Type': 'application/json',
-    if (token != null) 'Authorization': 'Bearer $token',
-  };
+  Future<Map<String, String>> _headers() async {
+    final t = token ?? await TokenStorage.getAccessToken();
+    return {
+      'Content-Type': 'application/json',
+      if (t != null) 'Authorization': 'Bearer $t',
+    };
+  }
   
   /// Get all supported currencies from the API
   Future<List<Currency>> getSupportedCurrencies() async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/currencies'),
-        headers: _headers,
-      );
-      
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      final resp = await dio.get('/currencies');
+      if (resp.statusCode == 200) {
+        final data = resp.data;
         final List<dynamic> currencies = data['data'] ?? data;
         
         return currencies.map((json) {
@@ -53,13 +57,11 @@ class CurrencyService {
   /// Get user currency preferences
   Future<List<CurrencyPreference>> getUserCurrencyPreferences() async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/currencies/preferences'),
-        headers: _headers,
-      );
-      
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      final resp = await dio.get('/currencies/preferences');
+      if (resp.statusCode == 200) {
+        final data = resp.data;
         final List<dynamic> preferences = data['data'] ?? data;
         return preferences.map((json) => CurrencyPreference.fromJson(json)).toList();
       } else {
@@ -74,17 +76,14 @@ class CurrencyService {
   /// Set user currency preferences
   Future<void> setUserCurrencyPreferences(List<String> currencies, String primaryCurrency) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/currencies/preferences'),
-        headers: _headers,
-        body: json.encode({
-          'currencies': currencies,
-          'primary_currency': primaryCurrency,
-        }),
-      );
-      
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception('Failed to set preferences: ${response.statusCode}');
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      final resp = await dio.post('/currencies/preferences', data: {
+        'currencies': currencies,
+        'primary_currency': primaryCurrency,
+      });
+      if (resp.statusCode != 200 && resp.statusCode != 201) {
+        throw Exception('Failed to set preferences: ${resp.statusCode}');
       }
     } catch (e) {
       print('Error setting preferences: $e');
@@ -95,20 +94,17 @@ class CurrencyService {
   /// Get family currency settings
   Future<FamilyCurrencySettings> getFamilyCurrencySettings() async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/family/currency-settings'),
-        headers: _headers,
-      );
-      
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      final resp = await dio.get('/family/currency-settings');
+      if (resp.statusCode == 200) {
+        final data = resp.data;
         return FamilyCurrencySettings.fromJson(data['data'] ?? data);
       } else {
-        throw Exception('Failed to load family settings: ${response.statusCode}');
+        throw Exception('Failed to load family settings: ${resp.statusCode}');
       }
     } catch (e) {
       print('Error fetching family settings: $e');
-      // Return default settings
       return FamilyCurrencySettings(
         familyId: '',
         baseCurrency: 'CNY',
@@ -122,14 +118,11 @@ class CurrencyService {
   /// Update family currency settings
   Future<void> updateFamilyCurrencySettings(Map<String, dynamic> updates) async {
     try {
-      final response = await http.put(
-        Uri.parse('$baseUrl/family/currency-settings'),
-        headers: _headers,
-        body: json.encode(updates),
-      );
-      
-      if (response.statusCode != 200) {
-        throw Exception('Failed to update settings: ${response.statusCode}');
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      final resp = await dio.put('/family/currency-settings', data: updates);
+      if (resp.statusCode != 200) {
+        throw Exception('Failed to update settings: ${resp.statusCode}');
       }
     } catch (e) {
       print('Error updating family settings: $e');
@@ -146,13 +139,11 @@ class CurrencyService {
         if (date != null) 'date': date.toIso8601String().substring(0, 10),
       };
       
-      final uri = Uri.parse('$baseUrl/currencies/rate')
-          .replace(queryParameters: queryParams);
-      
-      final response = await http.get(uri, headers: _headers);
-      
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      final resp = await dio.get('/currencies/rate', queryParameters: queryParams);
+      if (resp.statusCode == 200) {
+        final data = resp.data;
         final rateData = data['data'] ?? data;
         
         if (rateData is Map && rateData.containsKey('rate')) {
@@ -179,17 +170,14 @@ class CurrencyService {
   /// Get batch exchange rates
   Future<Map<String, double>> getBatchExchangeRates(String baseCurrency, List<String> targetCurrencies) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/currencies/rates'),
-        headers: _headers,
-        body: json.encode({
-          'base_currency': baseCurrency,
-          'target_currencies': targetCurrencies,
-        }),
-      );
-      
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      final resp = await dio.post('/currencies/rates', data: {
+        'base_currency': baseCurrency,
+        'target_currencies': targetCurrencies,
+      });
+      if (resp.statusCode == 200) {
+        final data = resp.data;
         final ratesData = data['data'] ?? data;
         
         final Map<String, double> rates = {};
@@ -215,19 +203,16 @@ class CurrencyService {
   /// Convert amount between currencies
   Future<ConvertAmountResponse> convertAmount(double amount, String from, String to, {DateTime? date}) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/currencies/convert'),
-        headers: _headers,
-        body: json.encode({
-          'amount': amount,
-          'from_currency': from,
-          'to_currency': to,
-          if (date != null) 'date': date.toIso8601String().substring(0, 10),
-        }),
-      );
-      
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      final resp = await dio.post('/currencies/convert', data: {
+        'amount': amount,
+        'from_currency': from,
+        'to_currency': to,
+        if (date != null) 'date': date.toIso8601String().substring(0, 10),
+      });
+      if (resp.statusCode == 200) {
+        final data = resp.data;
         return ConvertAmountResponse.fromJson(data['data'] ?? data);
       } else {
         throw Exception('Failed to convert amount: ${response.statusCode}');
@@ -255,13 +240,11 @@ class CurrencyService {
         'days': days.toString(),
       };
       
-      final uri = Uri.parse('$baseUrl/currencies/history')
-          .replace(queryParameters: queryParams);
-      
-      final response = await http.get(uri, headers: _headers);
-      
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      final resp = await dio.get('/currencies/history', queryParameters: queryParams);
+      if (resp.statusCode == 200) {
+        final data = resp.data;
         final List<dynamic> history = data['data'] ?? data;
         return history.map((json) => ExchangeRate.fromJson(json)).toList();
       } else {
@@ -276,13 +259,11 @@ class CurrencyService {
   /// Get popular exchange pairs
   Future<List<ExchangePair>> getPopularExchangePairs() async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/currencies/popular-pairs'),
-        headers: _headers,
-      );
-      
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      final resp = await dio.get('/currencies/popular-pairs');
+      if (resp.statusCode == 200) {
+        final data = resp.data;
         final List<dynamic> pairs = data['data'] ?? data;
         return pairs.map((json) => ExchangePair.fromJson(json)).toList();
       } else {
@@ -305,13 +286,11 @@ class CurrencyService {
   /// Refresh exchange rates
   Future<void> refreshExchangeRates() async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/currencies/refresh'),
-        headers: _headers,
-      );
-      
-      if (response.statusCode != 200) {
-        throw Exception('Failed to refresh rates: ${response.statusCode}');
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      final resp = await dio.post('/currencies/refresh');
+      if (resp.statusCode != 200) {
+        throw Exception('Failed to refresh rates: ${resp.statusCode}');
       }
     } catch (e) {
       print('Error refreshing rates: $e');

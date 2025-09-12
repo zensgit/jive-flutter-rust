@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT base_currency, allow_multi_currency, auto_convert\n            FROM family_currency_settings\n            WHERE family_id = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "base_currency",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "allow_multi_currency",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 2,
+        "name": "auto_convert",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "d9740c18a47d026853f7b8542fe0f3b90ec7a106b9277dcb40fe7bcef98e7bf7"
+}

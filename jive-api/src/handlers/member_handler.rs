@@ -2,17 +2,16 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::Json,
-    Extension,
 };
 use serde::Deserialize;
 use uuid::Uuid;
 
 use crate::models::{
-    membership::{FamilyMember, MemberWithUserInfo},
+    membership::{FamilyMember},
     permission::{MemberRole, Permission},
 };
-use crate::services::{MemberService, ServiceContext, ServiceError};
-use crate::AppState;
+use crate::services::{MemberService, ServiceError};
+use sqlx::PgPool;
 use sqlx;
 
 use super::family_handler::ApiResponse;
@@ -38,7 +37,7 @@ pub struct UpdatePermissionsRequest {
 
 // Get family members
 pub async fn get_family_members(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Path(family_id): Path<Uuid>,
     claims: crate::auth::Claims,
 ) -> Result<Json<ApiResponse<Vec<serde_json::Value>>>, StatusCode> {
@@ -53,7 +52,7 @@ pub async fn get_family_members(
     )
     .bind(family_id)
     .bind(user_id)
-    .fetch_one(&state.pool)
+    .fetch_one(&pool)
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     
@@ -78,7 +77,7 @@ pub async fn get_family_members(
         "#
     )
     .bind(family_id)
-    .fetch_all(&state.pool)
+    .fetch_all(&pool)
     .await
     .map_err(|e| {
         eprintln!("Error getting family members: {:?}", e);
@@ -102,7 +101,7 @@ pub async fn get_family_members(
 
 // Add member to family
 pub async fn add_member(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Path(family_id): Path<Uuid>,
     claims: crate::auth::Claims,
     Json(request): Json<AddMemberRequest>,
@@ -113,7 +112,7 @@ pub async fn add_member(
     };
     
     // Verify user is member of the family and get their context
-    let service = MemberService::new(state.pool.clone());
+    let service = MemberService::new(pool.clone());
     
     // Get member context to check permissions
     let ctx = match service.get_member_context(user_id, family_id).await {
@@ -134,7 +133,7 @@ pub async fn add_member(
 
 // Remove member from family
 pub async fn remove_member(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Path((family_id, member_id)): Path<(Uuid, Uuid)>,
     claims: crate::auth::Claims,
 ) -> Result<StatusCode, StatusCode> {
@@ -143,7 +142,7 @@ pub async fn remove_member(
         Err(_) => return Err(StatusCode::UNAUTHORIZED),
     };
     
-    let service = MemberService::new(state.pool.clone());
+    let service = MemberService::new(pool.clone());
     
     // Get member context to check permissions
     let ctx = match service.get_member_context(user_id, family_id).await {
@@ -165,7 +164,7 @@ pub async fn remove_member(
 
 // Update member role
 pub async fn update_member_role(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Path((family_id, member_id)): Path<(Uuid, Uuid)>,
     claims: crate::auth::Claims,
     Json(request): Json<UpdateRoleRequest>,
@@ -175,7 +174,7 @@ pub async fn update_member_role(
         Err(_) => return Err(StatusCode::UNAUTHORIZED),
     };
     
-    let service = MemberService::new(state.pool.clone());
+    let service = MemberService::new(pool.clone());
     
     // Get member context to check permissions
     let ctx = match service.get_member_context(user_id, family_id).await {
@@ -197,7 +196,7 @@ pub async fn update_member_role(
 
 // Update member permissions
 pub async fn update_member_permissions(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Path((family_id, member_id)): Path<(Uuid, Uuid)>,
     claims: crate::auth::Claims,
     Json(request): Json<UpdatePermissionsRequest>,
@@ -207,7 +206,7 @@ pub async fn update_member_permissions(
         Err(_) => return Err(StatusCode::UNAUTHORIZED),
     };
     
-    let service = MemberService::new(state.pool.clone());
+    let service = MemberService::new(pool.clone());
     
     // Get member context to check permissions
     let ctx = match service.get_member_context(user_id, family_id).await {

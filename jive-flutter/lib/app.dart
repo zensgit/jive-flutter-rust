@@ -30,7 +30,6 @@ class JiveApp extends ConsumerWidget {
         seedColor: AppConstants.primaryColor,
         brightness: Brightness.light,
       ),
-      fontFamily: 'Roboto',
       appBarTheme: const AppBarTheme(
         elevation: 0,
         centerTitle: true,
@@ -85,7 +84,6 @@ class JiveApp extends ConsumerWidget {
         seedColor: AppConstants.primaryColor,
         brightness: Brightness.dark,
       ),
-      fontFamily: 'Roboto',
       appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: true,

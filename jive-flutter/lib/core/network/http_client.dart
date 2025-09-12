@@ -4,6 +4,7 @@ import 'interceptors/auth_interceptor.dart';
 import 'interceptors/error_interceptor.dart';
 import 'interceptors/logging_interceptor.dart';
 import 'interceptors/retry_interceptor.dart';
+import 'api_readiness.dart';
 
 /// HTTP客户端单例
 class HttpClient {
@@ -57,6 +58,10 @@ class HttpClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
+      // 在首次关键 GET（排除 /health 自身）前确保 API 就绪
+      if (!path.contains('health')) {
+        await ApiReadiness.ensureReady(_dio);
+      }
       final response = await _dio.get<T>(
         path,
         queryParameters: queryParameters,
@@ -81,6 +86,9 @@ class HttpClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
+      if (!path.contains('auth') && !path.contains('health')) {
+        await ApiReadiness.ensureReady(_dio);
+      }
       final response = await _dio.post<T>(
         path,
         data: data,
@@ -107,6 +115,9 @@ class HttpClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
+      if (!path.contains('auth')) {
+        await ApiReadiness.ensureReady(_dio);
+      }
       final response = await _dio.put<T>(
         path,
         data: data,
@@ -131,6 +142,9 @@ class HttpClient {
     CancelToken? cancelToken,
   }) async {
     try {
+      if (!path.contains('auth')) {
+        await ApiReadiness.ensureReady(_dio);
+      }
       final response = await _dio.delete<T>(
         path,
         data: data,

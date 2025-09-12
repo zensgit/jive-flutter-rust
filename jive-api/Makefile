@@ -67,8 +67,14 @@ shell:
 db-shell:
 	./docker-run.sh db-shell
 
-migrate:
+	migrate:
 	./docker-run.sh migrate
+
+# Run migrations against local DB (no Docker)
+.PHONY: migrate-local
+migrate-local:
+	@chmod +x scripts/migrate_local.sh
+	./scripts/migrate_local.sh
 
 # 本地开发命令
 local-run:

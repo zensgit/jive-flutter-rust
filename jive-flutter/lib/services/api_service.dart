@@ -1,11 +1,15 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'package:dio/dio.dart';
+import '../core/network/http_client.dart';
+import '../core/network/api_readiness.dart';
+import '../core/storage/token_storage.dart';
 import '../models/payee.dart';
 import '../models/transaction.dart';
 import '../models/rule.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:8012/api/v1';
+  // 统一通过 ApiConfig, 在 HttpClient 中已经设置 baseUrl
   
   // 单例模式
   static final ApiService _instance = ApiService._internal();
@@ -13,70 +17,79 @@ class ApiService {
   ApiService._internal();
 
   // 通用请求头
-  Map<String, String> get headers => {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  };
+  Future<Map<String, String>> headers() async {
+    final token = await TokenStorage.getAccessToken();
+    return {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
+
+  Dio get _dio => HttpClient.instance.dio;
+
+  Future<T> _run<T>(Future<T> Function() op) async {
+    int attempt = 0;
+    while (true) {
+      try {
+        return await op();
+      } catch (e) {
+        if (e is DioException && (e.type == DioExceptionType.connectionError || e.error is SocketException)) {
+          if (attempt < 2) {
+            await Future.delayed(Duration(milliseconds: 300 * (attempt + 1)));
+            attempt++;
+            continue;
+          }
+        }
+        rethrow;
+      }
+    }
+  }
 
   // ==================== Generic HTTP Methods ====================
   
   /// Generic GET request
   Future<dynamic> get(String endpoint) async {
-    final uri = Uri.parse('$baseUrl$endpoint');
-    final response = await http.get(uri, headers: headers);
-    
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('GET request failed: ${response.body}');
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.get(endpoint, options: Options(headers: hdr)));
+    if (resp is Response) {
+      if (resp.statusCode == 200) return resp.data; else throw Exception('GET failed: ${resp.statusCode}');
     }
+    return resp;
   }
   
   /// Generic POST request
   Future<dynamic> post(String endpoint, Map<String, dynamic> body) async {
-    final uri = Uri.parse('$baseUrl$endpoint');
-    final response = await http.post(
-      uri,
-      headers: headers,
-      body: json.encode(body),
-    );
-    
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('POST request failed: ${response.body}');
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.post(endpoint, data: body, options: Options(headers: hdr)));
+    if (resp is Response) {
+      if (resp.statusCode == 200 || resp.statusCode == 201) return resp.data; else throw Exception('POST failed: ${resp.statusCode}');
     }
+    return resp;
   }
   
   /// Generic PUT request
   Future<dynamic> put(String endpoint, Map<String, dynamic> body) async {
-    final uri = Uri.parse('$baseUrl$endpoint');
-    final response = await http.put(
-      uri,
-      headers: headers,
-      body: json.encode(body),
-    );
-    
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('PUT request failed: ${response.body}');
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.put(endpoint, data: body, options: Options(headers: hdr)));
+    if (resp is Response) {
+      if (resp.statusCode == 200) return resp.data; else throw Exception('PUT failed: ${resp.statusCode}');
     }
+    return resp;
   }
   
   /// Generic DELETE request
   Future<dynamic> delete(String endpoint) async {
-    final uri = Uri.parse('$baseUrl$endpoint');
-    final response = await http.delete(uri, headers: headers);
-    
-    if (response.statusCode == 200 || response.statusCode == 204) {
-      if (response.body.isNotEmpty) {
-        return json.decode(response.body);
-      }
-      return null;
-    } else {
-      throw Exception('DELETE request failed: ${response.body}');
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.delete(endpoint, options: Options(headers: hdr)));
+    if (resp is Response) {
+      if (resp.statusCode == 200 || resp.statusCode == 204) return resp.data; else throw Exception('DELETE failed: ${resp.statusCode}');
     }
+    return resp;
   }
 
   // ==================== Payee管理 ====================
@@ -95,57 +108,45 @@ class ApiService {
       'per_page': perPage.toString(),
     };
     
-    final uri = Uri.parse('$baseUrl/payees').replace(queryParameters: queryParams);
-    final response = await http.get(uri, headers: headers);
-    
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => Payee.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load payees: ${response.body}');
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.get('/payees', queryParameters: queryParams, options: Options(headers: hdr)));
+    if (resp is Response && resp.statusCode == 200) {
+      final List data = resp.data is List ? resp.data : (resp.data['data'] ?? []);
+      return data.map((j) => Payee.fromJson(j)).toList();
     }
+    throw Exception('Failed to load payees');
   }
 
   /// 创建收款人
   Future<Payee> createPayee(Payee payee) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/payees'),
-      headers: headers,
-      body: json.encode(payee.toJson()),
-    );
-    
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Payee.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to create payee: ${response.body}');
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.post('/payees', data: payee.toJson(), options: Options(headers: hdr)));
+    if (resp is Response && (resp.statusCode == 200 || resp.statusCode == 201)) {
+      return Payee.fromJson(resp.data is Map ? resp.data : json.decode(resp.data));
     }
+    throw Exception('Failed to create payee');
   }
 
   /// 更新收款人
   Future<Payee> updatePayee(String id, Map<String, dynamic> updates) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl/payees/$id'),
-      headers: headers,
-      body: json.encode(updates),
-    );
-    
-    if (response.statusCode == 200) {
-      return Payee.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to update payee: ${response.body}');
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.put('/payees/$id', data: updates, options: Options(headers: hdr)));
+    if (resp is Response && resp.statusCode == 200) {
+      return Payee.fromJson(resp.data is Map ? resp.data : json.decode(resp.data));
     }
+    throw Exception('Failed to update payee');
   }
 
   /// 删除收款人
   Future<void> deletePayee(String id) async {
-    final response = await http.delete(
-      Uri.parse('$baseUrl/payees/$id'),
-      headers: headers,
-    );
-    
-    if (response.statusCode != 204 && response.statusCode != 200) {
-      throw Exception('Failed to delete payee: ${response.body}');
-    }
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.delete('/payees/$id', options: Options(headers: hdr)));
+    if (resp is Response && (resp.statusCode == 200 || resp.statusCode == 204)) return; 
+    throw Exception('Failed to delete payee');
   }
 
   /// 获取收款人建议
@@ -155,33 +156,28 @@ class ApiService {
       'ledger_id': ledgerId,
     };
     
-    final uri = Uri.parse('$baseUrl/payees/suggestions').replace(queryParameters: queryParams);
-    final response = await http.get(uri, headers: headers);
-    
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => PayeeSuggestion.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to get suggestions: ${response.body}');
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.get('/payees/suggestions', queryParameters: queryParams, options: Options(headers: hdr)));
+    if (resp is Response && resp.statusCode == 200) {
+      final List data = resp.data is List ? resp.data : (resp.data['data'] ?? []);
+      return data.map((j) => PayeeSuggestion.fromJson(j)).toList();
     }
+    throw Exception('Failed to get suggestions');
   }
 
   /// 合并收款人
   Future<Payee> mergePayees(String targetId, List<String> sourceIds) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/payees/merge'),
-      headers: headers,
-      body: json.encode({
-        'target_id': targetId,
-        'source_ids': sourceIds,
-      }),
-    );
-    
-    if (response.statusCode == 200) {
-      return Payee.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to merge payees: ${response.body}');
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.post('/payees/merge', data: {
+          'target_id': targetId,
+          'source_ids': sourceIds,
+        }, options: Options(headers: hdr)));
+    if (resp is Response && resp.statusCode == 200) {
+      return Payee.fromJson(resp.data is Map ? resp.data : json.decode(resp.data));
     }
+    throw Exception('Failed to merge payees');
   }
 
   // ==================== 交易管理 ====================
@@ -210,30 +206,25 @@ class ApiService {
       'per_page': perPage.toString(),
     };
     
-    final uri = Uri.parse('$baseUrl/transactions').replace(queryParameters: queryParams);
-    final response = await http.get(uri, headers: headers);
-    
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => Transaction.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load transactions: ${response.body}');
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.get('/transactions', queryParameters: queryParams, options: Options(headers: hdr)));
+    if (resp is Response && resp.statusCode == 200) {
+      final List data = resp.data is List ? resp.data : (resp.data['data'] ?? []);
+      return data.map((j) => Transaction.fromJson(j)).toList();
     }
+    throw Exception('Failed to load transactions');
   }
 
   /// 创建交易
   Future<Transaction> createTransaction(Transaction transaction) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/transactions'),
-      headers: headers,
-      body: json.encode(transaction.toJson()),
-    );
-    
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Transaction.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to create transaction: ${response.body}');
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.post('/transactions', data: transaction.toJson(), options: Options(headers: hdr)));
+    if (resp is Response && (resp.statusCode == 200 || resp.statusCode == 201)) {
+      return Transaction.fromJson(resp.data is Map ? resp.data : json.decode(resp.data));
     }
+    throw Exception('Failed to create transaction');
   }
 
   /// 批量操作交易
@@ -243,22 +234,16 @@ class ApiService {
     String? categoryId,
     String? status,
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/transactions/bulk'),
-      headers: headers,
-      body: json.encode({
-        'transaction_ids': transactionIds,
-        'operation': operation,
-        'category_id': categoryId,
-        'status': status,
-      }),
-    );
-    
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to perform bulk operation: ${response.body}');
-    }
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.post('/transactions/bulk', data: {
+          'transaction_ids': transactionIds,
+          'operation': operation,
+          'category_id': categoryId,
+          'status': status,
+        }, options: Options(headers: hdr)));
+    if (resp is Response && resp.statusCode == 200) return resp.data;
+    throw Exception('Failed to perform bulk operation');
   }
 
   // ==================== 规则引擎 ====================
@@ -279,30 +264,25 @@ class ApiService {
       'per_page': perPage.toString(),
     };
     
-    final uri = Uri.parse('$baseUrl/rules').replace(queryParameters: queryParams);
-    final response = await http.get(uri, headers: headers);
-    
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => Rule.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load rules: ${response.body}');
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.get('/rules', queryParameters: queryParams, options: Options(headers: hdr)));
+    if (resp is Response && resp.statusCode == 200) {
+      final List data = resp.data is List ? resp.data : (resp.data['data'] ?? []);
+      return data.map((j) => Rule.fromJson(j)).toList();
     }
+    throw Exception('Failed to load rules');
   }
 
   /// 创建规则
   Future<Rule> createRule(Rule rule) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/rules'),
-      headers: headers,
-      body: json.encode(rule.toJson()),
-    );
-    
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Rule.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to create rule: ${response.body}');
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.post('/rules', data: rule.toJson(), options: Options(headers: hdr)));
+    if (resp is Response && (resp.statusCode == 200 || resp.statusCode == 201)) {
+      return Rule.fromJson(resp.data is Map ? resp.data : json.decode(resp.data));
     }
+    throw Exception('Failed to create rule');
   }
 
   /// 执行规则
@@ -311,34 +291,27 @@ class ApiService {
     List<String>? ruleIds,
     bool dryRun = false,
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/rules/execute'),
-      headers: headers,
-      body: json.encode({
-        'transaction_ids': transactionIds,
-        'rule_ids': ruleIds,
-        'dry_run': dryRun,
-      }),
-    );
-    
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => RuleExecutionResult.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to execute rules: ${response.body}');
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.post('/rules/execute', data: {
+          'transaction_ids': transactionIds,
+          'rule_ids': ruleIds,
+          'dry_run': dryRun,
+        }, options: Options(headers: hdr)));
+    if (resp is Response && resp.statusCode == 200) {
+      final List data = resp.data is List ? resp.data : (resp.data['data'] ?? []);
+      return data.map((j) => RuleExecutionResult.fromJson(j)).toList();
     }
+    throw Exception('Failed to execute rules');
   }
 
   /// 删除规则
   Future<void> deleteRule(String id) async {
-    final response = await http.delete(
-      Uri.parse('$baseUrl/rules/$id'),
-      headers: headers,
-    );
-    
-    if (response.statusCode != 204 && response.statusCode != 200) {
-      throw Exception('Failed to delete rule: ${response.body}');
-    }
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.delete('/rules/$id', options: Options(headers: hdr)));
+    if (resp is Response && (resp.statusCode == 200 || resp.statusCode == 204)) return; 
+    throw Exception('Failed to delete rule');
   }
 
   // ==================== 账户管理 ====================
@@ -355,57 +328,41 @@ class ApiService {
       'per_page': perPage.toString(),
     };
     
-    final uri = Uri.parse('$baseUrl/accounts').replace(queryParameters: queryParams);
-    final response = await http.get(uri, headers: headers);
-    
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.get('/accounts', queryParameters: queryParams, options: Options(headers: hdr)));
+    if (resp is Response && resp.statusCode == 200) {
+      final List data = resp.data is List ? resp.data : (resp.data['data'] ?? []);
       return data.cast<Map<String, dynamic>>();
-    } else {
-      throw Exception('Failed to load accounts: ${response.body}');
     }
+    throw Exception('Failed to load accounts');
   }
 
   /// 获取账户统计
   Future<Map<String, dynamic>> getAccountStatistics(String ledgerId) async {
-    final uri = Uri.parse('$baseUrl/accounts/statistics').replace(
-      queryParameters: {'ledger_id': ledgerId},
-    );
-    final response = await http.get(uri, headers: headers);
-    
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to get account statistics: ${response.body}');
-    }
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.get('/accounts/statistics', queryParameters: {'ledger_id': ledgerId}, options: Options(headers: hdr)));
+    if (resp is Response && resp.statusCode == 200) return resp.data;
+    throw Exception('Failed to get account statistics');
   }
 
   /// 获取交易统计
   Future<Map<String, dynamic>> getTransactionStatistics(String ledgerId) async {
-    final uri = Uri.parse('$baseUrl/transactions/statistics').replace(
-      queryParameters: {'ledger_id': ledgerId},
-    );
-    final response = await http.get(uri, headers: headers);
-    
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to get transaction statistics: ${response.body}');
-    }
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.get('/transactions/statistics', queryParameters: {'ledger_id': ledgerId}, options: Options(headers: hdr)));
+    if (resp is Response && resp.statusCode == 200) return resp.data;
+    throw Exception('Failed to get transaction statistics');
   }
 
   /// 获取收款人统计
   Future<Map<String, dynamic>> getPayeeStatistics(String ledgerId) async {
-    final uri = Uri.parse('$baseUrl/payees/statistics').replace(
-      queryParameters: {'ledger_id': ledgerId},
-    );
-    final response = await http.get(uri, headers: headers);
-    
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to get payee statistics: ${response.body}');
-    }
+    await ApiReadiness.ensureReady(_dio);
+    final hdr = await headers();
+    final resp = await _run(() => _dio.get('/payees/statistics', queryParameters: {'ledger_id': ledgerId}, options: Options(headers: hdr)));
+    if (resp is Response && resp.statusCode == 200) return resp.data;
+    throw Exception('Failed to get payee statistics');
   }
 }
 

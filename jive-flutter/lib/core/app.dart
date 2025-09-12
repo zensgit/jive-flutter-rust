@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import '../devtools/dev_quick_actions.dart';
 
 import 'constants/app_constants.dart';
 import 'theme/app_theme.dart';
 import 'router/app_router.dart';
 import 'localization/app_localizations.dart';
 import '../features/auth/providers/auth_provider.dart';
+import 'storage/token_storage.dart';
+import 'auth/auth_events.dart';
 import '../features/settings/providers/settings_provider.dart';
 import '../providers/currency_provider.dart';
 import '../providers/settings_provider.dart' as global_settings;
@@ -30,22 +34,24 @@ class _JiveAppState extends ConsumerState<JiveApp> {
   }
   
   Future<void> _initializeApp() async {
-    // 延迟执行，确保应用完全初始化
-    await Future.delayed(const Duration(seconds: 2));
-    
+    // 延迟：等待路由/本地化就绪
+    await Future.delayed(const Duration(milliseconds: 800));
+    // 跳过未登录或 token 已过期场景下的自动请求，减少 401 噪音
+    final token = await TokenStorage.getAccessToken();
+    final expired = await TokenStorage.isTokenExpired();
+    if (token == null || expired) {
+      debugPrint('ℹ️ Skip auto refresh (token ${token == null ? 'absent' : 'expired'})');
+      return;
+    }
     try {
-      // 获取设置
       final settings = ref.read(global_settings.settingsProvider);
       final autoUpdateRates = settings.autoUpdateRates ?? true;
-      
       if (autoUpdateRates && mounted) {
-        // 自动更新汇率
+        debugPrint('@@ App.init -> refreshing exchange rates');
         await ref.read(currencyProvider.notifier).refreshExchangeRates();
-        print('✅ Exchange rates updated successfully');
       }
     } catch (e) {
       print('⚠️ Failed to update exchange rates: $e');
-      // 不影响应用启动
     }
   }
   
@@ -55,7 +61,8 @@ class _JiveAppState extends ConsumerState<JiveApp> {
     final themeMode = ref.watch(themeModeProvider);
     final locale = ref.watch(localeProvider);
 
-    return MaterialApp.router(
+    // 使用 MaterialApp.router 作为根，保持其提供的本地化 / 主题等
+    final app = MaterialApp.router(
       // 应用基本信息
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
@@ -80,16 +87,44 @@ class _JiveAppState extends ConsumerState<JiveApp> {
 
       // 构建器 - 添加文本缩放控制
       builder: (context, child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: TextScaler.linear(
-              MediaQuery.of(context).textScaler.scale(1.0).clamp(0.8, 1.2),
-            ),
-          ),
-          child: child ?? const SizedBox.shrink(),
+        debugPrint('@@ App.builder start (has Directionality=${Directionality.maybeOf(context)!=null})');
+        
+        // Ensure child is never null and has proper constraints
+        final safeChild = child ?? const SizedBox.expand();
+        
+        // Wrap in a layout builder to ensure proper constraints
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final mediaWrapped = MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: TextScaler.linear(
+                  MediaQuery.of(context).textScaler.scale(1.0).clamp(0.8, 1.2),
+                ),
+              ),
+              child: safeChild,
+            );
+            // 将开发调试悬浮控件放入 MaterialApp 内部，确保 Directionality / Theme 等已就绪
+            // 注意：SelectionArea 需要 Overlay 祖先，不能包裹在 MaterialApp.builder 外层
+            // 已在错误页和关键位置提供可选文本/复制按钮
+            return DevQuickActions(child: mediaWrapped);
+          },
         );
       },
     );
+    // 监听认证事件：未授权时跳转登录（假设路由有 /login）
+    AuthEvents.stream.listen((event) {
+      if (event == AuthEvent.unauthorized) {
+        // 提示并跳转登录
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('登录已过期，请重新登录'), duration: Duration(seconds: 2)),
+          );
+        }
+        router.go('/login');
+      }
+    });
+    // DevQuickActions 已在 builder 内包裹，直接返回 app 即可
+    return app;
   }
 }
 

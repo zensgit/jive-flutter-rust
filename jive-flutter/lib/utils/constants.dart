@@ -1,6 +1,9 @@
 /// API Constants
+import '../core/config/api_config.dart';
+
 class ApiConstants {
-  static const String baseUrl = 'http://localhost:8012/api/v1';
+  // 统一使用 ApiConfig.apiUrl，避免环境切换不一致
+  static String get baseUrl => ApiConfig.apiUrl;
   
   // Authentication endpoints
   static const String login = '/auth/login';

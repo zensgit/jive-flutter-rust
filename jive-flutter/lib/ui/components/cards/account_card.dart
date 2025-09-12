@@ -1,9 +1,11 @@
 // 账户卡片组件
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../providers/currency_provider.dart';
 import '../../../core/constants/app_constants.dart';
 
-class AccountCard extends StatelessWidget {
+class AccountCard extends ConsumerWidget {
   final String id;
   final String name;
   final String type;
@@ -36,7 +38,7 @@ class AccountCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final currencyFormatter = NumberFormat.currency(symbol: _getCurrencySymbol());
     
@@ -147,7 +149,7 @@ class AccountCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            currencyFormatter.format(balance),
+                            ref.read(currencyProvider.notifier).formatCurrency(balance, currency),
                             style: theme.textTheme.headlineSmall?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,

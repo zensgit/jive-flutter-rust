@@ -59,6 +59,12 @@ jsonwebtoken = "9.3"
 # 随机数生成
 rand = "0.8"
 
+# HTTP客户端
+reqwest = { version = "0.12", features = ["json", "rustls-tls"] }
+
+# 静态变量
+lazy_static = "1.4"
+
 [dev-dependencies]
 tokio-test = "0.4"
 

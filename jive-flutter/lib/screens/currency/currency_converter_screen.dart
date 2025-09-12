@@ -71,6 +71,7 @@ class _CurrencyConverterScreenState extends ConsumerState<CurrencyConverterScree
   @override
   Widget build(BuildContext context) {
     final baseCurrency = ref.watch(baseCurrencyProvider);
+    final formatter = ref.read(currencyProvider.notifier);
     final selectedCurrencies = ref.watch(selectedCurrenciesProvider);
 
     return Scaffold(
@@ -193,14 +194,14 @@ class _CurrencyConverterScreenState extends ConsumerState<CurrencyConverterScree
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '${_amountController.text} $_fromCurrency',
+                        formatter.formatCurrency(double.tryParse(_amountController.text) ?? 0, _fromCurrency),
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 10),
                       const Icon(Icons.arrow_downward, size: 24),
                       const SizedBox(height: 10),
                       Text(
-                        '${_result!.toStringAsFixed(2)} $_toCurrency',
+                        formatter.formatCurrency(_result ?? 0, _toCurrency),
                         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           color: Theme.of(context).primaryColor,
                           fontWeight: FontWeight.bold,

@@ -80,7 +80,7 @@ class BudgetProgress extends StatelessWidget {
                       if (showAmount) ...[
                         const SizedBox(height: 2),
                         Text(
-                          '¥${spent.toStringAsFixed(2)} / ¥${budgeted.toStringAsFixed(2)}',
+                      '${ref.read(currencyProvider.notifier).formatCurrency(spent, ref.read(baseCurrencyProvider).code)} / ${ref.read(currencyProvider.notifier).formatCurrency(budgeted, ref.read(baseCurrencyProvider).code)}',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurface.withOpacity(0.6),
                           ),
@@ -101,7 +101,9 @@ class BudgetProgress extends StatelessWidget {
                         ),
                       ),
                     Text(
-                      isOverBudget ? '超支 ¥${(-remaining).toStringAsFixed(2)}' : '剩余 ¥${remaining.toStringAsFixed(2)}',
+                      isOverBudget 
+                          ? '超支 ${ref.read(currencyProvider.notifier).formatCurrency(-remaining, ref.read(baseCurrencyProvider).code)}' 
+                          : '剩余 ${ref.read(currencyProvider.notifier).formatCurrency(remaining, ref.read(baseCurrencyProvider).code)}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: isOverBudget ? AppConstants.errorColor : theme.colorScheme.onSurface.withOpacity(0.6),
                       ),

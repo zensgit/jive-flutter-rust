@@ -13,3 +13,4 @@ pub mod ledgers;
 pub mod placeholder;
 pub mod enhanced_profile;
 pub mod currency_handler;
+pub mod currency_handler_enhanced;

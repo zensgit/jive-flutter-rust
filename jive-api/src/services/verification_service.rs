@@ -1,7 +1,8 @@
 use rand::Rng;
 use redis::aio::ConnectionManager;
 use redis::AsyncCommands;
-use std::time::Duration;
+// Duration 未使用，移除以消除 warning
+// use std::time::Duration;
 
 use super::ServiceError;
 
@@ -33,9 +34,10 @@ impl VerificationService {
             let key = format!("verification:{}:{}", user_id, operation);
             
             // Store code with 5 minutes expiration
-            conn.set_ex(&key, code, 300)
+            // 显式标注返回类型，避免 2024 edition never type fallback 潜在错误
+            conn.set_ex::<_, _, ()>(&key, code, 300)
                 .await
-                .map_err(|e| ServiceError::InternalError)?;
+                .map_err(|_e| ServiceError::InternalError)?;
             
             Ok(())
         } else {
@@ -58,14 +60,14 @@ impl VerificationService {
             // Get stored code
             let stored_code: Option<String> = conn.get(&key)
                 .await
-                .map_err(|e| ServiceError::InternalError)?;
+                .map_err(|_e| ServiceError::InternalError)?;
             
             if let Some(code) = stored_code {
                 if code == provided_code {
                     // Delete the code after successful verification
                     let _: () = conn.del(&key)
                         .await
-                        .map_err(|e| ServiceError::InternalError)?;
+                        .map_err(|_e| ServiceError::InternalError)?;
                     
                     return Ok(true);
                 }

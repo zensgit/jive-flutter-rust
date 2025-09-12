@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Jive Money 快捷命令
+# 这是 jive-manager.sh 的简化别名
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+exec "$SCRIPT_DIR/jive-manager.sh" "$@"

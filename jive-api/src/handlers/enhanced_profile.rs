@@ -8,13 +8,13 @@ use sqlx::PgPool;
 use uuid::Uuid;
 use chrono::{DateTime, Utc};
 use argon2::{
-    password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
+    password_hash::{rand_core::OsRng, PasswordHasher, SaltString},
     Argon2,
 };
 
 use crate::auth::{Claims, RegisterRequest};
 use crate::error::{ApiError, ApiResult};
-use crate::services::{AuthService, FamilyService, AvatarService};
+use crate::services::{FamilyService, AvatarService};
 use crate::models::family::CreateFamilyRequest;
 use super::family_handler::ApiResponse;
 
@@ -116,7 +116,7 @@ pub async fn register_with_preferences(
     sqlx::query(
         r#"
         INSERT INTO users (
-            id, email, name, password_hash, 
+            id, email, full_name, password_hash, 
             country, preferred_currency, preferred_language, 
             preferred_timezone, preferred_date_format,
             avatar_url, avatar_style, avatar_color, avatar_background,

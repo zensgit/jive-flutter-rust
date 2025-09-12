@@ -10,6 +10,8 @@ pub mod budget_service;
 pub mod verification_service;
 pub mod avatar_service;
 pub mod currency_service;
+pub mod exchange_rate_api;
+pub mod scheduled_tasks;
 
 pub use context::ServiceContext;
 pub use error::ServiceError;

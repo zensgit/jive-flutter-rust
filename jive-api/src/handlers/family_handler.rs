@@ -16,7 +16,7 @@ pub struct JoinFamilyRequest {
 }
 
 use crate::services::{FamilyService, ServiceContext, ServiceError};
-use crate::AppState;
+use sqlx::PgPool;
 
 #[derive(Debug, Serialize)]
 pub struct ApiResponse<T> {
@@ -59,7 +59,7 @@ impl<T> ApiResponse<T> {
 
 // Create new family
 pub async fn create_family(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     claims: crate::auth::Claims,
     Json(request): Json<CreateFamilyRequest>,
 ) -> Result<Json<ApiResponse<Family>>, StatusCode> {
@@ -68,7 +68,7 @@ pub async fn create_family(
         Err(_) => return Err(StatusCode::UNAUTHORIZED),
     };
     
-    let service = FamilyService::new(state.pool.clone());
+    let service = FamilyService::new(pool.clone());
     
     match service.create_family(user_id, request).await {
         Ok(family) => Ok(Json(ApiResponse::success(family))),
@@ -93,7 +93,7 @@ pub async fn create_family(
 
 // List user's families
 pub async fn list_families(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     claims: crate::auth::Claims,
 ) -> Result<Json<ApiResponse<Vec<Family>>>, StatusCode> {
     let user_id = match claims.user_id() {
@@ -101,7 +101,7 @@ pub async fn list_families(
         Err(_) => return Err(StatusCode::UNAUTHORIZED),
     };
     
-    let service = FamilyService::new(state.pool.clone());
+    let service = FamilyService::new(pool.clone());
     
     match service.get_user_families(user_id).await {
         Ok(families) => Ok(Json(ApiResponse::success(families))),
@@ -114,7 +114,7 @@ pub async fn list_families(
 
 // Get family details
 pub async fn get_family(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Path(family_id): Path<Uuid>,
     Extension(ctx): Extension<ServiceContext>,
 ) -> Result<Json<ApiResponse<Family>>, StatusCode> {
@@ -122,7 +122,7 @@ pub async fn get_family(
         return Err(StatusCode::FORBIDDEN);
     }
     
-    let service = FamilyService::new(state.pool.clone());
+    let service = FamilyService::new(pool.clone());
     
     match service.get_family(&ctx, family_id).await {
         Ok(family) => Ok(Json(ApiResponse::success(family))),
@@ -137,7 +137,7 @@ pub async fn get_family(
 
 // Update family
 pub async fn update_family(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Path(family_id): Path<Uuid>,
     Extension(ctx): Extension<ServiceContext>,
     Json(request): Json<UpdateFamilyRequest>,
@@ -146,7 +146,7 @@ pub async fn update_family(
         return Err(StatusCode::FORBIDDEN);
     }
     
-    let service = FamilyService::new(state.pool.clone());
+    let service = FamilyService::new(pool.clone());
     
     match service.update_family(&ctx, family_id, request).await {
         Ok(family) => Ok(Json(ApiResponse::success(family))),
@@ -161,7 +161,7 @@ pub async fn update_family(
 
 // Delete family
 pub async fn delete_family(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Path(family_id): Path<Uuid>,
     claims: crate::auth::Claims,
 ) -> Result<StatusCode, StatusCode> {
@@ -176,7 +176,7 @@ pub async fn delete_family(
     )
     .bind(family_id)
     .bind(user_id)
-    .fetch_optional(&state.pool)
+    .fetch_optional(&pool)
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     
@@ -194,7 +194,7 @@ pub async fn delete_family(
         None,
     );
     
-    let service = FamilyService::new(state.pool.clone());
+    let service = FamilyService::new(pool.clone());
     
     match service.delete_family(&ctx, family_id).await {
         Ok(()) => Ok(StatusCode::NO_CONTENT),
@@ -209,7 +209,7 @@ pub async fn delete_family(
 
 // Join family by invite code
 pub async fn join_family(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     claims: crate::auth::Claims,
     Json(request): Json<JoinFamilyRequest>,
 ) -> Result<Json<ApiResponse<Family>>, StatusCode> {
@@ -218,7 +218,7 @@ pub async fn join_family(
         Err(_) => return Err(StatusCode::UNAUTHORIZED),
     };
     
-    let service = FamilyService::new(state.pool.clone());
+    let service = FamilyService::new(pool.clone());
     
     match service.join_family_by_invite_code(user_id, request.invite_code).await {
         Ok(family) => Ok(Json(ApiResponse::success(family))),
@@ -260,11 +260,11 @@ pub struct SwitchFamilyRequest {
 }
 
 pub async fn switch_family(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Extension(user_id): Extension<Uuid>,
     Json(request): Json<SwitchFamilyRequest>,
 ) -> Result<StatusCode, StatusCode> {
-    let service = FamilyService::new(state.pool.clone());
+    let service = FamilyService::new(pool.clone());
     
     match service.switch_family(user_id, request.family_id).await {
         Ok(()) => Ok(StatusCode::OK),
@@ -278,7 +278,7 @@ pub async fn switch_family(
 
 // Get family statistics
 pub async fn get_family_statistics(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Path(family_id): Path<Uuid>,
     claims: crate::auth::Claims,
 ) -> Result<Json<ApiResponse<serde_json::Value>>, StatusCode> {
@@ -293,7 +293,7 @@ pub async fn get_family_statistics(
     )
     .bind(family_id)
     .bind(user_id)
-    .fetch_one(&state.pool)
+    .fetch_one(&pool)
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     
@@ -301,7 +301,7 @@ pub async fn get_family_statistics(
         return Err(StatusCode::FORBIDDEN);
     }
     
-    let service = FamilyService::new(state.pool.clone());
+    let service = FamilyService::new(pool.clone());
     
     match service.get_family_statistics(family_id).await {
         Ok(stats) => Ok(Json(ApiResponse::success(stats))),
@@ -314,7 +314,7 @@ pub async fn get_family_statistics(
 
 // Regenerate invite code
 pub async fn regenerate_invite_code(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Path(family_id): Path<Uuid>,
     Extension(ctx): Extension<ServiceContext>,
 ) -> Result<Json<ApiResponse<String>>, StatusCode> {
@@ -322,7 +322,7 @@ pub async fn regenerate_invite_code(
         return Err(StatusCode::FORBIDDEN);
     }
     
-    let service = FamilyService::new(state.pool.clone());
+    let service = FamilyService::new(pool.clone());
     
     match service.regenerate_invite_code(&ctx, family_id).await {
         Ok(code) => Ok(Json(ApiResponse::success(code))),
@@ -348,7 +348,8 @@ pub struct VerificationCodeResponse {
 }
 
 pub async fn request_verification_code(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
+    State(redis): State<Option<redis::aio::ConnectionManager>>,
     claims: crate::auth::Claims,
     Json(request): Json<RequestVerificationRequest>,
 ) -> Result<Json<ApiResponse<VerificationCodeResponse>>, StatusCode> {
@@ -357,44 +358,62 @@ pub async fn request_verification_code(
         Err(_) => return Err(StatusCode::UNAUTHORIZED),
     };
     
-    let verification_service = crate::services::VerificationService::new(state.redis.clone());
-    
-    // Get user email for sending code
-    let email: Option<String> = sqlx::query_scalar(
-        "SELECT email FROM users WHERE id = $1"
-    )
-    .bind(user_id)
-    .fetch_optional(&state.pool)
-    .await
-    .unwrap_or(None);
-    
-    let email = email.unwrap_or_else(|| "user@example.com".to_string());
-    
-    match verification_service.send_verification_code(
-        &user_id.to_string(),
-        &request.operation,
-        &email
-    ).await {
-        Ok(code) => {
-            // In production, don't return the code
-            Ok(Json(ApiResponse::success(VerificationCodeResponse {
-                message: format!("验证码已发送至 {}", email),
-                code: Some(code), // Remove this in production
-            })))
+    if let Some(redis_conn) = redis {
+        let verification_service = crate::services::VerificationService::new(Some(redis_conn));
+        
+        // Get user email for sending code
+        let email: Option<String> = sqlx::query_scalar(
+            "SELECT email FROM users WHERE id = $1"
+        )
+        .bind(user_id)
+        .fetch_optional(&pool)
+        .await
+        .unwrap_or(None);
+        
+        let email = email.unwrap_or_else(|| "user@example.com".to_string());
+        
+        match verification_service.send_verification_code(
+            &user_id.to_string(),
+            &request.operation,
+            &email
+        ).await {
+            Ok(code) => {
+                // In production, don't return the code
+                Ok(Json(ApiResponse {
+                    success: true,
+                    data: Some(VerificationCodeResponse {
+                        message: format!("验证码已发送至 {}", email),
+                        code: Some(code), // Remove this in production
+                    }),
+                    error: None,
+                    timestamp: chrono::Utc::now(),
+                }))
+            }
+            Err(e) => {
+                eprintln!("Error sending verification code: {:?}", e);
+                Ok(Json(ApiResponse {
+                    success: false,
+                    data: None,
+                    error: Some(ApiError {
+                        code: "VERIFICATION_SERVICE_ERROR".to_string(),
+                        message: "验证码服务暂时不可用".to_string(),
+                        details: None,
+                    }),
+                    timestamp: chrono::Utc::now(),
+                }))
+            }
         }
-        Err(e) => {
-            eprintln!("Error sending verification code: {:?}", e);
-            Ok(Json(ApiResponse::<VerificationCodeResponse> {
-                success: false,
-                data: None,
-                error: Some(ApiError {
-                    code: "VERIFICATION_SERVICE_ERROR".to_string(),
-                    message: "验证码服务暂时不可用".to_string(),
-                    details: None,
-                }),
-                timestamp: chrono::Utc::now(),
-            }))
-        }
+    } else {
+        // Redis not available, return mock response for development
+        Ok(Json(ApiResponse {
+            success: true,
+            data: Some(VerificationCodeResponse {
+                message: "验证码已发送 (开发模式 - Redis未启用)".to_string(),
+                code: Some("123456".to_string()), // Mock code for testing
+            }),
+            error: None,
+            timestamp: chrono::Utc::now(),
+        }))
     }
 }
 
@@ -406,7 +425,8 @@ pub struct LeaveFamilyRequest {
 }
 
 pub async fn leave_family(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
+    State(redis): State<Option<redis::aio::ConnectionManager>>,
     claims: crate::auth::Claims,
     Json(request): Json<LeaveFamilyRequest>,
 ) -> Result<Json<ApiResponse<()>>, StatusCode> {
@@ -416,16 +436,17 @@ pub async fn leave_family(
     };
     
     // Verify the code first
-    let verification_service = crate::services::VerificationService::new(state.redis.clone());
-    
-    match verification_service.verify_code(
-        &user_id.to_string(),
-        "leave_family",
-        &request.verification_code
-    ).await {
-        Ok(true) => {
+    if let Some(redis_conn) = redis {
+        let verification_service = crate::services::VerificationService::new(Some(redis_conn));
+        
+        match verification_service.verify_code(
+            &user_id.to_string(),
+            "leave_family",
+            &request.verification_code
+        ).await {
+            Ok(true) => {
             // Code is valid, proceed with leaving family
-            let service = FamilyService::new(state.pool.clone());
+            let service = FamilyService::new(pool.clone());
             
             match service.leave_family(user_id, request.family_id).await {
                 Ok(()) => Ok(Json(ApiResponse::success(()))),
@@ -446,36 +467,60 @@ pub async fn leave_family(
                     Err(StatusCode::INTERNAL_SERVER_ERROR)
                 }
             }
+            }
+            Ok(false) => {
+                Ok(Json(ApiResponse::<()> {
+                    success: false,
+                    data: None,
+                    error: Some(ApiError {
+                        code: "INVALID_VERIFICATION_CODE".to_string(),
+                        message: "验证码错误或已过期".to_string(),
+                        details: None,
+                    }),
+                    timestamp: chrono::Utc::now(),
+                }))
+            }
+            Err(_) => {
+                Ok(Json(ApiResponse::<()> {
+                    success: false,
+                    data: None,
+                    error: Some(ApiError {
+                        code: "VERIFICATION_SERVICE_ERROR".to_string(),
+                        message: "验证码服务暂时不可用".to_string(),
+                        details: None,
+                    }),
+                    timestamp: chrono::Utc::now(),
+                }))
+            }
         }
-        Ok(false) => {
-            Ok(Json(ApiResponse::<()> {
-                success: false,
-                data: None,
-                error: Some(ApiError {
-                    code: "INVALID_VERIFICATION_CODE".to_string(),
-                    message: "验证码错误或已过期".to_string(),
-                    details: None,
-                }),
-                timestamp: chrono::Utc::now(),
-            }))
-        }
-        Err(e) => {
-            Ok(Json(ApiResponse::<()> {
-                success: false,
-                data: None,
-                error: Some(ApiError {
-                    code: "VERIFICATION_SERVICE_ERROR".to_string(),
-                    message: "验证码服务暂时不可用".to_string(),
-                    details: None,
-                }),
-                timestamp: chrono::Utc::now(),
-            }))
+    } else {
+        // Redis not available, proceed without verification in development
+        let service = FamilyService::new(pool.clone());
+        
+        match service.leave_family(user_id, request.family_id).await {
+            Ok(()) => Ok(Json(ApiResponse::success(()))),
+            Err(ServiceError::BusinessRuleViolation(msg)) => {
+                Ok(Json(ApiResponse::<()> {
+                    success: false,
+                    data: None,
+                    error: Some(ApiError {
+                        code: "CANNOT_LEAVE".to_string(),
+                        message: msg,
+                        details: None,
+                    }),
+                    timestamp: chrono::Utc::now(),
+                }))
+            }
+            Err(e) => {
+                eprintln!("Error leaving family: {:?}", e);
+                Err(StatusCode::INTERNAL_SERVER_ERROR)
+            }
         }
     }
 }
 // Get family action permissions
 pub async fn get_family_actions(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Path(family_id): Path<Uuid>,
     claims: crate::auth::Claims,
 ) -> Result<Json<ApiResponse<serde_json::Value>>, StatusCode> {
@@ -490,7 +535,7 @@ pub async fn get_family_actions(
     )
     .bind(family_id)
     .bind(user_id)
-    .fetch_optional(&state.pool)
+    .fetch_optional(&pool)
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     
@@ -501,7 +546,7 @@ pub async fn get_family_actions(
         "SELECT COUNT(*) FROM family_members WHERE family_id = $1"
     )
     .bind(family_id)
-    .fetch_one(&state.pool)
+    .fetch_one(&pool)
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     
@@ -695,7 +740,8 @@ pub struct TransferOwnershipRequest {
 }
 
 pub async fn transfer_ownership(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
+    State(redis): State<Option<redis::aio::ConnectionManager>>,
     Path(family_id): Path<Uuid>,
     claims: crate::auth::Claims,
     Json(request): Json<TransferOwnershipRequest>,
@@ -711,7 +757,7 @@ pub async fn transfer_ownership(
     )
     .bind(family_id)
     .bind(user_id)
-    .fetch_optional(&state.pool)
+    .fetch_optional(&pool)
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     
@@ -729,21 +775,22 @@ pub async fn transfer_ownership(
     }
     
     // Verify the verification code
-    let verification_service = crate::services::VerificationService::new(state.redis.clone());
-    
-    match verification_service.verify_code(
-        &user_id.to_string(),
-        "transfer_ownership",
-        &request.verification_code
-    ).await {
-        Ok(true) => {
+    if let Some(redis_conn) = redis {
+        let verification_service = crate::services::VerificationService::new(Some(redis_conn));
+        
+        match verification_service.verify_code(
+            &user_id.to_string(),
+            "transfer_ownership",
+            &request.verification_code
+        ).await {
+            Ok(true) => {
             // Verify new owner exists and is a member
             let new_owner_role: Option<String> = sqlx::query_scalar(
                 "SELECT role FROM family_members WHERE family_id = $1 AND user_id = $2"
             )
             .bind(family_id)
             .bind(request.new_owner_id)
-            .fetch_optional(&state.pool)
+            .fetch_optional(&pool)
             .await
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
             
@@ -761,7 +808,7 @@ pub async fn transfer_ownership(
             }
             
             // Start transaction
-            let mut tx = state.pool.begin().await
+            let mut tx = pool.begin().await
                 .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
             
             // Update old owner to admin
@@ -794,30 +841,43 @@ pub async fn transfer_ownership(
                 .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
             
             Ok(Json(ApiResponse::success(())))
+            }
+            Ok(false) => {
+                Ok(Json(ApiResponse::<()> {
+                    success: false,
+                    data: None,
+                    error: Some(ApiError {
+                        code: "INVALID_VERIFICATION_CODE".to_string(),
+                        message: "验证码错误或已过期".to_string(),
+                        details: None,
+                    }),
+                    timestamp: chrono::Utc::now(),
+                }))
+            }
+            Err(_) => {
+                Ok(Json(ApiResponse::<()> {
+                    success: false,
+                    data: None,
+                    error: Some(ApiError {
+                        code: "VERIFICATION_SERVICE_ERROR".to_string(),
+                        message: "验证码服务暂时不可用".to_string(),
+                        details: None,
+                    }),
+                    timestamp: chrono::Utc::now(),
+                }))
+            }
         }
-        Ok(false) => {
-            Ok(Json(ApiResponse::<()> {
-                success: false,
-                data: None,
-                error: Some(ApiError {
-                    code: "INVALID_VERIFICATION_CODE".to_string(),
-                    message: "验证码错误或已过期".to_string(),
-                    details: None,
-                }),
-                timestamp: chrono::Utc::now(),
-            }))
-        }
-        Err(_) => {
-            Ok(Json(ApiResponse::<()> {
-                success: false,
-                data: None,
-                error: Some(ApiError {
-                    code: "VERIFICATION_SERVICE_ERROR".to_string(),
-                    message: "验证码服务暂时不可用".to_string(),
-                    details: None,
-                }),
-                timestamp: chrono::Utc::now(),
-            }))
-        }
+    } else {
+        // Redis not available, return error for this sensitive operation
+        Ok(Json(ApiResponse::<()> {
+            success: false,
+            data: None,
+            error: Some(ApiError {
+                code: "SERVICE_UNAVAILABLE".to_string(),
+                message: "验证服务暂时不可用，无法进行所有权转让".to_string(),
+                details: None,
+            }),
+            timestamp: chrono::Utc::now(),
+        }))
     }
 }

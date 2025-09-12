@@ -10,7 +10,7 @@ use uuid::Uuid;
 
 use crate::models::audit::{AuditLog, AuditLogFilter};
 use crate::services::{AuditService, ServiceContext};
-use crate::AppState;
+use sqlx::PgPool;
 
 use super::family_handler::ApiResponse;
 
@@ -28,7 +28,7 @@ pub struct AuditLogQuery {
 
 // Get audit logs
 pub async fn get_audit_logs(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Path(family_id): Path<Uuid>,
     Query(query): Query<AuditLogQuery>,
     Extension(ctx): Extension<ServiceContext>,
@@ -42,7 +42,7 @@ pub async fn get_audit_logs(
         return Err(StatusCode::FORBIDDEN);
     }
     
-    let service = AuditService::new(state.pool.clone());
+    let service = AuditService::new(pool.clone());
     
     let filter = AuditLogFilter {
         family_id: Some(family_id),
@@ -76,7 +76,7 @@ pub struct ExportQuery {
 
 // Export audit logs as CSV
 pub async fn export_audit_logs(
-    State(state): State<AppState>,
+    State(pool): State<PgPool>,
     Path(family_id): Path<Uuid>,
     Query(query): Query<ExportQuery>,
     Extension(ctx): Extension<ServiceContext>,
@@ -90,7 +90,7 @@ pub async fn export_audit_logs(
         return Err(StatusCode::FORBIDDEN);
     }
     
-    let service = AuditService::new(state.pool.clone());
+    let service = AuditService::new(pool.clone());
     
     match service.export_audit_report(family_id, query.from_date, query.to_date).await {
         Ok(csv) => {

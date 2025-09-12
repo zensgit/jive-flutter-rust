@@ -24,13 +24,16 @@ impl FromRef<AppState> for PgPool {
     }
 }
 
-// WebSocket 管理器的 FromRef 实现已移至 main_complete.rs
-// impl FromRef<AppState> for std::sync::Arc<ws::WsConnectionManager> {
-//     fn from_ref(app_state: &AppState) -> std::sync::Arc<ws::WsConnectionManager> {
-//         app_state.ws_manager.clone()
-//     }
-// }
+// Redis connection manager FromRef implementation
+impl FromRef<AppState> for Option<redis::aio::ConnectionManager> {
+    fn from_ref(app_state: &AppState) -> Option<redis::aio::ConnectionManager> {
+        app_state.redis.clone()
+    }
+}
 
 // Re-export commonly used types
 pub use error::{ApiError, ApiResult};
 pub use services::{ServiceContext, ServiceError};
+
+
+

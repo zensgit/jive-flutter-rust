@@ -16,7 +16,6 @@ use std::sync::Arc;
 use tokio::net::TcpListener;
 use tower::ServiceBuilder;
 use tower_http::{
-    cors::{Any, CorsLayer},
     trace::TraceLayer,
 };
 use tracing::{info, warn, error};
@@ -24,46 +23,10 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use redis::aio::ConnectionManager;
 use redis::Client as RedisClient;
 
-// 内部模块
-mod handlers;
-mod error;
-mod auth;
-mod services {
-    pub mod auth_service;
-    pub mod member_service;
-    pub mod family_service;
-    pub mod avatar_service;
-    // pub mod currency_service; // Temporarily disabled due to compilation issues
-    pub use auth_service::*;
-    pub use member_service::*;
-    pub use family_service::*;
-    pub use avatar_service::*;
-    
-    use thiserror::Error;
-    
-    #[derive(Debug, Error)]
-    pub enum ServiceError {
-        #[error("Database error: {0}")]
-        Database(#[from] sqlx::Error),
-        
-        #[error("Not found: {resource_type} with id {id}")]
-        NotFound {
-            resource_type: String,
-            id: String,
-        },
-        
-        #[error("Validation error: {0}")]
-        Validation(String),
-        
-        #[error("Unauthorized")]
-        Unauthorized,
-        
-        #[error("Internal error: {0}")]
-        Internal(String),
-    }
-}
-mod models;
-mod ws;
+// 使用库中的模块
+use jive_money_api::{handlers, error, auth, services, models, ws, ServiceContext};
+use error::{ApiError, ApiResult};
+use services::*;
 
 // 导入处理器
 use handlers::template_handler::*;
@@ -73,35 +36,16 @@ use handlers::payees::*;
 use handlers::rules::*;
 use handlers::auth as auth_handlers;
 use handlers::enhanced_profile;
-// use handlers::currency_handler;
+use handlers::currency_handler;
+use handlers::currency_handler_enhanced;
 use handlers::ledgers::{list_ledgers, create_ledger, get_current_ledger, get_ledger, 
                          update_ledger, delete_ledger, get_ledger_statistics, get_ledger_members};
 use handlers::family_handler::{list_families, create_family, get_family, update_family, delete_family, join_family, leave_family, request_verification_code, get_family_statistics, get_family_actions, get_role_descriptions, transfer_ownership};
 use handlers::member_handler::{get_family_members, add_member, remove_member, update_member_role, update_member_permissions};
 use handlers::placeholder::{export_data, activity_logs, advanced_settings, family_settings};
 
-// AppState 定义 - 包含所有共享状态
-#[derive(Clone)]
-pub struct AppState {
-    pub pool: PgPool,
-    pub ws_manager: Arc<ws::WsConnectionManager>,
-    pub redis: Option<ConnectionManager>,
-}
-
-// 实现 FromRef，让 PgPool 可以从 AppState 中提取
-// 这样处理器可以继续使用 State<PgPool>
-impl FromRef<AppState> for PgPool {
-    fn from_ref(app_state: &AppState) -> PgPool {
-        app_state.pool.clone()
-    }
-}
-
-// WebSocket 管理器的 FromRef 实现
-impl FromRef<AppState> for Arc<ws::WsConnectionManager> {
-    fn from_ref(app_state: &AppState) -> Arc<ws::WsConnectionManager> {
-        app_state.ws_manager.clone()
-    }
-}
+// 使用库中的 AppState
+use jive_money_api::AppState;
 
 /// WebSocket 查询参数
 #[derive(Debug, Deserialize)]
@@ -113,9 +57,9 @@ pub struct WsQuery {
 async fn handle_websocket(
     ws: WebSocketUpgrade,
     Query(query): Query<WsQuery>,
-    State(pool): State<PgPool>,
-    State(ws_manager): State<Arc<ws::WsConnectionManager>>,
+    State(app_state): State<AppState>,
 ) -> Response {
+    let pool = app_state.pool.clone();
     // 验证 token（简化版本）
     let token = query.token.unwrap_or_default();
     if token.is_empty() {
@@ -149,8 +93,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     info!("📦 Features: WebSocket, Database, Redis (optional), Full API");
 
     // 数据库连接
+    // DATABASE_URL 回退：开发脚本使用宿主 5433 端口映射容器 5432，这里同步保持一致，避免脚本外手动运行 API 时连接被拒绝
     let database_url = std::env::var("DATABASE_URL")
-        .unwrap_or_else(|_| "postgresql://huazhou:@localhost:5432/jive_money".to_string());
+        .unwrap_or_else(|_| "postgresql://huazhou:@localhost:5433/jive_money".to_string());
     
     info!("📦 Connecting to database...");
     
@@ -254,17 +199,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 创建应用状态
     let app_state = AppState {
         pool: pool.clone(),
-        ws_manager: ws_manager.clone(),
+        ws_manager: Some(ws_manager.clone()),
         redis: redis_manager,
     };
+    
+    // 启动定时任务（汇率更新等）
+    info!("🕒 Starting scheduled tasks...");
+    let pool_arc = Arc::new(pool.clone());
+    services::scheduled_tasks::init_scheduled_tasks(pool_arc).await;
+    info!("✅ Scheduled tasks started");
 
-    // CORS 配置 - 允许所有头部以避免Flutter自定义头问题
-    let cors = CorsLayer::new()
-        .allow_origin(Any)
-        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE, Method::OPTIONS])
-        .allow_headers(Any)  // 允许所有头部
-        .expose_headers([header::CONTENT_TYPE])
-        .max_age(std::time::Duration::from_secs(3600));
+    // 统一使用 middleware/cors.rs 中的 CORS 配置，避免与其它入口重复/漂移
+    use jive_money_api::middleware::cors::create_cors_layer;
+    let cors = create_cors_layer();
 
     // 路由配置
     let app = Router::new()
@@ -371,19 +318,30 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/ledgers/:id/statistics", get(get_ledger_statistics))
         .route("/api/v1/ledgers/:id/members", get(get_ledger_members))
         
-        // 货币管理 API - Temporarily disabled due to compilation issues
-        // .route("/api/v1/currencies", get(currency_handler::get_supported_currencies))
-        // .route("/api/v1/currencies/preferences", get(currency_handler::get_user_currency_preferences))
-        // .route("/api/v1/currencies/preferences", post(currency_handler::set_user_currency_preferences))
-        // .route("/api/v1/currencies/rate", get(currency_handler::get_exchange_rate))
-        // .route("/api/v1/currencies/rates", post(currency_handler::get_batch_exchange_rates))
-        // .route("/api/v1/currencies/rates/add", post(currency_handler::add_exchange_rate))
-        // .route("/api/v1/currencies/convert", post(currency_handler::convert_amount))
-        // .route("/api/v1/currencies/history", get(currency_handler::get_exchange_rate_history))
-        // .route("/api/v1/currencies/popular-pairs", get(currency_handler::get_popular_exchange_pairs))
-        // .route("/api/v1/currencies/refresh", post(currency_handler::refresh_exchange_rates))
-        // .route("/api/v1/family/currency-settings", get(currency_handler::get_family_currency_settings))
-        // .route("/api/v1/family/currency-settings", put(currency_handler::update_family_currency_settings))
+        // 货币管理 API - 基础功能
+        .route("/api/v1/currencies", get(currency_handler::get_supported_currencies))
+        .route("/api/v1/currencies/preferences", get(currency_handler::get_user_currency_preferences))
+        .route("/api/v1/currencies/preferences", post(currency_handler::set_user_currency_preferences))
+        .route("/api/v1/currencies/rate", get(currency_handler::get_exchange_rate))
+        .route("/api/v1/currencies/rates", post(currency_handler::get_batch_exchange_rates))
+        .route("/api/v1/currencies/rates/add", post(currency_handler::add_exchange_rate))
+        .route("/api/v1/currencies/convert", post(currency_handler::convert_amount))
+        .route("/api/v1/currencies/history", get(currency_handler::get_exchange_rate_history))
+        .route("/api/v1/currencies/popular-pairs", get(currency_handler::get_popular_exchange_pairs))
+        .route("/api/v1/currencies/refresh", post(currency_handler::refresh_exchange_rates))
+        .route("/api/v1/family/currency-settings", get(currency_handler::get_family_currency_settings))
+        .route("/api/v1/family/currency-settings", put(currency_handler::update_family_currency_settings))
+        
+        // 货币管理 API - 增强功能
+        .route("/api/v1/currencies/all", get(currency_handler_enhanced::get_all_currencies))
+        .route("/api/v1/currencies/user-settings", get(currency_handler_enhanced::get_user_currency_settings))
+        .route("/api/v1/currencies/user-settings", put(currency_handler_enhanced::update_user_currency_settings))
+        .route("/api/v1/currencies/realtime-rates", get(currency_handler_enhanced::get_realtime_exchange_rates))
+        .route("/api/v1/currencies/rates-detailed", post(currency_handler_enhanced::get_detailed_batch_rates))
+        // 保留 GET 语义，去除临时 POST 兼容，前端统一改为 GET
+        .route("/api/v1/currencies/crypto-prices", get(currency_handler_enhanced::get_crypto_prices))
+        .route("/api/v1/currencies/convert-any", post(currency_handler_enhanced::convert_currency))
+        .route("/api/v1/currencies/manual-refresh", post(currency_handler_enhanced::manual_refresh_rates))
         
         // 占位符 API - 功能开发中
         .route("/api/v1/families/:id/export", get(export_data))

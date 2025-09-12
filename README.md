@@ -119,6 +119,12 @@ jive-flutter-rust/
 ## 🛠️ 开发命令
 
 ```bash
+# 启动完整版 API（宽松 CORS，全部 Origin/Headers 放行，用于前端调试）
+make api-dev
+
+# 启动完整版 API（安全模式，白名单 + 指定自定义头）
+make api-safe
+
 # 运行测试
 make test
 
@@ -137,6 +143,80 @@ make db-migrate
 # 查看日志
 make logs
 ```
+
+### 默认管理员账号（开发环境）
+
+- 账号：`superadmin@jive.money`
+- 密码：`admin123`
+
+说明：该账号由迁移 `016_fix_families_member_count_and_superadmin.sql` 统一创建/对齐，仅用于本地开发与测试。请勿在生产环境使用默认凭据，部署前务必更改密码或禁用该账号。
+
+### 管理脚本 (一键启动)
+
+使用 `jive-manager.sh` 可同时管理数据库 / Redis / API / Flutter Web：
+
+```bash
+# 全部服务（安全 CORS 模式 API）
+./jive-manager.sh start all
+
+# 全部服务（开发宽松模式：API 设置 CORS_DEV=1）
+./jive-manager.sh start all-dev
+
+# 仅启动宽松开发 API
+./jive-manager.sh start api-dev
+
+# 切换 API 运行模式（不影响数据库 / Redis）
+./jive-manager.sh mode dev    # 切到开发宽松
+./jive-manager.sh mode safe   # 切回安全
+
+# 查看状态 / 停止
+./jive-manager.sh status
+./jive-manager.sh stop all-dev
+```
+
+说明：宽松模式适合前端快速迭代；提交代码前请使用安全模式验证。
+
+状态显示说明：
+- `API: ● 运行中 (... 模式: 开发宽松)` 表示使用 `CORS_DEV=1`（所有 Origin / Headers 放开）。
+- `API: ● 运行中 (... 模式: 安全)` 表示白名单 + 指定头部策略（生产/预发布推荐）。
+- 切换模式方式：`restart all-dev` 或 `restart all` / `restart api-dev`。
+ - 也可直接使用 `./jive-manager.sh mode dev|safe` 快速切换。
+
+### Docker 数据库 + 本地 API（推荐开发流程）
+
+当你希望将数据库/Redis 放在 Docker 中，而在本机直接运行 Rust API 与 Flutter Web 时，使用以下流程：
+
+```bash
+# 1) 启动 Docker 中的数据库与 Redis
+./jive-manager.sh start db
+./jive-manager.sh start redis
+
+# 2) 执行数据库迁移（新增命令）
+./jive-manager.sh start migrate
+# 目标默认指向: postgresql://postgres:postgres@localhost:5433/jive_money
+
+# 3) 启动本地 API（二选一）
+./jive-manager.sh mode safe   # 安全模式
+# 或
+./jive-manager.sh mode dev    # 开发宽松模式 (CORS_DEV=1)
+
+# 4) 启动前端 Web（可选）
+./jive-manager.sh start web
+# 访问: http://localhost:3021
+
+# 5) 健康检查
+curl http://127.0.0.1:8012/health
+```
+
+排错提示：如出现 “role postgres does not exist”，通常是误连到本机 5432 或使用了错误用户。请确认连接的是 5433 端口，用户/密码为 `postgres/postgres`，或显式设置 `export DATABASE_URL=postgresql://postgres:postgres@localhost:5433/jive_money` 后重试。
+
+### 数据库迁移说明（重要修复）
+
+- 迁移 `016_fix_families_member_count_and_superadmin.sql`：
+  - 为 `families` 表新增 `member_count` 列并回填，修复注册流程依赖该字段导致的 400 错误。
+  - 统一开发环境的 superadmin 账号与密码（见上）。
+- 若你的数据库卷较早创建，建议强制重放迁移以确保 016 被执行：
+  - `./jive-api/scripts/migrate_local.sh --db-url postgresql://postgres:postgres@localhost:5433/jive_money --force`
 
 ## 📱 支持平台
 

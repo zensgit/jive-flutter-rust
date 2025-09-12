@@ -14,35 +14,46 @@ class AuthService {
     required String password,
     bool rememberMe = false,
   }) async {
-    print('DEBUG AuthService.login: Called with email=$email');
+    // 支持在开发环境使用用户名“superadmin”直接登录（自动映射为邮箱）
+    final normalizedEmail = _normalizeLoginIdentifier(email);
+    print('DEBUG AuthService.login: Called with email=$normalizedEmail');
     try {
       print('DEBUG AuthService.login: About to make POST request to ${Endpoints.login}');
       final response = await _client.dio.post(
         Endpoints.login,
         data: {
-          'email': email,
+          'email': normalizedEmail,
           'password': password,
           'remember_me': rememberMe,
         },
-        options: Options(
-          headers: {
-            'Origin': 'http://localhost:3021',
-            'Content-Type': 'application/json',
-          },
-        ),
       );
       
       // 处理我们API的响应格式
+      final status = response.statusCode ?? 0;
       final responseData = response.data;
-      print('DEBUG AuthService: Response data = $responseData');
-      
-      if (responseData['success'] != true) {
-        print('DEBUG AuthService: Success field is not true: ${responseData['success']}');
-        throw ApiException(responseData['message'] ?? '登录失败');
+      print('DEBUG AuthService: Response status = $status, data = $responseData');
+
+      // 明确处理常见错误状态，给出更友好的信息
+      if (status == 401 || responseData?['error'] == 'Unauthorized') {
+        throw ApiException('用户名或密码错误');
+      }
+      if (status == 403) {
+        throw ApiException('账户未激活或无权限');
+      }
+
+      if (responseData is! Map || responseData['success'] != true) {
+        final msg = (responseData is Map
+                ? responseData['message'] ?? responseData['error']
+                : null) ??
+            '登录失败';
+        print('DEBUG AuthService: Non-success response: $msg');
+        throw ApiException(msg);
       }
       
       print('DEBUG AuthService: Creating AuthResponse from JSON');
-      final authResponse = AuthResponse.fromJson(responseData);
+      final authResponse = AuthResponse.fromJson(
+        Map<String, dynamic>.from(responseData as Map),
+      );
       print('DEBUG AuthService: AuthResponse user = ${authResponse.user}');
       print('DEBUG AuthService: AuthResponse token = ${authResponse.accessToken?.substring(0, 20) ?? 'null'}...');
       
@@ -65,6 +76,11 @@ class AuthService {
       _client.dio.options.headers['Authorization'] = 
           'Bearer ${authResponse.accessToken}';
       
+      // 登录成功后刷新实时汇率（忽略错误）
+      try {
+        // 延迟到下一帧再读取 provider（避免 login 调用环境中无 ProviderScope）
+        // 实际集成处可在上层监听登录完成后调用 refresh; 这里尝试静态触发需要访问全局ref不太方便，故留待上层。
+      } catch (_) {}
       return authResponse;
     } catch (e) {
       print('DEBUG AuthService: Login error caught: $e');
@@ -80,6 +96,17 @@ class AuthService {
       }
       throw _handleError(e);
     }
+  }
+
+  /// 将用户名映射为邮箱（仅用于本地开发超级管理员便捷登录）
+  String _normalizeLoginIdentifier(String input) {
+    final trimmed = input.trim();
+    if (trimmed.contains('@')) return trimmed;
+    // 仅在开发环境处理内置超级管理员用户名
+    if (ApiConfig.isDevelopment && trimmed.toLowerCase() == 'superadmin') {
+      return 'superadmin@jive.money';
+    }
+    return trimmed; // 其他用户名保持原样（后端目前按邮箱匹配）
   }
   
   /// 注册
@@ -100,7 +127,9 @@ class AuthService {
         },
       );
       
-      final authResponse = AuthResponse.fromJson(response.data);
+      final authResponse = AuthResponse.fromJson(
+        Map<String, dynamic>.from(response.data as Map),
+      );
       
       // 保存令牌
       await TokenStorage.saveTokens(
@@ -156,7 +185,9 @@ class AuthService {
         },
       );
       
-      final authResponse = AuthResponse.fromJson(response.data);
+      final authResponse = AuthResponse.fromJson(
+        Map<String, dynamic>.from(response.data as Map),
+      );
       
       // 保存新令牌
       await TokenStorage.saveTokens(

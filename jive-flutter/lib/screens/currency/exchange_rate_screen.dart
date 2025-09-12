@@ -118,6 +118,38 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Fallback indicator (listen to last fetch log via provider flag if implemented)
+            Consumer(builder: (context, ref, _) {
+              final lastRates = ref.watch(currencyProvider);
+              // 简单判断：如果 provider 内部可暴露 isFallback，可替换为 lastRates.isFallback
+              final isFallback = lastRates.isFallback ?? false;
+              if (!isFallback) return const SizedBox.shrink();
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                margin: const EdgeInsets.only(bottom: 8),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade100,
+                  border: Border.all(color: Colors.orange.shade300),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '当前显示离线/备用汇率，可能与实时数值有差异',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.orange[900]),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _isRefreshing ? null : _refreshRates,
+                      child: const Text('重试'),
+                    ),
+                  ],
+                ),
+              );
+            }),
             // Update status
             if (_isRefreshing)
               const LinearProgressIndicator(),

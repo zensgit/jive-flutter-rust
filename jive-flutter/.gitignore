@@ -33,6 +33,11 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Web development assets (keep these for icons to work in dev mode)
+!/web/
+!/web/assets/
+!/web/assets/**
+
 # Symbolication related
 app.*.symbols
 

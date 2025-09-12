@@ -1,10 +1,12 @@
 // 交易卡片组件
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../providers/currency_provider.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../models/transaction.dart';
 
-class TransactionCard extends StatelessWidget {
+class TransactionCard extends ConsumerWidget {
   // 支持Transaction对象的构造方法
   final Transaction? transaction;
   final bool? showDate;
@@ -72,9 +74,9 @@ class TransactionCard extends StatelessWidget {
        elevation = null;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final currencyFormatter = NumberFormat.currency(symbol: '¥');
+    final formatter = ref.read(currencyProvider.notifier);
     
     // 从transaction对象或直接参数获取数据
     final cardTitle = transaction?.description ?? title ?? '';
@@ -228,7 +230,7 @@ class TransactionCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '${cardIsIncome ? '+' : '-'}${currencyFormatter.format(cardAmount.abs())}',
+                    '${cardIsIncome ? '+' : '-'}${formatter.formatCurrency(cardAmount.abs(), ref.read(baseCurrencyProvider).code)}',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: cardIsIncome 

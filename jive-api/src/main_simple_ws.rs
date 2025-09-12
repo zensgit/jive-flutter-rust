@@ -13,9 +13,9 @@ use std::net::SocketAddr;
 use tokio::net::TcpListener;
 use tower::ServiceBuilder;
 use tower_http::{
-    cors::{Any, CorsLayer},
     trace::TraceLayer,
 };
+use jive_money_api::middleware::cors::create_cors_layer;
 use tracing::{info, warn, error};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -78,11 +78,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
-    // CORS配置
-    let cors = CorsLayer::new()
-        .allow_origin(Any)
-        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
-        .allow_headers([header::CONTENT_TYPE, header::AUTHORIZATION]);
+    // 使用统一的 CORS Layer（支持 CORS_DEV=1 开发模式）
+    let cors = create_cors_layer();
 
     // 路由配置
     let app = Router::new()

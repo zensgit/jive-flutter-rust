@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../utils/string_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../models/ledger.dart';
@@ -718,8 +719,8 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                     ? NetworkImage(member.avatar!)
                     : null,
                 child: member.avatar == null
-                    ? Text(member.name[0].toUpperCase())
-                    : null,
+                  ? Text(StringUtils.safeInitial(member.name))
+                  : null,
               ),
               title: Text(member.name),
               subtitle: Text(member.role.label),

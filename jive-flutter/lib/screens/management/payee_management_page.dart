@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../utils/string_utils.dart';
 
 /// 交易对方管理页面 - 简化版本
 class PayeeManagementPage extends StatefulWidget {
@@ -223,7 +224,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
         leading: CircleAvatar(
           backgroundColor: payee['color'] as Color,
           child: Text(
-            payee['name'].toString()[0].toUpperCase(),
+            StringUtils.safeInitial(payee['name']?.toString()),
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -370,7 +371,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
                   radius: 25,
                   backgroundColor: payee['color'] as Color,
                   child: Text(
-                    payee['name'].toString()[0].toUpperCase(),
+                    StringUtils.safeInitial(payee['name']?.toString()),
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

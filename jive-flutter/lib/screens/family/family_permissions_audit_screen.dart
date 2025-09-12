@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../utils/string_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
@@ -721,7 +722,7 @@ class _FamilyPermissionsAuditScreenState
         leading: CircleAvatar(
           backgroundColor: user.$3 ? Colors.green : Colors.orange,
           child: Text(
-            user.$1[0],
+            StringUtils.safeInitial(user.$1),
             style: const TextStyle(color: Colors.white),
           ),
         ),

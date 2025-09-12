@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../utils/string_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/invitation.dart';
 import '../../models/family.dart';
@@ -334,6 +335,8 @@ class _PendingInvitationsScreenState
     final isExpired = invitation.invitation.isExpired;
     final canAccept = invitation.invitation.canAccept;
     
+    
+    
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -352,7 +355,7 @@ class _PendingInvitationsScreenState
                     radius: 24,
                     backgroundColor: theme.colorScheme.primaryContainer,
                     child: Text(
-                      invitation.family.name[0].toUpperCase(),
+                      StringUtils.safeInitial(invitation.family.name),
                       style: TextStyle(
                         color: theme.colorScheme.onPrimaryContainer,
                         fontWeight: FontWeight.bold,

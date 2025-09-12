@@ -240,7 +240,7 @@ class EmailNotificationService extends ChangeNotifier {
       
       <h3>预算详情</h3>
       <ul>
-        <li>预算金额：¥{{budgetAmount}}</li>
+        <li>预算金额：{{budgetAmountFormatted}}</li>
         <li>已使用：¥{{usedAmount}}</li>
         <li>剩余：¥{{remainingAmount}}</li>
         <li>使用率：{{usagePercentage}}%</li>

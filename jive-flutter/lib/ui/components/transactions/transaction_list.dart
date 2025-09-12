@@ -4,7 +4,10 @@ import '../../../core/constants/app_constants.dart';
 import '../cards/transaction_card.dart';
 import '../loading/loading_widget.dart';
 
-class TransactionList extends StatelessWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../providers/currency_provider.dart';
+
+class TransactionList extends ConsumerWidget {
   final List<TransactionData> transactions;
   final bool groupByDate;
   final bool showSearchBar;
@@ -29,7 +32,7 @@ class TransactionList extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (isLoading) {
       return const Center(child: LoadingWidget());
     }
@@ -39,8 +42,8 @@ class TransactionList extends StatelessWidget {
     }
 
     final content = groupByDate 
-        ? _buildGroupedList(context)
-        : _buildSimpleList(context);
+        ? _buildGroupedList(context, ref)
+        : _buildSimpleList(context, ref);
 
     if (onRefresh != null) {
       return RefreshIndicator(
@@ -83,7 +86,7 @@ class TransactionList extends StatelessWidget {
     );
   }
 
-  Widget _buildSimpleList(BuildContext context) {
+  Widget _buildSimpleList(BuildContext context, WidgetRef ref) {
     return ListView.builder(
       controller: scrollController,
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -100,7 +103,7 @@ class TransactionList extends StatelessWidget {
     );
   }
 
-  Widget _buildGroupedList(BuildContext context) {
+  Widget _buildGroupedList(BuildContext context, WidgetRef ref) {
     final groupedTransactions = _groupTransactionsByDate();
     final theme = Theme.of(context);
     
@@ -117,7 +120,7 @@ class TransactionList extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 日期头部
-            _buildDateHeader(theme, date, dayTransactions),
+            _buildDateHeader(context, ref, theme, date, dayTransactions),
             
             // 该日期的交易
             ...dayTransactions.map((transaction) => 
@@ -134,9 +137,11 @@ class TransactionList extends StatelessWidget {
     );
   }
 
-  Widget _buildDateHeader(ThemeData theme, DateTime date, List<TransactionData> transactions) {
+  Widget _buildDateHeader(BuildContext context, WidgetRef ref, ThemeData theme, DateTime date, List<TransactionData> transactions) {
     final total = _calculateDayTotal(transactions);
     final isPositive = total >= 0;
+    final base = ref.watch(baseCurrencyProvider).code;
+    final formatted = ref.read(currencyProvider.notifier).formatCurrency(total.abs(), base);
     
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -174,7 +179,7 @@ class TransactionList extends StatelessWidget {
                 ),
               ),
               Text(
-                _formatAmount(total),
+                '${total >= 0 ? '+' : '-'}$formatted',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: isPositive ? AppConstants.successColor : AppConstants.errorColor,

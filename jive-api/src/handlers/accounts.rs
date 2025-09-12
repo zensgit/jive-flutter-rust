@@ -9,7 +9,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use sqlx::{PgPool, Row, QueryBuilder};
 use uuid::Uuid;
-use rust_decimal::{Decimal, prelude::Zero};
+use rust_decimal::Decimal;
 use chrono::{DateTime, Utc};
 
 use crate::error::{ApiError, ApiResult};

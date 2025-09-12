@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../utils/string_utils.dart';
 import '../../services/api_service.dart';
 import '../../models/payee.dart';
 
@@ -284,7 +285,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
             leading: CircleAvatar(
               backgroundColor: _getColorForPayee(payee),
               child: Text(
-                payee.name.isNotEmpty ? payee.name[0].toUpperCase() : '?',
+                StringUtils.safeInitial(payee.name),
                 style: const TextStyle(color: Colors.white),
               ),
             ),
@@ -299,7 +300,11 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
                   Text('分类: ${payee.categoryName}'),
                 Text('交易次数: ${payee.transactionCount}'),
                 if (payee.totalAmount != null)
-                  Text('总金额: ¥${payee.totalAmount!.toStringAsFixed(2)}'),
+                  Consumer(builder: (context, ref, _) {
+                    final base = ref.watch(baseCurrencyProvider).code;
+                    final str = ref.read(currencyProvider.notifier).formatCurrency(payee.totalAmount ?? 0, base);
+                    return Text('总金额: $str');
+                  }),
               ],
             ),
             trailing: PopupMenuButton<String>(

@@ -309,12 +309,12 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       // Update user info
       await _apiService.put('/auth/user', {
         'name': _nameController.text.trim(),
+        'email': _emailController.text.trim(),
       });
       
-      // Update preferences
+      // Update preferences (移除货币设置，货币在专门的货币管理页面设置)
       await _apiService.put('/auth/preferences', {
         'country': _selectedCountry,
-        'currency': _selectedCurrency,
         'language': _selectedLanguage,
         'timezone': _selectedTimezone,
         'date_format': _selectedDateFormat,
@@ -677,12 +677,12 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   
                   TextField(
                     controller: _emailController,
-                    enabled: false,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: const InputDecoration(
                       labelText: '邮箱',
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.email),
-                      helperText: '邮箱不可修改',
+                      helperText: '修改邮箱可能需要重新验证',
                     ),
                   ),
                 ],
@@ -739,6 +739,15 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                             fontSize: 12,
                           ),
                         ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '货币设置请前往: 设置 → 货币管理',
+                          style: TextStyle(
+                            color: Colors.blue[600],
+                            fontSize: 11,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -757,23 +766,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       setState(() {
                         _selectedCountry = value!;
                         _autoAdjustSettings(value);
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Currency
-                  DropdownButtonFormField<String>(
-                    value: _selectedCurrency,
-                    decoration: const InputDecoration(
-                      labelText: '货币',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.attach_money),
-                    ),
-                    items: _getCurrencyItems(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedCurrency = value!;
                       });
                     },
                   ),
@@ -1112,30 +1104,137 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   }
   
   void _autoAdjustSettings(String country) {
+    // 根据国家自动调整语言、时区和日期格式（货币在货币管理页面设置）
     switch (country) {
       case 'CN':
-        _selectedCurrency = 'CNY';
         _selectedLanguage = 'zh-CN';
         _selectedTimezone = 'Asia/Shanghai';
         _selectedDateFormat = 'YYYY-MM-DD';
         break;
+      case 'TW':
+        _selectedLanguage = 'zh-TW';
+        _selectedTimezone = 'Asia/Taipei';
+        _selectedDateFormat = 'YYYY-MM-DD';
+        break;
+      case 'HK':
+        _selectedLanguage = 'zh-HK';
+        _selectedTimezone = 'Asia/Hong_Kong';
+        _selectedDateFormat = 'DD/MM/YYYY';
+        break;
+      case 'SG':
+        _selectedLanguage = 'en-SG';
+        _selectedTimezone = 'Asia/Singapore';
+        _selectedDateFormat = 'DD/MM/YYYY';
+        break;
+      case 'MY':
+        _selectedLanguage = 'ms-MY';
+        _selectedTimezone = 'Asia/Kuala_Lumpur';
+        _selectedDateFormat = 'DD/MM/YYYY';
+        break;
+      case 'IN':
+        _selectedLanguage = 'en-IN';
+        _selectedTimezone = 'Asia/Kolkata';
+        _selectedDateFormat = 'DD/MM/YYYY';
+        break;
+      case 'ID':
+        _selectedLanguage = 'id-ID';
+        _selectedTimezone = 'Asia/Jakarta';
+        _selectedDateFormat = 'DD/MM/YYYY';
+        break;
+      case 'TH':
+        _selectedLanguage = 'th-TH';
+        _selectedTimezone = 'Asia/Bangkok';
+        _selectedDateFormat = 'DD/MM/YYYY';
+        break;
       case 'US':
-        _selectedCurrency = 'USD';
         _selectedLanguage = 'en-US';
         _selectedTimezone = 'America/New_York';
         _selectedDateFormat = 'MM/DD/YYYY';
         break;
       case 'GB':
-        _selectedCurrency = 'GBP';
         _selectedLanguage = 'en-GB';
         _selectedTimezone = 'Europe/London';
         _selectedDateFormat = 'DD/MM/YYYY';
         break;
       case 'JP':
-        _selectedCurrency = 'JPY';
         _selectedLanguage = 'ja-JP';
         _selectedTimezone = 'Asia/Tokyo';
         _selectedDateFormat = 'YYYY-MM-DD';
+        break;
+      case 'KR':
+        _selectedLanguage = 'ko-KR';
+        _selectedTimezone = 'Asia/Seoul';
+        _selectedDateFormat = 'YYYY-MM-DD';
+        break;
+      case 'AU':
+        _selectedLanguage = 'en-AU';
+        _selectedTimezone = 'Australia/Sydney';
+        _selectedDateFormat = 'DD/MM/YYYY';
+        break;
+      case 'CA':
+        _selectedLanguage = 'en-CA';
+        _selectedTimezone = 'America/Toronto';
+        _selectedDateFormat = 'YYYY-MM-DD';
+        break;
+      case 'DE':
+        _selectedLanguage = 'de-DE';
+        _selectedTimezone = 'Europe/Berlin';
+        _selectedDateFormat = 'DD.MM.YYYY';
+        break;
+      case 'FR':
+        _selectedLanguage = 'fr-FR';
+        _selectedTimezone = 'Europe/Paris';
+        _selectedDateFormat = 'DD/MM/YYYY';
+        break;
+      case 'IT':
+        _selectedLanguage = 'it-IT';
+        _selectedTimezone = 'Europe/Rome';
+        _selectedDateFormat = 'DD/MM/YYYY';
+        break;
+      case 'ES':
+        _selectedLanguage = 'es-ES';
+        _selectedTimezone = 'Europe/Madrid';
+        _selectedDateFormat = 'DD/MM/YYYY';
+        break;
+      case 'RU':
+        _selectedLanguage = 'ru-RU';
+        _selectedTimezone = 'Europe/Moscow';
+        _selectedDateFormat = 'DD.MM.YYYY';
+        break;
+      case 'BR':
+        _selectedLanguage = 'pt-BR';
+        _selectedTimezone = 'America/Sao_Paulo';
+        _selectedDateFormat = 'DD/MM/YYYY';
+        break;
+      case 'MX':
+        _selectedLanguage = 'es-MX';
+        _selectedTimezone = 'America/Mexico_City';
+        _selectedDateFormat = 'DD/MM/YYYY';
+        break;
+      case 'AE':
+        _selectedLanguage = 'ar-AE';
+        _selectedTimezone = 'Asia/Dubai';
+        _selectedDateFormat = 'DD/MM/YYYY';
+        break;
+      case 'SA':
+        _selectedLanguage = 'ar-SA';
+        _selectedTimezone = 'Asia/Riyadh';
+        _selectedDateFormat = 'DD/MM/YYYY';
+        break;
+      case 'ZA':
+        _selectedLanguage = 'en-ZA';
+        _selectedTimezone = 'Africa/Johannesburg';
+        _selectedDateFormat = 'YYYY/MM/DD';
+        break;
+      case 'EG':
+        _selectedLanguage = 'ar-EG';
+        _selectedTimezone = 'Africa/Cairo';
+        _selectedDateFormat = 'DD/MM/YYYY';
+        break;
+      case 'NG':
+        _selectedLanguage = 'en-NG';
+        _selectedTimezone = 'Africa/Lagos';
+        _selectedDateFormat = 'DD/MM/YYYY';
         break;
     }
   }

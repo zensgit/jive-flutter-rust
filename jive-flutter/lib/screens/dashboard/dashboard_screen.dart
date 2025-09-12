@@ -5,6 +5,7 @@ import '../../ui/components/dashboard/account_overview.dart';
 import '../../ui/components/dashboard/recent_transactions.dart';
 import '../../ui/components/dashboard/budget_summary.dart';
 import '../../providers/ledger_provider.dart';
+import '../../providers/currency_provider.dart';
 import '../../providers/account_provider.dart';
 import '../../providers/transaction_provider.dart';
 import '../../models/account.dart';
@@ -129,10 +130,12 @@ class DashboardScreen extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Builder(builder: (context) {
+            Consumer(builder: (context, ref, _) {
               final total = _calculateNetWorth(accounts);
+              final formatted = ref.read(currencyProvider.notifier)
+                  .formatCurrency(total, ref.read(baseCurrencyProvider).code);
               return Text(
-                '¥${total.toStringAsFixed(2)}',
+                formatted,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -143,20 +146,28 @@ class DashboardScreen extends ConsumerWidget {
             Row(
               children: [
                 Expanded(
-                  child: _buildSubAmount(
-                    context,
-                    '资产',
-                    '¥0.00',
-                    Colors.green,
-                  ),
+                  child: Consumer(builder: (context, ref, _) {
+                    final str = ref.read(currencyProvider.notifier)
+                        .formatCurrency(0, ref.read(baseCurrencyProvider).code);
+                    return _buildSubAmount(
+                      context,
+                      '资产',
+                      str,
+                      Colors.green,
+                    );
+                  }),
                 ),
                 Expanded(
-                  child: _buildSubAmount(
-                    context,
-                    '负债',
-                    '¥0.00',
-                    Colors.red,
-                  ),
+                  child: Consumer(builder: (context, ref, _) {
+                    final str = ref.read(currencyProvider.notifier)
+                        .formatCurrency(0, ref.read(baseCurrencyProvider).code);
+                    return _buildSubAmount(
+                      context,
+                      '负债',
+                      str,
+                      Colors.red,
+                    );
+                  }),
                 ),
               ],
             ),

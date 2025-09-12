@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../models/ledger.dart';
@@ -333,6 +334,20 @@ class FamilySwitcher extends ConsumerWidget {
           const Icon(Icons.error_outline, size: 16, color: Colors.red),
           const SizedBox(width: 8),
           Text(currentLedger?.name ?? '加载失败'),
+          const SizedBox(width: 8),
+          IconButton(
+            tooltip: '复制错误',
+            icon: const Icon(Icons.copy, size: 16, color: Colors.red),
+            onPressed: () async {
+              final text = currentLedger?.name ?? '加载失败';
+              await Clipboard.setData(ClipboardData(text: text));
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('已复制')), 
+                );
+              }
+            },
+          )
         ],
       ),
     );

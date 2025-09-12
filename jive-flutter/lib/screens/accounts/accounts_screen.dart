@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/router/app_router.dart';
 import '../../providers/account_provider.dart';
 import '../../models/account.dart';
+import '../../providers/currency_provider.dart';
 
 class AccountsScreen extends ConsumerStatefulWidget {
   const AccountsScreen({super.key});
@@ -250,7 +251,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                 ],
               ),
               Text(
-                '¥${totalBalance.toStringAsFixed(2)}',
+                ref.read(currencyProvider.notifier).formatCurrency(totalBalance, ref.read(baseCurrencyProvider).code),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,

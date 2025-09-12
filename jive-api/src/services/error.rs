@@ -48,6 +48,11 @@ pub enum ServiceError {
     #[error("Authentication error: {0}")]
     AuthenticationError(String),
     
+    #[error("External API error: {message}")]
+    ExternalApi {
+        message: String,
+    },
+    
     #[error("Internal server error")]
     InternalError,
 }

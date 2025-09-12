@@ -1,0 +1,60 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT id, from_currency, to_currency, rate, source, \n                   effective_date, created_at\n            FROM exchange_rates\n            WHERE from_currency = $1 \n            AND to_currency = $2\n            AND effective_date >= $3\n            ORDER BY effective_date DESC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "from_currency",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "to_currency",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "rate",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "source",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "effective_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 6,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Date"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true
+    ]
+  },
+  "hash": "99269899ec267be4fbc9deb9c4b7a400a30bfb68de4be9f87e8dc5bc66f054ce"
+}

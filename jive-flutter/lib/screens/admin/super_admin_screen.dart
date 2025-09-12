@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../utils/string_utils.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SuperAdminScreen extends StatefulWidget {
@@ -251,7 +252,7 @@ class _SuperAdminScreenState extends State<SuperAdminScreen> with TickerProvider
                   leading: CircleAvatar(
                     backgroundColor: _getUserRoleColor(user['role']),
                     child: Text(
-                      user['name'][0],
+                      StringUtils.safeInitial(user['name']?.toString()),
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),

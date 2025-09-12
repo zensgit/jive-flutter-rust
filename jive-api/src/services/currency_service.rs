@@ -86,7 +86,7 @@ impl CurrencyService {
         let currencies = rows.into_iter().map(|row| Currency {
             code: row.code,
             name: row.name,
-            symbol: row.symbol,
+            symbol: row.symbol, // 列已为非 NULL（或宏推断非可选）
             decimal_places: row.decimal_places.unwrap_or(2),
             is_active: row.is_active.unwrap_or(true),
         }).collect();
@@ -343,12 +343,13 @@ impl CurrencyService {
         let row = sqlx::query!(
             r#"
             INSERT INTO exchange_rates 
-            (id, from_currency, to_currency, rate, source, effective_date)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            ON CONFLICT (from_currency, to_currency, effective_date)
+            (id, from_currency, to_currency, rate, source, date, effective_date)
+            VALUES ($1, $2, $3, $4, $5, $6, $6)
+            ON CONFLICT (from_currency, to_currency, date)
             DO UPDATE SET 
                 rate = $4,
                 source = $5,
+                effective_date = $6,
                 updated_at = CURRENT_TIMESTAMP
             RETURNING id, from_currency, to_currency, rate, source, 
                       effective_date, created_at
@@ -362,18 +363,19 @@ impl CurrencyService {
         )
         .fetch_one(&self.pool)
         .await?;
-        
-        let rate = ExchangeRate {
+
+        let effective = row.effective_date; // 若为非可选
+        let created_at = row.created_at.unwrap_or_else(|| Utc::now());
+
+        Ok(ExchangeRate {
             id: row.id,
             from_currency: row.from_currency,
             to_currency: row.to_currency,
             rate: row.rate,
             source: row.source.unwrap_or_else(|| "manual".to_string()),
-            effective_date: row.effective_date,
-            created_at: row.created_at.unwrap_or_else(|| Utc::now()),
-        };
-        
-        Ok(rate)
+            effective_date: effective,
+            created_at,
+        })
     }
     
     /// 货币转换
@@ -419,17 +421,15 @@ impl CurrencyService {
         .fetch_all(&self.pool)
         .await?;
         
-        let rates = rows.into_iter().map(|row| ExchangeRate {
+        Ok(rows.into_iter().map(|row| ExchangeRate {
             id: row.id,
             from_currency: row.from_currency,
             to_currency: row.to_currency,
             rate: row.rate,
             source: row.source.unwrap_or_else(|| "manual".to_string()),
-            effective_date: row.effective_date,
+            effective_date: row.effective_date, // 非可选
             created_at: row.created_at.unwrap_or_else(|| Utc::now()),
-        }).collect();
-        
-        Ok(rates)
+        }).collect())
     }
     
     /// 获取家庭支持的货币列表
@@ -464,18 +464,89 @@ impl CurrencyService {
         }
     }
     
-    /// 自动获取最新汇率（可以对接外部API）
+    /// 自动获取最新汇率并更新到数据库
     pub async fn fetch_latest_rates(&self, base_currency: &str) -> Result<(), ServiceError> {
-        // TODO: 实现对接外部汇率API
-        // 例如：https://api.exchangerate-api.com/v4/latest/{base_currency}
-        // 或者：https://api.frankfurter.app/latest?from={base_currency}
-        
-        // 这里暂时返回成功，实际实现时需要：
-        // 1. 调用外部API
-        // 2. 解析返回的汇率数据
-        // 3. 批量更新到数据库
+        use super::exchange_rate_api::EXCHANGE_RATE_SERVICE;
         
         tracing::info!("Fetching latest exchange rates for {}", base_currency);
+        
+        // 获取汇率服务实例
+        let mut service = EXCHANGE_RATE_SERVICE.lock().await;
+        
+        // 获取最新汇率
+        let rates = service.fetch_fiat_rates(base_currency).await?;
+        
+        // 批量更新到数据库
+        let effective_date = Utc::now().date_naive();
+        
+        for (target_currency, rate) in rates.iter() {
+            if target_currency != base_currency {
+                let id = Uuid::new_v4();
+                
+                // 插入或更新汇率
+                sqlx::query!(
+                    r#"
+                    INSERT INTO exchange_rates 
+                    (id, from_currency, to_currency, rate, source, date, effective_date)
+                    VALUES ($1, $2, $3, $4, $5, $6, $6)
+                    ON CONFLICT (from_currency, to_currency, date)
+                    DO UPDATE SET 
+                        rate = $4,
+                        source = $5,
+                        effective_date = $6,
+                        updated_at = CURRENT_TIMESTAMP
+                    "#,
+                    id,
+                    base_currency,
+                    target_currency.as_str(),
+                    rate,
+                    "api",
+                    effective_date
+                )
+                .execute(&self.pool)
+                .await?;
+            }
+        }
+        
+        tracing::info!("Successfully updated {} exchange rates for {}", rates.len() - 1, base_currency);
+        Ok(())
+    }
+    
+    /// 获取并更新加密货币价格
+    pub async fn fetch_crypto_prices(&self, crypto_codes: Vec<&str>, fiat_currency: &str) -> Result<(), ServiceError> {
+        use super::exchange_rate_api::EXCHANGE_RATE_SERVICE;
+        
+        tracing::info!("Fetching crypto prices in {}", fiat_currency);
+        
+        // 获取汇率服务实例
+        let mut service = EXCHANGE_RATE_SERVICE.lock().await;
+        
+        // 获取加密货币价格
+        let prices = service.fetch_crypto_prices(crypto_codes.clone(), fiat_currency).await?;
+        
+        // 批量更新到数据库
+        for (crypto_code, price) in prices.iter() {
+            sqlx::query!(
+                r#"
+                INSERT INTO crypto_prices 
+                (crypto_code, base_currency, price, source, last_updated)
+                VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+                ON CONFLICT (crypto_code, base_currency)
+                DO UPDATE SET 
+                    price = $3,
+                    source = $4,
+                    last_updated = CURRENT_TIMESTAMP
+                "#,
+                crypto_code,
+                fiat_currency,
+                price,
+                "api"
+            )
+            .execute(&self.pool)
+            .await?;
+        }
+        
+        tracing::info!("Successfully updated {} crypto prices in {}", prices.len(), fiat_currency);
         Ok(())
     }
 }

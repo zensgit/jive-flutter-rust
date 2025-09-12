@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/ledger.dart';
 import '../../services/api/ledger_service.dart';
 import '../../providers/ledger_provider.dart';
+import '../../utils/string_utils.dart';
 
 /// 邀请成员对话框
 class InviteMemberDialog extends ConsumerStatefulWidget {
@@ -241,7 +242,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                                   radius: 16,
                                   backgroundColor: theme.primaryColor.withOpacity(0.1),
                                   child: Text(
-                                    email[0].toUpperCase(),
+                                    StringUtils.safeInitial(email),
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: theme.primaryColor,

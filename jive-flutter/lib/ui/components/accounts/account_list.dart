@@ -325,8 +325,10 @@ class AccountList extends StatelessWidget {
   }
 
   String _formatAmount(double amount) {
+    // Use base currency for account list totals
+    // Note: This widget is not a ConsumerWidget; keep simple formatting here
     final sign = amount >= 0 ? '' : '-';
-    return '$sign¥${amount.abs().toStringAsFixed(2)}';
+    return '$sign${amount.abs().toStringAsFixed(2)}';
   }
 }
 
@@ -425,6 +427,6 @@ class GroupedAccountList extends StatelessWidget {
 
   String _formatGroupTotal(List<AccountData> accounts) {
     final total = accounts.fold<double>(0, (sum, account) => sum + account.balance);
-    return '¥${total.toStringAsFixed(2)}';
+    return total.toStringAsFixed(2);
   }
 }

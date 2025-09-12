@@ -6,6 +6,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import '../models/family.dart' as family_model;
 import '../models/transaction.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/currency_provider.dart';
 
 /// 分享服务
 class ShareService {
@@ -59,12 +61,20 @@ Jive Money - 您的智能家庭财务管家
     required double balance,
     required Widget? chartWidget,
   }) async {
+    // Use currency provider to format amounts consistently
+    final container = ProviderScope.containerOf(context, listen: false);
+    final base = container.read(baseCurrencyProvider).code;
+    final formatter = container.read(currencyProvider.notifier);
+    final incomeStr = formatter.formatCurrency(income, base);
+    final expenseStr = formatter.formatCurrency(expense, base);
+    final balanceStr = formatter.formatCurrency(balance, base);
+
     String shareText = '''
 📊 $familyName - $period 财务报告
 
-💰 收入：¥${income.toStringAsFixed(2)}
-💸 支出：¥${expense.toStringAsFixed(2)}
-💎 结余：¥${balance.toStringAsFixed(2)}
+💰 收入：$incomeStr
+💸 支出：$expenseStr
+💎 结余：$balanceStr
 📈 储蓄率：${((balance / income) * 100).toStringAsFixed(1)}%
 
 ━━━━━━━━━━━━━━━━
@@ -132,12 +142,16 @@ Jive Money - 您的智能家庭财务管家
   }) async {
     final icon = transaction.type == TransactionType.income ? '💰' : '💸';
     final typeText = transaction.type == TransactionType.income ? '收入' : '支出';
+    final container = ProviderScope.containerOf(context, listen: false);
+    final base = container.read(baseCurrencyProvider).code;
+    final formatter = container.read(currencyProvider.notifier);
+    final amountStr = formatter.formatCurrency(transaction.amount, base);
     
     final shareText = '''
 $icon $typeText记录
 
 📝 ${transaction.description}
-💵 金额：¥${transaction.amount.toStringAsFixed(2)}
+💵 金额：$amountStr
 📂 分类：${transaction.categoryName}
 📅 日期：${_formatDate(transaction.date)}
 🏠 账本：$familyName

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import '../../../providers/currency_provider.dart';
 
-class TransactionListItem extends StatelessWidget {
+class TransactionListItem extends ConsumerWidget {
   final dynamic transaction;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
@@ -14,11 +16,13 @@ class TransactionListItem extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final amount = transaction.amount ?? 0.0;
     final isExpense = transaction.type == 'expense';
     final isIncome = transaction.type == 'income';
     final isTransfer = transaction.type == 'transfer';
+    final base = ref.watch(baseCurrencyProvider).code;
+    final formatted = ref.read(currencyProvider.notifier).formatCurrency(amount.abs(), transaction.currency ?? base);
     
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -128,7 +132,7 @@ class TransactionListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '${isExpense ? '-' : isIncome ? '+' : ''}¥${amount.abs().toStringAsFixed(2)}',
+                    '${isExpense ? '-' : isIncome ? '+' : ''}$formatted',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

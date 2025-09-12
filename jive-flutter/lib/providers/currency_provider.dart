@@ -13,6 +13,7 @@ class CurrencyPreferences {
   final List<String> selectedCurrencies;
   final bool showCurrencyCode;
   final bool showCurrencySymbol;
+  final bool? isFallback; // null = 未知；true = 当前显示为备用汇率
 
   const CurrencyPreferences({
     required this.multiCurrencyEnabled,
@@ -21,6 +22,7 @@ class CurrencyPreferences {
     required this.selectedCurrencies,
     required this.showCurrencyCode,
     required this.showCurrencySymbol,
+    this.isFallback,
   });
 
   factory CurrencyPreferences.fromJson(Map<String, dynamic> json) {
@@ -31,6 +33,7 @@ class CurrencyPreferences {
       selectedCurrencies: List<String>.from(json['selected_currencies'] ?? ['USD', 'CNY', 'EUR']),
       showCurrencyCode: json['show_currency_code'] ?? true,
       showCurrencySymbol: json['show_currency_symbol'] ?? false,
+      isFallback: json['is_fallback'],
     );
   }
 
@@ -41,6 +44,7 @@ class CurrencyPreferences {
     'selected_currencies': selectedCurrencies,
     'show_currency_code': showCurrencyCode,
     'show_currency_symbol': showCurrencySymbol,
+    if (isFallback != null) 'is_fallback': isFallback,
   };
 
   CurrencyPreferences copyWith({
@@ -50,6 +54,7 @@ class CurrencyPreferences {
     List<String>? selectedCurrencies,
     bool? showCurrencyCode,
     bool? showCurrencySymbol,
+    bool? isFallback,
   }) {
     return CurrencyPreferences(
       multiCurrencyEnabled: multiCurrencyEnabled ?? this.multiCurrencyEnabled,
@@ -58,6 +63,7 @@ class CurrencyPreferences {
       selectedCurrencies: selectedCurrencies ?? this.selectedCurrencies,
       showCurrencyCode: showCurrencyCode ?? this.showCurrencyCode,
       showCurrencySymbol: showCurrencySymbol ?? this.showCurrencySymbol,
+      isFallback: isFallback ?? this.isFallback,
     );
   }
 }
@@ -73,6 +79,13 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   bool _isLoadingRates = false;
   DateTime? _lastRateUpdate;
   Future<void>? _pendingRateUpdate;
+  // Manual override rates and expiry
+  final Map<String, double> _manualRates = {};
+  DateTime? _manualRatesExpiryUtc; // Global expiry (legacy)
+  final Map<String, DateTime> _manualRatesExpiryByCurrency = {}; // Per-currency expiry
+  static const String _kManualRatesKey = 'manual_rates';
+  static const String _kManualRatesExpiryKey = 'manual_rates_expiry_utc';
+  static const String _kManualRatesExpiryMapKey = 'manual_rates_expiry_map';
 
   CurrencyNotifier(
     this._prefsBox, 
@@ -81,6 +94,7 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     this._cryptoPriceService,
   ) : super(_loadPreferences(_prefsBox, _userCountry)) {
     _initializeCurrencyCache();
+    _loadManualRates();
     _loadExchangeRates();
   }
 
@@ -106,6 +120,38 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       showCurrencyCode: true,
       showCurrencySymbol: false,
     );
+  }
+  
+  void _loadManualRates() {
+    try {
+      final saved = _prefsBox.get(_kManualRatesKey);
+      if (saved is Map) {
+        _manualRates
+          ..clear()
+          ..addAll(saved.map((k, v) => MapEntry(k.toString(), (v as num).toDouble())));
+      }
+      // Load per-currency expiry map first (new schema)
+      final expiryMap = _prefsBox.get(_kManualRatesExpiryMapKey);
+      _manualRatesExpiryByCurrency.clear();
+      if (expiryMap is Map) {
+        expiryMap.forEach((k, v) {
+          final dt = v is String ? DateTime.tryParse(v) : null;
+          if (dt != null) {
+            _manualRatesExpiryByCurrency[k.toString()] = dt.toUtc();
+          }
+        });
+      }
+      // Fallback to global expiry (legacy)
+      final expiryStr = _prefsBox.get(_kManualRatesExpiryKey);
+      if (expiryStr is String) {
+        _manualRatesExpiryUtc = DateTime.tryParse(expiryStr)?.toUtc();
+      }
+    } catch (e) {
+      // Ignore corrupt data
+      _manualRates.clear();
+      _manualRatesExpiryUtc = null;
+      _manualRatesExpiryByCurrency.clear();
+    }
   }
 
   void _initializeCurrencyCache() {
@@ -136,42 +182,164 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     _isLoadingRates = true;
     
     try {
-      // Fetch real exchange rates from API
-      final rates = await _exchangeRateService.getExchangeRates(state.baseCurrency);
-      _exchangeRates = rates;
+      // Always fetch live rates first for selected targets (no mock)
+      final targets = state.selectedCurrencies
+          .where((c) => c != state.baseCurrency)
+          .toList();
+      final rates = await _exchangeRateService
+          .getExchangeRatesForTargets(state.baseCurrency, targets);
+      _exchangeRates = rates; // may be partially empty if server missing some pairs
+      // Overlay valid manual rates so they take precedence until expiry
+      final nowUtc = DateTime.now().toUtc();
+      if (_manualRates.isNotEmpty) {
+        for (final entry in _manualRates.entries) {
+          final code = entry.key;
+          final value = entry.value;
+          final perExpiry = _manualRatesExpiryByCurrency[code];
+          final isValid = perExpiry != null
+              ? nowUtc.isBefore(perExpiry)
+              : (_manualRatesExpiryUtc != null && nowUtc.isBefore(_manualRatesExpiryUtc!));
+          if (isValid) {
+            _exchangeRates[code] = ExchangeRate(
+              fromCurrency: state.baseCurrency,
+              toCurrency: code,
+              rate: value,
+              date: DateTime.now(),
+              source: 'manual',
+            );
+          }
+        }
+      }
+      // Do not auto-fill missing with mock; let UI reflect missing to avoid confusion
       _lastRateUpdate = DateTime.now();
-      
-      // Also fetch crypto prices if crypto is enabled
+      state = state.copyWith(isFallback: _exchangeRateService.lastWasFallback);
       if (state.cryptoEnabled) {
         await _loadCryptoPrices();
       }
     } catch (e) {
       print('Error loading exchange rates: $e');
-      // Fallback to mock rates if API fails
       _exchangeRates = MockExchangeRates.getAllRatesFrom(state.baseCurrency);
-      _lastRateUpdate = DateTime.now(); // Mark as updated even with mock data
+      _lastRateUpdate = DateTime.now();
+      state = state.copyWith(isFallback: true);
     } finally {
       _isLoadingRates = false;
     }
   }
+
+  /// Set manual fiat rates with expiry (UTC). Map keys are toCurrency codes.
+  Future<void> setManualRates(Map<String, double> toCurrencyRates, DateTime expiryUtc) async {
+    _manualRates
+      ..clear()
+      ..addAll(toCurrencyRates);
+    _manualRatesExpiryUtc = expiryUtc.toUtc();
+    await _prefsBox.put(_kManualRatesKey, _manualRates);
+    await _prefsBox.put(_kManualRatesExpiryKey, _manualRatesExpiryUtc!.toIso8601String());
+    // Clear per-currency map to use global
+    await _prefsBox.delete(_kManualRatesExpiryMapKey);
+    _manualRatesExpiryByCurrency.clear();
+    await _savePreferences();
+    // Do not fetch live immediately; keep manual active until expiry
+  }
+
+  /// Set manual rates with per-currency expiries
+  Future<void> setManualRatesWithExpiries(
+    Map<String, double> toCurrencyRates,
+    Map<String, DateTime> expiriesUtc,
+  ) async {
+    _manualRates
+      ..clear()
+      ..addAll(toCurrencyRates);
+    _manualRatesExpiryUtc = null; // use per-currency expiries
+    _manualRatesExpiryByCurrency
+      ..clear()
+      ..addAll(expiriesUtc.map((k, v) => MapEntry(k, v.toUtc())));
+    await _prefsBox.put(_kManualRatesKey, _manualRates);
+    await _prefsBox.put(
+      _kManualRatesExpiryMapKey,
+      _manualRatesExpiryByCurrency.map((k, v) => MapEntry(k, v.toIso8601String())),
+    );
+    await _prefsBox.delete(_kManualRatesExpiryKey);
+    await _savePreferences();
+  }
+
+  /// Clear manual rates (revert to automatic)
+  Future<void> clearManualRates() async {
+    _manualRates.clear();
+    _manualRatesExpiryUtc = null;
+    _manualRatesExpiryByCurrency.clear();
+    await _prefsBox.delete(_kManualRatesKey);
+    await _prefsBox.delete(_kManualRatesExpiryKey);
+    await _prefsBox.delete(_kManualRatesExpiryMapKey);
+    await _savePreferences();
+    await _loadExchangeRates();
+  }
+
+  /// Upsert a single manual rate with per-currency expiry
+  Future<void> upsertManualRate(String toCurrencyCode, double rate, DateTime expiryUtc) async {
+    _manualRates[toCurrencyCode] = rate;
+    _manualRatesExpiryByCurrency[toCurrencyCode] = expiryUtc.toUtc();
+    await _prefsBox.put(_kManualRatesKey, _manualRates);
+    await _prefsBox.put(
+      _kManualRatesExpiryMapKey,
+      _manualRatesExpiryByCurrency.map((k, v) => MapEntry(k, v.toIso8601String())),
+    );
+    await _savePreferences();
+    await _loadExchangeRates();
+  }
+
+  /// Expose whether manual rates are active
+  bool get manualRatesActive {
+    final nowUtc = DateTime.now().toUtc();
+    // Active if any per-currency expiry is valid or global expiry is valid
+    final anyPerActive = _manualRatesExpiryByCurrency.values.any((dt) => nowUtc.isBefore(dt));
+    final globalActive = _manualRatesExpiryUtc != null && nowUtc.isBefore(_manualRatesExpiryUtc!);
+    return anyPerActive || globalActive;
+  }
+
+  /// Earliest non-expired expiry for banner display
+  DateTime? get manualRatesExpiryUtc {
+    final nowUtc = DateTime.now().toUtc();
+    final validExpiries = _manualRatesExpiryByCurrency.values
+        .where((dt) => nowUtc.isBefore(dt))
+        .toList();
+    validExpiries.sort();
+    if (validExpiries.isNotEmpty) {
+      return validExpiries.first;
+    }
+    return _manualRatesExpiryUtc;
+  }
   
   Future<void> _loadCryptoPrices() async {
     try {
-      // Get crypto prices in base currency
-      final cryptoPrices = await _cryptoPriceService.getAllCryptoPrices(state.baseCurrency);
+      // Skip if crypto is not enabled
+      if (!state.cryptoEnabled) {
+        return;
+      }
+      
+      // Get crypto prices in base currency with timeout
+      final cryptoPrices = await _cryptoPriceService.getAllCryptoPrices(state.baseCurrency)
+          .timeout(const Duration(seconds: 10), onTimeout: () {
+        print('Crypto price fetch timed out, using cached values');
+        return {};
+      });
       
       // Convert to ExchangeRate objects and add to _exchangeRates
-      for (final entry in cryptoPrices.entries) {
-        _exchangeRates[entry.key] = ExchangeRate(
-          fromCurrency: state.baseCurrency,
-          toCurrency: entry.key,
-          rate: 1.0 / entry.value, // Invert because price is crypto->fiat
-          date: DateTime.now(),
-          source: 'coingecko',
-        );
+      if (cryptoPrices.isNotEmpty) {
+        for (final entry in cryptoPrices.entries) {
+          if (entry.value > 0) {
+            _exchangeRates[entry.key] = ExchangeRate(
+              fromCurrency: state.baseCurrency,
+              toCurrency: entry.key,
+              rate: 1.0 / entry.value, // Invert because price is crypto->fiat
+              date: DateTime.now(),
+              source: 'coingecko',
+            );
+          }
+        }
       }
     } catch (e) {
-      print('Error loading crypto prices: $e');
+      // Fail silently, crypto prices are optional
+      print('Error loading crypto prices from CoinGecko: $e');
     }
   }
   
@@ -182,6 +350,11 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   /// 3. User performs currency conversion in transaction
   Future<void> refreshExchangeRates() async {
     await _loadExchangeRates();
+  }
+
+  /// Public: refresh only crypto prices (used by crypto selection page)
+  Future<void> refreshCryptoPrices() async {
+    await _loadCryptoPrices();
   }
 
   /// Get all available currencies based on settings
@@ -206,6 +379,28 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
         .where((c) => c != null)
         .cast<Currency>()
         .toList();
+  }
+
+  /// Add a currency to the selected list
+  Future<void> addSelectedCurrency(String currencyCode) async {
+    if (!state.selectedCurrencies.contains(currencyCode)) {
+      final updated = List<String>.from(state.selectedCurrencies)..add(currencyCode);
+      state = state.copyWith(selectedCurrencies: updated);
+      await _savePreferences();
+    }
+  }
+
+  /// Remove a currency from the selected list
+  Future<void> removeSelectedCurrency(String currencyCode) async {
+    if (state.selectedCurrencies.contains(currencyCode)) {
+      final updated = List<String>.from(state.selectedCurrencies)..remove(currencyCode);
+      // Ensure base currency remains in list
+      if (!updated.contains(state.baseCurrency)) {
+        updated.insert(0, state.baseCurrency);
+      }
+      state = state.copyWith(selectedCurrencies: updated);
+      await _savePreferences();
+    }
   }
 
   /// Get base currency
@@ -405,9 +600,17 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   String formatCurrency(double amount, String currencyCode) {
     final currency = _currencyCache[currencyCode];
     if (currency == null) return amount.toStringAsFixed(2);
-    
-    final formatted = currency.formatAmount(amount);
-    return '${currency.symbol}$formatted';
+    final amt = currency.formatAmount(amount);
+    if (state.showCurrencySymbol && state.showCurrencyCode) {
+      return '${currency.symbol}$amt ${currency.code}';
+    } else if (state.showCurrencySymbol) {
+      return '${currency.symbol}$amt';
+    } else if (state.showCurrencyCode) {
+      return '$amt ${currency.code}';
+    } else {
+      // Fallback to code if both off (should not happen due to guard)
+      return '$amt ${currency.code}';
+    }
   }
 
   /// Check if crypto is supported
@@ -468,4 +671,42 @@ final baseCurrencyProvider = Provider<Currency>((ref) {
 
 final isCryptoSupportedProvider = Provider<bool>((ref) {
   return ref.read(currencyProvider.notifier).isCryptoSupported();
+});
+
+/// Expose current fiat/crypto exchange rates relative to base as a simple map
+final exchangeRatesProvider = Provider<Map<String, double>>((ref) {
+  // Rebuild when currency state changes
+  ref.watch(currencyProvider);
+  final notifier = ref.read(currencyProvider.notifier);
+  // Build map of toCurrency -> rate from base
+  final Map<String, double> map = {};
+  for (final entry in notifier._exchangeRates.entries) {
+    map[entry.key] = entry.value.rate;
+  }
+  return map;
+});
+
+/// Expose ExchangeRate objects (with source) keyed by toCurrency
+final exchangeRateObjectsProvider = Provider<Map<String, ExchangeRate>>((ref) {
+  ref.watch(currencyProvider);
+  final notifier = ref.read(currencyProvider.notifier);
+  // Return a copy to avoid external mutation
+  return Map<String, ExchangeRate>.fromEntries(
+    notifier._exchangeRates.entries.map((e) => MapEntry(e.key, e.value)),
+  );
+});
+
+/// Expose crypto prices in base currency (code -> price in base)
+final cryptoPricesProvider = Provider<Map<String, double>>((ref) {
+  ref.watch(currencyProvider);
+  final notifier = ref.read(currencyProvider.notifier);
+  final Map<String, double> map = {};
+  for (final entry in notifier._exchangeRates.entries) {
+    final code = entry.key;
+    final isCrypto = CurrencyDefaults.cryptoCurrencies.any((c) => c.code == code);
+    if (isCrypto && entry.value.rate != 0) {
+      map[code] = 1.0 / entry.value.rate;
+    }
+  }
+  return map;
 });

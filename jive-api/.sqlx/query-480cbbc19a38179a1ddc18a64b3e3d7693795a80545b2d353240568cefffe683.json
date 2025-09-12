@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                UPDATE exchange_rates \n                SET is_manual = false \n                WHERE is_manual = true \n                  AND manual_rate_expiry IS NOT NULL \n                  AND manual_rate_expiry < CURRENT_TIMESTAMP\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "480cbbc19a38179a1ddc18a64b3e3d7693795a80545b2d353240568cefffe683"
+}
