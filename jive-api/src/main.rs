@@ -38,6 +38,7 @@ use handlers::auth as auth_handlers;
 use handlers::enhanced_profile;
 use handlers::currency_handler;
 use handlers::currency_handler_enhanced;
+use handlers::tag_handler;
 use handlers::ledgers::{list_ledgers, create_ledger, get_current_ledger, get_ledger, 
                          update_ledger, delete_ledger, get_ledger_statistics, get_ledger_members};
 use handlers::family_handler::{list_families, create_family, get_family, update_family, delete_family, join_family, leave_family, request_verification_code, get_family_statistics, get_family_actions, get_role_descriptions, transfer_ownership};
@@ -342,6 +343,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/currencies/crypto-prices", get(currency_handler_enhanced::get_crypto_prices))
         .route("/api/v1/currencies/convert-any", post(currency_handler_enhanced::convert_currency))
         .route("/api/v1/currencies/manual-refresh", post(currency_handler_enhanced::manual_refresh_rates))
+
+        // 标签管理 API（Phase 1 最小集）
+        .route("/api/v1/tags", get(tag_handler::list_tags))
+        .route("/api/v1/tags", post(tag_handler::create_tag))
+        .route("/api/v1/tags/:id", put(tag_handler::update_tag))
+        .route("/api/v1/tags/:id", delete(tag_handler::delete_tag))
+        .route("/api/v1/tags/merge", post(tag_handler::merge_tags))
+        .route("/api/v1/tags/summary", get(tag_handler::tag_summary))
         
         // 占位符 API - 功能开发中
         .route("/api/v1/families/:id/export", get(export_data))

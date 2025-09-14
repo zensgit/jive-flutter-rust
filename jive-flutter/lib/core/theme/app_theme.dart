@@ -53,6 +53,7 @@ class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
       colorScheme: colorScheme,
       textTheme: _buildTextTheme(colorScheme),
       appBarTheme: _buildAppBarTheme(colorScheme),
@@ -96,6 +97,7 @@ class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
       colorScheme: colorScheme,
       textTheme: _buildTextTheme(colorScheme),
       appBarTheme: _buildAppBarTheme(colorScheme),

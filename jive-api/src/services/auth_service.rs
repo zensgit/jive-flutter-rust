@@ -18,6 +18,7 @@ pub struct RegisterRequest {
     pub email: String,
     pub password: String,
     pub name: Option<String>,
+    pub username: Option<String>,
 }
 
 #[derive(Debug)]
@@ -66,6 +67,19 @@ impl AuthService {
         if exists {
             return Err(ServiceError::Conflict("Email already registered".to_string()));
         }
+
+        // If username provided, ensure uniqueness (case-insensitive)
+        if let Some(ref username) = request.username {
+            let username_exists = sqlx::query_scalar::<_, bool>(
+                "SELECT EXISTS(SELECT 1 FROM users WHERE LOWER(username) = LOWER($1))"
+            )
+            .bind(username)
+            .fetch_one(&self.pool)
+            .await?;
+            if username_exists {
+                return Err(ServiceError::Conflict("Username already taken".to_string()));
+            }
+        }
         
         let mut tx = self.pool.begin().await?;
         
@@ -79,12 +93,13 @@ impl AuthService {
         
         sqlx::query(
             r#"
-            INSERT INTO users (id, email, name, full_name, password_hash, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            INSERT INTO users (id, email, username, name, full_name, password_hash, created_at, updated_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             "#
         )
         .bind(user_id)
         .bind(&request.email)
+        .bind(&request.username)
         .bind(&user_name)
         .bind(&user_name)
         .bind(&password_hash)

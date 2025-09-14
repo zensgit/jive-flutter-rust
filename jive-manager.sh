@@ -276,6 +276,7 @@ api_start_safe() {
     eval $SQLX_PREFIX nohup cargo run --release --bin jive-api > "$LOG_DIR/api.log" 2>&1 &
     local pid=$!
     save_pid "api" $pid
+    echo "safe" > "$PID_DIR/api.mode"
     wait_for_port $API_PORT "API(安全)"
     cd "$PROJECT_ROOT"
 }
@@ -303,6 +304,7 @@ api_start_dev() {
     eval $SQLX_PREFIX nohup cargo run --bin jive-api > "$LOG_DIR/api.log" 2>&1 &
     local pid=$!
     save_pid "api" $pid
+    echo "dev" > "$PID_DIR/api.mode"
     wait_for_port $API_PORT "API(开发)"
     cd "$PROJECT_ROOT"
 }
@@ -363,22 +365,21 @@ web_start() {
     fi
     
     # 启动
-    # 检测 flutter 是否支持 --web-renderer 参数
-    local RENDERER_FLAG=""
-    # 使用 -- 终止 grep 选项解析，避免把模式当作参数
-    if flutter run -h 2>&1 | grep -q -- "--web-renderer"; then
-        # 可通过环境变量 WEB_RENDERER 指定 (html | canvaskit | auto)
-        local renderer=${WEB_RENDERER:-html}
-        RENDERER_FLAG="--web-renderer $renderer"
-        print_info "检测到 --web-renderer 支持，使用: $renderer"
-    else
-        print_warning "Flutter 版本不支持 --web-renderer，使用默认渲染器"
+    # Flutter 3.35+ 使用 --wasm 代替 --web-renderer
+    local WASM_FLAG=""
+    if [ "${USE_WASM:-false}" = "true" ]; then
+        if flutter run -h 2>&1 | grep -q -- "--wasm"; then
+            WASM_FLAG="--wasm"
+            print_info "启用 WebAssembly 编译模式"
+        else
+            print_warning "Flutter 版本不支持 --wasm"
+        fi
     fi
 
     # 运行（不引用空参数以避免旧版本报错）
     local EXTRA_FLAGS="--no-version-check --disable-service-auth-codes"
-    if [ -n "$RENDERER_FLAG" ]; then
-        nohup flutter run -d web-server --web-port $WEB_PORT $RENDERER_FLAG $EXTRA_FLAGS > "$LOG_DIR/web.log" 2>&1 &
+    if [ -n "$WASM_FLAG" ]; then
+        nohup flutter run -d web-server --web-port $WEB_PORT $WASM_FLAG $EXTRA_FLAGS > "$LOG_DIR/web.log" 2>&1 &
     else
         nohup flutter run -d web-server --web-port $WEB_PORT $EXTRA_FLAGS > "$LOG_DIR/web.log" 2>&1 &
     fi
@@ -534,6 +535,23 @@ start_service() {
             ;;
         adminer)
             docker_start "adminer"
+            ;;
+        build)
+            if [ "$2" = "web" ]; then
+                web_build
+            else
+                print_error "未知构建目标: ${2:-<缺失>} (支持: web)"; show_usage; exit 1
+            fi
+            ;;
+        rebuild)
+            rebuild
+            ;;
+        rebuild-all)
+            # 可指定模式: dev | safe
+            rebuild_all "${3:-dev}"
+            ;;
+        rebuild-all-dev)
+            rebuild_all_dev
             ;;
         docker)
             docker_start "all"
@@ -691,6 +709,95 @@ show_logs() {
     esac
 }
 
+# ================================================================
+# 构建与重新编译
+# ================================================================
+
+web_build() {
+    print_info "构建 Flutter Web 发布版..."
+    ensure_flutter_available || return 1
+    ensure_flutter_writable || return 1
+    cd "$PROJECT_ROOT/jive-flutter"
+    
+    # Flutter 3.35+ 使用 --wasm 代替 --web-renderer
+    local WASM_FLAG=""
+    if [ "${USE_WASM:-false}" = "true" ]; then
+        if flutter build web -h 2>&1 | grep -q -- "--wasm"; then
+            WASM_FLAG="--wasm"
+            print_info "使用 WebAssembly 编译模式"
+        else
+            print_warning "Flutter 版本不支持 --wasm"
+        fi
+    fi
+    
+    # 是否禁用图标裁剪
+    local ICON_FLAG=""
+    if [ "${NO_TREE_SHAKE_ICONS:-0}" = "1" ]; then
+        ICON_FLAG="--no-tree-shake-icons"
+        print_info "关闭图标 Tree Shake"
+    fi
+    
+    # 执行构建
+    flutter clean >/dev/null 2>&1 || true
+    flutter pub get || { print_error "flutter pub get 失败"; return 1; }
+    if [ -n "$WASM_FLAG" ]; then
+        flutter build web --release -t lib/main.dart $WASM_FLAG --dart-define=API_BASE_URL=http://localhost:$API_PORT $ICON_FLAG || { print_error "Flutter Web 构建失败"; return 1; }
+    else
+        flutter build web --release -t lib/main.dart --dart-define=API_BASE_URL=http://localhost:$API_PORT $ICON_FLAG || { print_error "Flutter Web 构建失败"; return 1; }
+    fi
+    
+    print_success "Flutter Web 构建完成: jive-flutter/build/web"
+    cd "$PROJECT_ROOT"
+}
+
+rebuild() {
+    # 一键：停止 web -> 重新构建 -> 启动 web 预览（可选）
+    print_info "执行重新编译 (Flutter Web)..."
+    web_stop || true
+    web_build || { print_error "重新编译失败"; return 1; }
+    # 可选：提供一个简单的本地静态预览（3022）
+    if command -v python3 >/dev/null 2>&1; then
+        print_info "在 3022 端口预览发布包..."
+        cd "$PROJECT_ROOT/jive-flutter/build/web"
+        nohup python3 -m http.server 3022 > "$LOG_DIR/web_release.log" 2>&1 &
+        save_pid "web_release" $!
+        cd "$PROJECT_ROOT"
+        print_success "预览地址: http://localhost:3022"
+    else
+        print_warning "未找到 python3，跳过预览服务。可手动运行: cd jive-flutter/build/web && python3 -m http.server 3022"
+    fi
+}
+
+# 重新编译 API + Web 并启动（API 模式可选 dev|safe，默认 dev）
+rebuild_all() {
+    local mode=${1:-dev}
+    print_info "执行全栈重新编译 (API: $mode, Web 构建 + 预览)..."
+    # API
+    if [ "$mode" = "dev" ]; then
+        api_stop || true
+        api_start_dev || { print_error "API 启动失败 (dev)"; return 1; }
+    else
+        api_stop || true
+        api_start_safe || { print_error "API 启动失败 (safe)"; return 1; }
+    fi
+    # Web
+    rebuild || { print_error "Web 重新编译失败"; return 1; }
+    print_success "全栈重新编译完成 (API: $mode, 预览: http://localhost:3022)"
+}
+
+# 重启 API(dev) 并启动前端热重载 (3021)
+rebuild_all_dev() {
+    print_info "重启 API(dev) 并启动前端热重载..."
+    api_stop || true
+    api_start_dev || { print_error "API(dev) 启动失败"; return 1; }
+    # 前端热重载
+    if is_service_running "web"; then
+        web_stop || true
+    fi
+    web_start || { print_error "前端热重载启动失败"; return 1; }
+    print_success "API(dev)+Web(dev) 已启动：API http://localhost:$API_PORT, Web http://localhost:$WEB_PORT"
+}
+
 # 清理
 clean_all() {
     print_header
@@ -757,6 +864,10 @@ show_usage() {
     echo "  health          - 快速健康检查 (API/DB/Redis/Adminer)"
     echo "  status          - 查看服务状态"
     echo "  logs [服务]     - 查看服务日志"
+    echo "  build web       - 构建 Flutter Web 发布版"
+    echo "  rebuild         - 重新编译前端并在 3022 端口预览"
+    echo "  rebuild-all [dev|safe] - 重新编译 API 与前端并预览 (默认 dev)"
+    echo "  rebuild-all-dev - 重启 API(dev) 并启动前端热重载(3021)"
     echo "  clean           - 清理所有服务和数据"
     echo "  ports           - 释放所有端口"
     echo "  help            - 显示此帮助"
@@ -781,6 +892,11 @@ show_usage() {
     echo "  $0 logs api           # 查看 API 日志"
     echo "  $0 status             # 查看所有服务状态"
     echo "  $0 ports              # 释放所有端口"
+    echo "  $0 build web          # 仅构建前端发布包"
+    echo "  $0 rebuild            # 重建前端并预览"
+    echo "  $0 rebuild-all dev    # 重建 API(宽松) + 前端并预览"
+    echo "  $0 rebuild-all safe   # 重建 API(安全) + 前端并预览"
+    echo "  $0 rebuild-all-dev    # 重启 API(宽松) + 启动前端热重载(3021)"
     echo ""
     echo -e "${CYAN}快捷操作:${NC}"
     echo "  $0                    # 显示状态"
@@ -864,9 +980,27 @@ main() {
     # 检查依赖
     check_dependencies
     
-case "$command" in
+    case "$command" in
         start|up)
             start_service "$service"
+            ;;
+        build)
+            # 支持: build web
+            if [ "$service" = "web" ]; then
+                web_build
+            else
+                print_error "未知构建目标: ${service:-<缺失>} (支持: web)"; show_usage; exit 1
+            fi
+            ;;
+        rebuild)
+            rebuild
+            ;;
+        rebuild-all)
+            # 可指定模式: dev | safe (第二个参数)
+            rebuild_all "${service:-dev}"
+            ;;
+        rebuild-all-dev)
+            rebuild_all_dev
             ;;
         stop|down)
             stop_service "$service"

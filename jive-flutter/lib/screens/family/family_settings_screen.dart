@@ -30,7 +30,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
   late LedgerType _selectedType;
-  late String _selectedCurrency;
+  // 货币字段已移除，但保留原值以兼容性
   late bool _isDefault;
   
   File? _avatarImage;
@@ -46,7 +46,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
     _nameController = TextEditingController(text: widget.ledger.name);
     _descriptionController = TextEditingController(text: widget.ledger.description);
     _selectedType = widget.ledger.type;
-    _selectedCurrency = widget.ledger.currency;
+    // 货币字段已移除
     _isDefault = widget.ledger.isDefault;
 
     // 监听变化
@@ -66,7 +66,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
       _hasChanges = _nameController.text != widget.ledger.name ||
           _descriptionController.text != widget.ledger.description ||
           _selectedType != widget.ledger.type ||
-          _selectedCurrency != widget.ledger.currency ||
+          // 货币字段已移除
           _isDefault != widget.ledger.isDefault ||
           _avatarImage != null;
     });
@@ -224,36 +224,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                   ),
                 ),
                 
-                // 货币
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedCurrency,
-                    decoration: InputDecoration(
-                      labelText: '货币',
-                      prefixIcon: const Icon(Icons.attach_money),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: 'CNY', child: Text('CNY - 人民币')),
-                      DropdownMenuItem(value: 'USD', child: Text('USD - 美元')),
-                      DropdownMenuItem(value: 'EUR', child: Text('EUR - 欧元')),
-                      DropdownMenuItem(value: 'GBP', child: Text('GBP - 英镑')),
-                      DropdownMenuItem(value: 'JPY', child: Text('JPY - 日元')),
-                      DropdownMenuItem(value: 'HKD', child: Text('HKD - 港币')),
-                    ],
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _selectedCurrency = value;
-                          _hasChanges = true;
-                        });
-                      }
-                    },
-                  ),
-                ),
+                // 货币选项已移除
                 
                 // 描述
                 Padding(
@@ -459,7 +430,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
         name: _nameController.text.trim(),
         type: _selectedType,
         description: _descriptionController.text.trim(),
-        currency: _selectedCurrency,
+        currency: widget.ledger.currency, // 保持原有货币值不变
         isDefault: _isDefault,
       );
 

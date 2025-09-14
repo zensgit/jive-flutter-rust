@@ -21,17 +21,18 @@ class CurrencyService {
     };
   }
   
-  /// Get all supported currencies from the API
-  Future<List<Currency>> getSupportedCurrencies() async {
+  /// Result wrapper for currency catalog with ETag support
+  Future<CurrencyCatalogResult> getSupportedCurrenciesWithEtag({String? etag}) async {
     try {
       final dio = HttpClient.instance.dio;
       await ApiReadiness.ensureReady(dio);
-      final resp = await dio.get('/currencies');
+      final resp = await dio.get('/currencies', options: Options(headers: {
+        if (etag != null && etag.isNotEmpty) 'If-None-Match': etag,
+      }));
       if (resp.statusCode == 200) {
         final data = resp.data;
         final List<dynamic> currencies = data['data'] ?? data;
-        
-        return currencies.map((json) {
+        final items = currencies.map((json) {
           final apiCurrency = ApiCurrency.fromJson(json);
           // Map API currency to app Currency model
           return Currency(
@@ -44,14 +45,28 @@ class CurrencyService {
             flag: _getFlag(apiCurrency.code),
           );
         }).toList();
+        final newEtag = resp.headers['etag']?.first;
+        return CurrencyCatalogResult(items, newEtag, false);
+      } else if (resp.statusCode == 304) {
+        return CurrencyCatalogResult(const [], etag, true);
       } else {
-        throw Exception('Failed to load currencies: ${response.statusCode}');
+        throw Exception('Failed to load currencies: ${resp.statusCode}');
       }
     } catch (e) {
       print('Error fetching currencies: $e');
-      // Return default currencies as fallback
+      // On failure, signal fallback by returning empty and notModified=false
+      return CurrencyCatalogResult(const [], etag, false, error: e.toString());
+    }
+  }
+
+  /// Backward compatible simple fetch (no ETag)
+  Future<List<Currency>> getSupportedCurrencies() async {
+    final res = await getSupportedCurrenciesWithEtag();
+    if (res.notModified || res.items.isEmpty) {
+      // Fallback to bundled list
       return CurrencyDefaults.fiatCurrencies;
     }
+    return res.items;
   }
   
   /// Get user currency preferences
@@ -65,7 +80,7 @@ class CurrencyService {
         final List<dynamic> preferences = data['data'] ?? data;
         return preferences.map((json) => CurrencyPreference.fromJson(json)).toList();
       } else {
-        throw Exception('Failed to load preferences: ${response.statusCode}');
+        throw Exception('Failed to load preferences: ${resp.statusCode}');
       }
     } catch (e) {
       print('Error fetching preferences: $e');
@@ -156,7 +171,7 @@ class CurrencyService {
           throw Exception('Invalid rate format');
         }
       } else {
-        throw Exception('Failed to get exchange rate: ${response.statusCode}');
+        throw Exception('Failed to get exchange rate: ${resp.statusCode}');
       }
     } catch (e) {
       print('Error getting exchange rate: $e');
@@ -187,7 +202,7 @@ class CurrencyService {
         
         return rates;
       } else {
-        throw Exception('Failed to get batch rates: ${response.statusCode}');
+        throw Exception('Failed to get batch rates: ${resp.statusCode}');
       }
     } catch (e) {
       print('Error getting batch rates: $e');
@@ -215,7 +230,7 @@ class CurrencyService {
         final data = resp.data;
         return ConvertAmountResponse.fromJson(data['data'] ?? data);
       } else {
-        throw Exception('Failed to convert amount: ${response.statusCode}');
+        throw Exception('Failed to convert amount: ${resp.statusCode}');
       }
     } catch (e) {
       print('Error converting amount: $e');
@@ -248,7 +263,7 @@ class CurrencyService {
         final List<dynamic> history = data['data'] ?? data;
         return history.map((json) => ExchangeRate.fromJson(json)).toList();
       } else {
-        throw Exception('Failed to get history: ${response.statusCode}');
+        throw Exception('Failed to get history: ${resp.statusCode}');
       }
     } catch (e) {
       print('Error getting rate history: $e');
@@ -267,7 +282,7 @@ class CurrencyService {
         final List<dynamic> pairs = data['data'] ?? data;
         return pairs.map((json) => ExchangePair.fromJson(json)).toList();
       } else {
-        throw Exception('Failed to get popular pairs: ${response.statusCode}');
+        throw Exception('Failed to get popular pairs: ${resp.statusCode}');
       }
     } catch (e) {
       print('Error getting popular pairs: $e');
@@ -346,4 +361,12 @@ class CurrencyService {
     final key = '$from-$to';
     return rates[key] ?? 1.0;
   }
+}
+
+class CurrencyCatalogResult {
+  final List<Currency> items;
+  final String? etag;
+  final bool notModified;
+  final String? error;
+  CurrencyCatalogResult(this.items, this.etag, this.notModified, {this.error});
 }

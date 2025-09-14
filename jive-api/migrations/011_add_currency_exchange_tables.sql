@@ -127,10 +127,10 @@ ON CONFLICT (code) DO NOTHING;
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'set_updated_at') THEN
-        CREATE OR REPLACE FUNCTION set_updated_at() RETURNS TRIGGER AS $$
+        CREATE OR REPLACE FUNCTION set_updated_at() RETURNS TRIGGER AS $func$
         BEGIN
             NEW.updated_at = CURRENT_TIMESTAMP; RETURN NEW;
-        END; $$ LANGUAGE plpgsql;
+        END; $func$ LANGUAGE plpgsql;
     END IF;
 END$$;
 

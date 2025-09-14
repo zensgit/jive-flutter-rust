@@ -12,6 +12,7 @@ pub mod avatar_service;
 pub mod currency_service;
 pub mod exchange_rate_api;
 pub mod scheduled_tasks;
+pub mod tag_service;
 
 pub use context::ServiceContext;
 pub use error::ServiceError;
@@ -25,3 +26,4 @@ pub use budget_service::BudgetService;
 pub use verification_service::VerificationService;
 pub use avatar_service::{Avatar, AvatarService, AvatarStyle};
 pub use currency_service::{CurrencyService, Currency, ExchangeRate, FamilyCurrencySettings};
+pub use tag_service::{TagService, TagDto, TagSummary};

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/currency.dart' as model;
 import '../../providers/currency_provider.dart';
+import '../../providers/settings_provider.dart';
 import 'currency_selection_page.dart';
 import 'crypto_selection_page.dart';
 import 'exchange_rate_converter_page.dart';
+import '../../widgets/data_source_info.dart';
 
 /// 优化后的货币管理页面 V2
 class CurrencyManagementPageV2 extends ConsumerStatefulWidget {
@@ -25,6 +27,12 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _autoFetchExchangeRates();
     });
+  }
+
+  // 检测“已下线”的币种并提示替换（基于 isEnabled=false）
+  List<model.Currency> _findDeprecatedSelected() {
+    final selected = ref.read(selectedCurrenciesProvider);
+    return selected.where((c) => c.isEnabled == false).toList();
   }
 
   Widget _buildManualRatesBanner(WidgetRef ref) {
@@ -268,6 +276,93 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
     }
   }
 
+  Widget _DeprecatedCurrencyNotice() {
+    final cs = Theme.of(context).colorScheme;
+    final deprecated = _findDeprecatedSelected();
+    if (deprecated.isEmpty) return const SizedBox.shrink();
+    return Container(
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: cs.errorContainer.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: cs.error),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.warning_amber_rounded, color: cs.error),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              '以下币种已下线：${deprecated.map((e) => e.code).join(', ')}，建议替换为可用币种。',
+              style: TextStyle(color: cs.onErrorContainer, fontSize: 12),
+            ),
+          ),
+          TextButton(
+            onPressed: () => _openReplacementDialog(deprecated),
+            child: const Text('一键替换'),
+          )
+        ],
+      ),
+    );
+  }
+
+  Future<void> _openReplacementDialog(List<model.Currency> deprecated) async {
+    final available = ref.read(availableCurrenciesProvider).where((c) => c.isEnabled).toList();
+    final selectedMap = <String, String>{};
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('替换下线币种'),
+          content: SizedBox(
+            width: 480,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: deprecated.map((d) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Row(
+                    children: [
+                      Expanded(child: Text(d.code)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                          value: selectedMap[d.code],
+                          items: available.map((c) => DropdownMenuItem(value: c.code, child: Text('${c.code} · ${c.nameZh}'))).toList(),
+                          onChanged: (v) => selectedMap[d.code] = v ?? d.code,
+                          decoration: const InputDecoration(border: OutlineInputBorder(), labelText: '替换为'),
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('取消')),
+            ElevatedButton(
+              onPressed: () async {
+                // 应用替换：移除旧币种，加入新币种
+                final notifier = ref.read(currencyProvider.notifier);
+                for (final d in deprecated) {
+                  final replacement = selectedMap[d.code];
+                  if (replacement != null && replacement != d.code) {
+                    await notifier.removeSelectedCurrency(d.code);
+                    await notifier.addSelectedCurrency(replacement);
+                  }
+                }
+                if (context.mounted) Navigator.pop(context);
+              },
+              child: const Text('应用'),
+            )
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final currencyPrefs = ref.watch(currencyProvider);
@@ -276,12 +371,14 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
     final baseCurrency = ref.watch(baseCurrencyProvider);
     final selectedCurrencies = ref.watch(selectedCurrenciesProvider);
     
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: cs.surface,
       appBar: AppBar(
         title: const Text('多币种设置'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: theme.appBarTheme.backgroundColor,
+        foregroundColor: theme.appBarTheme.foregroundColor,
         elevation: 0.5,
         actions: [
           if (_isLoadingRates)
@@ -297,12 +394,13 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
             ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
         child: Column(
           children: [
             // 1. 基础货币 - 放在第一行
             Container(
-              color: Colors.white,
+              color: cs.surface,
               margin: const EdgeInsets.only(top: 8),
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -310,7 +408,7 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.star, color: Colors.amber[700], size: 20),
+                      Icon(Icons.star, color: cs.tertiary, size: 20),
                       const SizedBox(width: 8),
                       const Text(
                         '基础货币',
@@ -323,14 +421,14 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: Colors.amber[100],
+                          color: cs.tertiaryContainer,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           '重要',
                           style: TextStyle(
                             fontSize: 11,
-                            color: Colors.amber[900],
+                            color: cs.onTertiaryContainer,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -357,9 +455,9 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.amber[50],
+                        color: cs.tertiaryContainer.withOpacity(0.4),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.amber[200]!),
+                        border: Border.all(color: cs.tertiary),
                       ),
                       child: Row(
                         children: [
@@ -368,14 +466,14 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                             width: 48,
                             height: 48,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: cs.surface,
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.amber[300]!),
+                              border: Border.all(color: cs.tertiary),
                             ),
                             child: Center(
                               child: Text(
                                 baseCurrency.flag ?? baseCurrency.symbol,
-                                style: const TextStyle(fontSize: 24),
+                                style: TextStyle(fontSize: 24, color: cs.onSurface),
                               ),
                             ),
                           ),
@@ -400,12 +498,12 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                                         vertical: 2,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: Colors.grey[200],
+                                        color: cs.surfaceVariant,
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                       child: Text(
                                         baseCurrency.symbol,
-                                        style: const TextStyle(fontSize: 12),
+                                        style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
                                       ),
                                     ),
                                   ],
@@ -415,7 +513,7 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                                   baseCurrency.nameZh,
                                   style: TextStyle(
                                     fontSize: 13,
-                                    color: Colors.grey[600],
+                                    color: cs.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -430,16 +528,16 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
               ),
             ),
 
-            // 2. 启用多币种 - 第二行
+            // 2. 启用多币种 - 第二行（使用 ColorScheme，提升暗色可读性）
             Container(
-              color: Colors.white,
+              color: cs.surface,
               margin: const EdgeInsets.only(top: 8),
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.language, color: Colors.blue[700], size: 20),
+                      Icon(Icons.language, color: cs.primary, size: 20),
                       const SizedBox(width: 8),
                       const Text(
                         '启用多币种',
@@ -454,7 +552,7 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                         onChanged: (value) async {
                           await currencyNotifier.setMultiCurrencyMode(value);
                         },
-                        activeColor: Colors.blue,
+                        activeColor: cs.primary,
                       ),
                     ],
                   ),
@@ -465,15 +563,15 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.purple[50],
+                          color: cs.secondaryContainer.withOpacity(0.45),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.purple[200]!),
+                          border: Border.all(color: cs.secondary),
                         ),
                         child: Row(
                           children: [
                             Icon(
                               Icons.currency_bitcoin,
-                              color: Colors.purple[700],
+                              color: cs.secondary,
                               size: 20,
                             ),
                             const SizedBox(width: 8),
@@ -490,7 +588,7 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                               onChanged: (value) async {
                                 await currencyNotifier.setCryptoMode(value);
                               },
-                              activeColor: Colors.purple,
+                              activeColor: cs.secondary,
                             ),
                           ],
                         ),
@@ -499,24 +597,24 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.red[50],
+                          color: cs.errorContainer.withOpacity(0.35),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.red[200]!),
+                          border: Border.all(color: cs.error),
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.block, color: Colors.red[700], size: 20),
+                            Icon(Icons.block, color: cs.error, size: 20),
                             const SizedBox(width: 8),
                             Text(
                               '加密货币在您的地区不可用',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.red[700],
-                              ),
+                              style: TextStyle(fontSize: 14, color: cs.onErrorContainer),
                             ),
                           ],
                         ),
                       ),
+
+                    // 下线提示与一键替换（当已选中出现 is_active=false 的币种时）
+                    _DeprecatedCurrencyNotice(),
                   ],
                 ],
               ),
@@ -525,7 +623,7 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
             // 3. 多币种管理
             if (currencyPrefs.multiCurrencyEnabled)
               Container(
-                color: Colors.white,
+                color: cs.surface,
                 margin: const EdgeInsets.only(top: 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -534,8 +632,7 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                       padding: const EdgeInsets.all(16),
                       child: Row(
                         children: [
-                          const Icon(Icons.account_balance_wallet, 
-                            color: Colors.green, size: 20),
+                          Icon(Icons.account_balance_wallet, color: cs.secondary, size: 20),
                           const SizedBox(width: 8),
                           const Text(
                             '已选货币',
@@ -551,14 +648,14 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.green[100],
+                              color: cs.secondaryContainer,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               '${selectedCurrencies.length}',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.green[800],
+                                color: cs.onSecondaryContainer,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -568,7 +665,7 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                     ),
                     // 管理按钮
                     ListTile(
-                      leading: const Icon(Icons.edit, color: Colors.blue),
+                      leading: Icon(Icons.edit, color: cs.primary),
                       title: const Text('管理法定货币'),
                       subtitle: Text(
                         '选择并管理汇率',
@@ -576,18 +673,18 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                       ),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {
+                        final compact = ref.read(settingsProvider).listDensity == 'compact';
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const CurrencySelectionPage(),
+                            builder: (context) => CurrencySelectionPage(compact: compact),
                           ),
                         );
                       },
                     ),
                     if (currencyPrefs.cryptoEnabled)
                       ListTile(
-                        leading: const Icon(Icons.currency_bitcoin, 
-                          color: Colors.purple),
+                        leading: Icon(Icons.currency_bitcoin, color: cs.secondary),
                         title: const Text('管理加密货币'),
                         subtitle: Text(
                           '选择并管理加密货币',
@@ -609,7 +706,7 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
 
             // 4. 显示设置
             Container(
-              color: Colors.white,
+              color: cs.surface,
               margin: const EdgeInsets.only(top: 8),
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -617,7 +714,7 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.visibility, color: Colors.teal[700], size: 20),
+                      Icon(Icons.visibility, color: cs.primary, size: 20),
                       const SizedBox(width: 8),
                       const Text(
                         '显示设置',
@@ -672,19 +769,18 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.teal[50],
+                      color: cs.primaryContainer.withOpacity(0.35),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.info_outline, 
-                          size: 16, color: Colors.teal[700]),
+                        Icon(Icons.info_outline, size: 16, color: cs.onPrimaryContainer),
                         const SizedBox(width: 8),
                         Text(
                           _getDisplayExample(),
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.teal[700],
+                            color: cs.onPrimaryContainer,
                           ),
                         ),
                       ],
@@ -693,6 +789,40 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
                 ],
               ),
             ),
+
+            // 4b. 主题外观（已移至全局设置-主题模块）
+
+            // 6. 页脚信息：上次更新 & 数据源 (简洁显示)
+            Builder(builder: (_) {
+              final last = ref.watch(currencyProvider.notifier).lastUpdate;
+              final isFallback = ref.watch(currencyProvider).isFallback ?? false;
+              final text = last != null
+                  ? '上次更新: ${_formatDate(last.toLocal())} · 法币来源: ${isFallback ? '备用' : '主要'} · 加密来源: CoinGecko→CoinCap→Binance · 法币缓存15分钟/加密5分钟'
+                  : '汇率尚未更新 · 法币来源: ExchangeRate-API→Frankfurter→FXRates · 加密来源: CoinGecko→CoinCap→Binance';
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          text,
+                          style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton.icon(
+                        onPressed: () => showDataSourceInfoSheet(context),
+                        icon: const Icon(Icons.info_outline, size: 16),
+                        label: const Text('来源说明'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
 
             // 5. 汇率管理（隐藏）
             if (false) Container(
@@ -779,6 +909,7 @@ class _CurrencyManagementPageV2State extends ConsumerState<CurrencyManagementPag
             const SizedBox(height: 24),
           ],
         ),
+      ),
       ),
     );
   }

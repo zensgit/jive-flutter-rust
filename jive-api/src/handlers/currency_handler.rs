@@ -1,7 +1,9 @@
 use axum::{
     extract::{Query, State},
-    response::Json,
+    response::{IntoResponse, Json, Response},
+    http::{HeaderMap, HeaderValue, StatusCode},
 };
+use axum::body::Body;
 use chrono::NaiveDate;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
@@ -18,12 +20,42 @@ use super::family_handler::ApiResponse;
 /// 获取所有支持的货币
 pub async fn get_supported_currencies(
     State(pool): State<PgPool>,
-) -> ApiResult<Json<ApiResponse<Vec<Currency>>>> {
-    let service = CurrencyService::new(pool);
-    let currencies = service.get_supported_currencies().await
+    headers: HeaderMap,
+) -> ApiResult<Response> {
+    let service = CurrencyService::new(pool.clone());
+    // Compute a simple ETag based on latest currencies updated_at max
+    let etag_row = sqlx::query!(
+        r#"SELECT to_char(MAX(updated_at), 'YYYYMMDDHH24MISS') AS max_ts FROM currencies WHERE is_active = true"#
+    )
+    .fetch_one(&pool)
+    .await
+    .map_err(|_| ApiError::InternalServerError)?;
+
+    let mut current_etag = etag_row.max_ts.unwrap_or_else(|| "0".to_string());
+    if current_etag.is_empty() { current_etag = "0".to_string(); }
+    let current_etag_value = format!("W/\"curr-{}\"", current_etag);
+
+    if let Some(if_none_match) = headers.get("if-none-match").and_then(|v| v.to_str().ok()) {
+        if if_none_match == current_etag_value {
+            // Not modified
+            let mut resp = Response::builder()
+                .status(StatusCode::NOT_MODIFIED)
+                .header("ETag", HeaderValue::from_str(&current_etag_value).unwrap())
+                .body(Body::empty())
+                .unwrap();
+            return Ok(resp);
+        }
+    }
+
+    let currencies = service
+        .get_supported_currencies()
+        .await
         .map_err(|_e| ApiError::InternalServerError)?;
-    
-    Ok(Json(ApiResponse::success(currencies)))
+
+    let body = Json(ApiResponse::success(currencies));
+    let mut resp = body.into_response();
+    resp.headers_mut().insert("ETag", HeaderValue::from_str(&current_etag_value).unwrap());
+    Ok(resp)
 }
 
 /// 获取用户的货币偏好

@@ -95,13 +95,46 @@ class _JiveAppState extends ConsumerState<JiveApp> {
         // Wrap in a layout builder to ensure proper constraints
         return LayoutBuilder(
           builder: (context, constraints) {
+            // Apply density and corner radius from settings
+            final settings = ref.watch(settingsProvider);
+            final isCompact = settings.listDensity == 'compact';
+            final radius = settings.cornerRadius == 'small'
+                ? 8.0
+                : settings.cornerRadius == 'large' ? 16.0 : 12.0;
             final mediaWrapped = MediaQuery(
               data: MediaQuery.of(context).copyWith(
                 textScaler: TextScaler.linear(
-                  MediaQuery.of(context).textScaler.scale(1.0).clamp(0.8, 1.2),
+                  MediaQuery.of(context).textScaler.scale(1.0).clamp(0.9, 1.15),
                 ),
+                padding: MediaQuery.of(context).padding,
               ),
-              child: safeChild,
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  visualDensity: isCompact ? const VisualDensity(horizontal: -2, vertical: -2) : VisualDensity.adaptivePlatformDensity,
+                  cardTheme: Theme.of(context).cardTheme.copyWith(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(radius),
+                    ),
+                  ),
+                  inputDecorationTheme: Theme.of(context).inputDecorationTheme.copyWith(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(radius),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(radius),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
+                    ),
+                  ),
+                  checkboxTheme: Theme.of(context).checkboxTheme.copyWith(
+                    visualDensity: isCompact ? const VisualDensity(horizontal: -2, vertical: -2) : null,
+                  ),
+                  listTileTheme: Theme.of(context).listTileTheme.copyWith(
+                    dense: isCompact,
+                    contentPadding: isCompact ? const EdgeInsets.symmetric(horizontal: 12, vertical: 4) : null,
+                  ),
+                ),
+                child: safeChild,
+              ),
             );
             // 将开发调试悬浮控件放入 MaterialApp 内部，确保 Directionality / Theme 等已就绪
             // 注意：SelectionArea 需要 Overlay 祖先，不能包裹在 MaterialApp.builder 外层

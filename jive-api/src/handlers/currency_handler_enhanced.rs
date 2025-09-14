@@ -53,19 +53,15 @@ pub async fn get_all_currencies(
             code, 
             name, 
             name_zh,
-            symbol, 
+            COALESCE(symbol, '') AS symbol,
             decimal_places, 
             is_active,
             is_crypto,
-            flag,
-            COALESCE(country_code, '') as country_code,
-            COALESCE(is_popular, false) as is_popular,
-            COALESCE(display_order, 0) as display_order
+            flag
         FROM currencies
         WHERE is_active = true
         ORDER BY 
             is_crypto ASC,  -- Fiat first, then crypto
-            display_order ASC,
             code ASC
         "#
     )
@@ -82,7 +78,7 @@ pub async fn get_all_currencies(
             name: row.name,
             name_zh: row.name_zh,
             // row.symbol 已被编译期推断为非 Option；直接使用
-            symbol: row.symbol,
+            symbol: row.symbol.unwrap_or_default(),
             decimal_places: row.decimal_places.unwrap_or(2),
             is_enabled: row.is_active.unwrap_or(true),
             is_crypto: row.is_crypto.unwrap_or(false),
@@ -251,11 +247,9 @@ pub async fn get_realtime_exchange_rates(
     
     for row in recent_rates {
         rates.insert(row.to_currency, row.rate);
-        if let Some(created_at) = row.created_at {
-            let created_naive = created_at.naive_utc();
-            if last_updated.map(|lu| created_naive > lu).unwrap_or(true) {
-                last_updated = Some(created_naive);
-            }
+        let created_naive = row.created_at.naive_utc();
+        if last_updated.map(|lu| created_naive > lu).unwrap_or(true) {
+            last_updated = Some(created_naive);
         }
     }
     
@@ -328,13 +322,68 @@ pub async fn get_detailed_batch_rates(
 
     // Helper closures
     let mut fiat_rates: Option<(HashMap<String, Decimal>, String)> = None;
+    // Keep per-currency provider label for fiat targets
+    let mut fiat_source_map: HashMap<String, String> = HashMap::new();
     let mut crypto_prices_cache: Option<(HashMap<String, Decimal>, String)> = None; // code -> price in USD
 
     // Fetch fiat rates for base if needed
     if !base_is_crypto {
-        if let Ok(r) = api.fetch_fiat_rates(&base).await {
-            // fetch_fiat_rates caches source internally; expose via debug label
-            fiat_rates = Some((r, "fiat".to_string()));
+        // Merge per-target from providers in priority order, so missing ones are filled by next providers
+        let order_env = std::env::var("FIAT_PROVIDER_ORDER").unwrap_or_else(|_| "exchangerate-api,frankfurter,fxrates".to_string());
+        let providers: Vec<String> = order_env
+            .split(',')
+            .map(|s| s.trim().to_lowercase())
+            .filter(|s| !s.is_empty())
+            .collect();
+
+        // Accumulator for merged rates and a map to track source per currency
+        let mut merged: std::collections::HashMap<String, rust_decimal::Decimal> = std::collections::HashMap::new();
+        // Source map lives outside for later access
+
+        // Determine which targets are fiat (we only need fiat->fiat rates here)
+        let mut fiat_targets: Vec<String> = Vec::new();
+        for t in targets.iter() {
+            if !is_crypto_currency(&pool, t).await.unwrap_or(false) {
+                fiat_targets.push(t.clone());
+            }
+        }
+
+        for p in providers {
+            if fiat_targets.is_empty() { break; }
+            if let Ok((rmap, src)) = api.fetch_fiat_rates_from(&p, &base).await {
+                for t in fiat_targets.clone() { // iterate over a snapshot to allow removal
+                    if let Some(val) = rmap.get(&t) {
+                        // fill only if not already present
+                        if !merged.contains_key(&t) {
+                            merged.insert(t.clone(), *val);
+                            fiat_source_map.insert(t.clone(), src.clone());
+                        }
+                    }
+                }
+                // remove filled ones from pending list
+                fiat_targets.retain(|code| !merged.contains_key(code));
+            }
+        }
+
+        // If still missing, fallback to combined/default method (may be cached/default)
+        if !fiat_targets.is_empty() {
+            if let Ok(r) = api.fetch_fiat_rates(&base).await {
+                for t in fiat_targets.iter() {
+                    if let Some(val) = r.get(t) {
+                        if !merged.contains_key(t) {
+                            merged.insert(t.clone(), *val);
+                            // use cached source if available; otherwise mark as "fiat"
+                            let src = api.cached_fiat_source(&base).unwrap_or_else(|| "fiat".to_string());
+                            fiat_source_map.insert(t.clone(), src);
+                        }
+                    }
+                }
+            }
+        }
+
+        if !merged.is_empty() {
+            fiat_rates = Some((merged, "merged".to_string()));
+            // We'll use source_map at insertion time below
         }
     }
 
@@ -347,8 +396,11 @@ pub async fn get_detailed_batch_rates(
             // fiat -> fiat
             if let Some((ref rates_map, _)) = fiat_rates {
                 if let Some(rate) = rates_map.get(tgt) {
-                    // try to expose actual provider source if available from cache
-                    let provider = api.cached_fiat_source(&base).unwrap_or_else(|| "fiat".to_string());
+                    // Try to get per-currency provider label if available; otherwise fall back to cached/global
+                    let provider = match fiat_source_map.get(tgt) {
+                        Some(p) => p.clone(),
+                        None => api.cached_fiat_source(&base).unwrap_or_else(|| "fiat".to_string()),
+                    };
                     Some((*rate, provider))
                 } else { None }
             } else { None }
@@ -367,10 +419,9 @@ pub async fn get_detailed_batch_rates(
                         crypto_prices_cache = Some((p.clone(), "coingecko".to_string()));
                     }
                 }
-                if let (Some((ref cp, _)), Some((ref fr, _))) = (&crypto_prices_cache, &fiat_rates) {
+                if let (Some((ref cp, _)), Some((ref fr, ref provider))) = (&crypto_prices_cache, &fiat_rates) {
                     if let (Some(p_base_usd), Some(usd_to_tgt)) = (cp.get(&base), fr.get(tgt)) {
-                        let provider = api.cached_crypto_source(&[base.as_str()], "USD").unwrap_or_else(|| "crypto".to_string());
-                        Some((*p_base_usd * *usd_to_tgt, provider))
+                        Some((*p_base_usd * *usd_to_tgt, provider.clone()))
                     } else { None }
                 } else { None }
             }
@@ -389,12 +440,11 @@ pub async fn get_detailed_batch_rates(
                         crypto_prices_cache = Some((p.clone(), "coingecko".to_string()));
                     }
                 }
-                if let (Some((ref cp, _)), Some((ref fr, _))) = (&crypto_prices_cache, &fiat_rates) {
+                if let (Some((ref cp, _)), Some((ref fr, ref provider))) = (&crypto_prices_cache, &fiat_rates) {
                     if let (Some(p_tgt_usd), Some(usd_to_base)) = (cp.get(tgt), fr.get(&base)) {
                         // price(tgt, base) = p_tgt_usd / usd_to_base; then invert for base->tgt
                         let price_tgt_base = *p_tgt_usd / *usd_to_base;
-                        let provider = api.cached_crypto_source(&[tgt.as_str()], "USD").unwrap_or_else(|| "crypto".to_string());
-                        Some((Decimal::ONE / price_tgt_base, provider))
+                        Some((Decimal::ONE / price_tgt_base, provider.clone()))
                     } else { None }
                 } else { None }
             }
@@ -457,11 +507,9 @@ pub async fn get_crypto_prices(
     for row in prices {
         let price = Decimal::ONE / row.price;
         crypto_prices.insert(row.crypto_code, price);
-        if let Some(created_at) = row.created_at {
-            let created_naive = created_at.naive_utc();
-            if last_updated.map(|lu| created_naive > lu).unwrap_or(true) {
-                last_updated = Some(created_naive);
-            }
+        let created_naive = row.created_at.naive_utc();
+        if last_updated.map(|lu| created_naive > lu).unwrap_or(true) {
+            last_updated = Some(created_naive);
         }
     }
     

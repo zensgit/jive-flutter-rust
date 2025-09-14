@@ -6,6 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/ledger_provider.dart';
 import '../../providers/settings_provider.dart' hide currentUserProvider;
 import '../../providers/currency_provider.dart';
+import '../management/user_currency_browser.dart';
 import '../../widgets/dialogs/create_family_dialog.dart';
 import '../../widgets/dialogs/invite_member_dialog.dart';
 
@@ -93,6 +94,13 @@ class SettingsScreen extends ConsumerWidget {
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () => context.go('/settings/currency'),
               ),
+              ListTile(
+                leading: const Icon(Icons.currency_exchange),
+                title: const Text('币种管理（用户）'),
+                subtitle: const Text('查看全部法币/加密币，启用或设为基础'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () => context.go('/settings/currency/user-browser'),
+              ),
             ],
           ),
           
@@ -160,8 +168,8 @@ class SettingsScreen extends ConsumerWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.palette),
-                title: const Text('主题'),
-                subtitle: const Text('外观和颜色'),
+                title: const Text('主题设置'),
+                subtitle: const Text('主题模式 / 列表密度 / 圆角'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () => context.go('/settings/theme'),
               ),

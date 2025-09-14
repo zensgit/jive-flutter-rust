@@ -32,7 +32,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
     _isEditing = widget.theme != null;
     
     if (_isEditing) {
@@ -82,6 +82,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
             Tab(text: '主要颜色'),
             Tab(text: '界面颜色'),
             Tab(text: '状态颜色'),
+            Tab(text: '外观风格'),
           ],
         ),
       ),
@@ -109,6 +110,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
                 _buildMainColorsTab(),
                 _buildUIColorsTab(),
                 _buildStatusColorsTab(),
+                _buildAppearanceTab(),
               ],
             ),
           ),
@@ -285,6 +287,53 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
             onChanged: (color) => _updateColor(buttonText: color),
           ),
         ]),
+      ],
+    );
+  }
+
+  /// 外观风格（密度与圆角）
+  Widget _buildAppearanceTab() {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        SwitchListTile(
+          value: _editingTheme.listDensity == 'compact',
+          onChanged: (v) {
+            setState(() {
+              _editingTheme = _editingTheme.copyWith(
+                listDensity: v ? 'compact' : 'comfortable',
+              );
+            });
+          },
+          title: const Text('紧凑密度'),
+          subtitle: const Text('减少垂直留白，显示更多列表项'),
+        ),
+        const SizedBox(height: 8),
+        ListTile(
+          leading: const Icon(Icons.crop_square_rounded),
+          title: const Text('圆角大小'),
+          subtitle: const Text('小 / 中 / 大'),
+          trailing: DropdownButton<String>(
+            value: _editingTheme.cornerRadius,
+            items: const [
+              DropdownMenuItem(value: 'small', child: Text('小')),
+              DropdownMenuItem(value: 'medium', child: Text('中')),
+              DropdownMenuItem(value: 'large', child: Text('大')),
+            ],
+            onChanged: (v) {
+              if (v != null) {
+                setState(() {
+                  _editingTheme = _editingTheme.copyWith(cornerRadius: v);
+                });
+              }
+            },
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          '提示：密度与圆角设置会随主题一起保存/分享，应用到卡片、输入框、列表等组件。',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+        )
       ],
     );
   }
@@ -626,6 +675,38 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
                             child: const Text('次要按钮'),
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 16),
+                      // 密度与圆角预览
+                      SwitchListTile(
+                        value: _editingTheme.listDensity == 'compact',
+                        onChanged: (v) {
+                          setState(() {
+                            _editingTheme = _editingTheme.copyWith(
+                              listDensity: v ? 'compact' : 'comfortable',
+                            );
+                          });
+                        },
+                        title: const Text('紧凑密度'),
+                        subtitle: const Text('减少垂直留白以显示更多内容'),
+                      ),
+                      ListTile(
+                        title: const Text('圆角大小'),
+                        trailing: DropdownButton<String>(
+                          value: _editingTheme.cornerRadius,
+                          items: const [
+                            DropdownMenuItem(value: 'small', child: Text('小')),
+                            DropdownMenuItem(value: 'medium', child: Text('中')),
+                            DropdownMenuItem(value: 'large', child: Text('大')),
+                          ],
+                          onChanged: (v) {
+                            if (v != null) {
+                              setState(() {
+                                _editingTheme = _editingTheme.copyWith(cornerRadius: v);
+                              });
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),

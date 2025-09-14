@@ -17,9 +17,11 @@ import '../../screens/accounts/account_add_screen.dart';
 import '../../screens/accounts/account_detail_screen.dart';
 import '../../screens/budgets/budgets_screen.dart';
 import '../../screens/settings/settings_screen.dart';
+import '../../screens/settings/theme_settings_screen.dart';
 import '../../screens/settings/profile_settings_screen.dart';
 import '../../screens/currency/exchange_rate_screen.dart';
 import '../../screens/management/currency_management_page_v2.dart';
+import '../../screens/management/user_currency_browser.dart';
 import '../../screens/family/family_members_screen.dart';
 import '../../screens/family/family_settings_screen.dart';
 import '../../screens/family/family_dashboard_screen.dart';
@@ -45,8 +47,10 @@ class AppRoutes {
   static const profile = '/settings/profile';
   static const security = '/settings/security';
   static const preferences = '/settings/preferences';
+  static const theme = '/settings/theme';
   static const exchangeRate = '/settings/exchange-rate';
   static const currencyManagement = '/settings/currency';
+  static const userCurrencyBrowser = '/settings/currency/user-browser';
   static const cryptoManagement = '/settings/crypto';
   
   // 家庭管理路由
@@ -197,12 +201,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const Scaffold(body: Center(child: Text('Preferences'))),  // TODO: Create PreferencesScreen
               ),
               GoRoute(
+                path: 'theme',
+                builder: (context, state) => const ThemeSettingsScreen(),
+              ),
+              GoRoute(
                 path: 'exchange-rate',
                 builder: (context, state) => const ExchangeRateScreen(),
               ),
               GoRoute(
                 path: 'currency',
                 builder: (context, state) => const CurrencyManagementPageV2(),
+              ),
+              GoRoute(
+                path: 'currency/user-browser',
+                builder: (context, state) => const UserCurrencyBrowser(),
               ),
               GoRoute(
                 path: 'crypto',

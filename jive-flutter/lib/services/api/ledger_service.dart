@@ -124,7 +124,39 @@ class LedgerService {
         '${Endpoints.ledgers}/$id/statistics',
       );
       
-      return LedgerStatistics.fromJson(response.data);
+      // 处理不同的响应格式
+      dynamic responseData = response.data;
+      Map<String, dynamic> statisticsData;
+      
+      if (responseData is Map) {
+        // 如果响应本身就是统计数据
+        if (responseData.containsKey('totalAccounts') || 
+            responseData.containsKey('totalTransactions') ||
+            responseData.containsKey('totalBudgets')) {
+          statisticsData = responseData as Map<String, dynamic>;
+        } else if (responseData.containsKey('data')) {
+          // 如果响应包含 'data' 字段
+          statisticsData = responseData['data'] as Map<String, dynamic>;
+        } else if (responseData.containsKey('statistics')) {
+          // 如果响应包含 'statistics' 字段
+          statisticsData = responseData['statistics'] as Map<String, dynamic>;
+        } else {
+          // 使用整个响应作为统计数据
+          statisticsData = responseData as Map<String, dynamic>;
+        }
+      } else {
+        // 如果响应格式不正确，返回默认值
+        statisticsData = {
+          'totalAccounts': 0,
+          'totalTransactions': 0,
+          'totalBudgets': 0,
+          'monthlyExpense': 0.0,
+          'monthlyIncome': 0.0,
+          'balance': 0.0,
+        };
+      }
+      
+      return LedgerStatistics.fromJson(statisticsData);
     } catch (e) {
       throw _handleError(e);
     }
@@ -137,7 +169,30 @@ class LedgerService {
         '${Endpoints.ledgers}/$id/members',
       );
       
-      final List<dynamic> data = response.data['data'] ?? response.data;
+      // 处理不同的响应格式
+      dynamic responseData = response.data;
+      List<dynamic> data;
+      
+      if (responseData is List) {
+        data = responseData;
+      } else if (responseData is Map && responseData.containsKey('data')) {
+        // 如果响应是包含 'data' 字段的对象
+        final dataField = responseData['data'];
+        if (dataField is List) {
+          data = dataField;
+        } else if (dataField is Map && dataField.containsKey('members')) {
+          // 如果 data 是对象且包含 'members' 字段
+          data = dataField['members'] ?? [];
+        } else {
+          data = [];
+        }
+      } else if (responseData is Map && responseData.containsKey('members')) {
+        // 如果响应直接包含 'members' 字段
+        data = responseData['members'] ?? [];
+      } else {
+        data = [];
+      }
+      
       return data.map((json) => LedgerMember.fromJson(json)).toList();
     } catch (e) {
       throw _handleError(e);

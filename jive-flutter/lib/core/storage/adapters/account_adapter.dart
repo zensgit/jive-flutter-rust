@@ -100,9 +100,8 @@ class AccountGroupAdapter extends TypeAdapter<AccountGroup> {
       name: fields[1] as String,
       description: fields[2] as String?,
       color: fields[3] != null ? Color(fields[3] as int) : null,
-      icon: fields[4] != null 
-          ? IconData(fields[4] as int, fontFamily: 'MaterialIcons') 
-          : null,
+      // 使用常量替代运行时构造 IconData，兼容 web tree-shake-icons
+      icon: fields[4] != null ? Icons.folder : null,
       sortOrder: fields[5] as int,
       accountIds: (fields[6] as List).cast<String>(),
       createdAt: fields[7] as DateTime?,

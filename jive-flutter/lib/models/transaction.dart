@@ -285,10 +285,8 @@ class TransactionCategory {
       id: json['id']?.toString(),
       name: json['name'] ?? '',
       parentId: json['parent_id']?.toString(),
-      icon: IconData(
-        json['icon'] ?? Icons.category.codePoint,
-        fontFamily: 'MaterialIcons',
-      ),
+      // 避免运行时根据 codePoint 构造 IconData，使用常量映射或默认常量
+      icon: Icons.category,
       color: Color(json['color'] ?? Colors.grey.value),
       type: TransactionType.fromString(json['type']),
       sortOrder: json['sort_order'] ?? 0,

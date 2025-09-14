@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/currency.dart' as model;
 import '../../providers/currency_provider.dart';
+import '../../widgets/source_badge.dart';
+import '../../providers/settings_provider.dart';
 
 /// 加密货币选择管理页面
 class CryptoSelectionPage extends ConsumerStatefulWidget {
@@ -17,12 +19,21 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
   bool _isUpdatingPrices = false;
   final Map<String, TextEditingController> _priceControllers = {};
   final Map<String, bool> _manualPrices = {};
+  final Map<String, DateTime> _manualExpiry = {};
+  final Map<String, double> _localPriceOverrides = {};
+  bool _compact = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final density = ref.read(settingsProvider).listDensity;
+      setState(() { _compact = density == 'compact'; });
+    });
     // 打开页面时自动获取加密货币价格
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       _fetchLatestPrices();
     });
   }
@@ -37,16 +48,22 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
   }
 
   Future<void> _fetchLatestPrices() async {
+    if (!mounted) return;
     setState(() {
       _isUpdatingPrices = true;
     });
     
     try {
       await ref.read(currencyProvider.notifier).refreshCryptoPrices();
-      _showSnackBar('加密货币价格已更新', Colors.green);
+      if (mounted) {
+        _showSnackBar('加密货币价格已更新', Colors.green);
+      }
     } catch (e) {
-      _showSnackBar('价格更新失败', Colors.red);
+      if (mounted) {
+        _showSnackBar('价格更新失败', Colors.red);
+      }
     } finally {
+      if (!mounted) return;
       setState(() {
         _isUpdatingPrices = false;
       });
@@ -154,34 +171,42 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
     final isSelected = ref.watch(selectedCurrenciesProvider).contains(crypto);
     final cryptoPrices = ref.watch(cryptoPricesProvider);
     final baseCurrency = ref.watch(baseCurrencyProvider);
-    final price = cryptoPrices[crypto.code] ?? 0.0;
+    final price = _localPriceOverrides[crypto.code] ?? cryptoPrices[crypto.code] ?? 0.0;
     
     // 获取或创建价格输入控制器
     if (!_priceControllers.containsKey(crypto.code)) {
       _priceControllers[crypto.code] = TextEditingController(
-                text: ref.read(currencyProvider.notifier).formatCurrency(price, baseCurrency.code),
+        text: price > 0 ? price.toStringAsFixed(2) : '',
       );
     }
     
+    final cs = Theme.of(context).colorScheme;
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      margin: EdgeInsets.symmetric(horizontal: _compact ? 12 : 16, vertical: _compact ? 2 : 4),
       elevation: 1,
-      color: isSelected ? Colors.purple[50] : Colors.white,
+      color: isSelected ? cs.secondaryContainer : cs.surface,
       child: ExpansionTile(
         leading: Container(
-          width: 48,
-          height: 48,
+          width: _compact ? 40 : 48,
+          height: _compact ? 40 : 48,
           decoration: BoxDecoration(
-            color: _getCryptoColor(crypto.code).withOpacity(0.1),
+            color: _getCryptoColor(crypto.code).withOpacity(0.12),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: isSelected 
                   ? _getCryptoColor(crypto.code) 
-                  : Colors.grey[300]!,
+                  : cs.outlineVariant,
             ),
           ),
           child: Center(
-            child: _getCryptoIcon(crypto.code),
+            child: Icon(
+              Icons.currency_bitcoin,
+              // use onSurface in dark to avoid low contrast
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? cs.onSurface
+                  : _getCryptoColor(crypto.code),
+              size: _compact ? 20 : 22,
+            ),
           ),
         ),
         title: Row(
@@ -199,12 +224,9 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                           fontSize: 16,
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: _compact ? 6 : 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
+                        padding: EdgeInsets.symmetric(horizontal: _compact ? 4 : 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: _getCryptoColor(crypto.code).withOpacity(0.2),
                           borderRadius: BorderRadius.circular(4),
@@ -212,7 +234,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                         child: Text(
                           crypto.symbol,
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: _compact ? 10 : 11,
                             color: _getCryptoColor(crypto.code),
                             fontWeight: FontWeight.bold,
                           ),
@@ -222,10 +244,8 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                   ),
                   Text(
                     crypto.nameZh,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: _compact ? 12 : 13, color: cs.onSurfaceVariant),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -236,19 +256,15 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                 children: [
                   Text(
                     ref.read(currencyProvider.notifier).formatCurrency(price, baseCurrency.code),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: _compact ? 13 : 14, fontWeight: FontWeight.w600, color: cs.onSurface),
                   ),
-                  if (_manualPrices[crypto.code] == true)
-                    Text(
-                      '手动',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.orange[700],
-                      ),
-                    ),
+                  const SizedBox(height: 2),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SourceBadge(source: _manualPrices[crypto.code] == true ? 'manual' : 'coingecko'),
+                    ],
+                  ),
                 ],
               ),
           ],
@@ -264,12 +280,12 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                   .removeSelectedCurrency(crypto.code);
             }
           },
-          activeColor: Colors.purple,
+          activeColor: cs.secondary,
         ),
         children: isSelected
             ? [
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(_compact ? 12 : 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -319,27 +335,31 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                                 labelText: '价格 (${baseCurrency.code})',
                                 prefixText: baseCurrency.symbol,
                                 border: const OutlineInputBorder(),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
-                                ),
+                                contentPadding: EdgeInsets.symmetric(horizontal: _compact ? 10 : 12, vertical: _compact ? 6 : 8),
                               ),
                               onChanged: (value) {
+                                if (!mounted) return;
                                 setState(() {
                                   _manualPrices[crypto.code] = true;
                                 });
                               },
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: _compact ? 8 : 12),
                           Column(
                             children: [
                               TextButton.icon(
                                 onPressed: () async {
-                                  // 自动获取最新价格
-                                  setState(() {
-                                    _manualPrices[crypto.code] = false;
-                                  });
+                                  // 自动获取最新价格，且清除该币种手动覆盖
+                                  if (mounted) {
+                                    setState(() {
+                                      _manualPrices[crypto.code] = false;
+                                      _manualExpiry.remove(crypto.code);
+                                      _localPriceOverrides.remove(crypto.code);
+                                    });
+                                  }
+                                  await ref.read(currencyProvider.notifier)
+                                      .clearManualRate(crypto.code);
                                   await _fetchLatestPrices();
                                 },
                                 icon: const Icon(Icons.refresh, size: 18),
@@ -349,16 +369,38 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                                 ),
                               ),
                               TextButton.icon(
-                                onPressed: () {
-                                  // 保存手动价格
-                                  final price = double.tryParse(
-                                    _priceControllers[crypto.code]!.text
-                                  );
-                                  if (price != null && price > 0) {
-                                    // TODO: 保存手动价格
-                                    _showSnackBar('价格已保存', Colors.green);
-                                  } else {
+                                onPressed: () async {
+                                  // 保存手动价格（带有效期），内部以汇率形式保存（基->币种的汇率 = 1/价格）
+                                  final priceText = _priceControllers[crypto.code]!.text.trim();
+                                  final price = double.tryParse(priceText);
+                                  if (price == null || price <= 0) {
                                     _showSnackBar('请输入有效价格', Colors.red);
+                                    return;
+                                  }
+                                  // 选择有效期（默认次日 UTC 00:00）
+                                  final tomorrow = DateTime.now().add(const Duration(days: 1));
+                                  DateTime defaultExpiry = DateTime.utc(
+                                    tomorrow.year, tomorrow.month, tomorrow.day, 0, 0, 0);
+                                  final date = await showDatePicker(
+                                    context: context,
+                                    initialDate: defaultExpiry.toLocal(),
+                                    firstDate: DateTime.now().toLocal(),
+                                    lastDate: DateTime.now().add(const Duration(days: 365)).toLocal(),
+                                  );
+                                  if (date == null) return; // 用户取消
+                                  final expiryUtc = DateTime.utc(date.year, date.month, date.day, 0, 0, 0);
+                                  // 汇率 = 1 / 价格
+                                  final rate = 1.0 / price;
+                                  await ref.read(currencyProvider.notifier)
+                                      .upsertManualRate(crypto.code, rate, expiryUtc);
+                                  if (mounted) {
+                                    setState(() {
+                                      _manualPrices[crypto.code] = true;
+                                      _manualExpiry[crypto.code] = expiryUtc;
+                                      _localPriceOverrides[crypto.code] = price;
+                                      _priceControllers[crypto.code]?.text = price.toStringAsFixed(2);
+                                    });
+                                    _showSnackBar('手动价格已保存', Colors.green);
                                   }
                                 },
                                 icon: const Icon(Icons.save, size: 18),
@@ -371,6 +413,12 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 8),
+                      if (_manualPrices[crypto.code] == true && _manualExpiry[crypto.code] != null)
+                        Text(
+                          '手动价格有效期: ${_manualExpiry[crypto.code]!.toLocal().toString().split(" ").first} 00:00',
+                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
                       const SizedBox(height: 8),
                       // 24小时变化（模拟数据）
                       Container(

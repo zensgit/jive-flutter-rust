@@ -985,20 +985,39 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   }
   
   List<DropdownMenuItem<String>> _getCountryItems() {
+    // 默认的国家列表
+    final defaultCountries = [
+      const DropdownMenuItem(value: 'CN', child: Text('中国')),
+      const DropdownMenuItem(value: 'US', child: Text('美国')),
+      const DropdownMenuItem(value: 'JP', child: Text('日本')),
+    ];
+    
     if (_localeData == null) {
-      return [
-        const DropdownMenuItem(value: 'CN', child: Text('中国')),
-        const DropdownMenuItem(value: 'US', child: Text('美国')),
-      ];
+      return defaultCountries;
     }
     
     final countries = _localeData!['countries'] as List<dynamic>? ?? [];
-    return countries.map((country) {
+    if (countries.isEmpty) {
+      return defaultCountries;
+    }
+    
+    final apiCountries = countries.map((country) {
       return DropdownMenuItem<String>(
-        value: country['code'],
-        child: Text(country['name']),
+        value: country['code']?.toString() ?? '',
+        child: Text(country['name']?.toString() ?? ''),
       );
     }).toList();
+    
+    // 确保当前选中的值在列表中
+    final hasSelectedValue = apiCountries.any((item) => item.value == _selectedCountry);
+    if (!hasSelectedValue && _selectedCountry.isNotEmpty) {
+      apiCountries.insert(0, DropdownMenuItem<String>(
+        value: _selectedCountry,
+        child: Text(_selectedCountry),
+      ));
+    }
+    
+    return apiCountries;
   }
   
   List<DropdownMenuItem<String>> _getCurrencyItems() {
@@ -1019,55 +1038,113 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   }
   
   List<DropdownMenuItem<String>> _getLanguageItems() {
+    // 默认的语言列表
+    final defaultLanguages = [
+      const DropdownMenuItem(value: 'zh-CN', child: Text('简体中文')),
+      const DropdownMenuItem(value: 'en-US', child: Text('English')),
+    ];
+    
     if (_localeData == null) {
-      return [
-        const DropdownMenuItem(value: 'zh-CN', child: Text('简体中文')),
-        const DropdownMenuItem(value: 'en-US', child: Text('English')),
-      ];
+      return defaultLanguages;
     }
     
     final languages = _localeData!['languages'] as List<dynamic>? ?? [];
-    return languages.map((language) {
+    if (languages.isEmpty) {
+      return defaultLanguages;
+    }
+    
+    final apiLanguages = languages.map((language) {
       return DropdownMenuItem<String>(
-        value: language['code'],
-        child: Text(language['name']),
+        value: language['code']?.toString() ?? '',
+        child: Text(language['name']?.toString() ?? ''),
       );
     }).toList();
+    
+    // 确保当前选中的值在列表中
+    final hasSelectedValue = apiLanguages.any((item) => item.value == _selectedLanguage);
+    if (!hasSelectedValue && _selectedLanguage.isNotEmpty) {
+      apiLanguages.insert(0, DropdownMenuItem<String>(
+        value: _selectedLanguage,
+        child: Text(_selectedLanguage),
+      ));
+    }
+    
+    return apiLanguages;
   }
   
   List<DropdownMenuItem<String>> _getTimezoneItems() {
+    // 默认的时区列表
+    final defaultTimezones = [
+      const DropdownMenuItem(value: 'Asia/Shanghai', child: Text('北京时间')),
+      const DropdownMenuItem(value: 'America/New_York', child: Text('纽约时间')),
+      const DropdownMenuItem(value: 'Europe/London', child: Text('伦敦时间')),
+      const DropdownMenuItem(value: 'Asia/Tokyo', child: Text('东京时间')),
+    ];
+    
     if (_localeData == null) {
-      return [
-        const DropdownMenuItem(value: 'Asia/Shanghai', child: Text('北京时间')),
-        const DropdownMenuItem(value: 'America/New_York', child: Text('纽约时间')),
-      ];
+      return defaultTimezones;
     }
     
     final timezones = _localeData!['timezones'] as List<dynamic>? ?? [];
-    return timezones.map((timezone) {
+    if (timezones.isEmpty) {
+      return defaultTimezones;
+    }
+    
+    // 从API数据构建时区列表
+    final apiTimezones = timezones.map((timezone) {
       return DropdownMenuItem<String>(
-        value: timezone['zone'],
-        child: Text(timezone['name']),
+        value: timezone['zone']?.toString() ?? '',
+        child: Text(timezone['name']?.toString() ?? ''),
       );
     }).toList();
+    
+    // 确保当前选中的值在列表中
+    final hasSelectedValue = apiTimezones.any((item) => item.value == _selectedTimezone);
+    if (!hasSelectedValue && _selectedTimezone.isNotEmpty) {
+      // 如果当前选中的值不在列表中，添加它
+      apiTimezones.insert(0, DropdownMenuItem<String>(
+        value: _selectedTimezone,
+        child: Text(_selectedTimezone),
+      ));
+    }
+    
+    return apiTimezones;
   }
   
   List<DropdownMenuItem<String>> _getDateFormatItems() {
+    // 默认的日期格式列表
+    final defaultFormats = [
+      const DropdownMenuItem(value: 'YYYY-MM-DD', child: Text('2024-12-31')),
+      const DropdownMenuItem(value: 'MM/DD/YYYY', child: Text('12/31/2024')),
+      const DropdownMenuItem(value: 'DD/MM/YYYY', child: Text('31/12/2024')),
+    ];
+    
     if (_localeData == null) {
-      return [
-        const DropdownMenuItem(value: 'YYYY-MM-DD', child: Text('2024-12-31')),
-        const DropdownMenuItem(value: 'MM/DD/YYYY', child: Text('12/31/2024')),
-        const DropdownMenuItem(value: 'DD/MM/YYYY', child: Text('31/12/2024')),
-      ];
+      return defaultFormats;
     }
     
     final formats = _localeData!['date_formats'] as List<dynamic>? ?? [];
-    return formats.map((format) {
+    if (formats.isEmpty) {
+      return defaultFormats;
+    }
+    
+    final apiFormats = formats.map((format) {
       return DropdownMenuItem<String>(
-        value: format['format'],
-        child: Text(format['example']),
+        value: format['format']?.toString() ?? '',
+        child: Text(format['example']?.toString() ?? ''),
       );
     }).toList();
+    
+    // 确保当前选中的值在列表中
+    final hasSelectedValue = apiFormats.any((item) => item.value == _selectedDateFormat);
+    if (!hasSelectedValue && _selectedDateFormat.isNotEmpty) {
+      apiFormats.insert(0, DropdownMenuItem<String>(
+        value: _selectedDateFormat,
+        child: Text(_selectedDateFormat),
+      ));
+    }
+    
+    return apiFormats;
   }
   
   String _getCurrencySymbol(String currency) {

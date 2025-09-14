@@ -137,7 +137,48 @@ class CryptoPriceService {
     return _fetchFromCoinGecko(cryptoCode, fiatCode);
   }
 
-  /// Get all crypto prices in a specific fiat currency
+  /// Get prices for specific cryptos in a fiat currency
+  Future<Map<String, double>> getCryptoPricesFor(String fiatCode, List<String> cryptoCodes) async {
+    final Map<String, double> prices = {};
+    if (cryptoCodes.isEmpty) return prices;
+
+    // Use backend API for batch prices
+    try {
+      final codes = cryptoCodes.map((e) => e.toUpperCase()).toSet().join(',');
+      final uri = Uri.parse('$_baseUrl/currencies/crypto-prices').replace(
+        queryParameters: {
+          'fiat_currency': fiatCode,
+          'crypto_codes': codes,
+        },
+      );
+      final response = await http
+          .get(uri, headers: {'Content-Type': 'application/json'})
+          .timeout(const Duration(seconds: 15));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final pricesData = data['prices'] as Map<String, dynamic>?;
+        if (pricesData != null) {
+          for (final entry in pricesData.entries) {
+            final price = entry.value;
+            if (price != null) {
+              prices[entry.key.toString().toUpperCase()] = (price as num).toDouble();
+              final cacheKey = '${entry.key.toString().toUpperCase()}_${fiatCode.toUpperCase()}';
+              _cache[cacheKey] = CachedCryptoPrice(
+                price: prices[entry.key.toString().toUpperCase()]!,
+                timestamp: DateTime.now(),
+              );
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print('Error fetching selected crypto prices from backend: $e');
+    }
+    
+    return prices;
+  }
+
+  /// Get all crypto prices in a specific fiat currency (top subset)
   Future<Map<String, double>> getAllCryptoPrices(String fiatCode) async {
     final Map<String, double> prices = {};
     

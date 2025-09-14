@@ -80,7 +80,7 @@ pub async fn list_ledgers(
     
     let ledgers: Vec<Ledger> = rows.into_iter().map(|row| Ledger {
         id: row.id,
-        family_id: row.family_id,
+        family_id: Some(row.family_id),
         name: row.name,
         ledger_type: "family".to_string(),  // Default to family type
         description: None,
@@ -140,7 +140,7 @@ pub async fn get_current_ledger(
     
     let ledger = row.map(|r| Ledger {
         id: r.id,
-        family_id: r.family_id,
+        family_id: Some(r.family_id),
         name: r.name,
         ledger_type: "family".to_string(),
         description: None,
@@ -204,7 +204,7 @@ pub async fn create_ledger(
     
     let ledger = Ledger {
         id: row.id,
-        family_id: row.family_id,
+        family_id: Some(row.family_id),
         name: row.name,
         ledger_type: req.ledger_type.unwrap_or_else(|| "family".to_string()),
         description: req.description,
@@ -245,7 +245,7 @@ pub async fn get_ledger(
     
     let ledger = Ledger {
         id: row.id,
-        family_id: row.family_id,
+        family_id: Some(row.family_id),
         name: row.name,
         ledger_type: "family".to_string(),
         description: None,
@@ -323,7 +323,7 @@ pub async fn update_ledger(
     
     let ledger = Ledger {
         id: row.id,
-        family_id: row.family_id,
+        family_id: Some(row.family_id),
         name: row.name,
         ledger_type: "family".to_string(),
         description: None,
@@ -407,7 +407,7 @@ async fn create_default_ledger(
     
     let ledger = Ledger {
         id: row.id,
-        family_id: row.family_id,
+        family_id: Some(row.family_id),
         name: row.name,
         ledger_type: "family".to_string(),
         description: Some("默认的家庭账本".to_string()),

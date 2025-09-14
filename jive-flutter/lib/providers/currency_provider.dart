@@ -4,6 +4,7 @@ import '../models/currency.dart';
 import '../models/exchange_rate.dart';
 import '../services/exchange_rate_service.dart';
 import '../services/crypto_price_service.dart';
+import '../services/currency_service.dart' as api;
 
 /// Currency preferences stored in Hive
 class CurrencyPreferences {
@@ -74,7 +75,11 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   final String? _userCountry;
   final ExchangeRateService _exchangeRateService;
   final CryptoPriceService _cryptoPriceService;
+  final api.CurrencyService _currencyService;
   Map<String, Currency> _currencyCache = {};
+  // Server-provided currency catalog
+  List<Currency> _serverCurrencies = [];
+  String? _catalogEtag;
   Map<String, ExchangeRate> _exchangeRates = {};
   bool _isLoadingRates = false;
   DateTime? _lastRateUpdate;
@@ -92,11 +97,16 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     this._userCountry,
     this._exchangeRateService,
     this._cryptoPriceService,
+    this._currencyService,
   ) : super(_loadPreferences(_prefsBox, _userCountry)) {
     _initializeCurrencyCache();
+    _loadSupportedCurrencies();
     _loadManualRates();
     _loadExchangeRates();
   }
+
+  // Expose last successful rate update time (for UI footer)
+  DateTime? get lastUpdate => _lastRateUpdate;
 
   static CurrencyPreferences _loadPreferences(Box box, String? userCountry) {
     final prefs = box.get('currency_preferences');
@@ -157,6 +167,49 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   void _initializeCurrencyCache() {
     for (final currency in CurrencyDefaults.getAllCurrencies()) {
       _currencyCache[currency.code] = currency;
+    }
+  }
+
+  /// Load supported currencies from server and merge into cache.
+  Future<void> _loadSupportedCurrencies() async {
+    try {
+      final res = await _currencyService.getSupportedCurrenciesWithEtag(etag: _catalogEtag);
+      if (res.notModified) {
+        return; // keep current
+      }
+      if (res.items.isNotEmpty) {
+        // Respect crypto enable flag when exposing to UI, but we keep cache complete
+        _serverCurrencies = res.items.map((c) {
+          final isCrypto = CurrencyDefaults.cryptoCurrencies.any((x) => x.code == c.code) || c.isCrypto;
+          final updated = c.copyWith(isCrypto: isCrypto);
+          _currencyCache[updated.code] = updated;
+          return updated;
+        }).toList();
+        _catalogEtag = res.etag ?? _catalogEtag;
+        await _applyServerPreferencesIfAvailable();
+      }
+    } catch (e) {
+      print('Failed to load supported currencies from server: $e');
+    }
+  }
+
+  /// Merge server-stored user currency preferences into local state.
+  Future<void> _applyServerPreferencesIfAvailable() async {
+    try {
+      final prefs = await _currencyService.getUserCurrencyPreferences();
+      if (prefs.isEmpty) return;
+      String? base;
+      final List<String> selected = [];
+      for (final p in prefs) {
+        if (p.isPrimary) base = p.currencyCode;
+        selected.add(p.currencyCode);
+      }
+      base ??= state.baseCurrency;
+      final merged = <String>{...selected, base}.toList();
+      state = state.copyWith(baseCurrency: base, selectedCurrencies: merged);
+      await _savePreferences();
+    } catch (e) {
+      print('Failed to load user currency preferences from server: $e');
     }
   }
 
@@ -274,6 +327,25 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     await _loadExchangeRates();
   }
 
+  /// Clear manual rate for a single currency (revert that currency to automatic)
+  Future<void> clearManualRate(String toCurrencyCode) async {
+    _manualRates.remove(toCurrencyCode);
+    _manualRatesExpiryByCurrency.remove(toCurrencyCode);
+    await _prefsBox.put(_kManualRatesKey, _manualRates);
+    await _prefsBox.put(
+      _kManualRatesExpiryMapKey,
+      _manualRatesExpiryByCurrency.map((k, v) => MapEntry(k, v.toIso8601String())),
+    );
+    // If no manual entries left, clear global keys
+    if (_manualRates.isEmpty && _manualRatesExpiryByCurrency.isEmpty) {
+      await _prefsBox.delete(_kManualRatesKey);
+      await _prefsBox.delete(_kManualRatesExpiryKey);
+      await _prefsBox.delete(_kManualRatesExpiryMapKey);
+    }
+    await _savePreferences();
+    await _loadExchangeRates();
+  }
+
   /// Upsert a single manual rate with per-currency expiry
   Future<void> upsertManualRate(String toCurrencyCode, double rate, DateTime expiryUtc) async {
     _manualRates[toCurrencyCode] = rate;
@@ -316,8 +388,14 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
         return;
       }
       
+      // Only fetch prices for selected cryptos to avoid noise
+      final selectedCryptoCodes = state.selectedCurrencies
+          .where((code) => CurrencyDefaults.cryptoCurrencies.any((c) => c.code == code))
+          .toList();
+
       // Get crypto prices in base currency with timeout
-      final cryptoPrices = await _cryptoPriceService.getAllCryptoPrices(state.baseCurrency)
+      final cryptoPrices = await _cryptoPriceService
+              .getCryptoPricesFor(state.baseCurrency, selectedCryptoCodes)
           .timeout(const Duration(seconds: 10), onTimeout: () {
         print('Crypto price fetch timed out, using cached values');
         return {};
@@ -325,16 +403,36 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       
       // Convert to ExchangeRate objects and add to _exchangeRates
       if (cryptoPrices.isNotEmpty) {
+        final nowUtc = DateTime.now().toUtc();
         for (final entry in cryptoPrices.entries) {
-          if (entry.value > 0) {
-            _exchangeRates[entry.key] = ExchangeRate(
+          final code = entry.key;
+          final price = entry.value; // crypto->fiat price
+          if (price <= 0) continue;
+          final manual = _manualRates[code];
+          final perExpiry = _manualRatesExpiryByCurrency[code];
+          final manualValid = manual != null && (
+            perExpiry != null
+              ? nowUtc.isBefore(perExpiry)
+              : (_manualRatesExpiryUtc != null && nowUtc.isBefore(_manualRatesExpiryUtc!))
+          );
+          if (manualValid) {
+            // Respect manual override for crypto; do not overwrite with live price
+            _exchangeRates[code] = ExchangeRate(
               fromCurrency: state.baseCurrency,
-              toCurrency: entry.key,
-              rate: 1.0 / entry.value, // Invert because price is crypto->fiat
+              toCurrency: code,
+              rate: manual,
               date: DateTime.now(),
-              source: 'coingecko',
+              source: 'manual',
             );
+            continue;
           }
+          _exchangeRates[code] = ExchangeRate(
+            fromCurrency: state.baseCurrency,
+            toCurrency: code,
+            rate: 1.0 / price, // Invert because price is crypto->fiat
+            date: DateTime.now(),
+            source: 'coingecko',
+          );
         }
       }
     } catch (e) {
@@ -360,15 +458,31 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   /// Get all available currencies based on settings
   List<Currency> getAvailableCurrencies() {
     final List<Currency> currencies = [];
-    
-    // Add fiat currencies
-    currencies.addAll(CurrencyDefaults.fiatCurrencies);
-    
-    // Add crypto currencies if enabled
-    if (state.cryptoEnabled) {
-      currencies.addAll(CurrencyDefaults.cryptoCurrencies);
+    // Prefer server catalog (fiat)
+    final serverFiat = _serverCurrencies.where((c) => !c.isCrypto).toList();
+    if (serverFiat.isNotEmpty) {
+      currencies.addAll(serverFiat);
+    } else {
+      currencies.addAll(CurrencyDefaults.fiatCurrencies);
     }
-    
+
+    // Cryptos
+    if (state.cryptoEnabled) {
+      final serverCrypto = _serverCurrencies.where((c) => c.isCrypto).toList();
+      if (serverCrypto.isNotEmpty) {
+        currencies.addAll(serverCrypto);
+      } else {
+        currencies.addAll(CurrencyDefaults.cryptoCurrencies);
+      }
+    }
+
+    // Ensure already-selected codes appear even if not in server list
+    for (final code in state.selectedCurrencies) {
+      if (!currencies.any((c) => c.code == code)) {
+        final cached = _currencyCache[code];
+        if (cached != null) currencies.add(cached);
+      }
+    }
     return currencies;
   }
 
@@ -387,6 +501,9 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       final updated = List<String>.from(state.selectedCurrencies)..add(currencyCode);
       state = state.copyWith(selectedCurrencies: updated);
       await _savePreferences();
+      _pushPreferencesToServer();
+      // Immediately fetch rates for the newly added currency
+      await _loadExchangeRates();
     }
   }
 
@@ -400,6 +517,9 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       }
       state = state.copyWith(selectedCurrencies: updated);
       await _savePreferences();
+      _pushPreferencesToServer();
+      // Refresh rates after removal to keep targets in sync
+      await _loadExchangeRates();
     }
   }
 
@@ -451,6 +571,10 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     }
     
     await _savePreferences();
+    // Reload server catalog (may include/exclude cryptos)
+    await _loadSupportedCurrencies();
+    // Refresh exchange rates/prices to reflect crypto mode change
+    await _loadExchangeRates();
   }
 
   /// Change base currency
@@ -470,9 +594,23 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     
     // Save preferences first
     await _savePreferences();
+    _pushPreferencesToServer();
     
     // Then reload exchange rates with new base currency
     await _loadExchangeRates();
+  }
+
+  /// Push user currency preferences to server (best-effort)
+  Future<void> _pushPreferencesToServer() async {
+    try {
+      await _currencyService.setUserCurrencyPreferences(
+        state.selectedCurrencies,
+        state.baseCurrency,
+      );
+    } catch (e) {
+      // Non-fatal; will retry on next change
+      print('Failed to push currency preferences to server: $e');
+    }
   }
 
   /// Toggle currency selection
@@ -499,6 +637,8 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     
     state = state.copyWith(selectedCurrencies: selectedCurrencies);
     await _savePreferences();
+    // Keep exchange rates up-to-date with selection changes
+    await _loadExchangeRates();
   }
 
   /// Get exchange rate between two currencies
@@ -650,8 +790,9 @@ final currencyProvider = StateNotifierProvider<CurrencyNotifier, CurrencyPrefere
   // Create service instances
   final exchangeRateService = ExchangeRateService();
   final cryptoPriceService = CryptoPriceService();
+  final currencyService = api.CurrencyService(null);
   
-  return CurrencyNotifier(box, userCountry, exchangeRateService, cryptoPriceService);
+  return CurrencyNotifier(box, userCountry, exchangeRateService, cryptoPriceService, currencyService);
 });
 
 /// Convenient providers for common currency operations

@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../utils/string_utils.dart';
+import 'currency_admin_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class SuperAdminScreen extends StatefulWidget {
+class SuperAdminScreen extends ConsumerStatefulWidget {
   const SuperAdminScreen({super.key});
 
   @override
-  State<SuperAdminScreen> createState() => _SuperAdminScreenState();
+  ConsumerState<SuperAdminScreen> createState() => _SuperAdminScreenState();
 }
 
-class _SuperAdminScreenState extends State<SuperAdminScreen> with TickerProviderStateMixin {
+class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen> with TickerProviderStateMixin {
   late TabController _tabController;
   
   final List<Map<String, dynamic>> _users = [
@@ -52,7 +53,8 @@ class _SuperAdminScreenState extends State<SuperAdminScreen> with TickerProvider
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    final isAdmin = ref.read(currentUserProvider)?.isAdmin ?? false;
+    _tabController = TabController(length: isAdmin ? 5 : 4, vsync: this);
   }
 
   @override
@@ -83,11 +85,13 @@ class _SuperAdminScreenState extends State<SuperAdminScreen> with TickerProvider
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
-          tabs: const [
-            Tab(text: '仪表盘', icon: Icon(Icons.dashboard)),
-            Tab(text: '用户管理', icon: Icon(Icons.people)),
-            Tab(text: '系统配置', icon: Icon(Icons.settings)),
-            Tab(text: '日志监控', icon: Icon(Icons.monitor)),
+          tabs: [
+            const Tab(text: '仪表盘', icon: Icon(Icons.dashboard)),
+            const Tab(text: '用户管理', icon: Icon(Icons.people)),
+            const Tab(text: '系统配置', icon: Icon(Icons.settings)),
+            const Tab(text: '日志监控', icon: Icon(Icons.monitor)),
+            if ((ref.read(currentUserProvider)?.isAdmin ?? false))
+              const Tab(text: '币种管理', icon: Icon(Icons.currency_exchange)),
           ],
         ),
       ),
@@ -98,6 +102,7 @@ class _SuperAdminScreenState extends State<SuperAdminScreen> with TickerProvider
           _buildUserManagementTab(),
           _buildSystemConfigTab(),
           _buildLogsTab(),
+          if ((ref.read(currentUserProvider)?.isAdmin ?? false)) const CurrencyAdminScreen() else const SizedBox.shrink(),
         ],
       ),
     );

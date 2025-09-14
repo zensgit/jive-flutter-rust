@@ -42,12 +42,20 @@ pub async fn register_with_family(
     State(pool): State<PgPool>,
     Json(req): Json<RegisterRequest>,
 ) -> ApiResult<Json<RegisterResponse>> {
-    
+    // Support username-only input by generating placeholder email
+    let input = req.email.trim().to_string();
+    let (final_email, username_opt) = if input.contains('@') {
+        (input.clone(), None)
+    } else {
+        (format!("{}@noemail.local", input.to_lowercase()), Some(input.clone()))
+    };
+
     let auth_service = AuthService::new(pool.clone());
     let register_req = crate::services::auth_service::RegisterRequest {
-        email: req.email.clone(),
+        email: final_email,
         password: req.password.clone(),
         name: Some(req.name.clone()),
+        username: username_opt,
     };
     
     match auth_service.register_with_family(register_req).await {
@@ -72,22 +80,39 @@ pub async fn register(
     State(pool): State<PgPool>,
     Json(req): Json<RegisterRequest>,
 ) -> ApiResult<Json<RegisterResponse>> {
-    // 验证邮箱格式
-    if !req.email.contains('@') {
-        return Err(ApiError::ValidationError("Invalid email format".to_string()));
-    }
+    // 支持无邮箱注册：传入值不包含'@'，视为用户名，生成占位邮箱 username@noemail.local
+    let input = req.email.trim().to_string();
+    let (final_email, username_opt) = if input.contains('@') {
+        (input.clone(), None)
+    } else {
+        (format!("{}@noemail.local", input.to_lowercase()), Some(input.clone()))
+    };
     
     // 检查邮箱是否已存在
     let existing = sqlx::query(
         "SELECT id FROM users WHERE LOWER(email) = LOWER($1)"
     )
-    .bind(&req.email)
+    .bind(&final_email)
     .fetch_optional(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
     if existing.is_some() {
         return Err(ApiError::BadRequest("Email already registered".to_string()));
+    }
+    
+    // 若为用户名注册，校验用户名唯一
+    if let Some(ref username) = username_opt {
+        let existing_username = sqlx::query(
+            "SELECT id FROM users WHERE LOWER(username) = LOWER($1)"
+        )
+        .bind(username)
+        .fetch_optional(&pool)
+        .await
+        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+        if existing_username.is_some() {
+            return Err(ApiError::BadRequest("Username already taken".to_string()));
+        }
     }
     
     // 生成密码哈希
@@ -119,19 +144,20 @@ pub async fn register(
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
-    // 创建用户
+    // 创建用户（将 name 写入 name 与 full_name，便于后续使用）
     sqlx::query(
         r#"
         INSERT INTO users (
-            id, email, full_name, password_hash, current_family_id,
+            id, email, username, full_name, password_hash, current_family_id,
             status, email_verified, created_at, updated_at
         ) VALUES (
-            $1, $2, $3, $4, $5, 'active', false, NOW(), NOW()
+            $1, $2, $3, $4, $5, $6, 'active', false, NOW(), NOW()
         )
         "#
     )
     .bind(user_id)
-    .bind(&req.email)
+    .bind(&final_email)
+    .bind(&username_opt)
     .bind(&req.name)
     .bind(password_hash)
     .bind(family_id)
@@ -158,12 +184,12 @@ pub async fn register(
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
     // 生成JWT令牌
-    let claims = Claims::new(user_id, req.email.clone(), Some(family_id));
+    let claims = Claims::new(user_id, final_email.clone(), Some(family_id));
     let token = claims.to_token()?;
     
     Ok(Json(RegisterResponse {
         user_id,
-        email: req.email,
+        email: final_email,
         token,
     }))
 }
@@ -175,25 +201,42 @@ pub async fn login(
 ) -> ApiResult<Json<Value>> {
     // 允许在输入为“superadmin”时映射为统一邮箱（便于本地/测试环境）
     // 不影响密码校验，仅做标识规范化
-    let mut login_email = req.email.trim().to_string();
-    if !login_email.contains('@') && login_email.eq_ignore_ascii_case("superadmin") {
-        login_email = "superadmin@jive.money".to_string();
+    let mut login_input = req.email.trim().to_string();
+    if !login_input.contains('@') && login_input.eq_ignore_ascii_case("superadmin") {
+        login_input = "superadmin@jive.money".to_string();
     }
 
     // 查找用户
-    let row = sqlx::query(
-        r#"
-        SELECT id, email, COALESCE(full_name, name) as name, password_hash,
-               is_active, email_verified, last_login_at,
-               created_at, updated_at
-        FROM users
-        WHERE LOWER(email) = LOWER($1)
-        "#
-    )
-    .bind(&login_email)
-    .fetch_optional(&pool)
-    .await
-    .map_err(|e| ApiError::DatabaseError(e.to_string()))?
+    let query_by_email = login_input.contains('@');
+    let row = if query_by_email {
+        sqlx::query(
+            r#"
+            SELECT id, email, COALESCE(full_name, name) as name, password_hash,
+                   is_active, email_verified, last_login_at,
+                   created_at, updated_at
+            FROM users
+            WHERE LOWER(email) = LOWER($1)
+            "#
+        )
+        .bind(&login_input)
+        .fetch_optional(&pool)
+        .await
+        .map_err(|e| ApiError::DatabaseError(e.to_string()))?
+    } else {
+        sqlx::query(
+            r#"
+            SELECT id, email, COALESCE(full_name, name) as name, password_hash,
+                   is_active, email_verified, last_login_at,
+                   created_at, updated_at
+            FROM users
+            WHERE LOWER(username) = LOWER($1)
+            "#
+        )
+        .bind(&login_input)
+        .fetch_optional(&pool)
+        .await
+        .map_err(|e| ApiError::DatabaseError(e.to_string()))?
+    }
     .ok_or(ApiError::Unauthorized)?;
     
     use sqlx::Row;
