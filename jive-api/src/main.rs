@@ -2,15 +2,15 @@
 //! 修复了所有模块依赖问题
 
 use axum::{
-    extract::{ws::WebSocketUpgrade, Query, State, FromRef},
-    http::{header, Method, StatusCode},
+    extract::{ws::WebSocketUpgrade, Query, State},
+    http::StatusCode,
     response::{Json, Response},
     routing::{get, post, put, delete},
     Router,
 };
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use serde_json::json;
-use sqlx::{postgres::PgPoolOptions, PgPool};
+use sqlx::postgres::PgPoolOptions;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tokio::net::TcpListener;
@@ -24,9 +24,7 @@ use redis::aio::ConnectionManager;
 use redis::Client as RedisClient;
 
 // 使用库中的模块
-use jive_money_api::{handlers, error, auth, services, models, ws, ServiceContext};
-use error::{ApiError, ApiResult};
-use services::*;
+use jive_money_api::{handlers, error, services, ws};
 
 // 导入处理器
 use handlers::template_handler::*;

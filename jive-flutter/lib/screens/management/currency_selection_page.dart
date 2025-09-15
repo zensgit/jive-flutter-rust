@@ -142,11 +142,54 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
       );
     }
     
-    return GestureDetector(
-      onTap: widget.isSelectingBaseCurrency
-          ? () => Navigator.pop(context, currency)
-          : null,
-      child: Card(
+    if (widget.isSelectingBaseCurrency) {
+      return Card(
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: dense ? 2 : 4),
+        elevation: isBaseCurrency ? 2 : 1,
+        color: isBaseCurrency ? cs.tertiaryContainer : cs.surface,
+        child: ListTile(
+          leading: Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: cs.surface,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: isBaseCurrency ? cs.tertiary : cs.outlineVariant),
+            ),
+            child: Center(
+              child: Text(currency.flag ?? currency.symbol, style: TextStyle(fontSize: 20, color: cs.onSurface)),
+            ),
+          ),
+          title: Row(
+            children: [
+              if (isBaseCurrency)
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: dense ? 6 : 8, vertical: 3),
+                  margin: const EdgeInsets.only(right: 8),
+                  decoration: BoxDecoration(
+                    color: cs.tertiaryContainer,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: cs.tertiary),
+                  ),
+                  child: Text('基础', style: TextStyle(fontSize: dense ? 10 : 11, color: cs.onTertiaryContainer, fontWeight: FontWeight.w700)),
+                ),
+              Text(currency.code, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(color: cs.surfaceVariant, borderRadius: BorderRadius.circular(4)),
+                child: Text(currency.symbol, style: TextStyle(fontSize: dense ? 11 : 12)),
+              ),
+            ],
+          ),
+          subtitle: Text(currency.nameZh, style: TextStyle(fontSize: dense ? 12 : 13, color: cs.onSurfaceVariant)),
+          trailing: isBaseCurrency ? const Icon(Icons.check_circle, color: Colors.amber) : const Icon(Icons.chevron_right),
+          onTap: () => Navigator.pop(context, currency),
+        ),
+      );
+    }
+
+    return Card(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: dense ? 2 : 4),
       elevation: isBaseCurrency ? 2 : 1,
       color: isBaseCurrency
@@ -239,21 +282,17 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
             ),
           ],
         ),
-        trailing: widget.isSelectingBaseCurrency
-            ? (isBaseCurrency 
-                ? const Icon(Icons.check_circle, color: Colors.amber)
-                : null)
-            : Checkbox(
+        trailing: Checkbox(
                 value: isSelected,
-                onChanged: isBaseCurrency ? null : (value) async {
-                  if (value == true) {
-                    await ref.read(currencyProvider.notifier)
-                        .addSelectedCurrency(currency.code);
-                  } else {
-                    await ref.read(currencyProvider.notifier)
-                        .removeSelectedCurrency(currency.code);
-                  }
-                },
+                onChanged: isBaseCurrency
+                    ? null
+                    : (value) async {
+                        if (value == true) {
+                          await ref.read(currencyProvider.notifier).addSelectedCurrency(currency.code);
+                        } else {
+                          await ref.read(currencyProvider.notifier).removeSelectedCurrency(currency.code);
+                        }
+                      },
                 activeColor: cs.primary,
               ),
         // ExpansionTile has no onTap; capture base currency selection via GestureDetector

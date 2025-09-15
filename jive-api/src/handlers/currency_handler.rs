@@ -13,7 +13,7 @@ use std::collections::HashMap;
 
 use crate::auth::Claims;
 use crate::error::{ApiError, ApiResult};
-use crate::services::{CurrencyService, Currency, ExchangeRate, FamilyCurrencySettings};
+use crate::services::{CurrencyService, ExchangeRate, FamilyCurrencySettings};
 use crate::services::currency_service::{UpdateCurrencySettingsRequest, AddExchangeRateRequest, CurrencyPreference};
 use super::family_handler::ApiResponse;
 
@@ -38,7 +38,7 @@ pub async fn get_supported_currencies(
     if let Some(if_none_match) = headers.get("if-none-match").and_then(|v| v.to_str().ok()) {
         if if_none_match == current_etag_value {
             // Not modified
-            let mut resp = Response::builder()
+            let resp = Response::builder()
                 .status(StatusCode::NOT_MODIFIED)
                 .header("ETag", HeaderValue::from_str(&current_etag_value).unwrap())
                 .body(Body::empty())

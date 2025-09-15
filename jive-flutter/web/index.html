@@ -36,17 +36,63 @@
   <title>Jive Money - 集腋记账</title>
   <link rel="manifest" href="manifest.json">
   
-  <!-- Fallback fonts for offline use -->
+  <!-- Prevent external font loading and use system fonts -->
   <style>
+    /* Override Material Design font to use system fonts */
+    @font-face {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 300;
+      font-display: swap;
+      src: local('system-ui'), local('-apple-system'), local('BlinkMacSystemFont'),
+           local('Segoe UI'), local('Arial'), local('sans-serif');
+    }
+    @font-face {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: local('system-ui'), local('-apple-system'), local('BlinkMacSystemFont'),
+           local('Segoe UI'), local('Arial'), local('sans-serif');
+    }
+    @font-face {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: local('system-ui'), local('-apple-system'), local('BlinkMacSystemFont'),
+           local('Segoe UI'), local('Arial'), local('sans-serif');
+    }
+    @font-face {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: local('system-ui'), local('-apple-system'), local('BlinkMacSystemFont'),
+           local('Segoe UI'), local('Arial'), local('sans-serif');
+    }
+
+    /* Chinese font support */
     @font-face {
       font-family: 'Noto Sans SC';
       font-style: normal;
       font-weight: 400;
       font-display: swap;
-      src: local('Noto Sans SC'), local('Noto Sans SC Regular');
+      src: local('Noto Sans SC'), local('Noto Sans SC Regular'),
+           local('PingFang SC'), local('Hiragino Sans GB'),
+           local('Microsoft YaHei'), local('sans-serif');
     }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
-      'Hiragino Sans GB', 'Microsoft YaHei', Arial, 'Helvetica Neue', sans-serif; }
+
+    /* Default body font */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+        'Hiragino Sans GB', 'Microsoft YaHei', Arial, 'Helvetica Neue', sans-serif;
+    }
+
+    /* Prevent font loading errors */
+    .material-icons {
+      font-family: 'Material Icons', 'Material Icons Local', sans-serif !important;
+    }
   </style>
 
   <!-- Flutter web runtime -->

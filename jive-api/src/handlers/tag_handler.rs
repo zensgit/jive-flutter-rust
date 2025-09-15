@@ -1,5 +1,5 @@
 use axum::{extract::{State, Query}, response::{Json, IntoResponse, Response}, http::{HeaderMap, HeaderValue, StatusCode}};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use sqlx::PgPool;
 use uuid::Uuid;
 
@@ -43,7 +43,7 @@ pub async fn list_tags(
 
     if let Some(if_none_match) = headers.get("if-none-match").and_then(|v| v.to_str().ok()) {
         if if_none_match == current_etag_value {
-            let mut resp = Response::builder()
+            let resp = Response::builder()
                 .status(StatusCode::NOT_MODIFIED)
                 .header("ETag", HeaderValue::from_str(&current_etag_value).unwrap())
                 .body(axum::body::Body::empty())

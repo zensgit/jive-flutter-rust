@@ -20,60 +20,79 @@ impl ScheduledTaskManager {
     pub async fn start_all_tasks(self: Arc<Self>) {
         info!("Starting scheduled tasks...");
         
-        // 启动汇率更新任务（每15分钟）
+        // 延迟启动时间（秒）
+        let startup_delay = std::env::var("STARTUP_DELAY")
+            .unwrap_or_else(|_| "30".to_string())
+            .parse::<u64>()
+            .unwrap_or(30);
+        
+        // 启动汇率更新任务（延迟30秒后开始，每15分钟执行）
         let manager_clone = Arc::clone(&self);
         tokio::spawn(async move {
+            info!("Exchange rate update task will start in {} seconds", startup_delay);
+            tokio::time::sleep(TokioDuration::from_secs(startup_delay)).await;
             manager_clone.run_exchange_rate_update_task().await;
         });
         
-        // 启动加密货币价格更新任务（每5分钟）
+        // 启动加密货币价格更新任务（延迟20秒后开始，每5分钟执行）
         let manager_clone = Arc::clone(&self);
         tokio::spawn(async move {
+            info!("Crypto price update task will start in 20 seconds");
+            tokio::time::sleep(TokioDuration::from_secs(20)).await;
             manager_clone.run_crypto_price_update_task().await;
         });
         
-        // 启动缓存清理任务（每小时）
+        // 启动缓存清理任务（延迟60秒后开始，每小时执行）
         let manager_clone = Arc::clone(&self);
         tokio::spawn(async move {
+            info!("Cache cleanup task will start in 60 seconds");
+            tokio::time::sleep(TokioDuration::from_secs(60)).await;
             manager_clone.run_cache_cleanup_task().await;
         });
         
-        info!("All scheduled tasks started");
+        info!("All scheduled tasks initialized (will start after delay)");
     }
     
     /// 汇率更新任务
     async fn run_exchange_rate_update_task(&self) {
         let mut interval = interval(TokioDuration::from_secs(15 * 60)); // 15分钟
         
+        // 第一次执行汇率更新
+        info!("Starting initial exchange rate update");
+        self.update_exchange_rates().await;
+        
         loop {
             interval.tick().await;
-            
-            info!("Running exchange rate update task");
-            
-            // 获取所有需要更新的基础货币
-            let base_currencies = match self.get_active_base_currencies().await {
-                Ok(currencies) => currencies,
-                Err(e) => {
-                    error!("Failed to get base currencies: {:?}", e);
-                    continue;
-                }
-            };
-            
-            let currency_service = CurrencyService::new((*self.pool).clone());
-            
-            for base_currency in base_currencies {
-                match currency_service.fetch_latest_rates(&base_currency).await {
-                    Ok(_) => {
-                        info!("Successfully updated exchange rates for {}", base_currency);
-                    }
-                    Err(e) => {
-                        warn!("Failed to update exchange rates for {}: {:?}", base_currency, e);
-                    }
-                }
-                
-                // 避免API限流，每个请求之间等待1秒
-                tokio::time::sleep(TokioDuration::from_secs(1)).await;
+            info!("Running scheduled exchange rate update");
+            self.update_exchange_rates().await;
+        }
+    }
+    
+    /// 执行汇率更新
+    async fn update_exchange_rates(&self) {
+        // 获取所有需要更新的基础货币
+        let base_currencies = match self.get_active_base_currencies().await {
+            Ok(currencies) => currencies,
+            Err(e) => {
+                error!("Failed to get base currencies: {:?}", e);
+                return;
             }
+        };
+        
+        let currency_service = CurrencyService::new((*self.pool).clone());
+        
+        for base_currency in base_currencies {
+            match currency_service.fetch_latest_rates(&base_currency).await {
+                Ok(_) => {
+                    info!("Successfully updated exchange rates for {}", base_currency);
+                }
+                Err(e) => {
+                    warn!("Failed to update exchange rates for {}: {:?}", base_currency, e);
+                }
+            }
+            
+            // 避免API限流，每个请求之间等待1秒
+            tokio::time::sleep(TokioDuration::from_secs(1)).await;
         }
     }
     
@@ -81,55 +100,64 @@ impl ScheduledTaskManager {
     async fn run_crypto_price_update_task(&self) {
         let mut interval = interval(TokioDuration::from_secs(5 * 60)); // 5分钟
         
+        // 第一次执行
+        info!("Starting initial crypto price update");
+        self.update_crypto_prices().await;
+        
         loop {
             interval.tick().await;
-            
-            info!("Running crypto price update task");
-            
-            // 检查是否有用户启用了加密货币
-            let crypto_enabled = match self.check_crypto_enabled().await {
-                Ok(enabled) => enabled,
-                Err(e) => {
-                    error!("Failed to check crypto status: {:?}", e);
-                    continue;
+            info!("Running scheduled crypto price update");
+            self.update_crypto_prices().await;
+        }
+    }
+    
+    /// 执行加密货币价格更新
+    async fn update_crypto_prices(&self) {
+        info!("Checking crypto price updates...");
+        
+        // 检查是否有用户启用了加密货币
+        let crypto_enabled = match self.check_crypto_enabled().await {
+            Ok(enabled) => enabled,
+            Err(e) => {
+                error!("Failed to check crypto status: {:?}", e);
+                return;
+            }
+        };
+        
+        if !crypto_enabled {
+            return;
+        }
+        
+        let currency_service = CurrencyService::new((*self.pool).clone());
+        
+        // 主要加密货币列表
+        let crypto_codes = vec![
+            "BTC", "ETH", "USDT", "BNB", "SOL", "XRP", "USDC", "ADA",
+            "AVAX", "DOGE", "DOT", "MATIC", "LINK", "LTC", "UNI", "ATOM",
+            "COMP", "MKR", "AAVE", "SUSHI", "ARB", "OP", "SHIB", "TRX"
+        ];
+        
+        // 获取需要更新的法定货币
+        let fiat_currencies = match self.get_crypto_base_currencies().await {
+            Ok(currencies) => currencies,
+            Err(e) => {
+                error!("Failed to get fiat currencies for crypto: {:?}", e);
+                vec!["USD".to_string()] // 默认至少更新USD
+            }
+        };
+        
+        for fiat in fiat_currencies {
+            match currency_service.fetch_crypto_prices(crypto_codes.clone(), &fiat).await {
+                Ok(_) => {
+                    info!("Successfully updated crypto prices in {}", fiat);
                 }
-            };
-            
-            if !crypto_enabled {
-                continue;
+                Err(e) => {
+                    warn!("Failed to update crypto prices in {}: {:?}", fiat, e);
+                }
             }
             
-            let currency_service = CurrencyService::new((*self.pool).clone());
-            
-            // 主要加密货币列表
-            let crypto_codes = vec![
-                "BTC", "ETH", "USDT", "BNB", "SOL", "XRP", "USDC", "ADA",
-                "AVAX", "DOGE", "DOT", "MATIC", "LINK", "LTC", "UNI", "ATOM",
-                "COMP", "MKR", "AAVE", "SUSHI", "ARB", "OP", "SHIB", "TRX"
-            ];
-            
-            // 获取需要更新的法定货币
-            let fiat_currencies = match self.get_crypto_base_currencies().await {
-                Ok(currencies) => currencies,
-                Err(e) => {
-                    error!("Failed to get fiat currencies for crypto: {:?}", e);
-                    vec!["USD".to_string()] // 默认至少更新USD
-                }
-            };
-            
-            for fiat in fiat_currencies {
-                match currency_service.fetch_crypto_prices(crypto_codes.clone(), &fiat).await {
-                    Ok(_) => {
-                        info!("Successfully updated crypto prices in {}", fiat);
-                    }
-                    Err(e) => {
-                        warn!("Failed to update crypto prices in {}: {:?}", fiat, e);
-                    }
-                }
-                
-                // 避免API限流
-                tokio::time::sleep(TokioDuration::from_secs(2)).await;
-            }
+            // 避免API限流
+            tokio::time::sleep(TokioDuration::from_secs(2)).await;
         }
     }
     

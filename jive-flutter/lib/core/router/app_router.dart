@@ -22,6 +22,7 @@ import '../../screens/settings/profile_settings_screen.dart';
 import '../../screens/currency/exchange_rate_screen.dart';
 import '../../screens/management/currency_management_page_v2.dart';
 import '../../screens/management/user_currency_browser.dart';
+import '../../screens/management/tag_management_page.dart';
 import '../../screens/family/family_members_screen.dart';
 import '../../screens/family/family_settings_screen.dart';
 import '../../screens/family/family_dashboard_screen.dart';
@@ -219,6 +220,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'crypto',
                 builder: (context, state) => const CurrencyManagementPageV2(), // reuses V2; inside page navigates to crypto
+              ),
+              // 标签管理
+              GoRoute(
+                path: 'tags',
+                builder: (context, state) => const TagManagementPage(),
               ),
             ],
           ),

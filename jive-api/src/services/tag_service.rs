@@ -1,6 +1,5 @@
 use sqlx::{PgPool, Row};
 use uuid::Uuid;
-use chrono::Utc;
 
 use super::ServiceError;
 

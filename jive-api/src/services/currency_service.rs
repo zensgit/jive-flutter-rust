@@ -478,7 +478,7 @@ impl CurrencyService {
         
         // 仅对系统已知的币种写库，避免外键错误
         // 在线模式或存在 .sqlx 缓存时可查询；否则跳过过滤（保守按未知代码丢弃）
-        let mut known_codes: std::collections::HashSet<String> = std::collections::HashSet::new();
+        let known_codes: std::collections::HashSet<String> = std::collections::HashSet::new();
         // 尝试在线查询，若 SQLX_OFFLINE 导致无法编译，则在构建时跳过该分支
         #[cfg(any())]
         {
