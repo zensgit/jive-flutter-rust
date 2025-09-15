@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Simple logger wrapper for the services
 class Logger {
   final String name;
@@ -5,18 +7,18 @@ class Logger {
   Logger(this.name);
 
   void info(String message) {
-    print('[$name] INFO: $message');
+    debugPrint('[$name] INFO: $message');
   }
 
   void debug(String message) {
-    print('[$name] DEBUG: $message');
+    debugPrint('[$name] DEBUG: $message');
   }
 
   void warning(String message) {
-    print('[$name] WARNING: $message');
+    debugPrint('[$name] WARNING: $message');
   }
 
   void error(String message) {
-    print('[$name] ERROR: $message');
+    debugPrint('[$name] ERROR: $message');
   }
 }

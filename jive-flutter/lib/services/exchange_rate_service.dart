@@ -39,10 +39,10 @@ class ExchangeRateService {
       usedFallback = true;
       rates = _getFallbackRates(baseCurrency);
       _lastWasFallback = true;
-      print('⚠️ Using fallback exchange rates (backend unavailable)');
+      debugPrint('⚠️ Using fallback exchange rates (backend unavailable)');
     } else {
       _lastWasFallback = false;
-      print('✅ Live exchange rates fetched');
+      debugPrint('✅ Live exchange rates fetched');
     }
     _cache[cacheKey] = CachedExchangeRates(rates: rates, timestamp: DateTime.now());
     return rates;
@@ -150,7 +150,7 @@ class ExchangeRateService {
           attempt++;
           continue;
         }
-        print('Error fetching from backend API: $e');
+        debugPrint('Error fetching from backend API: $e');
         break;
       }
     }
@@ -201,7 +201,7 @@ class ExchangeRateService {
         return exchangeRates;
       }
     } catch (e) {
-      print('Error fetching from frankfurter: $e');
+      debugPrint('Error fetching from frankfurter: $e');
     }
     
     return null;
@@ -238,7 +238,7 @@ class ExchangeRateService {
         return exchangeRates;
       }
     } catch (e) {
-      print('Error fetching from fxratesapi: $e');
+      debugPrint('Error fetching from fxratesapi: $e');
     }
     
     return null;

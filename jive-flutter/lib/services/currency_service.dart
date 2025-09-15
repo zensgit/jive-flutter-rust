@@ -53,7 +53,7 @@ class CurrencyService {
         throw Exception('Failed to load currencies: ${resp.statusCode}');
       }
     } catch (e) {
-      print('Error fetching currencies: $e');
+      debugPrint('Error fetching currencies: $e');
       // On failure, signal fallback by returning empty and notModified=false
       return CurrencyCatalogResult(const [], etag, false, error: e.toString());
     }
@@ -83,7 +83,7 @@ class CurrencyService {
         throw Exception('Failed to load preferences: ${resp.statusCode}');
       }
     } catch (e) {
-      print('Error fetching preferences: $e');
+      debugPrint('Error fetching preferences: $e');
       return [];
     }
   }
@@ -101,7 +101,7 @@ class CurrencyService {
         throw Exception('Failed to set preferences: ${resp.statusCode}');
       }
     } catch (e) {
-      print('Error setting preferences: $e');
+      debugPrint('Error setting preferences: $e');
       rethrow;
     }
   }
@@ -119,7 +119,7 @@ class CurrencyService {
         throw Exception('Failed to load family settings: ${resp.statusCode}');
       }
     } catch (e) {
-      print('Error fetching family settings: $e');
+      debugPrint('Error fetching family settings: $e');
       return FamilyCurrencySettings(
         familyId: '',
         baseCurrency: 'CNY',
@@ -140,7 +140,7 @@ class CurrencyService {
         throw Exception('Failed to update settings: ${resp.statusCode}');
       }
     } catch (e) {
-      print('Error updating family settings: $e');
+      debugPrint('Error updating family settings: $e');
       rethrow;
     }
   }
@@ -174,7 +174,7 @@ class CurrencyService {
         throw Exception('Failed to get exchange rate: ${resp.statusCode}');
       }
     } catch (e) {
-      print('Error getting exchange rate: $e');
+      debugPrint('Error getting exchange rate: $e');
       // Return 1.0 as fallback for same currency
       if (from == to) return 1.0;
       // Return approximate rates as fallback
@@ -205,7 +205,7 @@ class CurrencyService {
         throw Exception('Failed to get batch rates: ${resp.statusCode}');
       }
     } catch (e) {
-      print('Error getting batch rates: $e');
+      debugPrint('Error getting batch rates: $e');
       // Return approximate rates as fallback
       final Map<String, double> rates = {};
       for (final target in targetCurrencies) {
@@ -233,7 +233,7 @@ class CurrencyService {
         throw Exception('Failed to convert amount: ${resp.statusCode}');
       }
     } catch (e) {
-      print('Error converting amount: $e');
+      debugPrint('Error converting amount: $e');
       // Fallback to simple conversion
       final rate = await getExchangeRate(from, to, date: date);
       return ConvertAmountResponse(
@@ -266,7 +266,7 @@ class CurrencyService {
         throw Exception('Failed to get history: ${resp.statusCode}');
       }
     } catch (e) {
-      print('Error getting rate history: $e');
+      debugPrint('Error getting rate history: $e');
       return [];
     }
   }
@@ -285,7 +285,7 @@ class CurrencyService {
         throw Exception('Failed to get popular pairs: ${resp.statusCode}');
       }
     } catch (e) {
-      print('Error getting popular pairs: $e');
+      debugPrint('Error getting popular pairs: $e');
       // Return default pairs
       return [
         ExchangePair(from: 'CNY', to: 'USD', name: '人民币/美元'),
@@ -308,7 +308,7 @@ class CurrencyService {
         throw Exception('Failed to refresh rates: ${resp.statusCode}');
       }
     } catch (e) {
-      print('Error refreshing rates: $e');
+      debugPrint('Error refreshing rates: $e');
       rethrow;
     }
   }
