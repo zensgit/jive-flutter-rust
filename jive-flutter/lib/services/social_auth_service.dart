@@ -76,7 +76,7 @@ class SocialAuthService {
       
       throw Exception('Failed to bind WeChat: ${response.statusCode}');
     } catch (e) {
-      print('Error binding WeChat: $e');
+      debugPrint('Error binding WeChat: $e');
       return null;
     }
   }
@@ -108,7 +108,7 @@ class SocialAuthService {
       
       throw Exception('Failed to login with WeChat: ${response.statusCode}');
     } catch (e) {
-      print('Error logging in with WeChat: $e');
+      debugPrint('Error logging in with WeChat: $e');
       return null;
     }
   }
@@ -143,7 +143,7 @@ class SocialAuthService {
       
       throw Exception('Failed to register with WeChat: ${response.statusCode}');
     } catch (e) {
-      print('Error registering with WeChat: $e');
+      debugPrint('Error registering with WeChat: $e');
       return null;
     }
   }
@@ -158,7 +158,7 @@ class SocialAuthService {
       
       return response.statusCode == 200;
     } catch (e) {
-      print('Error unbinding WeChat: $e');
+      debugPrint('Error unbinding WeChat: $e');
       return false;
     }
   }
@@ -189,7 +189,7 @@ class SocialAuthService {
       
       throw Exception('Failed to bind QQ: ${response.statusCode}');
     } catch (e) {
-      print('Error binding QQ: $e');
+      debugPrint('Error binding QQ: $e');
       return null;
     }
   }
@@ -219,7 +219,7 @@ class SocialAuthService {
       
       throw Exception('Failed to login with QQ: ${response.statusCode}');
     } catch (e) {
-      print('Error logging in with QQ: $e');
+      debugPrint('Error logging in with QQ: $e');
       return null;
     }
   }
@@ -249,7 +249,7 @@ class SocialAuthService {
       
       throw Exception('Failed to register with QQ: ${response.statusCode}');
     } catch (e) {
-      print('Error registering with QQ: $e');
+      debugPrint('Error registering with QQ: $e');
       return null;
     }
   }
@@ -264,7 +264,7 @@ class SocialAuthService {
       
       return response.statusCode == 200;
     } catch (e) {
-      print('Error unbinding QQ: $e');
+      debugPrint('Error unbinding QQ: $e');
       return false;
     }
   }
@@ -295,7 +295,7 @@ class SocialAuthService {
       
       throw Exception('Failed to bind TikTok: ${response.statusCode}');
     } catch (e) {
-      print('Error binding TikTok: $e');
+      debugPrint('Error binding TikTok: $e');
       return null;
     }
   }
@@ -325,7 +325,7 @@ class SocialAuthService {
       
       throw Exception('Failed to login with TikTok: ${response.statusCode}');
     } catch (e) {
-      print('Error logging in with TikTok: $e');
+      debugPrint('Error logging in with TikTok: $e');
       return null;
     }
   }
@@ -355,7 +355,7 @@ class SocialAuthService {
       
       throw Exception('Failed to register with TikTok: ${response.statusCode}');
     } catch (e) {
-      print('Error registering with TikTok: $e');
+      debugPrint('Error registering with TikTok: $e');
       return null;
     }
   }
@@ -370,7 +370,7 @@ class SocialAuthService {
       
       return response.statusCode == 200;
     } catch (e) {
-      print('Error unbinding TikTok: $e');
+      debugPrint('Error unbinding TikTok: $e');
       return false;
     }
   }
@@ -382,7 +382,7 @@ class SocialAuthService {
   Future<String?> _getWeChatAuthCode() async {
     // TODO: Implement WeChat SDK
     // For now, return mock data for development
-    print('WeChat SDK not implemented. Using mock data.');
+    debugPrint('WeChat SDK not implemented. Using mock data.');
     
     // In production, this would:
     // 1. Call WeChat SDK to open WeChat app
@@ -397,7 +397,7 @@ class SocialAuthService {
   Future<Map<String, dynamic>?> _getQQAuthData() async {
     // TODO: Implement QQ SDK
     // For now, return mock data for development
-    print('QQ SDK not implemented. Using mock data.');
+    debugPrint('QQ SDK not implemented. Using mock data.');
     
     // In production, this would:
     // 1. Call QQ SDK to open QQ app or web view
@@ -415,7 +415,7 @@ class SocialAuthService {
   Future<Map<String, dynamic>?> _getTikTokAuthData() async {
     // TODO: Implement TikTok/抖音 SDK
     // For now, return mock data for development
-    print('TikTok SDK not implemented. Using mock data.');
+    debugPrint('TikTok SDK not implemented. Using mock data.');
     
     // In production, this would:
     // 1. Call TikTok SDK to open TikTok app
