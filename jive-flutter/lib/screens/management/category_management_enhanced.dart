@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/category.dart';
 import '../../providers/category_management_provider.dart';
+import '../../providers/category_provider.dart';
+import '../../providers/ledger_provider.dart';
 
 /// 增强版分类管理页面
 /// 实现设计文档中的所有交互功能
@@ -73,6 +75,27 @@ class _CategoryManagementEnhancedPageState extends State<CategoryManagementEnhan
         ? '已选择 ${_selectedCategories.length} 个分类'
         : '分类管理'),
       actions: [
+        // 后端刷新按钮（最小入口）
+        Consumer(builder: (context, ref, _) {
+          return IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: '刷新(后端)',
+            onPressed: () async {
+              final ledger = ref.read(currentLedgerProvider);
+              if (ledger?.id != null) {
+                await ref.read(userCategoriesProvider.notifier).refreshFromBackend(ledgerId: ledger!.id!);
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('已从后端刷新分类')),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('无当前账本，无法刷新')),
+                );
+              }
+            },
+          );
+        }),
         if (_isSelectionMode) ...[
           IconButton(
             icon: const Icon(Icons.select_all),
