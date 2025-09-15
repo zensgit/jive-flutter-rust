@@ -96,10 +96,15 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
         },
         child: Container(
           padding: const EdgeInsets.all(24),
-          child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.85,
+            maxWidth: 500,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
             // 标题
             Row(
               children: [
@@ -289,6 +294,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
               ],
             ),
           ],
+            ),
           ),
         ),
       ),

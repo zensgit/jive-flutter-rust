@@ -440,7 +440,6 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
               ]
             : [],
       ),
-      ),
     );
   }
 
