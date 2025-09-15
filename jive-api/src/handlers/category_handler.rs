@@ -5,7 +5,6 @@ use sqlx::{PgPool, Row};
 use uuid::Uuid;
 
 use crate::auth::Claims;
-use crate::error::ApiError;
 
 #[derive(Debug, Deserialize)]
 pub struct ListParams {
@@ -188,7 +187,7 @@ pub async fn import_template(
     )
     .bind(id)
     .bind(&req.ledger_id)
-    .bind::<String>(tpl.get::<String,"name">("name"))
+    .bind::<String>(tpl.get("name"))
     .bind::<Option<String>>(tpl.try_get("color").ok())
     .bind::<Option<String>>(tpl.try_get("icon").ok())
     .bind::<String>(tpl.get("classification"))
