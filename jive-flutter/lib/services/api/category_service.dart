@@ -13,7 +13,7 @@ class CategoryService {
   Future<List<Category>> getCategories(String ledgerId) async {
     try {
       final response = await _client.get(
-        '${ApiConfig.apiUrl}/categories',
+        '${ApiConfig.baseUrl}/categories',
         queryParameters: {'ledger_id': ledgerId},
       );
       
@@ -40,7 +40,7 @@ class CategoryService {
   }) async {
     try {
       final response = await _client.post(
-        '${ApiConfig.apiUrl}/categories',
+        '${ApiConfig.baseUrl}/categories',
         data: {
           'ledger_id': ledgerId,
           'name': name,
@@ -69,7 +69,7 @@ class CategoryService {
   ) async {
     try {
       final response = await _client.put(
-        '${ApiConfig.apiUrl}/categories/$categoryId',
+        '${ApiConfig.baseUrl}/categories/$categoryId',
         data: updates,
       );
       
@@ -87,7 +87,7 @@ class CategoryService {
   Future<void> deleteCategory(String categoryId, {bool force = false}) async {
     try {
       final response = await _client.delete(
-        '${ApiConfig.apiUrl}/categories/$categoryId',
+        '${ApiConfig.baseUrl}/categories/$categoryId',
         queryParameters: force ? {'force': 'true'} : null,
       );
       
@@ -114,7 +114,7 @@ class CategoryService {
       if (featuredOnly == true) queryParams['featured'] = 'true';
 
       final response = await _client.get(
-        '${ApiConfig.apiUrl}/category-templates',
+        '${ApiConfig.baseUrl}/category-templates',
         queryParameters: queryParams,
       );
       
@@ -138,7 +138,7 @@ class CategoryService {
   }) async {
     try {
       final response = await _client.post(
-        '${ApiConfig.apiUrl}/categories/import',
+        '${ApiConfig.baseUrl}/categories/import',
         data: {
           'ledger_id': ledgerId,
           'template_ids': templateIds,
@@ -167,7 +167,7 @@ class CategoryService {
   }) async {
     try {
       final response = await _client.put(
-        '${ApiConfig.apiUrl}/categories/$categoryId/move',
+        '${ApiConfig.baseUrl}/categories/$categoryId/move',
         data: {
           if (newParentId != null) 'parent_id': newParentId,
           if (position != null) 'position': position,
@@ -193,7 +193,7 @@ class CategoryService {
   }) async {
     try {
       final response = await _client.post(
-        '${ApiConfig.apiUrl}/categories/$categoryId/convert-to-tag',
+        '${ApiConfig.baseUrl}/categories/$categoryId/convert-to-tag',
         data: {
           if (tagName != null) 'tag_name': tagName,
           'apply_to_transactions': applyToTransactions,
@@ -219,7 +219,7 @@ class CategoryService {
   }) async {
     try {
       final response = await _client.post(
-        '${ApiConfig.apiUrl}/transactions/batch-recategorize',
+        '${ApiConfig.baseUrl}/transactions/batch-recategorize',
         data: {
           'transaction_ids': transactionIds,
           'target_category_id': targetCategoryId,

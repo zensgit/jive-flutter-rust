@@ -252,39 +252,12 @@ class CategoryServiceIntegrated extends ChangeNotifier {
     }
   }
   
-  /// 创建用户分类（优先调用后端，失败时本地回退）
+  /// 创建用户分类
   Future<Category> createCategory(Category category) async {
-    try {
-      // 若具备 ledgerId 则尝试 API 创建
-      if (category.ledgerId != null && category.name.isNotEmpty) {
-        final api = CategoryService();
-        final created = await api.createCategory(
-          ledgerId: category.ledgerId!,
-          name: category.name,
-          classification: category.classification,
-          color: category.color,
-          icon: category.icon.isNotEmpty ? category.icon : null,
-          parentId: category.parentId,
-        );
-        // 覆盖本地并缓存
-        _userCategories.add(created);
-        await _saveUserCategoriesToCache();
-        _hasNetworkData = true;
-        notifyListeners();
-        return created;
-      }
-    } catch (e) {
-      _logger.warning('API createCategory failed, fallback to local: $e');
-    }
-
-    // 本地回退（无 ledgerId 或网络失败）
-    final local = category.copyWith(
-      id: category.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-    );
-    _userCategories.add(local);
+    _userCategories.add(category);
     await _saveUserCategoriesToCache();
     notifyListeners();
-    return local;
+    return category;
   }
   
   /// 更新用户分类
@@ -346,27 +319,13 @@ class CategoryServiceIntegrated extends ChangeNotifier {
   
   /// 加载用户分类缓存
   Future<List<Category>> _loadUserCategoriesFromCache() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString('user_categories');
-      if (raw == null || raw.isEmpty) return [];
-      final List<dynamic> list = jsonDecode(raw);
-      return list.map((e) => Category.fromJson(e as Map<String, dynamic>)).toList();
-    } catch (e) {
-      _logger.error('loadUserCategoriesFromCache failed: $e');
-      return [];
-    }
+    // TODO: 实现从缓存加载
+    return [];
   }
   
   /// 保存用户分类到缓存
   Future<void> _saveUserCategoriesToCache() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final list = _userCategories.map((e) => e.toJson()).toList();
-      await prefs.setString('user_categories', jsonEncode(list));
-    } catch (e) {
-      _logger.error('saveUserCategoriesToCache failed: $e');
-    }
+    // TODO: 实现保存到缓存
   }
   
   /// 加载模板缓存

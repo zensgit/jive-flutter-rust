@@ -106,18 +106,6 @@ class UserCategoriesNotifier extends StateNotifier<List<category_model.Category>
     state = _service.userCategories;
   }
 
-  /// 从后端刷新（若可用），失败时保持本地
-  Future<void> refreshFromBackend({String? ledgerId}) async {
-    try {
-      if (ledgerId == null) return;
-      final api = CategoryService();
-      final list = await api.getCategories(ledgerId);
-      state = list;
-    } catch (_) {
-      // ignore; keep local
-    }
-  }
-
   /// 创建分类
   Future<void> createCategory(category_model.Category category) async {
     try {
