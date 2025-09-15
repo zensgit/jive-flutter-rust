@@ -37,6 +37,7 @@ use handlers::enhanced_profile;
 use handlers::currency_handler;
 use handlers::currency_handler_enhanced;
 use handlers::tag_handler;
+use handlers::category_handler;
 use handlers::ledgers::{list_ledgers, create_ledger, get_current_ledger, get_ledger, 
                          update_ledger, delete_ledger, get_ledger_statistics, get_ledger_members};
 use handlers::family_handler::{list_families, create_family, get_family, update_family, delete_family, join_family, leave_family, request_verification_code, get_family_statistics, get_family_actions, get_role_descriptions, transfer_ownership};
@@ -461,3 +462,10 @@ async fn serve_icon() -> Result<Json<serde_json::Value>, StatusCode> {
         "cdn_base": "http://localhost:8012/static/icons"
     })))
 }
+        // 分类管理 API（最小可用）
+        .route("/api/v1/categories", get(category_handler::list_categories))
+        .route("/api/v1/categories", post(category_handler::create_category))
+        .route("/api/v1/categories/:id", put(category_handler::update_category))
+        .route("/api/v1/categories/:id", delete(category_handler::delete_category))
+        .route("/api/v1/categories/reorder", post(category_handler::reorder_categories))
+        .route("/api/v1/categories/import-template", post(category_handler::import_template))
