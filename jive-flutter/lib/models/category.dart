@@ -10,6 +10,7 @@ class Category with _$Category {
     String? id,
     required String name,
     String? nameEn,
+    String? description,
     required String color,
     required String icon,
     required CategoryClassification classification,
