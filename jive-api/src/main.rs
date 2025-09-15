@@ -350,7 +350,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/tags/:id", delete(tag_handler::delete_tag))
         .route("/api/v1/tags/merge", post(tag_handler::merge_tags))
         .route("/api/v1/tags/summary", get(tag_handler::tag_summary))
-        
+
+        // 分类管理 API（最小可用）
+        .route("/api/v1/categories", get(category_handler::list_categories))
+        .route("/api/v1/categories", post(category_handler::create_category))
+        .route("/api/v1/categories/:id", put(category_handler::update_category))
+        .route("/api/v1/categories/:id", delete(category_handler::delete_category))
+        .route("/api/v1/categories/reorder", post(category_handler::reorder_categories))
+        .route("/api/v1/categories/import-template", post(category_handler::import_template))
+
         // 占位符 API - 功能开发中
         .route("/api/v1/families/:id/export", get(export_data))
         .route("/api/v1/families/:id/activity-logs", get(activity_logs))
@@ -462,10 +470,3 @@ async fn serve_icon() -> Result<Json<serde_json::Value>, StatusCode> {
         "cdn_base": "http://localhost:8012/static/icons"
     })))
 }
-        // 分类管理 API（最小可用）
-        .route("/api/v1/categories", get(category_handler::list_categories))
-        .route("/api/v1/categories", post(category_handler::create_category))
-        .route("/api/v1/categories/:id", put(category_handler::update_category))
-        .route("/api/v1/categories/:id", delete(category_handler::delete_category))
-        .route("/api/v1/categories/reorder", post(category_handler::reorder_categories))
-        .route("/api/v1/categories/import-template", post(category_handler::import_template))

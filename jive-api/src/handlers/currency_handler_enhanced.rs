@@ -247,7 +247,7 @@ pub async fn get_realtime_exchange_rates(
     
     for row in recent_rates {
         rates.insert(row.to_currency, row.rate);
-        let created_naive = row.created_at.naive_utc();
+        let created_naive = row.created_at.unwrap_or_else(|| Utc::now()).naive_utc();
         if last_updated.map(|lu| created_naive > lu).unwrap_or(true) {
             last_updated = Some(created_naive);
         }
@@ -507,7 +507,7 @@ pub async fn get_crypto_prices(
     for row in prices {
         let price = Decimal::ONE / row.price;
         crypto_prices.insert(row.crypto_code, price);
-        let created_naive = row.created_at.naive_utc();
+        let created_naive = row.created_at.unwrap_or_else(|| Utc::now()).naive_utc();
         if last_updated.map(|lu| created_naive > lu).unwrap_or(true) {
             last_updated = Some(created_naive);
         }
