@@ -14,7 +14,7 @@ final systemTemplatesProvider = StateNotifierProvider<SystemTemplatesNotifier, A
 });
 
 /// 用户分类状态提供器
-final userCategoriesProvider = StateNotifierProvider<UserCategoriesNotifier, List<Category>>((ref) {
+final userCategoriesProvider = StateNotifierProvider<UserCategoriesNotifier, List<category_model.Category>>((ref) {
   return UserCategoriesNotifier(ref.watch(categoryServiceProvider));
 });
 
@@ -49,7 +49,7 @@ class SystemTemplatesNotifier extends StateNotifier<AsyncValue<List<SystemCatego
   }
 
   /// 按分类获取模板
-  Future<void> loadByClassification(CategoryClassification classification) async {
+  Future<void> loadByClassification(category_model.CategoryClassification classification) async {
     try {
       state = const AsyncValue.loading();
       final templates = await _service.getTemplatesByClassification(classification);
@@ -94,7 +94,7 @@ class SystemTemplatesNotifier extends StateNotifier<AsyncValue<List<SystemCatego
 }
 
 /// 用户分类状态管理器
-class UserCategoriesNotifier extends StateNotifier<List<Category>> {
+class UserCategoriesNotifier extends StateNotifier<List<category_model.Category>> {
   final CategoryServiceIntegrated _service;
 
   UserCategoriesNotifier(this._service) : super([]) {
@@ -107,7 +107,7 @@ class UserCategoriesNotifier extends StateNotifier<List<Category>> {
   }
 
   /// 创建分类
-  Future<void> createCategory(Category category) async {
+  Future<void> createCategory(category_model.Category category) async {
     try {
       final newCategory = await _service.createCategory(category);
       state = [...state, newCategory];
@@ -160,7 +160,7 @@ class UserCategoriesNotifier extends StateNotifier<List<Category>> {
   }
 
   /// 按分类类型获取分类
-  List<category_model.Category> getCategoriesByClassification(CategoryClassification classification) {
+  List<category_model.Category> getCategoriesByClassification(category_model.CategoryClassification classification) {
     return state.where((c) => c.classification == classification).toList();
   }
 }

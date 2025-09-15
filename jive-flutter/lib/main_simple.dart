@@ -19,6 +19,7 @@ import 'widgets/wechat_qr_binding_dialog.dart';
 import 'screens/ai_assistant_page.dart';
 import 'screens/add_transaction_page.dart';
 import 'screens/management/currency_management_page_v2.dart';
+import 'screens/management/currency_selection_page.dart';
 import 'screens/management/category_management_page.dart';
 import 'screens/management/category_template_library.dart';
 import 'screens/admin/template_admin_page.dart';
@@ -706,7 +707,7 @@ class SettingsPage extends StatelessWidget {
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const CurrencyManagementPage(),
+                builder: (context) => const CurrencySelectionPage(),
               ),
             );
           },

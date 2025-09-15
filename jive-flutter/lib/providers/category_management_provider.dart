@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/category.dart';
+import '../models/category.dart' as models;
 import '../models/tag.dart';
 import '../services/api/category_service.dart';
 import 'tag_provider.dart';
@@ -77,7 +77,7 @@ class CategoryProvider extends ChangeNotifier {
       final originalCategory = categories.firstWhere((c) => c.id == categoryId);
       
       // 创建新分类
-      final newCategory = Category(
+      final newCategory = models.Category(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         ledgerId: originalCategory.ledgerId,
         name: newName,
@@ -107,7 +107,7 @@ class CategoryProvider extends ChangeNotifier {
   /// 批量删除分类
   Future<void> batchDeleteCategories(List<String> categoryIds) async {
     try {
-      final deletedCategories = <Category>[];
+      final deletedCategories = <models.Category>[];
       
       for (final categoryId in categoryIds) {
         final categories = _ref.read(userCategoriesProvider);
@@ -265,7 +265,7 @@ class DuplicateCategoryAction extends UndoableAction {
 
 /// 批量删除操作
 class BatchDeleteAction extends UndoableAction {
-  final List<Category> deletedCategories;
+  final List<models.Category> deletedCategories;
   
   BatchDeleteAction({
     required this.deletedCategories,
