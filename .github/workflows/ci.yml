@@ -160,12 +160,13 @@ jobs:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jive_money_test
       run: |
         psql "$DATABASE_URL" -c 'SELECT 1' || (echo "DB not ready" && exit 1)
-        ./scripts/migrate_local.sh --force
+        ./scripts/migrate_local.sh --force --db-url "$DATABASE_URL"
 
     - name: Run tests
       working-directory: jive-api
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jive_money_test
+        TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jive_money_test
         REDIS_URL: redis://localhost:6379
         JWT_SECRET: test_secret_key_for_ci
         API_PORT: 8012
