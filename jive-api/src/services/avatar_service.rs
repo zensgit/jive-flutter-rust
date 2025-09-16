@@ -227,7 +227,7 @@ impl AvatarService {
             }
         } else {
             // 英文名字，取每个单词的首字母（最多2个）
-            for (i, part) in parts.iter().take(2).enumerate() {
+            for (_, part) in parts.iter().take(2).enumerate() {
                 if let Some(first_char) = part.chars().next() {
                     initials.push(first_char.to_uppercase().next().unwrap_or(first_char));
                 }

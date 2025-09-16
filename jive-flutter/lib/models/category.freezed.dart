@@ -23,6 +23,7 @@ mixin _$Category {
   String? get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String? get nameEn => throw _privateConstructorUsedError;
+  String? get description => throw _privateConstructorUsedError;
   String get color => throw _privateConstructorUsedError;
   String get icon => throw _privateConstructorUsedError;
   CategoryClassification get classification =>
@@ -50,6 +51,7 @@ abstract class $CategoryCopyWith<$Res> {
       {String? id,
       String name,
       String? nameEn,
+      String? description,
       String color,
       String icon,
       CategoryClassification classification,
@@ -78,6 +80,7 @@ class _$CategoryCopyWithImpl<$Res, $Val extends Category>
     Object? id = freezed,
     Object? name = null,
     Object? nameEn = freezed,
+    Object? description = freezed,
     Object? color = null,
     Object? icon = null,
     Object? classification = null,
@@ -101,6 +104,10 @@ class _$CategoryCopyWithImpl<$Res, $Val extends Category>
       nameEn: freezed == nameEn
           ? _value.nameEn
           : nameEn // ignore: cast_nullable_to_non_nullable
+              as String?,
+      description: freezed == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
               as String?,
       color: null == color
           ? _value.color
@@ -158,6 +165,7 @@ abstract class _$$CategoryImplCopyWith<$Res>
       {String? id,
       String name,
       String? nameEn,
+      String? description,
       String color,
       String icon,
       CategoryClassification classification,
@@ -184,6 +192,7 @@ class __$$CategoryImplCopyWithImpl<$Res>
     Object? id = freezed,
     Object? name = null,
     Object? nameEn = freezed,
+    Object? description = freezed,
     Object? color = null,
     Object? icon = null,
     Object? classification = null,
@@ -207,6 +216,10 @@ class __$$CategoryImplCopyWithImpl<$Res>
       nameEn: freezed == nameEn
           ? _value.nameEn
           : nameEn // ignore: cast_nullable_to_non_nullable
+              as String?,
+      description: freezed == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
               as String?,
       color: null == color
           ? _value.color
@@ -259,6 +272,7 @@ class _$CategoryImpl implements _Category {
       {this.id,
       required this.name,
       this.nameEn,
+      this.description,
       required this.color,
       required this.icon,
       required this.classification,
@@ -280,6 +294,8 @@ class _$CategoryImpl implements _Category {
   final String name;
   @override
   final String? nameEn;
+  @override
+  final String? description;
   @override
   final String color;
   @override
@@ -311,7 +327,7 @@ class _$CategoryImpl implements _Category {
 
   @override
   String toString() {
-    return 'Category(id: $id, name: $name, nameEn: $nameEn, color: $color, icon: $icon, classification: $classification, parentId: $parentId, ledgerId: $ledgerId, position: $position, usageCount: $usageCount, createdAt: $createdAt, updatedAt: $updatedAt, subcategories: $subcategories)';
+    return 'Category(id: $id, name: $name, nameEn: $nameEn, description: $description, color: $color, icon: $icon, classification: $classification, parentId: $parentId, ledgerId: $ledgerId, position: $position, usageCount: $usageCount, createdAt: $createdAt, updatedAt: $updatedAt, subcategories: $subcategories)';
   }
 
   @override
@@ -322,6 +338,8 @@ class _$CategoryImpl implements _Category {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.nameEn, nameEn) || other.nameEn == nameEn) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
             (identical(other.color, color) || other.color == color) &&
             (identical(other.icon, icon) || other.icon == icon) &&
             (identical(other.classification, classification) ||
@@ -349,6 +367,7 @@ class _$CategoryImpl implements _Category {
       id,
       name,
       nameEn,
+      description,
       color,
       icon,
       classification,
@@ -379,6 +398,7 @@ abstract class _Category implements Category {
       {final String? id,
       required final String name,
       final String? nameEn,
+      final String? description,
       required final String color,
       required final String icon,
       required final CategoryClassification classification,
@@ -399,6 +419,8 @@ abstract class _Category implements Category {
   String get name;
   @override
   String? get nameEn;
+  @override
+  String? get description;
   @override
   String get color;
   @override

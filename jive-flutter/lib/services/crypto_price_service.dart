@@ -120,7 +120,7 @@ class CryptoPriceService {
         if (price != null) return (price as num).toDouble();
       }
     } catch (e) {
-      print('Error fetching crypto price from backend (GET prices): $e');
+      debugPrint('Error fetching crypto price from backend (GET prices): $e');
     }
     return null;
   }
@@ -172,7 +172,7 @@ class CryptoPriceService {
         }
       }
     } catch (e) {
-      print('Error fetching selected crypto prices from backend: $e');
+      debugPrint('Error fetching selected crypto prices from backend: $e');
     }
     
     return prices;
@@ -212,7 +212,7 @@ class CryptoPriceService {
         }
       }
     } catch (e) {
-      print('Error fetching batch prices from backend: $e');
+      debugPrint('Error fetching batch prices from backend: $e');
     }
     
     return prices;

@@ -383,7 +383,7 @@ impl CurrencyService {
         &self,
         amount: Decimal,
         rate: Decimal,
-        from_decimal_places: i32,
+        _from_decimal_places: i32,
         to_decimal_places: i32,
     ) -> Decimal {
         let converted = amount * rate;
@@ -579,9 +579,6 @@ impl CurrencyService {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use rust_decimal::prelude::*;
-    
     #[test]
     fn test_convert_amount() {
         // let service = CurrencyService::new(PgPool::connect_lazy("").unwrap());

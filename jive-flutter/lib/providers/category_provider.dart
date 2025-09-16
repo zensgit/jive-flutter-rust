@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/category.dart' as category_model;
 import '../models/category_template.dart';
 import '../services/api/category_service_integrated.dart';
+import '../services/api/category_service.dart';
 
 /// 分类服务提供器
 final categoryServiceProvider = Provider<CategoryServiceIntegrated>((ref) {
@@ -104,6 +105,18 @@ class UserCategoriesNotifier extends StateNotifier<List<category_model.Category>
   /// 加载用户分类
   void _loadCategories() {
     state = _service.userCategories;
+  }
+
+  /// 从后端刷新（若可用），失败时保持本地
+  Future<void> refreshFromBackend({String? ledgerId}) async {
+    try {
+      if (ledgerId == null) return;
+      final api = CategoryService();
+      final list = await api.getCategories(ledgerId);
+      state = list;
+    } catch (_) {
+      // ignore; keep local
+    }
   }
 
   /// 创建分类

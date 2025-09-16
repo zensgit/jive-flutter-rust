@@ -58,7 +58,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
         await currencyNotifier.refreshExchangeRates();
         _lastFetchTime = DateTime.now();
       } catch (e) {
-        print('Failed to fetch exchange rates: $e');
+        debugPrint('Failed to fetch exchange rates: $e');
       }
     }
     

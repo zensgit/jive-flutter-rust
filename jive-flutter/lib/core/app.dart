@@ -51,7 +51,7 @@ class _JiveAppState extends ConsumerState<JiveApp> {
         await ref.read(currencyProvider.notifier).refreshExchangeRates();
       }
     } catch (e) {
-      print('⚠️ Failed to update exchange rates: $e');
+      debugPrint('⚠️ Failed to update exchange rates: $e');
     }
   }
   

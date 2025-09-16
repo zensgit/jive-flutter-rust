@@ -659,7 +659,7 @@ pub struct ConvertCurrencyResponse {
 
 /// Manual refresh of exchange rates
 pub async fn manual_refresh_rates(
-    State(pool): State<PgPool>,
+    State(_pool): State<PgPool>,
     _claims: Claims,
     Json(req): Json<ManualRefreshRequest>,
 ) -> ApiResult<Json<ApiResponse<RefreshResponse>>> {

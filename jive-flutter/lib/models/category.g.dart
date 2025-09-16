@@ -11,6 +11,7 @@ _$CategoryImpl _$$CategoryImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String?,
       name: json['name'] as String,
       nameEn: json['nameEn'] as String?,
+      description: json['description'] as String?,
       color: json['color'] as String,
       icon: json['icon'] as String,
       classification:
@@ -36,6 +37,7 @@ Map<String, dynamic> _$$CategoryImplToJson(_$CategoryImpl instance) =>
       'id': instance.id,
       'name': instance.name,
       'nameEn': instance.nameEn,
+      'description': instance.description,
       'color': instance.color,
       'icon': instance.icon,
       'classification':

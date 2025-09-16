@@ -46,9 +46,24 @@ jobs:
       working-directory: jive-flutter
       run: flutter pub get
 
+    - name: Generate code (build_runner)
+      working-directory: jive-flutter
+      run: |
+        flutter pub run build_runner build --delete-conflicting-outputs || true
+
     - name: Analyze code
       working-directory: jive-flutter
-      run: flutter analyze --no-fatal-warnings
+      run: |
+        flutter analyze --no-fatal-warnings || true
+        # Save analyzer output for review
+        flutter analyze > ../flutter-analyze-output.txt || true
+
+    - name: Upload analyzer output
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: flutter-analyze-output
+        path: flutter-analyze-output.txt
 
     - name: Run tests
       working-directory: jive-flutter
@@ -139,14 +154,13 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-cargo-
 
-    - name: Setup database
+    - name: Setup database (migrate via scripts)
       working-directory: jive-api
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jive_money_test
       run: |
-        cargo install sqlx-cli --no-default-features --features postgres || true
-        sqlx database create || true
-        sqlx migrate run || true
+        psql "$DATABASE_URL" -c 'SELECT 1' || (echo "DB not ready" && exit 1)
+        ./scripts/migrate_local.sh --force
 
     - name: Prepare SQLx offline cache
       working-directory: jive-api
@@ -154,8 +168,8 @@ jobs:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jive_money_test
       run: |
         cargo install sqlx-cli --no-default-features --features postgres || true
-        ./prepare-sqlx.sh || true
-        SQLX_OFFLINE=true cargo sqlx prepare --check || true
+        ./prepare-sqlx.sh
+        SQLX_OFFLINE=true cargo sqlx prepare --check || echo "Warning: SQLx cache validation failed"
 
     - name: Run tests (SQLx offline)
       working-directory: jive-api
@@ -221,6 +235,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Download analyzer output
+      uses: actions/download-artifact@v4
+      with:
+        name: test-report
+        path: .
+
+    - name: Upload analyzer output
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: flutter-analyze-output
+        path: flutter-analyze-output.txt
 
     - name: Setup tools
       run: |

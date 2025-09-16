@@ -16,9 +16,9 @@ class AuthService {
   }) async {
     // 支持在开发环境使用用户名“superadmin”直接登录（自动映射为邮箱）
     final normalizedEmail = _normalizeLoginIdentifier(email);
-    print('DEBUG AuthService.login: Called with email=$normalizedEmail');
+      debugPrint('DEBUG AuthService.login: Called with email=$normalizedEmail');
     try {
-      print('DEBUG AuthService.login: About to make POST request to ${Endpoints.login}');
+      debugPrint('DEBUG AuthService.login: About to make POST request to ${Endpoints.login}');
       final response = await _client.dio.post(
         Endpoints.login,
         data: {
@@ -31,7 +31,7 @@ class AuthService {
       // 处理我们API的响应格式
       final status = response.statusCode ?? 0;
       final responseData = response.data;
-      print('DEBUG AuthService: Response status = $status, data = $responseData');
+      debugPrint('DEBUG AuthService: Response status = $status, data = $responseData');
 
       // 明确处理常见错误状态，给出更友好的信息
       if (status == 401 || responseData?['error'] == 'Unauthorized') {
@@ -46,16 +46,16 @@ class AuthService {
                 ? responseData['message'] ?? responseData['error']
                 : null) ??
             '登录失败';
-        print('DEBUG AuthService: Non-success response: $msg');
+        debugPrint('DEBUG AuthService: Non-success response: $msg');
         throw ApiException(msg);
       }
       
-      print('DEBUG AuthService: Creating AuthResponse from JSON');
+      debugPrint('DEBUG AuthService: Creating AuthResponse from JSON');
       final authResponse = AuthResponse.fromJson(
         Map<String, dynamic>.from(responseData as Map),
       );
-      print('DEBUG AuthService: AuthResponse user = ${authResponse.user}');
-      print('DEBUG AuthService: AuthResponse token = ${authResponse.accessToken?.substring(0, 20) ?? 'null'}...');
+      debugPrint('DEBUG AuthService: AuthResponse user = ${authResponse.user}');
+      debugPrint('DEBUG AuthService: AuthResponse token = ${authResponse.accessToken?.substring(0, 20) ?? 'null'}...');
       
       // 保存令牌
       await TokenStorage.saveTokens(
@@ -83,11 +83,11 @@ class AuthService {
       } catch (_) {}
       return authResponse;
     } catch (e) {
-      print('DEBUG AuthService: Login error caught: $e');
-      print('DEBUG AuthService: Error type: ${e.runtimeType}');
+      debugPrint('DEBUG AuthService: Login error caught: $e');
+      debugPrint('DEBUG AuthService: Error type: ${e.runtimeType}');
       if (e is DioException) {
-        print('DEBUG AuthService: DioException type: ${e.type}');
-        print('DEBUG AuthService: DioException message: ${e.message}');
+        debugPrint('DEBUG AuthService: DioException type: ${e.type}');
+        debugPrint('DEBUG AuthService: DioException message: ${e.message}');
         print('DEBUG AuthService: Response: ${e.response}');
         print('DEBUG AuthService: Response data: ${e.response?.data}');
         print('DEBUG AuthService: Response status: ${e.response?.statusCode}');
