@@ -6,12 +6,24 @@ import 'package:dio/dio.dart';
 class RetryInterceptor extends Interceptor {
   final Dio dio;
   final int maxRetries;
-  final Duration retryDelay;
+  final Duration baseDelay;
+  final Duration maxDelay;
+  static DateTime? _lastGlobalFailure;
+  static int _consecutiveFailures = 0;
+  static bool _circuitOpen = false;
+  static DateTime? _circuitOpenedAt;
+  // 熔断持续时间
+  final Duration circuitOpenDuration;
+  // 达到多少连续失败开启熔断
+  final int circuitFailureThreshold;
   
   RetryInterceptor({
     required this.dio,
-    this.maxRetries = 3,
-    this.retryDelay = const Duration(seconds: 1),
+    this.maxRetries = 2,
+    this.baseDelay = const Duration(milliseconds: 300),
+    this.maxDelay = const Duration(seconds: 2),
+    this.circuitOpenDuration = const Duration(seconds: 8),
+    this.circuitFailureThreshold = 8,
   });
   
   @override
@@ -25,22 +37,29 @@ class RetryInterceptor extends Interceptor {
       return;
     }
     
-    // 获取重试次数
+    // 熔断状态下直接返回错误，避免风暴
+    if (_circuitOpen) {
+      final since = DateTime.now().difference(_circuitOpenedAt!);
+      if (since < circuitOpenDuration) {
+        handler.next(err);
+        return;
+      } else {
+        // 熔断期结束，半开
+        _circuitOpen = false;
+        _consecutiveFailures = 0;
+      }
+    }
+
     final retryCount = err.requestOptions.extra['retryCount'] ?? 0;
-    
     if (retryCount >= maxRetries) {
+      _recordFailure();
       handler.next(err);
       return;
     }
-    
-    // 计算延迟时间（指数退避）
-    final delay = Duration(
-      milliseconds: (retryDelay.inMilliseconds * (retryCount + 1)).toInt(),
-    );
-    
-    // 等待一段时间后重试
-    await Future.delayed(delay);
-    
+
+    final backoff = _calcBackoff(retryCount);
+    await Future.delayed(backoff);
+
     try {
       // 更新重试次数
       err.requestOptions.extra['retryCount'] = retryCount + 1;
@@ -57,11 +76,14 @@ class RetryInterceptor extends Interceptor {
         ),
       );
       
+      _recordSuccess();
       handler.resolve(response);
     } catch (e) {
       if (e is DioException) {
+        _recordFailure();
         handler.next(e);
       } else {
+        _recordFailure();
         handler.next(err);
       }
     }
@@ -97,5 +119,24 @@ class RetryInterceptor extends Interceptor {
     
     // 其他错误不重试
     return false;
+  }
+
+  Duration _calcBackoff(int retryCount) {
+    final ms = (baseDelay.inMilliseconds * (1 << retryCount)).clamp(baseDelay.inMilliseconds, maxDelay.inMilliseconds);
+    return Duration(milliseconds: ms);
+  }
+
+  void _recordFailure() {
+    _lastGlobalFailure = DateTime.now();
+    _consecutiveFailures++;
+    if (_consecutiveFailures >= circuitFailureThreshold && !_circuitOpen) {
+      _circuitOpen = true;
+      _circuitOpenedAt = DateTime.now();
+    }
+  }
+
+  void _recordSuccess() {
+    _consecutiveFailures = 0;
+    _circuitOpen = false;
   }
 }

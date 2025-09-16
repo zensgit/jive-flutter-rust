@@ -1,5 +1,6 @@
 // import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 /// 令牌存储服务 - 临时使用 SharedPreferences
 class TokenStorage {
@@ -19,7 +20,11 @@ class TokenStorage {
   /// 获取访问令牌
   static Future<String?> getAccessToken() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_accessTokenKey);
+    final token = prefs.getString(_accessTokenKey);
+    if (token != null && token.trim().isEmpty) {
+      return null;
+    }
+    return token;
   }
   
   /// 保存刷新令牌
@@ -70,6 +75,26 @@ class TokenStorage {
       return true; // 没有过期时间，认为已过期
     }
     return DateTime.now().isAfter(expiry);
+  }
+
+  /// 解码简单 JWT (不验证签名) 获取 exp 秒级时间戳，如果本地未存 expiry。
+  static DateTime? decodeJwtExpiry(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+      final payload = parts[1];
+      String normalized = payload.replaceAll('-', '+').replaceAll('_', '/');
+      while (normalized.length % 4 != 0) {
+        normalized += '=';
+      }
+      final decoded = String.fromCharCodes(base64.decode(normalized));
+      final map = jsonDecode(decoded);
+      if (map is Map && map['exp'] is num) {
+        final exp = (map['exp'] as num).toInt();
+        return DateTime.fromMillisecondsSinceEpoch(exp * 1000, isUtc: true).toLocal();
+      }
+    } catch (_) {}
+    return null;
   }
   
   /// 保存用户ID
@@ -169,4 +194,7 @@ class AuthInfo {
     final remaining = expiryDate!.difference(DateTime.now());
     return remaining.isNegative ? Duration.zero : remaining;
   }
+
+  @override
+  String toString() => 'AuthInfo(userId: ' + (userId ?? 'null') + ', exp: ' + (expiryDate?.toIso8601String() ?? 'null') + ', expired=' + isExpired.toString() + ')';
 }

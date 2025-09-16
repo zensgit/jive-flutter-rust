@@ -1,8 +1,12 @@
 import 'package:dio/dio.dart';
 import '../../storage/token_storage.dart';
+import '../../auth/auth_events.dart';
+import '../../../services/api/auth_service.dart';
 
 /// 认证拦截器
 class AuthInterceptor extends Interceptor {
+  static DateTime? _lastRefreshAttempt;
+  static const Duration _refreshBackoff = Duration(seconds: 5);
   @override
   Future<void> onRequest(
     RequestOptions options,
@@ -44,6 +48,12 @@ class AuthInterceptor extends Interceptor {
   ) async {
     // 如果是401错误，尝试刷新令牌
     if (err.response?.statusCode == 401) {
+      final now = DateTime.now();
+      if (_lastRefreshAttempt != null && now.difference(_lastRefreshAttempt!) < _refreshBackoff) {
+        handler.next(err);
+        return;
+      }
+      _lastRefreshAttempt = now;
       final refreshed = await _refreshToken();
       
       if (refreshed) {
@@ -60,7 +70,8 @@ class AuthInterceptor extends Interceptor {
       
       // 刷新失败，清除令牌并跳转到登录页
       await TokenStorage.clearTokens();
-      // TODO: 导航到登录页
+      // 通知应用需要跳转登录
+      AuthEvents.notify(AuthEvent.unauthorized);
     }
     
     handler.next(err);
@@ -69,25 +80,12 @@ class AuthInterceptor extends Interceptor {
   /// 刷新令牌
   Future<bool> _refreshToken() async {
     try {
-      final refreshToken = await TokenStorage.getRefreshToken();
-      
-      if (refreshToken == null || refreshToken.isEmpty) {
-        return false;
-      }
-      
-      // TODO: 调用刷新令牌API
-      // final response = await dio.post('/auth/refresh', data: {
-      //   'refresh_token': refreshToken,
-      // });
-      
-      // 模拟刷新成功
-      // await TokenStorage.saveTokens(
-      //   accessToken: response.data['access_token'],
-      //   refreshToken: response.data['refresh_token'],
-      // );
-      
-      return false; // 暂时返回false
-    } catch (e) {
+      final refresh = await TokenStorage.getRefreshToken();
+      if (refresh == null || refresh.isEmpty) return false;
+      final authService = AuthService();
+      final resp = await authService.refreshToken();
+      return resp.accessToken.isNotEmpty;
+    } catch (_) {
       return false;
     }
   }

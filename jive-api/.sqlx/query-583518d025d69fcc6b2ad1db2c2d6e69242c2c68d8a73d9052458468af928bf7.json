@@ -1,0 +1,58 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT l.id, l.family_id, l.name, l.currency, \n               l.is_default,\n               l.created_at, l.updated_at\n        FROM ledgers l\n        LEFT JOIN family_members fm ON l.family_id = fm.family_id\n        WHERE (fm.user_id = $1 OR l.family_id IS NULL) AND l.is_default = true\n        LIMIT 1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "family_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "currency",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "is_default",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 5,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 6,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "583518d025d69fcc6b2ad1db2c2d6e69242c2c68d8a73d9052458468af928bf7"
+}

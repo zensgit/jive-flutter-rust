@@ -1,0 +1,29 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT l.id, l.family_id\n        FROM ledgers l\n        LEFT JOIN family_members fm ON l.family_id = fm.family_id\n        WHERE l.id = $1 AND (fm.user_id = $2 OR l.family_id IS NULL)\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "family_id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "669abf06c00484fa35ac28131bb417cc178321d32b97c26b1f0842a08ca51a54"
+}

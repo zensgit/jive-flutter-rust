@@ -1,0 +1,44 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT code, name, symbol, decimal_places, is_active\n            FROM currencies\n            WHERE is_active = true\n            ORDER BY code\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "code",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "symbol",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "decimal_places",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "is_active",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "7cc5d220abdcf4ef2e63aa86b9ce0d947460192ba4f0e6d62150dc1d62557cdf"
+}

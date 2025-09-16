@@ -436,6 +436,7 @@ class UserData {
   }
 
   UserData copyWith({
+    String? id,
     String? username,
     String? email,
     String? avatar,
@@ -444,7 +445,7 @@ class UserData {
     String? role,
   }) {
     return UserData(
-      id: id,
+      id: id ?? this.id,
       username: username ?? this.username,
       email: email ?? this.email,
       avatar: avatar ?? this.avatar,

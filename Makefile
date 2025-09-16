@@ -1,4 +1,4 @@
-.PHONY: help install check start stop dev build test clean docker-up docker-down
+.PHONY: help install check start stop dev build test clean docker-up docker-down api-dev api-safe
 
 # 默认目标
 help:
@@ -17,6 +17,8 @@ help:
 	@echo "  make docker-down  - 停止 Docker 服务"
 	@echo "  make status       - 查看服务状态"
 	@echo "  make logs         - 查看日志"
+	@echo "  make api-dev      - 启动完整版 API (CORS_DEV=1)"
+	@echo "  make api-safe     - 启动完整版 API (安全CORS模式)"
 
 # 安装依赖
 install:
@@ -114,6 +116,16 @@ db-reset:
 # 查看日志
 logs:
 	@tail -f logs/*.log
+
+# 启动完整版 API（宽松 CORS 开发模式，支持自定义端口 API_PORT）
+api-dev:
+	@echo "启动完整版 API (CORS_DEV=1, 端口 $${API_PORT:-8012})..."
+	@cd jive-api && CORS_DEV=1 API_PORT=$${API_PORT:-8012} cargo run --bin jive-api
+
+# 启动完整版 API（安全 CORS：白名单 + 受控头部）
+api-safe:
+	@echo "启动完整版 API (安全 CORS 模式, 端口 $${API_PORT:-8012})..."
+	@cd jive-api && unset CORS_DEV && API_PORT=$${API_PORT:-8012} cargo run --bin jive-api
 
 # 代码格式化
 format:

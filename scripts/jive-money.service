@@ -1,0 +1,26 @@
+[Unit]
+Description=Jive Money API Service
+After=network.target postgresql.service redis.service
+Wants=postgresql.service redis.service
+
+[Service]
+Type=simple
+User=jive
+WorkingDirectory=/home/jive/jive-flutter-rust/jive-api
+Environment="DATABASE_URL=postgresql://postgres:postgres@localhost:5432/jive_money"
+Environment="REDIS_URL=redis://localhost:6379"
+Environment="API_PORT=8012"
+ExecStart=/home/jive/.cargo/bin/cargo run --release
+Restart=always
+RestartSec=10
+
+# 日志
+StandardOutput=append:/var/log/jive-money/api.log
+StandardError=append:/var/log/jive-money/api-error.log
+
+# 资源限制
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target

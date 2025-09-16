@@ -104,14 +104,20 @@ class AuthController extends StateNotifier<AuthState> {
     required String password,
     bool rememberMe = false,
   }) async {
+    print('DEBUG Provider: Login method called with email=$email');
     state = state.copyWith(status: AuthStatus.loading);
     
     try {
+      print('DEBUG Provider: Starting login for $email');
       final authResponse = await _authService.login(
         email: email,
         password: password,
         rememberMe: rememberMe,
       );
+      
+      print('DEBUG Provider: Got auth response');
+      print('DEBUG Provider: User = ${authResponse.user}');
+      print('DEBUG Provider: Token = ${authResponse.accessToken?.substring(0, 20) ?? 'null'}...');
       
       // 保存用户信息
       if (authResponse.user != null) {
@@ -122,15 +128,20 @@ class AuthController extends StateNotifier<AuthState> {
           user: authResponse.user,
         );
         
+        print('DEBUG: Login successful in provider, user: ${authResponse.user?.email}');
         return true;
       } else {
+        print('DEBUG: Login failed - no user in response');
+        print('DEBUG: Auth response: token=${authResponse.accessToken?.substring(0, 20)}...');
         state = state.copyWith(
           status: AuthStatus.error,
           errorMessage: '登录响应中缺少用户信息',
         );
         return false;
       }
-    } catch (e) {
+    } catch (e, stack) {
+      print('DEBUG Provider: Login exception: $e');
+      print('DEBUG Provider: Stack: $stack');
       state = state.copyWith(
         status: AuthStatus.error,
         errorMessage: _parseError(e),

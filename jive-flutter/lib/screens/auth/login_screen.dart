@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../services/auth_service.dart';
 import '../../services/storage_service.dart';
 import '../../widgets/wechat_login_button.dart';
+import '../../core/router/app_router.dart';
+import '../../providers/auth_provider.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController(text: 'superadmin@jive.money');
+  final _passwordController = TextEditingController(text: 'admin123');
   bool _isPasswordVisible = false;
   bool _isLoading = false;
   bool _rememberMe = false;
@@ -87,35 +91,53 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final result = await _authService.login(
-        _emailController.text.trim(),
-        _passwordController.text,
+      // 保存登录凭据
+      await _saveCredentials();
+      
+      print('DEBUG: Starting login for ${_emailController.text.trim()}');
+      
+      // 使用AuthController的login方法
+      final success = await ref.read(authControllerProvider.notifier).login(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        rememberMe: _rememberMe,
       );
       
+      print('DEBUG: Login result: $success');
+      
       if (mounted) {
-        if (result.success) {
-          // 保存登录凭据
-          await _saveCredentials();
+        if (success) {
+          final authState = ref.read(authControllerProvider);
+          print('DEBUG: Login successful, user: ${authState.user?.name}');
           
-          // 登录成功，显示欢迎消息并导航到主页
+          // 登录成功，显示欢迎消息
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('欢迎回来，${result.userData?.username}！'),
+              content: Text('欢迎回来，${authState.user?.name ?? '用户'}！'),
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.of(context).pushReplacementNamed('/home');
+          
+          // 直接跳转到仪表板
+          print('DEBUG: Navigating to dashboard');
+          context.go(AppRoutes.dashboard);
         } else {
+          final authState = ref.read(authControllerProvider);
+          print('DEBUG: Login failed: ${authState.errorMessage}');
+          
           // 登录失败，显示错误消息
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result.message ?? '登录失败'),
+              content: Text(authState.errorMessage ?? '登录失败'),
               backgroundColor: Colors.red,
             ),
           );
         }
       }
-    } catch (e) {
+    } catch (e, stack) {
+      print('DEBUG: Login exception: $e');
+      print('DEBUG: Stack trace: $stack');
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -417,7 +439,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // 注册链接
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pushNamed('/register');
+                        context.push(AppRoutes.register);
                       },
                       child: const Text('还没有账户？点击注册'),
                     ),
@@ -468,7 +490,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               backgroundColor: Colors.green,
                             ),
                           );
-                          Navigator.of(context).pushReplacementNamed('/home');
+                          context.go(AppRoutes.dashboard);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -528,9 +550,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             const SizedBox(height: 4),
                             const Text(
                               '• 支持用户名或邮箱地址登录\n'
-                              '• 测试账户：demo / 密码：123456\n'
-                              '• 测试账户：test / 密码：Test123!\n'
-                              '• 管理账户：superadmin / 密码：admin123\n'
+                              '• 管理员账户：admin / 密码：admin123\n'
+                              '• 邮箱和密码请填写完整\n'
+                              '• 确保后端API服务正在运行\n'
                               '• 也可以使用微信登录（模拟）\n'
                               '• 记住功能：账号+密码（30天）或永久记住（测试用）',
                               style: TextStyle(fontSize: 12, color: Colors.blue),
@@ -548,4 +570,5 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
 }

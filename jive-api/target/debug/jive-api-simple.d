@@ -1,1 +1,0 @@
-/Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-api/target/debug/jive-api-simple: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-api/src/main_simple.rs

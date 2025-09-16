@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../constants/app_constants.dart';
 
@@ -54,6 +53,7 @@ class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
       colorScheme: colorScheme,
       textTheme: _buildTextTheme(colorScheme),
       appBarTheme: _buildAppBarTheme(colorScheme),
@@ -97,6 +97,7 @@ class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
       colorScheme: colorScheme,
       textTheme: _buildTextTheme(colorScheme),
       appBarTheme: _buildAppBarTheme(colorScheme),
@@ -126,92 +127,92 @@ class AppTheme {
 
   /// 构建文本主题
   static TextTheme _buildTextTheme(ColorScheme colorScheme) {
-    return GoogleFonts.interTextTheme().copyWith(
-      displayLarge: GoogleFonts.inter(
+    return TextTheme(
+      displayLarge: TextStyle(
         fontSize: 57,
         fontWeight: FontWeight.w400,
         letterSpacing: -0.25,
         color: colorScheme.onSurface,
       ),
-      displayMedium: GoogleFonts.inter(
+      displayMedium: TextStyle(
         fontSize: 45,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
         color: colorScheme.onSurface,
       ),
-      displaySmall: GoogleFonts.inter(
+      displaySmall: TextStyle(
         fontSize: 36,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
         color: colorScheme.onSurface,
       ),
-      headlineLarge: GoogleFonts.inter(
+      headlineLarge: TextStyle(
         fontSize: 32,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
         color: colorScheme.onSurface,
       ),
-      headlineMedium: GoogleFonts.inter(
+      headlineMedium: TextStyle(
         fontSize: 28,
         fontWeight: FontWeight.w500,
         letterSpacing: 0,
         color: colorScheme.onSurface,
       ),
-      headlineSmall: GoogleFonts.inter(
+      headlineSmall: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.w500,
         letterSpacing: 0,
         color: colorScheme.onSurface,
       ),
-      titleLarge: GoogleFonts.inter(
+      titleLarge: TextStyle(
         fontSize: 22,
         fontWeight: FontWeight.w600,
         letterSpacing: 0,
         color: colorScheme.onSurface,
       ),
-      titleMedium: GoogleFonts.inter(
+      titleMedium: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.15,
         color: colorScheme.onSurface,
       ),
-      titleSmall: GoogleFonts.inter(
+      titleSmall: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.1,
         color: colorScheme.onSurface,
       ),
-      bodyLarge: GoogleFonts.inter(
+      bodyLarge: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.5,
         color: colorScheme.onSurface,
       ),
-      bodyMedium: GoogleFonts.inter(
+      bodyMedium: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.25,
         color: colorScheme.onSurface,
       ),
-      bodySmall: GoogleFonts.inter(
+      bodySmall: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.4,
         color: colorScheme.onSurface,
       ),
-      labelLarge: GoogleFonts.inter(
+      labelLarge: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.1,
         color: colorScheme.onSurface,
       ),
-      labelMedium: GoogleFonts.inter(
+      labelMedium: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.5,
         color: colorScheme.onSurface,
       ),
-      labelSmall: GoogleFonts.inter(
+      labelSmall: TextStyle(
         fontSize: 11,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.5,
@@ -229,7 +230,7 @@ class AppTheme {
       foregroundColor: colorScheme.onSurface,
       surfaceTintColor: colorScheme.surfaceTint,
       centerTitle: true,
-      titleTextStyle: GoogleFonts.inter(
+      titleTextStyle: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w600,
         color: colorScheme.onSurface,
@@ -264,7 +265,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
         ),
-        textStyle: GoogleFonts.inter(
+        textStyle: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
@@ -287,7 +288,7 @@ class AppTheme {
           color: colorScheme.outline,
           width: 1,
         ),
-        textStyle: GoogleFonts.inter(
+        textStyle: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
@@ -306,7 +307,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConstants.smallBorderRadius),
         ),
-        textStyle: GoogleFonts.inter(
+        textStyle: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
@@ -358,17 +359,17 @@ class AppTheme {
           width: 2,
         ),
       ),
-      labelStyle: GoogleFonts.inter(
+      labelStyle: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w500,
         color: colorScheme.onSurfaceVariant,
       ),
-      hintStyle: GoogleFonts.inter(
+      hintStyle: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         color: colorScheme.onSurfaceVariant,
       ),
-      errorStyle: GoogleFonts.inter(
+      errorStyle: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w400,
         color: colorScheme.error,
@@ -382,7 +383,7 @@ class AppTheme {
       backgroundColor: colorScheme.surfaceContainerHighest,
       selectedColor: colorScheme.primaryContainer,
       deleteIconColor: colorScheme.onSurfaceVariant,
-      labelStyle: GoogleFonts.inter(
+      labelStyle: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: colorScheme.onSurfaceVariant,
@@ -418,7 +419,7 @@ class AppTheme {
       elevation: 3,
       height: 80,
       labelTextStyle: WidgetStateProperty.all(
-        GoogleFonts.inter(
+        const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w500,
         ),
@@ -445,12 +446,12 @@ class AppTheme {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppConstants.largeBorderRadius),
       ),
-      titleTextStyle: GoogleFonts.inter(
+      titleTextStyle: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.w600,
         color: colorScheme.onSurface,
       ),
-      contentTextStyle: GoogleFonts.inter(
+      contentTextStyle: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         color: colorScheme.onSurface,
@@ -477,7 +478,7 @@ class AppTheme {
   static SnackBarThemeData _buildSnackBarTheme(ColorScheme colorScheme) {
     return SnackBarThemeData(
       backgroundColor: colorScheme.inverseSurface,
-      contentTextStyle: GoogleFonts.inter(
+      contentTextStyle: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: colorScheme.onInverseSurface,

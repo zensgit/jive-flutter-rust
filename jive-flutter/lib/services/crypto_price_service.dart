@@ -1,18 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/exchange_rate.dart';
+import '../utils/constants.dart';
 
 /// Service for fetching cryptocurrency prices
-/// Similar to maybe-main's CryptoPriceService
+/// Now uses backend API instead of direct external calls
 class CryptoPriceService {
-  // CoinGecko API (Free tier: 10-50 calls/minute, no API key needed)
-  static const String _coingeckoBaseUrl = 'https://api.coingecko.com/api/v3';
-  
-  // Alternative: CoinCap API (Free, no API key needed)
-  static const String _coincapBaseUrl = 'https://api.coincap.io/v2';
-  
-  // Alternative: Binance public API (No API key needed for public endpoints)
-  static const String _binanceBaseUrl = 'https://api.binance.com/api/v3';
+  // Backend base URL getter (align with ApiConstants dynamic getter)
+  String get _baseUrl => ApiConstants.baseUrl;
 
   // Cache duration for crypto prices (shorter due to volatility)
   static const Duration _cacheDuration = Duration(minutes: 5);
@@ -105,144 +100,119 @@ class CryptoPriceService {
     return price;
   }
 
-  /// Fetch from CoinGecko API
+  /// Fetch from CoinGecko API via backend
   Future<double?> _fetchFromCoinGecko(String cryptoCode, String fiatCode) async {
-    final geckoId = _coinGeckoIds[cryptoCode];
-    if (geckoId == null) return null;
-
     try {
-      final uri = Uri.parse('$_coingeckoBaseUrl/simple/price').replace(
+      // 后端只提供 GET /currencies/crypto-prices 批量接口
+      final uri = Uri.parse('$_baseUrl/currencies/crypto-prices').replace(
         queryParameters: {
-          'ids': geckoId,
-          'vs_currencies': fiatCode.toLowerCase(),
+          'fiat_currency': fiatCode,
+          'crypto_codes': cryptoCode,
         },
       );
-
       final response = await http
-          .get(uri)
+          .get(uri, headers: {'Content-Type': 'application/json'})
           .timeout(const Duration(seconds: 10));
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final price = data[geckoId]?[fiatCode.toLowerCase()];
-        
-        if (price != null) {
-          return (price as num).toDouble();
-        }
+        final pricesData = data['prices'] as Map<String, dynamic>?;
+        final price = pricesData?[cryptoCode];
+        if (price != null) return (price as num).toDouble();
       }
     } catch (e) {
-      print('Error fetching from CoinGecko: $e');
+      print('Error fetching crypto price from backend (GET prices): $e');
     }
-    
     return null;
   }
 
-  /// Fetch from CoinCap API (USD only)
+  /// Fetch from CoinCap API (USD only) - using backend
   Future<double?> _fetchFromCoinCap(String cryptoCode) async {
-    final coincapId = _coincapIds[cryptoCode];
-    if (coincapId == null) return null;
-
-    try {
-      final uri = Uri.parse('$_coincapBaseUrl/assets/$coincapId');
-      
-      final response = await http
-          .get(uri)
-          .timeout(const Duration(seconds: 10));
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final priceString = data['data']?['priceUsd'];
-        
-        if (priceString != null) {
-          return double.tryParse(priceString);
-        }
-      }
-    } catch (e) {
-      print('Error fetching from CoinCap: $e');
-    }
-    
-    return null;
+    // Use backend API for USD prices
+    return _fetchFromCoinGecko(cryptoCode, 'USD');
   }
 
-  /// Fetch from Binance API
+  /// Fetch from Binance API - using backend
   Future<double?> _fetchFromBinance(String cryptoCode, String fiatCode) async {
-    // Binance uses different symbols
-    final Map<String, String> fiatSymbols = {
-      'USD': 'USDT', // Binance uses USDT as USD proxy
-      'EUR': 'EUR',
-      'GBP': 'GBP',
-      'BRL': 'BRL',
-      'TRY': 'TRY',
-    };
-
-    final binanceFiat = fiatSymbols[fiatCode];
-    if (binanceFiat == null) return null;
-
-    try {
-      final symbol = '$cryptoCode$binanceFiat';
-      final uri = Uri.parse('$_binanceBaseUrl/ticker/price').replace(
-        queryParameters: {'symbol': symbol},
-      );
-      
-      final response = await http
-          .get(uri)
-          .timeout(const Duration(seconds: 10));
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final priceString = data['price'];
-        
-        if (priceString != null) {
-          return double.tryParse(priceString);
-        }
-      }
-    } catch (e) {
-      print('Error fetching from Binance: $e');
-    }
-    
-    return null;
+    // Use backend API instead
+    return _fetchFromCoinGecko(cryptoCode, fiatCode);
   }
 
-  /// Get all crypto prices in a specific fiat currency
-  Future<Map<String, double>> getAllCryptoPrices(String fiatCode) async {
+  /// Get prices for specific cryptos in a fiat currency
+  Future<Map<String, double>> getCryptoPricesFor(String fiatCode, List<String> cryptoCodes) async {
     final Map<String, double> prices = {};
-    
-    // Try to fetch all prices from CoinGecko in one request (more efficient)
+    if (cryptoCodes.isEmpty) return prices;
+
+    // Use backend API for batch prices
     try {
-      final ids = _coinGeckoIds.values.join(',');
-      final uri = Uri.parse('$_coingeckoBaseUrl/simple/price').replace(
+      final codes = cryptoCodes.map((e) => e.toUpperCase()).toSet().join(',');
+      final uri = Uri.parse('$_baseUrl/currencies/crypto-prices').replace(
         queryParameters: {
-          'ids': ids,
-          'vs_currencies': fiatCode.toLowerCase(),
+          'fiat_currency': fiatCode,
+          'crypto_codes': codes,
         },
       );
-
       final response = await http
-          .get(uri)
+          .get(uri, headers: {'Content-Type': 'application/json'})
           .timeout(const Duration(seconds: 15));
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        
-        for (final entry in _coinGeckoIds.entries) {
-          final cryptoCode = entry.key;
-          final geckoId = entry.value;
-          final price = data[geckoId]?[fiatCode.toLowerCase()];
-          
-          if (price != null) {
-            prices[cryptoCode] = (price as num).toDouble();
-            
-            // Cache individual prices
-            final cacheKey = '${cryptoCode}_$fiatCode';
-            _cache[cacheKey] = CachedCryptoPrice(
-              price: prices[cryptoCode]!,
-              timestamp: DateTime.now(),
-            );
+        final pricesData = data['prices'] as Map<String, dynamic>?;
+        if (pricesData != null) {
+          for (final entry in pricesData.entries) {
+            final price = entry.value;
+            if (price != null) {
+              prices[entry.key.toString().toUpperCase()] = (price as num).toDouble();
+              final cacheKey = '${entry.key.toString().toUpperCase()}_${fiatCode.toUpperCase()}';
+              _cache[cacheKey] = CachedCryptoPrice(
+                price: prices[entry.key.toString().toUpperCase()]!,
+                timestamp: DateTime.now(),
+              );
+            }
           }
         }
       }
     } catch (e) {
-      print('Error fetching batch prices from CoinGecko: $e');
+      print('Error fetching selected crypto prices from backend: $e');
+    }
+    
+    return prices;
+  }
+
+  /// Get all crypto prices in a specific fiat currency (top subset)
+  Future<Map<String, double>> getAllCryptoPrices(String fiatCode) async {
+    final Map<String, double> prices = {};
+    
+    // Use backend API for batch prices
+    try {
+      final codes = _coinGeckoIds.keys.take(20).join(',');
+      final uri = Uri.parse('$_baseUrl/currencies/crypto-prices').replace(
+        queryParameters: {
+          'fiat_currency': fiatCode,
+          'crypto_codes': codes,
+        },
+      );
+      final response = await http
+          .get(uri, headers: {'Content-Type': 'application/json'})
+          .timeout(const Duration(seconds: 15));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final pricesData = data['prices'] as Map<String, dynamic>?;
+        if (pricesData != null) {
+          for (final entry in pricesData.entries) {
+            final price = entry.value;
+            if (price != null) {
+              prices[entry.key] = (price as num).toDouble();
+              final cacheKey = '${entry.key}_$fiatCode';
+              _cache[cacheKey] = CachedCryptoPrice(
+                price: prices[entry.key]!,
+                timestamp: DateTime.now(),
+              );
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print('Error fetching batch prices from backend: $e');
     }
     
     return prices;

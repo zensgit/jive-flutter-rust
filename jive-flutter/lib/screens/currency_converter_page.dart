@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/currency_converter.dart';
 import '../providers/currency_provider.dart';
 import '../models/currency.dart';
+import '../widgets/source_badge.dart';
 
 /// Standalone currency converter page
 class CurrencyConverterPage extends ConsumerStatefulWidget {
@@ -209,6 +210,8 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
   }
 
   Widget _buildRateItem(Currency currency, Currency baseCurrency) {
+    final rates = ref.watch(exchangeRateObjectsProvider);
+    final rateObj = rates[currency.code];
     return FutureBuilder<double?>(
       future: ref.read(currencyProvider.notifier).convertAmount(1.0, baseCurrency.code, currency.code),
       builder: (context, snapshot) {
@@ -263,12 +266,20 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Text(
-                      '1 ${baseCurrency.code}',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey[600],
-                      ),
+                    const SizedBox(height: 2),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '1 ${baseCurrency.code}',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        if (rateObj != null) SourceBadge(source: rateObj.source),
+                      ],
                     ),
                   ],
                 )

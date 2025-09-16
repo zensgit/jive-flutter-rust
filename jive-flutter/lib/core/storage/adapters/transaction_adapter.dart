@@ -159,7 +159,8 @@ class TransactionCategoryAdapter extends TypeAdapter<TransactionCategory> {
       id: fields[0] as String?,
       name: fields[1] as String,
       parentId: fields[2] as String?,
-      icon: IconData(fields[3] as int, fontFamily: 'MaterialIcons'),
+      // 避免运行时构造 IconData，改用常量
+      icon: Icons.category,
       color: Color(fields[4] as int),
       type: TransactionType.fromString(fields[5] as String?),
       sortOrder: fields[6] as int,

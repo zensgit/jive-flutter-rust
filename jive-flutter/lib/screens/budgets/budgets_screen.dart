@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/router/app_router.dart';
 import '../../providers/budget_provider.dart';
 import '../../models/budget.dart';
+import '../../providers/currency_provider.dart';
 
 class BudgetsScreen extends ConsumerWidget {
   const BudgetsScreen({super.key});
@@ -140,7 +141,7 @@ class BudgetsScreen extends ConsumerWidget {
                                 ),
                               ),
                               Text(
-                                '¥${remaining.toStringAsFixed(2)}',
+                                ref.read(currencyProvider.notifier).formatCurrency(remaining, ref.read(baseCurrencyProvider).code),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 24,
@@ -163,8 +164,8 @@ class BudgetsScreen extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _buildBudgetInfo('预算', totalBudget, Colors.white),
-                          _buildBudgetInfo('已用', totalSpent, Colors.white70),
+                          Consumer(builder: (context, ref, _) => _buildBudgetInfo('预算', totalBudget, Colors.white, ref)),
+                          Consumer(builder: (context, ref, _) => _buildBudgetInfo('已用', totalSpent, Colors.white70, ref)),
                           _buildBudgetInfo('剩余天数', DateTime.now().day.toDouble(), Colors.white70),
                         ],
                       ),
@@ -270,7 +271,7 @@ class BudgetsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBudgetInfo(String label, double value, Color color) {
+  Widget _buildBudgetInfo(String label, double value, Color color, [WidgetRef? ref]) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -285,7 +286,9 @@ class BudgetsScreen extends ConsumerWidget {
         Text(
           label == '剩余天数' 
               ? '${value.toInt()}天'
-              : '¥${value.toStringAsFixed(0)}',
+              : ref != null 
+                  ? ref.read(currencyProvider.notifier).formatCurrency(value, ref.read(baseCurrencyProvider).code)
+                  : value.toStringAsFixed(2),
           style: TextStyle(
             color: color,
             fontSize: 16,
@@ -363,14 +366,18 @@ class BudgetsScreen extends ConsumerWidget {
                           fontSize: 12,
                         ),
                       ),
-                      Text(
-                        '¥${remaining.abs().toStringAsFixed(2)}',
-                        style: TextStyle(
-                          color: isOverBudget ? Colors.red : Colors.green,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      Consumer(builder: (context, ref, _) {
+                        final str = ref.read(currencyProvider.notifier)
+                            .formatCurrency(remaining.abs(), ref.read(baseCurrencyProvider).code);
+                        return Text(
+                          str,
+                          style: TextStyle(
+                            color: isOverBudget ? Colors.red : Colors.green,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      }),
                     ],
                   ),
                 ],
@@ -395,20 +402,28 @@ class BudgetsScreen extends ConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '已用 ¥${spent.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                    ),
-                  ),
-                  Text(
-                    '预算 ¥${amount.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                    ),
-                  ),
+                  Consumer(builder: (context, ref, _) {
+                    final used = ref.read(currencyProvider.notifier)
+                        .formatCurrency(spent, ref.read(baseCurrencyProvider).code);
+                    return Text(
+                      '已用 ' + used,
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                    );
+                  }),
+                  Consumer(builder: (context, ref, _) {
+                    final totalStr = ref.read(currencyProvider.notifier)
+                        .formatCurrency(amount, ref.read(baseCurrencyProvider).code);
+                    return Text(
+                      '预算 ' + totalStr,
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                    );
+                  }),
                 ],
               ),
             ],

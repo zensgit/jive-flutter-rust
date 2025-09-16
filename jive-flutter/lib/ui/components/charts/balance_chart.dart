@@ -2,7 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class BalanceChart extends StatelessWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../providers/currency_provider.dart';
+
+class BalanceChart extends ConsumerWidget {
   final List<BalancePoint> data;
   final String title;
   final Color? lineColor;
@@ -27,7 +30,7 @@ class BalanceChart extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final primaryColor = lineColor ?? theme.primaryColor;
     
@@ -85,7 +88,7 @@ class BalanceChart extends StatelessWidget {
                       showTitles: true,
                       interval: _calculateInterval(),
                       reservedSize: 60,
-                      getTitlesWidget: _buildLeftTitle,
+                      getTitlesWidget: (value, meta) => _buildLeftTitle(context, ref, value, meta),
                     ),
                   ),
                 ),
@@ -137,7 +140,27 @@ class BalanceChart extends StatelessWidget {
                   touchTooltipData: LineTouchTooltipData(
                     tooltipBgColor: theme.cardColor,
                     tooltipRoundedRadius: 8,
-                    getTooltipItems: _buildTooltipItems,
+                    getTooltipItems: (spots) {
+                      final base = ref.read(baseCurrencyProvider).code;
+                      final formatter = ref.read(currencyProvider.notifier);
+                      return spots.map((touchedSpot) {
+                        const textStyle = TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        );
+                        final index = touchedSpot.spotIndex;
+                        if (index < data.length) {
+                          final point = data[index];
+                          final amountStr = formatter.formatCurrency(point.amount, point.currencyCode ?? base);
+                          return LineTooltipItem(
+                            '${point.formattedDate}\n$amountStr',
+                            textStyle,
+                          );
+                        }
+                        return const LineTooltipItem('', TextStyle());
+                      }).toList();
+                    },
                   ),
                   touchCallback: (event, response) {
                     if (event is FlTapUpEvent && 
@@ -230,11 +253,25 @@ class BalanceChart extends StatelessWidget {
     return Container();
   }
 
-  Widget _buildLeftTitle(double value, TitleMeta meta) {
+  Widget _buildLeftTitle(BuildContext context, WidgetRef ref, double value, TitleMeta meta) {
+    final base = ref.watch(baseCurrencyProvider).code;
+    final formatted = ref.read(currencyProvider.notifier).formatCurrency(value, base);
+    // Compact large values to keep axis tidy
+    String label;
+    final abs = value.abs();
+    if (abs >= 100000000) {
+      label = '${(value / 100000000).toStringAsFixed(1)}亿';
+    } else if (abs >= 10000) {
+      label = '${(value / 10000).toStringAsFixed(1)}万';
+    } else if (abs >= 1000) {
+      label = '${(value / 1000).toStringAsFixed(1)}K';
+    } else {
+      label = formatted;
+    }
     return SideTitleWidget(
       axisSide: meta.axisSide,
       child: Text(
-        _formatCurrency(value),
+        label,
         style: const TextStyle(
           fontSize: 10,
           color: Colors.grey,
@@ -265,7 +302,7 @@ class BalanceChart extends StatelessWidget {
       if (index < data.length) {
         final point = data[index];
         return LineTooltipItem(
-          '${point.formattedDate}\n¥${point.amount.toStringAsFixed(2)}',
+          '${point.formattedDate}\n${point.tooltipAmount}',
           textStyle,
         );
       }
@@ -279,11 +316,13 @@ class BalancePoint {
   final DateTime date;
   final double amount;
   final String? label;
+  final String? currencyCode; // display in base unless overridden
 
   const BalancePoint({
     required this.date,
     required this.amount,
     this.label,
+    this.currencyCode,
   });
 
   String get formattedDate {
@@ -301,5 +340,11 @@ class BalancePoint {
     } else {
       return '${date.month}/${date.day}';
     }
+  }
+
+  String get tooltipAmount {
+    // We cannot access ref here; fallback to simple formatting with base symbol placement in UI
+    // The actual formatted string will be constructed by BalanceChart using provider; keep placeholder here
+    return amount.toStringAsFixed(2);
   }
 }

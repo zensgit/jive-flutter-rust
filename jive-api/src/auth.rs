@@ -3,7 +3,7 @@
 use axum::{
     async_trait,
     extract::FromRequestParts,
-    http::{request::Parts, StatusCode, HeaderMap},
+    http::{request::Parts, StatusCode},
     response::{IntoResponse, Response},
     Json,
 };
@@ -78,6 +78,7 @@ impl Claims {
 
 /// 认证错误
 #[derive(Debug)]
+#[allow(dead_code)]
 pub enum AuthError {
     WrongCredentials,
     MissingCredentials,
@@ -163,7 +164,24 @@ pub struct RegisterRequest {
     pub email: String,
     pub password: String,
     pub name: String,
+    #[serde(default = "default_country")]
+    pub country: String,
+    #[serde(default = "default_currency")]
+    pub currency: String,
+    #[serde(default = "default_language")]
+    pub language: String,
+    #[serde(default = "default_timezone")]
+    pub timezone: String,
+    #[serde(default = "default_date_format")]
+    pub date_format: String,
 }
+
+// Default values for registration
+fn default_country() -> String { "CN".to_string() }
+fn default_currency() -> String { "CNY".to_string() }
+fn default_language() -> String { "zh-CN".to_string() }
+fn default_timezone() -> String { "Asia/Shanghai".to_string() }
+fn default_date_format() -> String { "YYYY-MM-DD".to_string() }
 
 /// 注册响应
 #[derive(Debug, Serialize)]
@@ -171,4 +189,15 @@ pub struct RegisterResponse {
     pub user_id: Uuid,
     pub email: String,
     pub token: String,
+}
+
+/// 生成JWT令牌
+pub fn generate_jwt(user_id: Uuid, family_id: Option<Uuid>) -> Result<String, AuthError> {
+    let claims = Claims::new(user_id, String::new(), family_id);
+    claims.to_token()
+}
+
+/// 解码JWT令牌
+pub fn decode_jwt(token: &str) -> Result<Claims, AuthError> {
+    Claims::from_token(token)
 }

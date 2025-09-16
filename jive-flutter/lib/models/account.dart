@@ -252,9 +252,9 @@ class AccountGroup {
       name: json['name'] ?? '',
       description: json['description'],
       color: json['color'] != null ? Color(json['color']) : null,
-      icon: json['icon'] != null 
-          ? IconData(json['icon'], fontFamily: 'MaterialIcons') 
-          : null,
+      // 避免运行时创建 IconData 以支持 web 图标 tree-shaking
+      // 保留一个稳定的常量作为默认图标
+      icon: json['icon'] != null ? Icons.folder : null,
       sortOrder: json['sort_order'] ?? 0,
       accountIds: json['account_ids'] != null
           ? List<String>.from(json['account_ids'])

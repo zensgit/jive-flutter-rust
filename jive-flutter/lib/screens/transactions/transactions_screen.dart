@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/router/app_router.dart';
@@ -84,17 +85,35 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
     }
     
     if (transactionState.error != null) {
+      final errorText = transactionState.error.toString();
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            Text('加载失败: ${transactionState.error}'),
+            SelectableText('加载失败: $errorText'),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => ref.read(transactionControllerProvider.notifier).refresh(),
-              child: const Text('重试'),
+            Wrap(
+              spacing: 12,
+              children: [
+                ElevatedButton(
+                  onPressed: () => ref.read(transactionControllerProvider.notifier).refresh(),
+                  child: const Text('重试'),
+                ),
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.copy, size: 18),
+                  label: const Text('复制错误信息'),
+                  onPressed: () async {
+                    await Clipboard.setData(ClipboardData(text: errorText));
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('已复制错误信息')),
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
           ],
         ),

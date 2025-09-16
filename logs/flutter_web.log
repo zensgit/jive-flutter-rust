@@ -1,160 +1,7 @@
-Resolving dependencies...
-Downloading packages...
-  _fe_analyzer_shared 64.0.0 (88.0.0 available)
-  analyzer 6.2.0 (8.1.1 available)
-  analyzer_plugin 0.11.3 (0.13.7 available)
-  args 2.5.0 (2.7.0 available)
-  async 2.11.0 (2.13.0 available)
-  boolean_selector 2.1.1 (2.1.2 available)
-  build 2.4.1 (3.0.2 available)
-  build_config 1.1.1 (1.2.0 available)
-  build_daemon 4.0.1 (4.0.4 available)
-  build_resolvers 2.4.2 (3.0.2 available)
-  build_runner 2.4.9 (2.7.0 available)
-  build_runner_core 7.3.0 (9.3.0 available)
-  cached_network_image 3.3.1 (3.4.1 available)
-  cached_network_image_platform_interface 4.0.0 (4.1.1 available)
-  cached_network_image_web 1.2.0 (1.3.1 available)
-  characters 1.4.0 (1.4.1 available)
-  checked_yaml 2.0.3 (2.0.4 available)
-  cli_util 0.4.1 (0.4.2 available)
-  code_builder 4.10.0 (4.10.1 available)
-  convert 3.1.1 (3.1.2 available)
-  crypto 3.0.3 (3.0.6 available)
-  custom_lint_core 0.6.3 (0.8.0 available)
-  dart_style 2.3.6 (3.1.2 available)
-  dio_web_adapter 1.1.1 (2.1.1 available)
-  ffi 2.1.0 (2.1.4 available)
-  file_picker 6.2.1 (10.3.2 available)
-  fl_chart 0.66.2 (1.1.0 available)
-  flutter_cache_manager 3.3.1 (3.4.1 available)
-  flutter_launcher_icons 0.13.1 (0.14.4 available)
-  flutter_lints 3.0.2 (6.0.0 available)
-  flutter_plugin_android_lifecycle 2.0.19 (2.0.30 available)
-  flutter_svg 2.0.10+1 (2.2.0 available)
-  freezed 2.5.2 (3.2.0 available)
-  freezed_annotation 2.4.4 (3.1.0 available)
-  glob 2.1.2 (2.1.3 available)
-  go_router 12.1.3 (16.2.1 available)
-  google_fonts 6.2.0 (6.3.1 available)
-  graphs 2.3.1 (2.3.2 available)
-  http 1.2.0 (1.5.0 available)
-  http_parser 4.0.2 (4.1.2 available)
-  io 1.0.4 (1.0.5 available)
-  js 0.7.1 (0.7.2 available)
-  json_serializable 6.8.0 (6.11.0 available)
-  lints 3.0.0 (6.0.0 available)
-  logger 2.6.0 (2.6.1 available)
-  logging 1.2.0 (1.3.0 available)
-  material_color_utilities 0.11.1 (0.13.0 available)
-  meta 1.16.0 (1.17.0 available)
-  mime 1.0.6 (2.0.0 available)
-  package_config 2.1.0 (2.2.0 available)
-  path_parsing 1.0.1 (1.1.0 available)
-  path_provider 2.1.4 (2.1.5 available)
-  path_provider_android 2.2.4 (2.2.18 available)
-  path_provider_foundation 2.3.2 (2.4.2 available)
-  petitparser 6.0.2 (7.0.1 available)
-  protobuf 3.1.0 (4.2.0 available)
-  pub_semver 2.1.4 (2.2.0 available)
-  pubspec_parse 1.4.0 (1.5.0 available)
-  retrofit 4.5.0 (4.7.2 available)
-  retrofit_generator 8.2.1 (10.0.2 available)
-  riverpod_analyzer_utils 0.5.1 (0.5.10 available)
-  riverpod_generator 2.4.0 (2.6.5 available)
-  rxdart 0.27.7 (0.28.0 available)
-  shared_preferences 2.2.3 (2.5.3 available)
-  shared_preferences_android 2.2.2 (2.4.12 available)
-  shared_preferences_foundation 2.3.5 (2.5.4 available)
-  shared_preferences_linux 2.4.0 (2.4.1 available)
-  shared_preferences_web 2.2.2 (2.4.3 available)
-  shared_preferences_windows 2.4.0 (2.4.1 available)
-  shelf 1.4.1 (1.4.2 available)
-  shelf_web_socket 1.0.4 (3.0.0 available)
-  source_gen 1.5.0 (4.0.0 available)
-  source_helper 1.3.4 (1.3.7 available)
-  source_span 1.10.0 (1.10.1 available)
-  sqflite 2.3.2 (2.4.2 available)
-  sqflite_common 2.5.3 (2.5.6 available)
-  string_scanner 1.2.0 (1.4.1 available)
-  synchronized 3.1.0+1 (3.4.0 available)
-  term_glyph 1.2.1 (1.2.2 available)
-  test_api 0.7.6 (0.7.7 available)
-  timing 1.0.1 (1.0.2 available)
-  typed_data 1.3.2 (1.4.0 available)
-  vector_graphics 1.1.11+1 (1.1.19 available)
-  vector_graphics_codec 1.1.11+1 (1.1.13 available)
-  vector_graphics_compiler 1.1.11+1 (1.1.19 available)
-  very_good_analysis 5.1.0 (9.0.0 available)
-  watcher 1.1.2 (1.1.3 available)
-! web 0.5.1 (overridden) (1.1.1 available)
-  web_socket_channel 2.4.0 (3.0.3 available)
-  win32 5.2.0 (5.14.0 available)
-  xdg_directories 1.0.4 (1.1.0 available)
-  xml 6.5.0 (6.6.1 available)
-  yaml 3.1.2 (3.1.3 available)
-Got dependencies!
-93 packages have newer versions incompatible with dependency constraints.
-Try `flutter pub outdated` for more information.
-Package file_picker:linux references file_picker:linux as the default plugin, but it does not provide an inline implementation.
-Ask the maintainers of file_picker to either avoid referencing a default implementation via `platforms: linux: default_package: file_picker` or add an inline implementation to file_picker via `platforms: linux:` `pluginClass` or `dartPluginClass`.
-
-Package file_picker:macos references file_picker:macos as the default plugin, but it does not provide an inline implementation.
-Ask the maintainers of file_picker to either avoid referencing a default implementation via `platforms: macos: default_package: file_picker` or add an inline implementation to file_picker via `platforms: macos:` `pluginClass` or `dartPluginClass`.
-
-Package file_picker:windows references file_picker:windows as the default plugin, but it does not provide an inline implementation.
-Ask the maintainers of file_picker to either avoid referencing a default implementation via `platforms: windows: default_package: file_picker` or add an inline implementation to file_picker via `platforms: windows:` `pluginClass` or `dartPluginClass`.
-
-Package file_picker:linux references file_picker:linux as the default plugin, but it does not provide an inline implementation.
-Ask the maintainers of file_picker to either avoid referencing a default implementation via `platforms: linux: default_package: file_picker` or add an inline implementation to file_picker via `platforms: linux:` `pluginClass` or `dartPluginClass`.
-
-Package file_picker:macos references file_picker:macos as the default plugin, but it does not provide an inline implementation.
-Ask the maintainers of file_picker to either avoid referencing a default implementation via `platforms: macos: default_package: file_picker` or add an inline implementation to file_picker via `platforms: macos:` `pluginClass` or `dartPluginClass`.
-
-Package file_picker:windows references file_picker:windows as the default plugin, but it does not provide an inline implementation.
-Ask the maintainers of file_picker to either avoid referencing a default implementation via `platforms: windows: default_package: file_picker` or add an inline implementation to file_picker via `platforms: windows:` `pluginClass` or `dartPluginClass`.
-
-Package file_picker:linux references file_picker:linux as the default plugin, but it does not provide an inline implementation.
-Ask the maintainers of file_picker to either avoid referencing a default implementation via `platforms: linux: default_package: file_picker` or add an inline implementation to file_picker via `platforms: linux:` `pluginClass` or `dartPluginClass`.
-
-Package file_picker:macos references file_picker:macos as the default plugin, but it does not provide an inline implementation.
-Ask the maintainers of file_picker to either avoid referencing a default implementation via `platforms: macos: default_package: file_picker` or add an inline implementation to file_picker via `platforms: macos:` `pluginClass` or `dartPluginClass`.
-
-Package file_picker:windows references file_picker:windows as the default plugin, but it does not provide an inline implementation.
-Ask the maintainers of file_picker to either avoid referencing a default implementation via `platforms: windows: default_package: file_picker` or add an inline implementation to file_picker via `platforms: windows:` `pluginClass` or `dartPluginClass`.
-
-Package file_picker:linux references file_picker:linux as the default plugin, but it does not provide an inline implementation.
-Ask the maintainers of file_picker to either avoid referencing a default implementation via `platforms: linux: default_package: file_picker` or add an inline implementation to file_picker via `platforms: linux:` `pluginClass` or `dartPluginClass`.
-
-Package file_picker:macos references file_picker:macos as the default plugin, but it does not provide an inline implementation.
-Ask the maintainers of file_picker to either avoid referencing a default implementation via `platforms: macos: default_package: file_picker` or add an inline implementation to file_picker via `platforms: macos:` `pluginClass` or `dartPluginClass`.
-
-Package file_picker:windows references file_picker:windows as the default plugin, but it does not provide an inline implementation.
-Ask the maintainers of file_picker to either avoid referencing a default implementation via `platforms: windows: default_package: file_picker` or add an inline implementation to file_picker via `platforms: windows:` `pluginClass` or `dartPluginClass`.
-
 Launching lib/main_simple.dart on Chrome in debug mode...
 Waiting for connection from debug service on Chrome...          
-Package file_picker:linux references file_picker:linux as the default plugin, but it does not provide an inline implementation.
-Ask the maintainers of file_picker to either avoid referencing a default implementation via `platforms: linux: default_package: file_picker` or add an inline implementation to file_picker via `platforms: linux:` `pluginClass` or `dartPluginClass`.
-
-Package file_picker:macos references file_picker:macos as the default plugin, but it does not provide an inline implementation.
-Ask the maintainers of file_picker to either avoid referencing a default implementation via `platforms: macos: default_package: file_picker` or add an inline implementation to file_picker via `platforms: macos:` `pluginClass` or `dartPluginClass`.
-
-Package file_picker:windows references file_picker:windows as the default plugin, but it does not provide an inline implementation.
-Ask the maintainers of file_picker to either avoid referencing a default implementation via `platforms: windows: default_package: file_picker` or add an inline implementation to file_picker via `platforms: windows:` `pluginClass` or `dartPluginClass`.
-
-Warning: In index.html:39: Local variable for "serviceWorkerVersion" is deprecated. Use "{{flutter_service_worker_version}}" template token instead. See https://docs.flutter.dev/platform-integration/web/initialization for more details.
-Warning: In index.html:48: "FlutterLoader.loadEntrypoint" is deprecated. Use "FlutterLoader.load" instead. See https://docs.flutter.dev/platform-integration/web/initialization for more details.
-Error: Couldn't resolve the package 'provider' in 'package:provider/provider.dart'.
-lib/screens/management/category_template_library.dart:2:8: Error: Not found: 'package:provider/provider.dart'
-import 'package:provider/provider.dart';
-       ^
-lib/screens/admin/template_admin_page.dart:2:8: Error: Not found: 'package:provider/provider.dart'
-import 'package:provider/provider.dart';
-       ^
-lib/screens/management/category_management_enhanced.dart:2:8: Error: Not found: 'package:provider/provider.dart'
-import 'package:provider/provider.dart';
-       ^
+Warning: In index.html:40: Local variable for "serviceWorkerVersion" is deprecated. Use "{{flutter_service_worker_version}}" template token instead. See https://docs.flutter.dev/platform-integration/web/initialization for more details.
+Warning: In index.html:49: "FlutterLoader.loadEntrypoint" is deprecated. Use "FlutterLoader.load" instead. See https://docs.flutter.dev/platform-integration/web/initialization for more details.
 lib/screens/management/category_template_library.dart:6:8: Error: Error when reading 'lib/utils/constants.dart': No such file or directory
 import '../../utils/constants.dart';
        ^
@@ -172,10 +19,6 @@ import '../../widgets/common/error_widget.dart';
        ^
 lib/screens/admin/template_admin_page.dart:8:8: Error: Error when reading 'lib/widgets/common/error_widget.dart': No such file or directory
 import '../../widgets/common/error_widget.dart';
-       ^
-Error: Couldn't resolve the package 'connectivity_plus' in 'package:connectivity_plus/connectivity_plus.dart'.
-lib/services/network/network_category_service.dart:4:8: Error: Not found: 'package:connectivity_plus/connectivity_plus.dart'
-import 'package:connectivity_plus/connectivity_plus.dart';
        ^
 lib/screens/management/category_template_library.dart:128:3: Error: Type 'AccountClassification' not found.
   AccountClassification? _getCurrentClassification() {
@@ -198,12 +41,6 @@ lib/screens/admin/template_admin_page.dart:688:3: Error: Type 'AccountClassifica
 lib/screens/admin/template_admin_page.dart:978:33: Error: Type 'AccountClassification' not found.
   String _getClassificationName(AccountClassification classification) {
                                 ^^^^^^^^^^^^^^^^^^^^^
-lib/services/api/category_service_integrated.dart:151:5: Error: Type 'CategoryClassification' not found.
-    CategoryClassification classification, {
-    ^^^^^^^^^^^^^^^^^^^^^^
-lib/services/api/category_service_integrated.dart:283:5: Error: Type 'AccountClassification' not found.
-    AccountClassification? classification,
-    ^^^^^^^^^^^^^^^^^^^^^
 lib/screens/management/category_template_library.dart:5:1: Error: 'SystemCategoryTemplate' is imported from both 'package:jive_money/models/category_template.dart' and 'package:jive_money/services/api/category_service.dart'.
 import '../../models/category_template.dart';
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -219,11 +56,6 @@ lib/screens/management/category_template_library.dart:46:19: Error: Member not f
 lib/screens/management/category_template_library.dart:44:19: Error: Member not found: 'healthEducation'.
     CategoryGroup.healthEducation,
                   ^^^^^^^^^^^^^^^
-lib/screens/management/category_template_library.dart:55:32: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-    _categoryService = context.read<CategoryService>();
-                               ^^^^
 lib/screens/management/category_template_library.dart:73:48: Error: The method 'getAllTemplates' isn't defined for the type 'CategoryService'.
  - 'CategoryService' is from 'package:jive_money/services/api/category_service.dart' ('lib/services/api/category_service.dart').
 Try correcting the name to the name of an existing method, or defining a method named 'getAllTemplates'.
@@ -355,16 +187,6 @@ lib/screens/management/category_template_library.dart:914:12: Error: Not a const
 lib/screens/admin/template_admin_page.dart:35:3: Error: 'AccountClassification' isn't a type.
   AccountClassification? _selectedClassification;
   ^^^^^^^^^^^^^^^^^^^^^
-lib/screens/admin/template_admin_page.dart:46:32: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-    _categoryService = context.read<CategoryService>();
-                               ^^^^
-lib/screens/admin/template_admin_page.dart:47:28: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-    _authService = context.read<AuthService>();
-                           ^^^^
 lib/screens/admin/template_admin_page.dart:60:31: Error: The getter 'isSuperAdmin' isn't defined for the type 'UserData'.
  - 'UserData' is from 'package:jive_money/services/storage_service.dart' ('lib/services/storage_service.dart').
 Try correcting the name to the name of an existing getter, or defining a getter or field named 'isSuperAdmin'.
@@ -500,319 +322,121 @@ lib/screens/admin/template_admin_page.dart:982:12: Error: Not a constant express
 lib/screens/admin/template_admin_page.dart:984:12: Error: Not a constant expression.
       case AccountClassification.transfer:
            ^^^^^^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:39:20: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:37:20: Error: 'CategoryProvider' isn't a type.
       context.read<CategoryProvider>().loadCategories();
                    ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:39:15: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-      context.read<CategoryProvider>().loadCategories();
-              ^^^^
-lib/screens/management/category_management_enhanced.dart:143:21: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:141:21: Error: 'CategoryProvider' isn't a type.
     return Consumer<CategoryProvider>(
                     ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:143:12: Error: The method 'Consumer' isn't defined for the type '_CategoryManagementEnhancedPageState'.
- - '_CategoryManagementEnhancedPageState' is from 'package:jive_money/screens/management/category_management_enhanced.dart' ('lib/screens/management/category_management_enhanced.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'Consumer'.
-    return Consumer<CategoryProvider>(
-           ^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:198:34: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:143:32: Error: The getter 'categoryStats' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'categoryStats'.
+        final stats = provider.categoryStats;
+                               ^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:196:34: Error: 'CategoryProvider' isn't a type.
                     context.read<CategoryProvider>().clearSearch();
                                  ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:208:24: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:206:24: Error: 'CategoryProvider' isn't a type.
           context.read<CategoryProvider>().searchCategories(value);
                        ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:198:29: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-                    context.read<CategoryProvider>().clearSearch();
-                            ^^^^
-lib/screens/management/category_management_enhanced.dart:208:19: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-          context.read<CategoryProvider>().searchCategories(value);
-                  ^^^^
-lib/screens/management/category_management_enhanced.dart:240:21: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:238:21: Error: 'CategoryProvider' isn't a type.
     return Consumer<CategoryProvider>(
                     ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:240:12: Error: The method 'Consumer' isn't defined for the type '_CategoryManagementEnhancedPageState'.
- - '_CategoryManagementEnhancedPageState' is from 'package:jive_money/screens/management/category_management_enhanced.dart' ('lib/screens/management/category_management_enhanced.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'Consumer'.
-    return Consumer<CategoryProvider>(
-           ^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:400:44: Error: The argument type 'String?' can't be assigned to the parameter type 'String'.
+lib/screens/management/category_management_enhanced.dart:240:37: Error: The method 'getCategoriesByClassification' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing method, or defining a method named 'getCategoriesByClassification'.
+        final categories = provider.getCategoriesByClassification(classification);
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:253:42: Error: The method 'hasChildren' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing method, or defining a method named 'hasChildren'.
+            final hasChildren = provider.hasChildren(category.id);
+                                         ^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:398:44: Error: The argument type 'String?' can't be assigned to the parameter type 'String'.
           _selectedCategories.add(category.id);
                                            ^
-lib/screens/management/category_management_enhanced.dart:416:35: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:414:35: Error: 'CategoryProvider' isn't a type.
     final provider = context.read<CategoryProvider>();
                                   ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:416:30: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-    final provider = context.read<CategoryProvider>();
-                             ^^^^
-lib/screens/management/category_management_enhanced.dart:435:18: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:433:18: Error: 'CategoryProvider' isn't a type.
     context.read<CategoryProvider>().reorderCategory(
                  ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:435:13: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-    context.read<CategoryProvider>().reorderCategory(
-            ^^^^
-lib/screens/management/category_management_enhanced.dart:451:18: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:449:18: Error: 'CategoryProvider' isn't a type.
     context.read<CategoryProvider>().updateCategoryParent(
                  ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:462:26: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:460:26: Error: 'CategoryProvider' isn't a type.
             context.read<CategoryProvider>().undoLastAction();
                          ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:451:13: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-    context.read<CategoryProvider>().updateCategoryParent(
-            ^^^^
-lib/screens/management/category_management_enhanced.dart:462:21: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-            context.read<CategoryProvider>().undoLastAction();
-                    ^^^^
-lib/screens/management/category_management_enhanced.dart:474:35: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:472:35: Error: 'CategoryProvider' isn't a type.
     final provider = context.read<CategoryProvider>();
                                   ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:474:30: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-    final provider = context.read<CategoryProvider>();
-                             ^^^^
-lib/screens/management/category_management_enhanced.dart:557:35: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:555:35: Error: 'CategoryProvider' isn't a type.
     final provider = context.read<CategoryProvider>();
                                   ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:557:30: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-    final provider = context.read<CategoryProvider>();
-                             ^^^^
-lib/screens/management/category_management_enhanced.dart:558:38: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
+lib/screens/management/category_management_enhanced.dart:556:38: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
  - 'Category' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
 Try correcting the name to the name of an existing getter, or defining a getter or field named 'transactionCount'.
     final hasTransactions = category.transactionCount > 0;
                                      ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:646:45: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:644:45: Error: 'CategoryProvider' isn't a type.
               final provider = context.read<CategoryProvider>();
                                             ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:646:40: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-              final provider = context.read<CategoryProvider>();
-                                       ^^^^
-lib/screens/management/category_management_enhanced.dart:842:35: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
+lib/screens/management/category_management_enhanced.dart:737:47: Error: The getter 'id' isn't defined for the type 'DragTargetDetails<Category>'.
+ - 'DragTargetDetails' is from 'package:flutter/src/widgets/drag_target.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/drag_target.dart').
+ - 'Category' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'id'.
+      onWillAcceptWithDetails: (data) => data.id != category.id,
+                                              ^^
+lib/screens/management/category_management_enhanced.dart:738:28: Error: The argument type 'dynamic Function(Category)' can't be assigned to the parameter type 'void Function(DragTargetDetails<Category>)?'.
+ - 'Category' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
+ - 'DragTargetDetails' is from 'package:flutter/src/widgets/drag_target.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/drag_target.dart').
+      onAcceptWithDetails: onAcceptDrop,
+                           ^
+lib/screens/management/category_management_enhanced.dart:836:35: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
  - 'Category' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
 Try correcting the name to the name of an existing getter, or defining a getter or field named 'transactionCount'.
                       '${category.transactionCount}',
                                   ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:1019:26: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:1011:26: Error: 'CategoryProvider' isn't a type.
             context.read<CategoryProvider>().convertCategoryToTag(
                          ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:1033:34: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:1025:34: Error: 'CategoryProvider' isn't a type.
                     context.read<CategoryProvider>().undoLastAction();
                                  ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:946:53: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
+lib/screens/management/category_management_enhanced.dart:938:53: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
  - 'Category' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
 Try correcting the name to the name of an existing getter, or defining a getter or field named 'transactionCount'.
             subtitle: Text('使用次数: ${widget.category.transactionCount}'),
                                                     ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:977:55: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
+lib/screens/management/category_management_enhanced.dart:969:55: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
  - 'Category' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
 Try correcting the name to the name of an existing getter, or defining a getter or field named 'transactionCount'.
           if (_applyToTransactions && widget.category.transactionCount > 0)
                                                       ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:993:46: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
+lib/screens/management/category_management_enhanced.dart:985:46: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
  - 'Category' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
 Try correcting the name to the name of an existing getter, or defining a getter or field named 'transactionCount'.
                       '将更新 ${widget.category.transactionCount} 笔交易',
                                              ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:1019:21: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-            context.read<CategoryProvider>().convertCategoryToTag(
-                    ^^^^
-lib/screens/management/category_management_enhanced.dart:1033:29: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-                    context.read<CategoryProvider>().undoLastAction();
-                            ^^^^
-lib/screens/management/category_management_enhanced.dart:1097:26: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:1089:26: Error: 'CategoryProvider' isn't a type.
             context.read<CategoryProvider>().duplicateCategory(
                          ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:1097:21: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-            context.read<CategoryProvider>().duplicateCategory(
-                    ^^^^
-lib/screens/management/category_management_enhanced.dart:1160:31: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:1152:31: Error: 'CategoryProvider' isn't a type.
               child: Consumer<CategoryProvider>(
                               ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:1224:43: Error: 'CategoryProvider' isn't a type.
+lib/screens/management/category_management_enhanced.dart:1216:43: Error: 'CategoryProvider' isn't a type.
             final provider = context.read<CategoryProvider>();
                                           ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:1142:64: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
+lib/screens/management/category_management_enhanced.dart:1134:64: Error: The getter 'transactionCount' isn't defined for the type 'Category'.
  - 'Category' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
 Try correcting the name to the name of an existing getter, or defining a getter or field named 'transactionCount'.
           Text('分类"${widget.category.name}"有 ${widget.category.transactionCount} 笔交易'),
                                                                ^^^^^^^^^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:1160:22: Error: The method 'Consumer' isn't defined for the type '_CategoryDeletionDialogState'.
- - '_CategoryDeletionDialogState' is from 'package:jive_money/screens/management/category_management_enhanced.dart' ('lib/screens/management/category_management_enhanced.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'Consumer'.
-              child: Consumer<CategoryProvider>(
-                     ^^^^^^^^
-lib/screens/management/category_management_enhanced.dart:1224:38: Error: The method 'read' isn't defined for the type 'BuildContext'.
- - 'BuildContext' is from 'package:flutter/src/widgets/framework.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'read'.
-            final provider = context.read<CategoryProvider>();
-                                     ^^^^
-lib/providers/category_provider.dart:112:57: Error: The argument type 'Category/*1*/' can't be assigned to the parameter type 'Category/*2*/'.
- - 'Category/*1*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
- - 'Category/*2*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
-      final newCategory = await _service.createCategory(category);
-                                                        ^
-lib/providers/category_provider.dart:113:26: Error: A value of type 'Category/*1*/' can't be assigned to a variable of type 'Category/*2*/'.
- - 'Category/*1*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
- - 'Category/*2*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
-      state = [...state, newCategory];
-                         ^
-lib/providers/category_provider.dart:122:37: Error: The argument type 'Category/*1*/' can't be assigned to the parameter type 'Category/*2*/'.
- - 'Category/*1*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
- - 'Category/*2*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
-      await _service.updateCategory(category);
-                                    ^
-lib/providers/category_provider.dart:151:26: Error: A value of type 'Category/*1*/' can't be assigned to a variable of type 'Category/*2*/'.
- - 'Category/*1*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
- - 'Category/*2*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
-      state = [...state, category];
-                         ^
-lib/services/api/category_service_integrated.dart:75:25: Error: A value of type 'List<Category/*1*/>' can't be assigned to a variable of type 'List<Category/*2*/>'.
- - 'List' is from 'dart:core'.
- - 'Category/*1*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
- - 'Category/*2*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
-      _userCategories = await _loadUserCategoriesFromCache();
-                        ^
-lib/services/api/category_service_integrated.dart:151:5: Error: 'CategoryClassification' isn't a type.
-    CategoryClassification classification, {
-    ^^^^^^^^^^^^^^^^^^^^^^
-lib/services/api/category_service_integrated.dart:226:32: Error: Too few positional arguments: 1 required, 0 given.
-      final category = Category(
-                               ^
-/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart:42:9: Context: Found this candidate, but the arguments don't match.
-  const Category(this.sections);
-        ^^^^^^^^
-lib/services/api/category_service_integrated.dart:257:25: Error: The argument type 'Category/*1*/' can't be assigned to the parameter type 'Category/*2*/'.
- - 'Category/*1*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
- - 'Category/*2*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
-    _userCategories.add(category);
-                        ^
-lib/services/api/category_service_integrated.dart:265:70: Error: The getter 'id' isn't defined for the type 'Category'.
- - 'Category' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'id'.
-    final index = _userCategories.indexWhere((c) => c.id == category.id);
-                                                                     ^^
-lib/services/api/category_service_integrated.dart:267:32: Error: A value of type 'Category/*1*/' can't be assigned to a variable of type 'Category/*2*/'.
- - 'Category/*1*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
- - 'Category/*2*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
-      _userCategories[index] = category;
-                               ^
-lib/services/api/category_service_integrated.dart:283:5: Error: 'AccountClassification' isn't a type.
-    AccountClassification? classification,
-    ^^^^^^^^^^^^^^^^^^^^^
-lib/services/api/category_service_integrated.dart:289:8: Error: A value of type 'List<Category/*1*/>' can't be returned from a function with return type 'List<Category/*2*/>'.
- - 'List' is from 'dart:core'.
- - 'Category/*1*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
- - 'Category/*2*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
-    }).toList();
-       ^
-lib/services/api/category_service_integrated.dart:349:25: Error: The getter 'AccountClassification' isn't defined for the type 'CategoryServiceIntegrated'.
- - 'CategoryServiceIntegrated' is from 'package:jive_money/services/api/category_service_integrated.dart' ('lib/services/api/category_service_integrated.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
-        classification: AccountClassification.income,
-                        ^^^^^^^^^^^^^^^^^^^^^
-lib/services/api/category_service_integrated.dart:360:25: Error: The getter 'AccountClassification' isn't defined for the type 'CategoryServiceIntegrated'.
- - 'CategoryServiceIntegrated' is from 'package:jive_money/services/api/category_service_integrated.dart' ('lib/services/api/category_service_integrated.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
-        classification: AccountClassification.expense,
-                        ^^^^^^^^^^^^^^^^^^^^^
-lib/services/api/category_service_integrated.dart:371:25: Error: The getter 'AccountClassification' isn't defined for the type 'CategoryServiceIntegrated'.
- - 'CategoryServiceIntegrated' is from 'package:jive_money/services/api/category_service_integrated.dart' ('lib/services/api/category_service_integrated.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
-        classification: AccountClassification.expense,
-                        ^^^^^^^^^^^^^^^^^^^^^
-lib/services/api/category_service_integrated.dart:382:25: Error: The getter 'AccountClassification' isn't defined for the type 'CategoryServiceIntegrated'.
- - 'CategoryServiceIntegrated' is from 'package:jive_money/services/api/category_service_integrated.dart' ('lib/services/api/category_service_integrated.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
-        classification: AccountClassification.expense,
-                        ^^^^^^^^^^^^^^^^^^^^^
-lib/services/api/category_service_integrated.dart:393:25: Error: The getter 'AccountClassification' isn't defined for the type 'CategoryServiceIntegrated'.
- - 'CategoryServiceIntegrated' is from 'package:jive_money/services/api/category_service_integrated.dart' ('lib/services/api/category_service_integrated.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'AccountClassification'.
-        classification: AccountClassification.expense,
-                        ^^^^^^^^^^^^^^^^^^^^^
-lib/services/api/category_service_integrated.dart:420:49: Error: A value of type 'List<Category/*1*/>' can't be returned from a function with return type 'List<Category/*2*/>'.
- - 'List' is from 'dart:core'.
- - 'Category/*1*/' is from 'package:jive_money/models/category.dart' ('lib/models/category.dart').
- - 'Category/*2*/' is from 'package:flutter/src/foundation/annotations.dart' ('/opt/homebrew/share/flutter/packages/flutter/lib/src/foundation/annotations.dart').
-  List<Category> get userCategories => _service.userCategories;
-                                                ^
-lib/services/network/network_category_service.dart:127:32: Error: Member not found: 'SystemCategoryTemplate.fromNetworkJson'.
-        SystemCategoryTemplate.fromNetworkJson(json)
-                               ^^^^^^^^^^^^^^^
-lib/services/network/network_category_service.dart:107:34: Error: The method 'Connectivity' isn't defined for the type 'NetworkCategoryService'.
- - 'NetworkCategoryService' is from 'package:jive_money/services/network/network_category_service.dart' ('lib/services/network/network_category_service.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'Connectivity'.
-      final connectivity = await Connectivity().checkConnectivity();
-                                 ^^^^^^^^^^^^
-lib/services/network/network_category_service.dart:108:27: Error: The getter 'ConnectivityResult' isn't defined for the type 'NetworkCategoryService'.
- - 'NetworkCategoryService' is from 'package:jive_money/services/network/network_category_service.dart' ('lib/services/network/network_category_service.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'ConnectivityResult'.
-      if (connectivity == ConnectivityResult.none) {
-                          ^^^^^^^^^^^^^^^^^^
-lib/services/network/network_category_service.dart:131:35: Error: The argument type 'List<dynamic>' can't be assigned to the parameter type 'List<SystemCategoryTemplate>'.
- - 'List' is from 'dart:core'.
- - 'SystemCategoryTemplate' is from 'package:jive_money/models/category_template.dart' ('lib/models/category_template.dart').
-      await _saveTemplatesToCache(templates);
-                                  ^
-lib/services/network/network_category_service.dart:135:14: Error: A value of type 'List<dynamic>' can't be returned from an async function with return type 'Future<List<SystemCategoryTemplate>>'.
- - 'List' is from 'dart:core'.
- - 'Future' is from 'dart:async'.
- - 'SystemCategoryTemplate' is from 'package:jive_money/models/category_template.dart' ('lib/models/category_template.dart').
-      return templates;
-             ^
-lib/services/network/network_category_service.dart:226:34: Error: The method 'Connectivity' isn't defined for the type 'NetworkCategoryService'.
- - 'NetworkCategoryService' is from 'package:jive_money/services/network/network_category_service.dart' ('lib/services/network/network_category_service.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'Connectivity'.
-      final connectivity = await Connectivity().checkConnectivity();
-                                 ^^^^^^^^^^^^
-lib/services/network/network_category_service.dart:227:27: Error: The getter 'ConnectivityResult' isn't defined for the type 'NetworkCategoryService'.
- - 'NetworkCategoryService' is from 'package:jive_money/services/network/network_category_service.dart' ('lib/services/network/network_category_service.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'ConnectivityResult'.
-      if (connectivity != ConnectivityResult.wifi) {
-                          ^^^^^^^^^^^^^^^^^^
-lib/services/network/network_category_service.dart:253:12: Error: Not a constant expression.
-      case ConnectivityResult.wifi:
-           ^^^^^^^^^^^^^^^^^^
-lib/services/network/network_category_service.dart:257:12: Error: Not a constant expression.
-      case ConnectivityResult.mobile:
-           ^^^^^^^^^^^^^^^^^^
-lib/services/network/network_category_service.dart:261:12: Error: Not a constant expression.
-      case ConnectivityResult.none:
-           ^^^^^^^^^^^^^^^^^^
-lib/services/network/network_category_service.dart:250:32: Error: The method 'Connectivity' isn't defined for the type 'NetworkCategoryService'.
- - 'NetworkCategoryService' is from 'package:jive_money/services/network/network_category_service.dart' ('lib/services/network/network_category_service.dart').
-Try correcting the name to the name of an existing method, or defining a method named 'Connectivity'.
-    final connectivity = await Connectivity().checkConnectivity();
-                               ^^^^^^^^^^^^
-lib/services/network/network_category_service.dart:377:51: Error: Member not found: 'SystemCategoryTemplate.fromNetworkJson'.
-          final template = SystemCategoryTemplate.fromNetworkJson(update['template']);
-                                                  ^^^^^^^^^^^^^^^
-lib/services/network/network_category_service.dart:410:35: Error: Member not found: 'SystemCategoryTemplate.getDefaultTemplates'.
-    return SystemCategoryTemplate.getDefaultTemplates();
-                                  ^^^^^^^^^^^^^^^^^^^
+lib/screens/management/category_management_enhanced.dart:1154:47: Error: The method 'getCategoriesByClassification' isn't defined for the type 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing method, or defining a method named 'getCategoriesByClassification'.
+                  final categories = provider.getCategoriesByClassification(
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Unhandled exception:
 Unsupported operation: Unsupported invalid type InvalidType(<invalid>) (InvalidType). Encountered while compiling file:///Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/%E5%BA%94%E7%94%A8/GitHub/jive-flutter-rust/jive-flutter/lib/screens/admin/template_admin_page.dart, which contains the type: InterfaceType(List<<invalid>>).
 #0      LibraryCompiler._typeCompilationError (package:dev_compiler/src/kernel/compiler_new.dart:4451)
@@ -898,5 +522,5 @@ Unsupported operation: Unsupported invalid type InvalidType(<invalid>) (InvalidT
 #78     listenAndCompile.<anonymous closure> (package:frontend_server/frontend_server.dart:1423)
 <asynchronous suspension>
 The Dart compiler exited unexpectedly.
-Waiting for connection from debug service on Chrome...             26.2s
+Waiting for connection from debug service on Chrome...              7.1s
 Failed to compile application.

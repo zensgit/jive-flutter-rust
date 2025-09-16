@@ -1,0 +1,59 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        INSERT INTO ledgers (id, family_id, name, currency, is_default, created_at, updated_at)\n        VALUES ($1, $2, '默认家庭', 'CNY', true, NOW(), NOW())\n        RETURNING id, family_id, name, currency, \n                  is_default,\n                  created_at, updated_at\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "family_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "currency",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "is_default",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 5,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 6,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "988f58d6d9f8e90811a497c1543dabd4a1d2596d244577d034add73e09d88622"
+}

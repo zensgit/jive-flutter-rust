@@ -187,22 +187,76 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 12),
-                    accounts.when(
-                      data: (accountList) => DropdownButtonFormField<String>(
-                        initialValue: _selectedAccountId,
+                    DropdownButtonFormField<String>(
+                      initialValue: _selectedAccountId,
+                      decoration: InputDecoration(
+                        hintText: '选择账户',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      items: accounts.map((account) {
+                        return DropdownMenuItem(
+                          value: account.id,
+                          child: Row(
+                            children: [
+                              Icon(
+                                _getAccountIcon(account.type.value),
+                                size: 20,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(account.name ?? '未命名'),
+                              const Spacer(),
+                              Text(
+                                '¥${(account.balance ?? 0).toStringAsFixed(2)}',
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedAccountId = value;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null) {
+                          return '请选择账户';
+                        }
+                        return null;
+                      },
+                    ),
+                    
+                    // 转账目标账户
+                    if (_type == 'transfer') ...[
+                      const SizedBox(height: 16),
+                      const Text(
+                        '转入账户',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        initialValue: _selectedToAccountId,
                         decoration: InputDecoration(
                           hintText: '选择账户',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        items: accountList.map((account) {
+                        items: accounts
+                            .where((account) => account.id != _selectedAccountId)
+                            .map((account) {
                           return DropdownMenuItem(
                             value: account.id,
                             child: Row(
                               children: [
                                 Icon(
-                                  _getAccountIcon(account.type),
+                                  _getAccountIcon(account.type.value),
                                   size: 20,
                                   color: Theme.of(context).primaryColor,
                                 ),
@@ -222,77 +276,15 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                         }).toList(),
                         onChanged: (value) {
                           setState(() {
-                            _selectedAccountId = value;
+                            _selectedToAccountId = value;
                           });
                         },
                         validator: (value) {
                           if (value == null) {
-                            return '请选择账户';
+                            return '请选择转入账户';
                           }
                           return null;
                         },
-                      ),
-                      loading: () => const CircularProgressIndicator(),
-                      error: (_, __) => const Text('加载账户失败'),
-                    ),
-                    
-                    // 转账目标账户
-                    if (_type == 'transfer') ...[
-                      const SizedBox(height: 16),
-                      const Text(
-                        '转入账户',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 12),
-                      accounts.when(
-                        data: (accountList) => DropdownButtonFormField<String>(
-                          initialValue: _selectedToAccountId,
-                          decoration: InputDecoration(
-                            hintText: '选择账户',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          items: accountList
-                              .where((account) => account.id != _selectedAccountId)
-                              .map((account) {
-                            return DropdownMenuItem(
-                              value: account.id,
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    _getAccountIcon(account.type),
-                                    size: 20,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(account.name ?? '未命名'),
-                                  const Spacer(),
-                                  Text(
-                                    '¥${(account.balance ?? 0).toStringAsFixed(2)}',
-                                    style: TextStyle(
-                                      color: Colors.grey[600],
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedToAccountId = value;
-                            });
-                          },
-                          validator: (value) {
-                            if (value == null) {
-                              return '请选择转入账户';
-                            }
-                            return null;
-                          },
-                        ),
-                        loading: () => const CircularProgressIndicator(),
-                        error: (_, __) => const Text('加载账户失败'),
                       ),
                     ],
                   ],

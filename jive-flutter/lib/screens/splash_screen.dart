@@ -19,15 +19,40 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _checkAuthAndNavigate() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
     
     if (!mounted) return;
     
-    final authState = ref.read(authControllerProvider);
-    
-    if (authState.isAuthenticated) {
-      context.go(AppRoutes.dashboard);
-    } else {
+    try {
+      // 等待认证状态初始化完成
+      int maxWaitTime = 5000; // 最多等待5秒
+      int waitTime = 0;
+      const checkInterval = 100;
+      
+      while (waitTime < maxWaitTime) {
+        final authState = ref.read(authControllerProvider);
+        
+        // 如果状态不是初始状态，说明已经初始化完成
+        if (authState.status != AuthStatus.initial) {
+          debugPrint('Auth state in splash: ${authState.status}, user: ${authState.user?.name}');
+          
+          if (authState.isAuthenticated) {
+            context.go(AppRoutes.dashboard);
+          } else {
+            context.go(AppRoutes.login);
+          }
+          return;
+        }
+        
+        await Future.delayed(const Duration(milliseconds: checkInterval));
+        waitTime += checkInterval;
+      }
+      
+      // 超时后默认跳转到登录页
+      debugPrint('Auth state check timeout, redirecting to login');
+      context.go(AppRoutes.login);
+    } catch (e) {
+      debugPrint('Auth check error: $e');
       context.go(AppRoutes.login);
     }
   }

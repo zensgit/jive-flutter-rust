@@ -12,9 +12,13 @@ class AuthService {
 
   final StorageService _storage = StorageService();
   UserData? _currentUser;
+  String? _token;
 
   /// 获取当前用户
   UserData? get currentUser => _currentUser;
+  
+  /// 获取认证令牌
+  String? get token => _token;
 
   /// 是否已登录
   bool get isLoggedIn => _currentUser != null;
@@ -27,10 +31,26 @@ class AuthService {
       
       if (userData != null && authToken != null) {
         _currentUser = userData;
+        _token = authToken;
         debugPrint('用户认证状态已恢复: ${userData.username}');
       }
     } catch (e) {
       debugPrint('初始化认证服务失败: $e');
+    }
+  }
+  
+  /// 保存认证令牌
+  Future<void> saveToken(String token) async {
+    _token = token;
+    await _storage.saveAuthToken(token);
+  }
+  
+  /// 保存用户ID
+  Future<void> saveUserId(String userId) async {
+    // 如果有当前用户，更新ID
+    if (_currentUser != null) {
+      _currentUser = _currentUser!.copyWith(id: userId);
+      await _storage.saveUserData(_currentUser!);
     }
   }
 

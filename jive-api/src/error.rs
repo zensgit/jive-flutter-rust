@@ -55,3 +55,17 @@ impl IntoResponse for ApiError {
 
 /// API结果类型别名
 pub type ApiResult<T> = Result<T, ApiError>;
+
+use crate::auth::AuthError;
+
+/// 实现AuthError到ApiError的转换
+impl From<AuthError> for ApiError {
+    fn from(err: AuthError) -> Self {
+        match err {
+            AuthError::WrongCredentials => ApiError::Unauthorized,
+            AuthError::MissingCredentials => ApiError::BadRequest("Missing credentials".to_string()),
+            AuthError::TokenCreation => ApiError::InternalServerError,
+            AuthError::InvalidToken => ApiError::Unauthorized,
+        }
+    }
+}

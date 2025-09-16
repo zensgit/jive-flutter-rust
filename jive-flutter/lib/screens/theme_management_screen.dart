@@ -79,6 +79,46 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
                   ],
                 ),
               ),
+              const PopupMenuItem(
+                value: 'eye_comfort',
+                child: Row(
+                  children: [
+                    Icon(Icons.visibility, size: 20),
+                    SizedBox(width: 8),
+                    Text('一键护眼主题'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'apply_eye_bluegrey',
+                child: Row(
+                  children: [
+                    Icon(Icons.color_lens, size: 20),
+                    SizedBox(width: 8),
+                    Text('应用护眼·蓝灰'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'apply_eye_green',
+                child: Row(
+                  children: [
+                    Icon(Icons.color_lens, size: 20),
+                    SizedBox(width: 8),
+                    Text('应用护眼·青绿'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'apply_eye_dark',
+                child: Row(
+                  children: [
+                    Icon(Icons.dark_mode, size: 20),
+                    SizedBox(width: 8),
+                    Text('应用护眼·夜间'),
+                  ],
+                ),
+              ),
             ],
           ),
         ],
@@ -362,6 +402,38 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
         break;
       case 'reset':
         await _resetToDefault();
+        break;
+      case 'eye_comfort':
+        await ThemeService().applyEyeComfortTheme();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('已应用护眼主题')),
+          );
+        }
+        break;
+      case 'apply_eye_bluegrey':
+        await ThemeService().applyPresetTheme('preset_eye_bluegrey');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('已应用护眼·蓝灰')), 
+          );
+        }
+        break;
+      case 'apply_eye_green':
+        await ThemeService().applyPresetTheme('preset_eye_green');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('已应用护眼·青绿')),
+          );
+        }
+        break;
+      case 'apply_eye_dark':
+        await ThemeService().applyPresetTheme('preset_eye_dark');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('已应用护眼·夜间')),
+          );
+        }
         break;
     }
   }

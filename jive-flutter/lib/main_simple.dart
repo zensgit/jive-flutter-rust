@@ -18,7 +18,8 @@ import 'models/theme_models.dart' as models;
 import 'widgets/wechat_qr_binding_dialog.dart';
 import 'screens/ai_assistant_page.dart';
 import 'screens/add_transaction_page.dart';
-import 'screens/management/currency_management_page.dart';
+import 'screens/management/currency_management_page_v2.dart';
+import 'screens/management/currency_selection_page.dart';
 import 'screens/management/category_management_page.dart';
 import 'screens/management/category_template_library.dart';
 import 'screens/admin/template_admin_page.dart';
@@ -26,7 +27,6 @@ import 'screens/management/tag_management_page.dart';
 import 'screens/management/payee_management_page.dart';
 import 'screens/management/travel_event_management_page.dart';
 import 'screens/management/rules_management_page.dart';
-import 'screens/currency_converter_page.dart';
 import 'widgets/invite_member_dialog.dart';
 
 void main() async {
@@ -97,8 +97,7 @@ class _JiveAppState extends State<JiveApp> {
         '/admin-login': (context) => const AdminLoginScreen(),
         '/home': (context) => const HomePage(),
         '/theme': (context) => const ThemeManagementScreen(),
-        '/currency-converter': (context) => const CurrencyConverterPage(),
-        '/settings/currency': (context) => const CurrencyManagementPage(),
+        '/settings/currency': (context) => const CurrencyManagementPageV2(),
         '/settings/categories': (context) => const CategoryManagementPage(),
         '/category/templates': (context) => const CategoryTemplateLibraryPage(),
         '/admin/templates': (context) => const TemplateAdminPage(),
@@ -434,9 +433,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SelectionArea(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
         child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -565,7 +563,6 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
           ),
         ],
-      ),
       ),
     );
   }
@@ -710,24 +707,12 @@ class SettingsPage extends StatelessWidget {
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const CurrencyManagementPage(),
+                builder: (context) => const CurrencySelectionPage(),
               ),
             );
           },
         ),
-        ListTile(
-          leading: const Icon(Icons.calculate),
-          title: const Text('货币转换器'),
-          subtitle: const Text('实时汇率转换工具'),
-          trailing: const Icon(Icons.arrow_forward_ios),
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const CurrencyConverterPage(),
-              ),
-            );
-          },
-        ),
+        // 隐藏货币转换器入口
         ListTile(
           leading: const Icon(Icons.category),
           title: const Text('分类管理'),
@@ -4859,5 +4844,3 @@ class _DissolveHouseholdDialogState extends State<_DissolveHouseholdDialog> {
     );
   }
 }
-
-

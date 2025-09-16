@@ -1,0 +1,41 @@
+# Jive Money 服务配置文件
+# 可以根据需要修改端口和其他配置
+
+# API 配置
+API_PORT=8012
+API_HOST=127.0.0.1
+API_LOG_LEVEL=info
+
+# Web 配置
+WEB_PORT=3021
+WEB_HOST=0.0.0.0
+
+# 数据库配置
+DB_PORT=5433
+DB_HOST=localhost
+DB_NAME=jive_money
+DB_USER=postgres
+DB_PASSWORD=postgres
+
+# Redis 配置
+REDIS_PORT=6380
+REDIS_HOST=localhost
+
+# Adminer 配置
+ADMINER_PORT=8080
+
+# Docker 配置
+DOCKER_COMPOSE_FILE=docker-compose.dev.yml
+
+# 日志配置
+LOG_DIR=.logs
+PID_DIR=.pids
+
+# 启动模式
+# 可选: local (本地), docker (容器), hybrid (混合)
+START_MODE=hybrid
+
+# 自动更新配置
+AUTO_UPDATE_RATES=true
+RATE_UPDATE_INTERVAL=15  # 分钟
+CRYPTO_UPDATE_INTERVAL=5  # 分钟

@@ -16,6 +16,9 @@ class AppSettings {
   final String numberFormat;
   final bool showDecimals;
   final ThemeMode themeMode;
+  // Appearance extensions
+  final String listDensity; // 'comfortable' | 'compact'
+  final String cornerRadius; // 'small' | 'medium' | 'large'
   
   AppSettings({
     this.defaultCurrency = 'CNY - 人民币',
@@ -30,6 +33,8 @@ class AppSettings {
     this.numberFormat = '#,##0.00',
     this.showDecimals = true,
     this.themeMode = ThemeMode.system,
+    this.listDensity = 'comfortable',
+    this.cornerRadius = 'medium',
   });
   
   // Helper methods for compatibility
@@ -70,6 +75,8 @@ class AppSettings {
     String? numberFormat,
     bool? showDecimals,
     ThemeMode? themeMode,
+    String? listDensity,
+    String? cornerRadius,
   }) {
     return AppSettings(
       defaultCurrency: defaultCurrency ?? this.defaultCurrency,
@@ -84,6 +91,8 @@ class AppSettings {
       numberFormat: numberFormat ?? this.numberFormat,
       showDecimals: showDecimals ?? this.showDecimals,
       themeMode: themeMode ?? this.themeMode,
+      listDensity: listDensity ?? this.listDensity,
+      cornerRadius: cornerRadius ?? this.cornerRadius,
     );
   }
 }
@@ -111,6 +120,8 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
       dateFormat: _prefs.getString('dateFormat') ?? 'yyyy-MM-dd',
       numberFormat: _prefs.getString('numberFormat') ?? '#,##0.00',
       showDecimals: _prefs.getBool('showDecimals') ?? true,
+      listDensity: _prefs.getString('listDensity') ?? 'comfortable',
+      cornerRadius: _prefs.getString('cornerRadius') ?? 'medium',
     );
   }
 
@@ -161,6 +172,12 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
       case 'showDecimals':
         state = state.copyWith(showDecimals: value as bool);
         break;
+      case 'listDensity':
+        state = state.copyWith(listDensity: value as String);
+        break;
+      case 'cornerRadius':
+        state = state.copyWith(cornerRadius: value as String);
+        break;
     }
   }
 
@@ -176,6 +193,54 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
 // 设置Provider
 final settingsProvider = StateNotifierProvider<SettingsNotifier, AppSettings>((ref) {
   return SettingsNotifier();
+});
+
+// ThemeMode Provider
+class ThemeModeNotifier extends StateNotifier<ThemeMode> {
+  late SharedPreferences _prefs;
+  
+  ThemeModeNotifier() : super(ThemeMode.system) {
+    _loadThemeMode();
+  }
+  
+  Future<void> _loadThemeMode() async {
+    _prefs = await SharedPreferences.getInstance();
+    final mode = _prefs.getString('themeMode') ?? 'system';
+    state = _themeModeFromString(mode);
+  }
+  
+  ThemeMode _themeModeFromString(String mode) {
+    switch (mode) {
+      case 'light':
+        return ThemeMode.light;
+      case 'dark':
+        return ThemeMode.dark;
+      case 'system':
+      default:
+        return ThemeMode.system;
+    }
+  }
+  
+  String _themeModeToString(ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.light:
+        return 'light';
+      case ThemeMode.dark:
+        return 'dark';
+      case ThemeMode.system:
+      default:
+        return 'system';
+    }
+  }
+  
+  Future<void> setThemeMode(ThemeMode mode) async {
+    state = mode;
+    await _prefs.setString('themeMode', _themeModeToString(mode));
+  }
+}
+
+final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
+  return ThemeModeNotifier();
 });
 
 // 当前用户Provider（从auth_provider导入）

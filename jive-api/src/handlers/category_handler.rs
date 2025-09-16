@@ -1,0 +1,205 @@
+//! 用户分类管理 API（最小可用版本）
+use axum::{extract::{Path, Query, State}, http::StatusCode, response::Json};
+use serde::{Deserialize, Serialize};
+use sqlx::{PgPool, Row};
+use uuid::Uuid;
+
+use crate::auth::Claims;
+
+#[derive(Debug, Deserialize)]
+pub struct ListParams {
+    pub ledger_id: Option<Uuid>,
+    pub classification: Option<String>, // expense|income|transfer
+}
+
+#[derive(Debug, Serialize)]
+pub struct CategoryDto {
+    pub id: Uuid,
+    pub ledger_id: Uuid,
+    pub name: String,
+    pub color: Option<String>,
+    pub icon: Option<String>,
+    pub classification: String,
+    pub parent_id: Option<Uuid>,
+    pub position: i32,
+    pub usage_count: i32,
+    pub last_used_at: Option<chrono::DateTime<chrono::Utc>>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateCategoryRequest {
+    pub ledger_id: Uuid,
+    pub name: String,
+    pub color: Option<String>,
+    pub icon: Option<String>,
+    pub classification: String,
+    pub parent_id: Option<Uuid>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateCategoryRequest {
+    pub name: Option<String>,
+    pub color: Option<String>,
+    pub icon: Option<String>,
+    pub classification: Option<String>,
+    pub parent_id: Option<Uuid>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ReorderItem { pub id: Uuid, pub position: i32 }
+
+#[derive(Debug, Deserialize)]
+pub struct ReorderRequest { pub items: Vec<ReorderItem> }
+
+pub async fn list_categories(
+    claims: Claims,
+    State(pool): State<PgPool>,
+    Query(params): Query<ListParams>,
+)-> Result<Json<Vec<CategoryDto>>, StatusCode> {
+    let _user_id = claims.user_id().map_err(|_| StatusCode::UNAUTHORIZED)?;
+
+    let mut query = sqlx::QueryBuilder::new(
+        "SELECT id, ledger_id, name, color, icon, classification, parent_id, position, usage_count, last_used_at \
+         FROM categories WHERE is_deleted = false"
+    );
+    if let Some(ledger) = params.ledger_id { query.push(" AND ledger_id = ").push_bind(ledger); }
+    if let Some(classif) = params.classification { query.push(" AND classification = ").push_bind(classif); }
+    query.push(" ORDER BY parent_id NULLS FIRST, position ASC, LOWER(name)");
+
+    let rows = query.build().fetch_all(&pool).await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let mut items = Vec::with_capacity(rows.len());
+    for r in rows {
+        items.push(CategoryDto{
+            id: r.get("id"),
+            ledger_id: r.get("ledger_id"),
+            name: r.get("name"),
+            color: r.try_get("color").ok(),
+            icon: r.try_get("icon").ok(),
+            classification: r.get("classification"),
+            parent_id: r.try_get("parent_id").ok(),
+            position: r.try_get("position").unwrap_or(0),
+            usage_count: r.try_get("usage_count").unwrap_or(0),
+            last_used_at: r.try_get("last_used_at").ok(),
+        });
+    }
+    Ok(Json(items))
+}
+
+pub async fn create_category(
+    claims: Claims,
+    State(pool): State<PgPool>,
+    Json(req): Json<CreateCategoryRequest>,
+) -> Result<Json<CategoryDto>, StatusCode> {
+    let _user_id = claims.user_id().map_err(|_| StatusCode::UNAUTHORIZED)?;
+
+    let rec = sqlx::query(
+        r#"INSERT INTO categories (id, ledger_id, name, color, icon, classification, parent_id, position, usage_count)
+           VALUES ($1,$2,$3,$4,$5,$6,$7, COALESCE((SELECT COALESCE(MAX(position),-1)+1 FROM categories WHERE ledger_id=$2 AND parent_id IS NOT DISTINCT FROM $7),0), 0)
+           RETURNING id, ledger_id, name, color, icon, classification, parent_id, position, usage_count, last_used_at"#
+    )
+    .bind(Uuid::new_v4())
+    .bind(&req.ledger_id)
+    .bind(&req.name)
+    .bind(&req.color)
+    .bind(&req.icon)
+    .bind(&req.classification)
+    .bind(&req.parent_id)
+    .fetch_one(&pool).await.map_err(|e|{ eprintln!("create_category err: {:?}", e); StatusCode::BAD_REQUEST })?;
+
+    Ok(Json(CategoryDto{
+        id: rec.get("id"), ledger_id: rec.get("ledger_id"), name: rec.get("name"),
+        color: rec.try_get("color").ok(), icon: rec.try_get("icon").ok(), classification: rec.get("classification"),
+        parent_id: rec.try_get("parent_id").ok(), position: rec.try_get("position").unwrap_or(0),
+        usage_count: rec.try_get("usage_count").unwrap_or(0), last_used_at: rec.try_get("last_used_at").ok(),
+    }))
+}
+
+pub async fn update_category(
+    claims: Claims,
+    State(pool): State<PgPool>,
+    Path(id): Path<Uuid>,
+    Json(req): Json<UpdateCategoryRequest>,
+) -> Result<StatusCode, StatusCode> {
+    let _user_id = claims.user_id().map_err(|_| StatusCode::UNAUTHORIZED)?;
+
+    let mut qb = sqlx::QueryBuilder::new("UPDATE categories SET updated_at = NOW()");
+    if let Some(name) = req.name { qb.push(", name = ").push_bind(name); }
+    if let Some(color) = req.color { qb.push(", color = ").push_bind(color); }
+    if let Some(icon) = req.icon { qb.push(", icon = ").push_bind(icon); }
+    if let Some(cls) = req.classification { qb.push(", classification = ").push_bind(cls); }
+    if let Some(pid) = req.parent_id { qb.push(", parent_id = ").push_bind(pid); }
+    qb.push(" WHERE id = ").push_bind(id);
+    let res = qb.build().execute(&pool).await.map_err(|_| StatusCode::BAD_REQUEST)?;
+    if res.rows_affected() == 0 { return Err(StatusCode::NOT_FOUND); }
+    Ok(StatusCode::NO_CONTENT)
+}
+
+pub async fn delete_category(
+    claims: Claims,
+    State(pool): State<PgPool>,
+    Path(id): Path<Uuid>,
+) -> Result<StatusCode, StatusCode> {
+    let _user_id = claims.user_id().map_err(|_| StatusCode::UNAUTHORIZED)?;
+    // MVP: forbid deletion if used
+    let in_use: (i64,) = sqlx::query_as("SELECT COUNT(1) FROM transactions WHERE category_id = $1")
+        .bind(id).fetch_one(&pool).await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    if in_use.0 > 0 { return Err(StatusCode::CONFLICT); }
+    let res = sqlx::query("UPDATE categories SET is_deleted=true, deleted_at=NOW() WHERE id=$1")
+        .bind(id).execute(&pool).await.map_err(|_| StatusCode::BAD_REQUEST)?;
+    if res.rows_affected() == 0 { return Err(StatusCode::NOT_FOUND); }
+    Ok(StatusCode::NO_CONTENT)
+}
+
+pub async fn reorder_categories(
+    claims: Claims,
+    State(pool): State<PgPool>,
+    Json(req): Json<ReorderRequest>,
+) -> Result<StatusCode, StatusCode> {
+    let _user_id = claims.user_id().map_err(|_| StatusCode::UNAUTHORIZED)?;
+    let mut tx = pool.begin().await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    for item in req.items { sqlx::query("UPDATE categories SET position=$1, updated_at=NOW() WHERE id=$2").bind(item.position).bind(item.id).execute(&mut *tx).await.map_err(|_| StatusCode::BAD_REQUEST)?; }
+    tx.commit().await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    Ok(StatusCode::NO_CONTENT)
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ImportTemplateRequest { pub ledger_id: Uuid, pub template_id: Uuid }
+
+pub async fn import_template(
+    claims: Claims,
+    State(pool): State<PgPool>,
+    Json(req): Json<ImportTemplateRequest>,
+) -> Result<Json<CategoryDto>, StatusCode> {
+    let _user_id = claims.user_id().map_err(|_| StatusCode::UNAUTHORIZED)?;
+
+    let tpl = sqlx::query(
+        r#"SELECT id, name, name_en, name_zh, classification, color, icon, version FROM system_category_templates WHERE id = $1 AND is_active = true"#
+    ).bind(req.template_id).fetch_optional(&pool).await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+     .ok_or(StatusCode::NOT_FOUND)?;
+
+    let id = Uuid::new_v4();
+    let rec = sqlx::query(
+        r#"INSERT INTO categories (id, ledger_id, name, color, icon, classification, position, usage_count, source_type, template_id, template_version)
+           VALUES ($1,$2,$3,$4,$5,$6,
+                   COALESCE((SELECT COALESCE(MAX(position),-1)+1 FROM categories WHERE ledger_id=$2),0),
+                   0,'system',$7,$8)
+           RETURNING id, ledger_id, name, color, icon, classification, parent_id, position, usage_count, last_used_at"#
+    )
+    .bind(id)
+    .bind(&req.ledger_id)
+    .bind::<String>(tpl.get("name"))
+    .bind::<Option<String>>(tpl.try_get("color").ok())
+    .bind::<Option<String>>(tpl.try_get("icon").ok())
+    .bind::<String>(tpl.get("classification"))
+    .bind::<Uuid>(tpl.get("id"))
+    .bind::<String>(tpl.get("version"))
+    .fetch_one(&pool).await.map_err(|e|{ eprintln!("import_template err: {:?}", e); StatusCode::BAD_REQUEST })?;
+
+    Ok(Json(CategoryDto{
+        id: rec.get("id"), ledger_id: rec.get("ledger_id"), name: rec.get("name"),
+        color: rec.try_get("color").ok(), icon: rec.try_get("icon").ok(), classification: rec.get("classification"),
+        parent_id: rec.try_get("parent_id").ok(), position: rec.try_get("position").unwrap_or(0),
+        usage_count: rec.try_get("usage_count").unwrap_or(0), last_used_at: rec.try_get("last_used_at").ok(),
+    }))
+}
+

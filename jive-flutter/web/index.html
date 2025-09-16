@@ -14,7 +14,8 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="$FLUTTER_BASE_HREF">
+  <!-- Force root base href for dev (placeholder was causing buildConfig issues on master channel) -->
+  <base href="/">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -34,29 +35,97 @@
 
   <title>Jive Money - 集腋记账</title>
   <link rel="manifest" href="manifest.json">
+  
+  <!-- Prevent external font loading and use system fonts -->
+  <style>
+    /* Override Material Design font to use system fonts */
+    @font-face {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 300;
+      font-display: swap;
+      src: local('system-ui'), local('-apple-system'), local('BlinkMacSystemFont'),
+           local('Segoe UI'), local('Arial'), local('sans-serif');
+    }
+    @font-face {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: local('system-ui'), local('-apple-system'), local('BlinkMacSystemFont'),
+           local('Segoe UI'), local('Arial'), local('sans-serif');
+    }
+    @font-face {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: local('system-ui'), local('-apple-system'), local('BlinkMacSystemFont'),
+           local('Segoe UI'), local('Arial'), local('sans-serif');
+    }
+    @font-face {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: local('system-ui'), local('-apple-system'), local('BlinkMacSystemFont'),
+           local('Segoe UI'), local('Arial'), local('sans-serif');
+    }
 
-  <script>
-    // The value below is injected by flutter build, do not touch.
-    var serviceWorkerVersion = "{{flutter_service_worker_version}}";
-  </script>
-  <!-- This script adds the flutter initialization JS code -->
+    /* Chinese font support */
+    @font-face {
+      font-family: 'Noto Sans SC';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: local('Noto Sans SC'), local('Noto Sans SC Regular'),
+           local('PingFang SC'), local('Hiragino Sans GB'),
+           local('Microsoft YaHei'), local('sans-serif');
+    }
+
+    /* Default body font */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+        'Hiragino Sans GB', 'Microsoft YaHei', Arial, 'Helvetica Neue', sans-serif;
+    }
+
+    /* Prevent font loading errors */
+    .material-icons {
+      font-family: 'Material Icons', 'Material Icons Local', sans-serif !important;
+    }
+  </style>
+
+  <!-- Flutter web runtime -->
   <script src="flutter.js" defer></script>
+  <!-- 开发阶段右键复制增强脚本: 允许默认右键 + Alt+右键快速复制 -->
+  <script src="right_click_dev.js" defer></script>
 </head>
 <body>
+  <noscript>
+    <p style="padding:16px;font-family:system-ui,Arial">This application requires JavaScript to run.</p>
+  </noscript>
   <script>
-    window.addEventListener('load', function(ev) {
-      // Download main.dart.js
-      _flutter.loader.load({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
-          });
-        }
+    // ===== BOOTSTRAP v2 (no loader.load attempt) =====
+    (function(){
+      const MARK='[boot-v2]';
+      function log(m){console.log(MARK,m);} 
+      function fail(e){console.error(MARK,'error',e);const n=document.createElement('pre');n.style.cssText='color:#c00;padding:12px;font:13px/1.5 monospace;white-space:pre-wrap;background:#fff3f3;border:1px solid #f99';n.textContent='Flutter Web 启动失败\n'+(e&& (e.stack||e));document.body.appendChild(n);} 
+      // Hard disable service worker during dev to avoid stale index.html
+      try { if('serviceWorker' in navigator){ navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())); } } catch(_){}
+      window.addEventListener('load', function(){
+        if(!window._flutter || !window._flutter.loader){ return fail('flutter.js 未加载 / _flutter.loader 缺失'); }
+        const loader = window._flutter.loader;
+        const legacy = typeof loader.loadEntrypoint==='function';
+        const opts = {serviceWorker:{serviceWorkerVersion:'{{flutter_service_worker_version}}'}};
+        if(!legacy){ return fail('缺少 loadEntrypoint (可能 flutter.js 仍是旧缓存)'); }
+        log('Using pure legacy loader.loadEntrypoint');
+        loader.loadEntrypoint(opts)
+          .then(e=>{log('Engine initializer received');return e.initializeEngine();})
+          .then(r=>{log('Engine initialized'); r.runApp(); log('Flutter app started (legacy only)');})
+          .catch(fail);
       });
-    });
+    })();
   </script>
+  <!-- END BOOTSTRAP v2 -->
 </body>
 </html>

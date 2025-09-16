@@ -74,6 +74,9 @@ class CustomThemeData {
   final Color navigationBar;
   final Color navigationBarText;
   final Color navigationBarSelected;
+  // UI extensions
+  final String listDensity; // 'comfortable' | 'compact'
+  final String cornerRadius; // 'small' | 'medium' | 'large'
 
   const CustomThemeData({
     required this.id,
@@ -110,6 +113,8 @@ class CustomThemeData {
     required this.navigationBar,
     required this.navigationBarText,
     required this.navigationBarSelected,
+    this.listDensity = 'comfortable',
+    this.cornerRadius = 'medium',
   });
 
   /// 转换为Flutter ThemeData
@@ -168,7 +173,9 @@ class CustomThemeData {
         color: cardColor,
         elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(
+            cornerRadius == 'small' ? 8 : (cornerRadius == 'large' ? 16 : 12),
+          ),
           side: BorderSide(color: borderColor.withOpacity(0.1)),
         ),
       ),
@@ -177,13 +184,20 @@ class CustomThemeData {
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
           borderSide: BorderSide(color: borderColor),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(
+            cornerRadius == 'small' ? 8 : (cornerRadius == 'large' ? 16 : 12),
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: primaryColor),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(
+            cornerRadius == 'small' ? 8 : (cornerRadius == 'large' ? 16 : 12),
+          ),
         ),
       ),
+      visualDensity: listDensity == 'compact'
+          ? const VisualDensity(horizontal: -2, vertical: -2)
+          : VisualDensity.adaptivePlatformDensity,
     );
   }
 
@@ -224,6 +238,8 @@ class CustomThemeData {
       navigationBar: Color(json['navigationBar'] ?? 0xFFFFFFFF),
       navigationBarText: Color(json['navigationBarText'] ?? 0xFF000000),
       navigationBarSelected: Color(json['navigationBarSelected'] ?? 0xFF2196F3),
+      listDensity: json['listDensity'] ?? 'comfortable',
+      cornerRadius: json['cornerRadius'] ?? 'medium',
     );
   }
 
@@ -264,6 +280,8 @@ class CustomThemeData {
       'navigationBar': navigationBar.value,
       'navigationBarText': navigationBarText.value,
       'navigationBarSelected': navigationBarSelected.value,
+      'listDensity': listDensity,
+      'cornerRadius': cornerRadius,
     };
   }
 
@@ -303,6 +321,8 @@ class CustomThemeData {
     Color? navigationBar,
     Color? navigationBarText,
     Color? navigationBarSelected,
+    String? listDensity,
+    String? cornerRadius,
   }) {
     return CustomThemeData(
       id: id ?? this.id,
@@ -339,6 +359,8 @@ class CustomThemeData {
       navigationBar: navigationBar ?? this.navigationBar,
       navigationBarText: navigationBarText ?? this.navigationBarText,
       navigationBarSelected: navigationBarSelected ?? this.navigationBarSelected,
+      listDensity: listDensity ?? this.listDensity,
+      cornerRadius: cornerRadius ?? this.cornerRadius,
     );
   }
 }

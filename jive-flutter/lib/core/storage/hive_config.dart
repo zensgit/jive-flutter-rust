@@ -1,4 +1,5 @@
 // Hive 本地存储配置
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
@@ -22,6 +23,7 @@ class HiveConfig {
   static const String transactionsBox = 'transactions_box';
   static const String ledgersBox = 'ledgers_box';
   static const String categoriesBox = 'categories_box';
+  static const String preferencesBox = 'preferences'; // For currency preferences
 
   // 类型ID常量
   static const int userTypeId = 0;
@@ -38,11 +40,14 @@ class HiveConfig {
     // Flutter环境初始化
     await Hive.initFlutter();
     
-    // 获取文档目录路径
-    final appDocumentDir = await getApplicationDocumentsDirectory();
-    final hiveDir = Directory('${appDocumentDir.path}/hive_data');
-    if (!await hiveDir.exists()) {
-      await hiveDir.create(recursive: true);
+    // Web平台不需要设置路径
+    if (!kIsWeb) {
+      // 获取文档目录路径
+      final appDocumentDir = await getApplicationDocumentsDirectory();
+      final hiveDir = Directory('${appDocumentDir.path}/hive_data');
+      if (!await hiveDir.exists()) {
+        await hiveDir.create(recursive: true);
+      }
     }
     
     // 注册适配器（如果尚未注册）
@@ -50,13 +55,14 @@ class HiveConfig {
     
     // 打开常用的 Box
     await Future.wait([
-      Hive.openBox(userBox),
+      Hive.openBox<User>(userBox),
       Hive.openBox(settingsBox), 
       Hive.openBox(cacheBox),
-      Hive.openBox(accountsBox),
-      Hive.openBox(transactionsBox),
-      Hive.openBox(ledgersBox),
-      Hive.openBox(categoriesBox),
+      Hive.openBox(preferencesBox), // Open preferences box for currency
+      Hive.openBox<Account>(accountsBox),
+      Hive.openBox<Transaction>(transactionsBox),
+      Hive.openBox<Ledger>(ledgersBox),
+      Hive.openBox<TransactionCategory>(categoriesBox),
     ]);
   }
   
@@ -93,6 +99,9 @@ class HiveConfig {
   
   /// 获取设置数据 Box  
   static Box getSettingsBox() => Hive.box(settingsBox);
+  
+  /// 获取偏好设置数据 Box
+  static Box getPreferencesBox() => Hive.box(preferencesBox);
   
   /// 获取缓存数据 Box
   static Box getCacheBox() => Hive.box(cacheBox);

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/currency.dart';
 import '../providers/currency_provider.dart';
+import 'source_badge.dart';
 
 /// Currency converter widget with auto-fetch rates
 class CurrencyConverter extends ConsumerStatefulWidget {
@@ -312,12 +313,27 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                   if (_convertedAmount != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        '汇率: 1 $_fromCurrency = ${(_convertedAmount! / (double.tryParse(_amountController.text) ?? 1)).toStringAsFixed(4)} $_toCurrency',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.blue[600],
-                        ),
+                      child: Row(
+                        children: [
+                          Text(
+                            '汇率: 1 $_fromCurrency = ${(_convertedAmount! / (double.tryParse(_amountController.text) ?? 1)).toStringAsFixed(4)} $_toCurrency',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.blue[600],
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          // Try to show source if available in provider's cache
+                          Builder(
+                            builder: (context) {
+                              final rates = ref.watch(exchangeRateObjectsProvider);
+                              final source = rates[_toCurrency ?? '']?.source;
+                              return source != null 
+                                  ? SourceBadge(source: source)
+                                  : const SizedBox.shrink();
+                            },
+                          ),
+                        ],
                       ),
                     ),
                 ],

@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE transactions t SET tags = (\n                        SELECT ARRAY(SELECT DISTINCT unnest(COALESCE(tags,'{}'::text[]))\n                                     EXCEPT SELECT unnest($1::text[])) || $2::text[] )\n                    FROM ledgers l\n                    WHERE t.ledger_id = l.id AND l.family_id = $3",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "TextArray",
+        "TextArray",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "8f95eccd822c2b0d590830af18d042cb78f1f77e0a155373b5dc32622002a7cb"
+}
