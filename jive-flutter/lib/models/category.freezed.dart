@@ -338,7 +338,8 @@ class _$CategoryImpl implements _Category {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.nameEn, nameEn) || other.nameEn == nameEn) &&
-            (identical(other.description, description) || other.description == description) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
             (identical(other.color, color) || other.color == color) &&
             (identical(other.icon, icon) || other.icon == icon) &&
             (identical(other.classification, classification) ||
