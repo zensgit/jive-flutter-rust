@@ -89,6 +89,16 @@ fmt:
 lint:
 	cargo clippy -- -D warnings
 
+# SQLx 离线缓存
+.PHONY: sqlx-prepare sqlx-check
+sqlx-prepare:
+	@echo "Preparing SQLx offline cache..."
+	@DATABASE_URL=${DATABASE_URL} ./prepare-sqlx.sh
+
+sqlx-check:
+	@echo "Checking SQLx offline cache against current schema..."
+	@SQLX_OFFLINE=true cargo sqlx prepare --check || (echo "SQLx cache out of date. Run 'make sqlx-prepare'" && exit 1)
+
 # 快速启动开发环境
 quick-start: build dev
 	@echo "开发环境已启动！"
