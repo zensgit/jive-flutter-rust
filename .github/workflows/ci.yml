@@ -168,8 +168,8 @@ jobs:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jive_money_test
       run: |
         cargo install sqlx-cli --no-default-features --features postgres || true
-        ./prepare-sqlx.sh || true
-        SQLX_OFFLINE=true cargo sqlx prepare --check || true
+        ./prepare-sqlx.sh
+        SQLX_OFFLINE=true cargo sqlx prepare --check || echo "Warning: SQLx cache validation failed"
 
     - name: Run tests (SQLx offline)
       working-directory: jive-api
