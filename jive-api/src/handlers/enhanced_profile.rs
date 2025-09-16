@@ -158,7 +158,7 @@ pub async fn register_with_preferences(
     };
     
     let family = family_service.create_family(user_id, family_request).await
-        .map_err(|e| ApiError::InternalServerError)?;
+        .map_err(|_e| ApiError::InternalServerError)?;
     
     // Update user's current family
     sqlx::query(
@@ -344,7 +344,6 @@ pub async fn update_preferences(
     if let Some(date_format) = req.preferred_date_format {
         updates.push(format!("preferred_date_format = ${}", bind_idx));
         bind_values.push(date_format);
-        bind_idx += 1;
     }
     
     if bind_values.is_empty() {

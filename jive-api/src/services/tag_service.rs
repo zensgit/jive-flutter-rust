@@ -33,8 +33,8 @@ impl TagService {
     pub async fn list_tags(&self, family_id: Uuid, q: Option<String>) -> Result<Vec<TagDto>, ServiceError> {
         let mut base = String::from("SELECT t.id, t.ledger_id, t.name, t.color, t.description, t.usage_count FROM tags t JOIN ledgers l ON t.ledger_id = l.id WHERE l.family_id = $1");
         let mut args: Vec<(usize, String)> = Vec::new();
-        let mut bind_idx = 2;
-        if let Some(q) = q { base.push_str(&format!(" AND t.name ILIKE ${}", bind_idx)); args.push((bind_idx, format!("%{}%", q))); bind_idx+=1; }
+        let bind_idx = 2;
+        if let Some(q) = q { base.push_str(&format!(" AND t.name ILIKE ${}", bind_idx)); args.push((bind_idx, format!("%{}%", q))); }
         base.push_str(" ORDER BY t.usage_count DESC, lower(t.name) ASC");
         let mut query = sqlx::query(&base).bind(family_id);
         for (_, v) in args { query = query.bind(v); }
