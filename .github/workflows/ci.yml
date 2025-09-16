@@ -46,6 +46,11 @@ jobs:
       working-directory: jive-flutter
       run: flutter pub get
 
+    - name: Generate code (build_runner)
+      working-directory: jive-flutter
+      run: |
+        flutter pub run build_runner build --delete-conflicting-outputs || true
+
     - name: Analyze code
       working-directory: jive-flutter
       run: flutter analyze --no-fatal-warnings
