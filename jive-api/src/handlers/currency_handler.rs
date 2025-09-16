@@ -272,7 +272,7 @@ pub async fn get_exchange_rate_history(
 
 /// 获取常用汇率对
 pub async fn get_popular_exchange_pairs(
-    State(pool): State<PgPool>,
+    State(_pool): State<PgPool>,
 ) -> ApiResult<Json<ApiResponse<Vec<ExchangePair>>>> {
     // 定义常用的汇率对
     let pairs = vec![

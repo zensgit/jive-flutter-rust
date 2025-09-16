@@ -86,7 +86,7 @@ impl CurrencyService {
         let currencies = rows.into_iter().map(|row| Currency {
             code: row.code,
             name: row.name,
-            symbol: row.symbol.unwrap_or_default(),
+            symbol: row.symbol,
             decimal_places: row.decimal_places.unwrap_or(2),
             is_active: row.is_active.unwrap_or(true),
         }).collect();
@@ -181,7 +181,7 @@ impl CurrencyService {
             
             Ok(FamilyCurrencySettings {
                 family_id,
-                base_currency: settings.base_currency.unwrap_or_else(|| "CNY".to_string()),
+                base_currency: settings.base_currency,
                 allow_multi_currency: settings.allow_multi_currency.unwrap_or(false),
                 auto_convert: settings.auto_convert.unwrap_or(false),
                 supported_currencies: supported,
@@ -383,7 +383,7 @@ impl CurrencyService {
         &self,
         amount: Decimal,
         rate: Decimal,
-        from_decimal_places: i32,
+        _from_decimal_places: i32,
         to_decimal_places: i32,
     ) -> Decimal {
         let converted = amount * rate;
@@ -579,9 +579,6 @@ impl CurrencyService {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use rust_decimal::prelude::*;
-    
     #[test]
     fn test_convert_amount() {
         // let service = CurrencyService::new(PgPool::connect_lazy("").unwrap());
