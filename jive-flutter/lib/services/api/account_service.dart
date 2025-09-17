@@ -5,7 +5,7 @@ import '../../models/account.dart';
 /// 账户API服务
 class AccountService {
   final _client = HttpClient.instance;
-  
+
   /// 获取所有账户
   Future<List<Account>> getAllAccounts({
     String? ledgerId,
@@ -19,27 +19,27 @@ class AccountService {
           'include_archived': includeArchived,
         },
       );
-      
+
       final List<dynamic> data = response.data['data'] ?? response.data;
       return data.map((json) => Account.fromJson(json)).toList();
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 获取单个账户
   Future<Account> getAccount(String id) async {
     try {
       final response = await _client.get(
         '${Endpoints.accounts}/$id',
       );
-      
+
       return Account.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 创建账户
   Future<Account> createAccount(Account account) async {
     try {
@@ -47,13 +47,13 @@ class AccountService {
         Endpoints.accounts,
         data: account.toJson(),
       );
-      
+
       return Account.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 更新账户
   Future<Account> updateAccount(String id, Map<String, dynamic> updates) async {
     try {
@@ -61,13 +61,13 @@ class AccountService {
         '${Endpoints.accounts}/$id',
         data: updates,
       );
-      
+
       return Account.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 删除账户
   Future<void> deleteAccount(String id) async {
     try {
@@ -78,59 +78,59 @@ class AccountService {
       throw _handleError(e);
     }
   }
-  
+
   /// 归档账户
   Future<Account> archiveAccount(String id) async {
     try {
       final response = await _client.post(
         '${Endpoints.accounts}/$id/archive',
       );
-      
+
       return Account.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 恢复归档账户
   Future<Account> unarchiveAccount(String id) async {
     try {
       final response = await _client.post(
         '${Endpoints.accounts}/$id/unarchive',
       );
-      
+
       return Account.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 设置默认账户
   Future<Account> setDefaultAccount(String id) async {
     try {
       final response = await _client.post(
         '${Endpoints.accounts}/$id/set-default',
       );
-      
+
       return Account.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 获取账户统计信息
   Future<AccountStatistics> getAccountStatistics(String id) async {
     try {
       final response = await _client.get(
         Endpoints.accountStats.replaceAll(':id', id),
       );
-      
+
       return AccountStatistics.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 获取账户交易历史
   Future<List<dynamic>> getAccountTransactions(
     String id, {
@@ -149,13 +149,13 @@ class AccountService {
           if (endDate != null) 'end_date': endDate.toIso8601String(),
         },
       );
-      
+
       return response.data['data'] ?? response.data;
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 获取账户余额历史
   Future<List<BalanceHistory>> getBalanceHistory(
     String id, {
@@ -170,14 +170,14 @@ class AccountService {
           'count': count,
         },
       );
-      
+
       final List<dynamic> data = response.data;
       return data.map((json) => BalanceHistory.fromJson(json)).toList();
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 批量更新账户排序
   Future<void> updateAccountsOrder(List<String> accountIds) async {
     try {
@@ -191,7 +191,7 @@ class AccountService {
       throw _handleError(e);
     }
   }
-  
+
   /// 错误处理
   Exception _handleError(dynamic error) {
     if (error is ApiException) {
@@ -211,7 +211,7 @@ class AccountStatistics {
   final DateTime? lastTransactionDate;
   final Map<String, double>? monthlyTrend;
   final Map<String, double>? categoryBreakdown;
-  
+
   AccountStatistics({
     required this.accountId,
     required this.totalIncome,
@@ -222,7 +222,7 @@ class AccountStatistics {
     this.monthlyTrend,
     this.categoryBreakdown,
   });
-  
+
   factory AccountStatistics.fromJson(Map<String, dynamic> json) {
     return AccountStatistics(
       accountId: json['account_id'],
@@ -249,14 +249,14 @@ class BalanceHistory {
   final double balance;
   final double change;
   final double changePercent;
-  
+
   BalanceHistory({
     required this.date,
     required this.balance,
     required this.change,
     required this.changePercent,
   });
-  
+
   factory BalanceHistory.fromJson(Map<String, dynamic> json) {
     return BalanceHistory(
       date: DateTime.parse(json['date']),

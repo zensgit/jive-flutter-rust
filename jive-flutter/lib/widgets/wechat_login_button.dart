@@ -8,7 +8,7 @@ class WeChatLoginButton extends StatefulWidget {
   final Function(String) onError;
   final String buttonText;
   final bool isBinding; // 是否为绑定操作
-  
+
   const WeChatLoginButton({
     super.key,
     required this.onSuccess,
@@ -40,7 +40,8 @@ class _WeChatLoginButtonState extends State<WeChatLoginButton> {
       );
 
       if (result != null && result['success'] == true) {
-        if (result.containsKey('authResult') && result.containsKey('userInfo')) {
+        if (result.containsKey('authResult') &&
+            result.containsKey('userInfo')) {
           // 直接登录成功
           widget.onSuccess(result['authResult'], result['userInfo']);
         } else if (result.containsKey('userData')) {
@@ -89,7 +90,7 @@ class _WeChatLoginButtonState extends State<WeChatLoginButton> {
             borderRadius: BorderRadius.circular(8),
           ),
         ),
-        icon: _isLoading 
+        icon: _isLoading
             ? const SizedBox(
                 width: 20,
                 height: 20,
@@ -148,7 +149,6 @@ class WeChatBindingCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            
             if (weChatInfo != null) ...[
               // 已绑定状态
               Row(
@@ -199,7 +199,8 @@ class WeChatBindingCard extends StatelessWidget {
                               height: 16,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.red),
                               ),
                             )
                           : const Text('解绑'),

@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 /// 主题模式枚举
 enum ThemeMode {
   light('light', '浅色'),
-  dark('dark', '深色'), 
+  dark('dark', '深色'),
   system('system', '跟随系统');
 
   const ThemeMode(this.value, this.displayName);
-  
+
   final String value;
   final String displayName;
 }
@@ -19,7 +19,7 @@ enum ThemeType {
   custom('custom', '自定义主题');
 
   const ThemeType(this.value, this.displayName);
-  
+
   final String value;
   final String displayName;
 }
@@ -35,41 +35,41 @@ class CustomThemeData {
   final bool isShared;
   final int downloads;
   final double rating;
-  
+
   // 主色调
   final Color primaryColor;
   final Color primaryVariant;
   final Color secondary;
   final Color secondaryVariant;
-  
+
   // 背景色
   final Color background;
   final Color surface;
   final Color surfaceVariant;
-  
+
   // 文字色
   final Color onPrimary;
   final Color onSecondary;
   final Color onBackground;
   final Color onSurface;
-  
+
   // 状态色
   final Color error;
   final Color onError;
   final Color success;
   final Color warning;
   final Color info;
-  
+
   // 卡片和边框
   final Color cardColor;
   final Color dividerColor;
   final Color borderColor;
-  
+
   // 按钮样式
   final Color buttonPrimary;
   final Color buttonSecondary;
   final Color buttonText;
-  
+
   // 导航栏
   final Color navigationBar;
   final Color navigationBarText;
@@ -136,7 +136,7 @@ class CustomThemeData {
       scaffoldBackgroundColor: background,
       cardColor: cardColor,
       dividerColor: dividerColor,
-      
+
       // 应用栏主题
       appBarTheme: AppBarTheme(
         backgroundColor: navigationBar,
@@ -144,7 +144,7 @@ class CustomThemeData {
         elevation: 0,
         centerTitle: true,
       ),
-      
+
       // 底部导航栏主题
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: navigationBar,
@@ -152,7 +152,7 @@ class CustomThemeData {
         unselectedItemColor: navigationBarText.withOpacity(0.6),
         type: BottomNavigationBarType.fixed,
       ),
-      
+
       // 按钮主题
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -160,14 +160,14 @@ class CustomThemeData {
           foregroundColor: buttonText,
         ),
       ),
-      
+
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: buttonPrimary,
           side: BorderSide(color: buttonPrimary),
         ),
       ),
-      
+
       // 卡片主题
       cardTheme: CardThemeData(
         color: cardColor,
@@ -179,7 +179,7 @@ class CustomThemeData {
           side: BorderSide(color: borderColor.withOpacity(0.1)),
         ),
       ),
-      
+
       // 输入框主题
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
@@ -208,8 +208,10 @@ class CustomThemeData {
       name: json['name'] ?? '',
       author: json['author'] ?? '',
       description: json['description'] ?? '',
-      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
-      updatedAt: DateTime.parse(json['updatedAt'] ?? DateTime.now().toIso8601String()),
+      createdAt:
+          DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
+      updatedAt:
+          DateTime.parse(json['updatedAt'] ?? DateTime.now().toIso8601String()),
       isShared: json['isShared'] ?? false,
       downloads: json['downloads'] ?? 0,
       rating: (json['rating'] ?? 0.0).toDouble(),
@@ -358,7 +360,8 @@ class CustomThemeData {
       buttonText: buttonText ?? this.buttonText,
       navigationBar: navigationBar ?? this.navigationBar,
       navigationBarText: navigationBarText ?? this.navigationBarText,
-      navigationBarSelected: navigationBarSelected ?? this.navigationBarSelected,
+      navigationBarSelected:
+          navigationBarSelected ?? this.navigationBarSelected,
       listDensity: listDensity ?? this.listDensity,
       cornerRadius: cornerRadius ?? this.cornerRadius,
     );

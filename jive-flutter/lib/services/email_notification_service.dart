@@ -10,26 +10,26 @@ import 'api/family_service.dart';
 /// 邮件通知服务
 class EmailNotificationService extends ChangeNotifier {
   static EmailNotificationService? _instance;
-  
+
   // SMTP配置
   late SmtpServer _smtpServer;
   bool _isConfigured = false;
-  
+
   // 邮件队列
   final Queue<EmailMessage> _emailQueue = Queue();
   bool _isProcessing = false;
   Timer? _processTimer;
-  
+
   // 邮件模板
   final Map<EmailTemplate, String> _templates = {};
-  
+
   // 批量发送配置
   static const int _batchSize = 50;
   static const Duration _batchDelay = Duration(seconds: 2);
-  
+
   // 退订管理
   final Set<String> _unsubscribedEmails = {};
-  
+
   // 发送统计
   int _sentCount = 0;
   int _failedCount = 0;
@@ -66,11 +66,11 @@ class EmailNotificationService extends ChangeNotifier {
         ssl: ssl,
         allowInsecure: allowInsecure,
       );
-      
+
       _isConfigured = true;
       _initializeTemplates();
       _startProcessingQueue();
-      
+
       notifyListeners();
     } catch (e) {
       debugPrint('Failed to configure SMTP: $e');
@@ -337,7 +337,8 @@ class EmailNotificationService extends ChangeNotifier {
 
     _queueEmail(EmailMessage(
       to: toEmail,
-      subject: '$familyName 周报 (${_formatDate(startDate)} - ${_formatDate(endDate)})',
+      subject:
+          '$familyName 周报 (${_formatDate(startDate)} - ${_formatDate(endDate)})',
       html: html,
       type: EmailType.weeklyReport,
       metadata: {
@@ -407,10 +408,10 @@ class EmailNotificationService extends ChangeNotifier {
     // 分批处理
     for (var i = 0; i < validRecipients.length; i += _batchSize) {
       final batch = validRecipients.skip(i).take(_batchSize).toList();
-      
+
       for (final email in batch) {
         var personalizedHtml = htmlContent;
-        
+
         // 应用个性化
         if (personalizations != null && personalizations.containsKey(email)) {
           personalizedHtml = personalizedHtml.replaceAll(
@@ -418,7 +419,7 @@ class EmailNotificationService extends ChangeNotifier {
             personalizations[email]!,
           );
         }
-        
+
         _queueEmail(EmailMessage(
           to: email,
           subject: subject,
@@ -426,7 +427,7 @@ class EmailNotificationService extends ChangeNotifier {
           type: type,
         ));
       }
-      
+
       // 批次间延迟
       if (i + _batchSize < validRecipients.length) {
         await Future.delayed(_batchDelay);
@@ -443,7 +444,7 @@ class EmailNotificationService extends ChangeNotifier {
   /// 开始处理队列
   void _startProcessingQueue() {
     if (_processTimer != null) return;
-    
+
     _processTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       _processEmailQueue();
     });
@@ -452,12 +453,12 @@ class EmailNotificationService extends ChangeNotifier {
   /// 处理邮件队列
   Future<void> _processEmailQueue() async {
     if (_isProcessing || _emailQueue.isEmpty) return;
-    
+
     _isProcessing = true;
-    
+
     while (_emailQueue.isNotEmpty) {
       final email = _emailQueue.removeFirst();
-      
+
       try {
         await _sendEmail(email);
         _sentCount++;
@@ -465,20 +466,20 @@ class EmailNotificationService extends ChangeNotifier {
       } catch (e) {
         _failedCount++;
         _logEmail(email, EmailStatus.failed, error: e.toString());
-        
+
         // 重试高优先级邮件
         if (email.priority == EmailPriority.high && email.retryCount < 3) {
           email.retryCount++;
           _emailQueue.add(email);
         }
       }
-      
+
       notifyListeners();
-      
+
       // 发送间隔
       await Future.delayed(const Duration(milliseconds: 100));
     }
-    
+
     _isProcessing = false;
   }
 
@@ -494,28 +495,31 @@ class EmailNotificationService extends ChangeNotifier {
   }
 
   /// 渲染模板
-  String _renderTemplate(EmailTemplate template, Map<String, String> variables) {
+  String _renderTemplate(
+      EmailTemplate template, Map<String, String> variables) {
     var html = _templates[template] ?? '';
-    
+
     variables.forEach((key, value) {
       html = html.replaceAll('{{$key}}', value);
     });
-    
+
     return html;
   }
 
   /// 记录邮件日志
   void _logEmail(EmailMessage email, EmailStatus status, {String? error}) {
-    _logs.insert(0, EmailLog(
-      to: email.to,
-      subject: email.subject,
-      type: email.type,
-      status: status,
-      timestamp: DateTime.now(),
-      error: error,
-      metadata: email.metadata,
-    ));
-    
+    _logs.insert(
+        0,
+        EmailLog(
+          to: email.to,
+          subject: email.subject,
+          type: email.type,
+          status: status,
+          timestamp: DateTime.now(),
+          error: error,
+          metadata: email.metadata,
+        ));
+
     // 保持日志数量
     if (_logs.length > 1000) {
       _logs.removeRange(1000, _logs.length);

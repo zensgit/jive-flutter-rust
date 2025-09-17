@@ -358,6 +358,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/categories/:id", delete(category_handler::delete_category))
         .route("/api/v1/categories/reorder", post(category_handler::reorder_categories))
         .route("/api/v1/categories/import-template", post(category_handler::import_template))
+        .route("/api/v1/categories/import", post(category_handler::batch_import_templates))
 
         // 占位符 API - 功能开发中
         .route("/api/v1/families/:id/export", get(export_data))

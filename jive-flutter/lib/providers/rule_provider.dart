@@ -42,7 +42,7 @@ class RuleNotifier extends StateNotifier<List<Rule>> {
         lastExecutedAt: DateTime.now().subtract(const Duration(days: 2)),
         createdAt: DateTime.now().subtract(const Duration(days: 30)),
       ),
-      
+
       // 工资收入规则
       Rule(
         id: '2',
@@ -81,7 +81,7 @@ class RuleNotifier extends StateNotifier<List<Rule>> {
         lastExecutedAt: DateTime.now().subtract(const Duration(days: 30)),
         createdAt: DateTime.now().subtract(const Duration(days: 60)),
       ),
-      
+
       // 大额支出提醒
       Rule(
         id: '3',
@@ -114,7 +114,7 @@ class RuleNotifier extends StateNotifier<List<Rule>> {
         lastExecutedAt: DateTime.now().subtract(const Duration(days: 5)),
         createdAt: DateTime.now().subtract(const Duration(days: 45)),
       ),
-      
+
       // 已停用的规则
       Rule(
         id: '4',
@@ -150,7 +150,7 @@ class RuleNotifier extends StateNotifier<List<Rule>> {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
-    
+
     state = [...state, newRule];
     // TODO: 保存到存储
   }
@@ -239,7 +239,7 @@ class RuleNotifier extends StateNotifier<List<Rule>> {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
-    
+
     addRule(duplicatedRule);
     return duplicatedRule;
   }
@@ -255,7 +255,7 @@ class RuleLogNotifier extends StateNotifier<List<RuleLog>> {
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       executedAt: DateTime.now(),
     );
-    
+
     state = [newLog, ...state];
     // TODO: 保存到存储，限制日志数量
   }
@@ -282,7 +282,8 @@ final rulesProvider = StateNotifierProvider<RuleNotifier, List<Rule>>((ref) {
 });
 
 /// 规则日志Provider
-final ruleLogsProvider = StateNotifierProvider<RuleLogNotifier, List<RuleLog>>((ref) {
+final ruleLogsProvider =
+    StateNotifierProvider<RuleLogNotifier, List<RuleLog>>((ref) {
   return RuleLogNotifier();
 });
 
@@ -293,14 +294,15 @@ final activeRulesProvider = Provider<List<Rule>>((ref) {
     ..sort((a, b) => (a.priority ?? 999).compareTo(b.priority ?? 999));
 });
 
-/// 停用规则Provider  
+/// 停用规则Provider
 final inactiveRulesProvider = Provider<List<Rule>>((ref) {
   final rules = ref.watch(rulesProvider);
   return rules.where((rule) => !rule.active).toList();
 });
 
 /// 按资源类型过滤的规则Provider
-final rulesByResourceTypeProvider = Provider.family<List<Rule>, ResourceType>((ref, type) {
+final rulesByResourceTypeProvider =
+    Provider.family<List<Rule>, ResourceType>((ref, type) {
   final rules = ref.watch(rulesProvider);
   return rules.where((rule) => rule.resourceType == type).toList();
 });
@@ -313,7 +315,8 @@ final transactionRulesProvider = Provider<List<Rule>>((ref) {
 /// 最近执行的规则Provider
 final recentlyExecutedRulesProvider = Provider<List<Rule>>((ref) {
   final rules = ref.watch(rulesProvider);
-  final recentRules = rules.where((rule) => rule.lastExecutedAt != null).toList();
+  final recentRules =
+      rules.where((rule) => rule.lastExecutedAt != null).toList();
   recentRules.sort((a, b) => b.lastExecutedAt!.compareTo(a.lastExecutedAt!));
   return recentRules.take(5).toList();
 });
@@ -322,13 +325,14 @@ final recentlyExecutedRulesProvider = Provider<List<Rule>>((ref) {
 final ruleStatsProvider = Provider<Map<String, dynamic>>((ref) {
   final rules = ref.watch(rulesProvider);
   final logs = ref.watch(ruleLogsProvider);
-  
+
   return {
     'totalRules': rules.length,
     'activeRules': rules.where((r) => r.active).length,
     'inactiveRules': rules.where((r) => !r.active).length,
     'totalExecutions': rules.fold(0, (sum, rule) => sum + rule.executionCount),
     'recentLogs': logs.take(10).length,
-    'successRate': logs.isEmpty ? 0.0 : logs.where((l) => l.success).length / logs.length,
+    'successRate':
+        logs.isEmpty ? 0.0 : logs.where((l) => l.success).length / logs.length,
   };
 });

@@ -11,7 +11,7 @@ class AddTransactionPage extends StatefulWidget {
 class _AddTransactionPageState extends State<AddTransactionPage> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
-  
+
   String _transactionType = 'expense'; // expense, income
   String _selectedCategory = '餐饮';
   DateTime _selectedDate = DateTime.now();
@@ -80,9 +80,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentCategories = _transactionType == 'expense' 
-        ? _expenseCategories 
-        : _incomeCategories;
+    final currentCategories =
+        _transactionType == 'expense' ? _expenseCategories : _incomeCategories;
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -128,7 +127,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                 ],
               ),
             ),
-            
+
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
@@ -148,14 +147,16 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                               onTap: () {
                                 setState(() {
                                   _transactionType = 'expense';
-                                  _selectedCategory = _expenseCategories[0]['name'];
+                                  _selectedCategory =
+                                      _expenseCategories[0]['name'];
                                 });
                               },
                               child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
                                 decoration: BoxDecoration(
-                                  color: _transactionType == 'expense' 
-                                      ? Colors.red 
+                                  color: _transactionType == 'expense'
+                                      ? Colors.red
                                       : Colors.transparent,
                                   borderRadius: const BorderRadius.only(
                                     topLeft: Radius.circular(12),
@@ -166,8 +167,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                                   '支出',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    color: _transactionType == 'expense' 
-                                        ? Colors.white 
+                                    color: _transactionType == 'expense'
+                                        ? Colors.white
                                         : Colors.black,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -180,14 +181,16 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                               onTap: () {
                                 setState(() {
                                   _transactionType = 'income';
-                                  _selectedCategory = _incomeCategories[0]['name'];
+                                  _selectedCategory =
+                                      _incomeCategories[0]['name'];
                                 });
                               },
                               child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
                                 decoration: BoxDecoration(
-                                  color: _transactionType == 'income' 
-                                      ? Colors.green 
+                                  color: _transactionType == 'income'
+                                      ? Colors.green
                                       : Colors.transparent,
                                   borderRadius: const BorderRadius.only(
                                     topRight: Radius.circular(12),
@@ -198,8 +201,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                                   '收入',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    color: _transactionType == 'income' 
-                                        ? Colors.white 
+                                    color: _transactionType == 'income'
+                                        ? Colors.white
                                         : Colors.black,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -210,9 +213,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // 金额输入
                     Container(
                       padding: const EdgeInsets.all(20),
@@ -234,7 +237,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                           TextField(
                             controller: _amountController,
                             keyboardType: TextInputType.number,
-                            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold),
                             decoration: InputDecoration(
                               hintText: '0.00',
                               prefixText: '¥ ',
@@ -250,9 +254,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // 分类选择
                     const Text(
                       '分类',
@@ -262,11 +266,12 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    
+
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 4,
                         childAspectRatio: 1,
                         crossAxisSpacing: 12,
@@ -275,8 +280,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                       itemCount: currentCategories.length,
                       itemBuilder: (context, index) {
                         final category = currentCategories[index];
-                        final isSelected = category['name'] == _selectedCategory;
-                        
+                        final isSelected =
+                            category['name'] == _selectedCategory;
+
                         return GestureDetector(
                           onTap: () {
                             setState(() {
@@ -285,10 +291,14 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: isSelected ? category['color'].withOpacity(0.2) : Colors.white,
+                              color: isSelected
+                                  ? category['color'].withOpacity(0.2)
+                                  : Colors.white,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: isSelected ? category['color'] : Colors.grey[200]!,
+                                color: isSelected
+                                    ? category['color']
+                                    : Colors.grey[200]!,
                                 width: isSelected ? 2 : 1,
                               ),
                             ),
@@ -305,7 +315,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                                   category['name'],
                                   style: TextStyle(
                                     fontSize: 12,
-                                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w600
+                                        : FontWeight.normal,
                                   ),
                                 ),
                               ],
@@ -314,9 +326,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                         );
                       },
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // 备注
                     Container(
                       padding: const EdgeInsets.all(20),
@@ -347,9 +359,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // 日期选择
                     Container(
                       padding: const EdgeInsets.all(20),

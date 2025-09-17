@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT t.id, t.name, t.usage_count FROM tags t JOIN ledgers l ON t.ledger_id=l.id WHERE l.family_id=$1 ORDER BY t.usage_count DESC, lower(t.name) ASC",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "usage_count",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "6707dc4ca72395a557e4af0d91b10fb7057e9d9fe83163baf2cd827c3332287f"
+}

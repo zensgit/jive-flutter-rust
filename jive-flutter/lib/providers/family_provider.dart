@@ -36,7 +36,7 @@ class FamilyState {
   /// 获取当前用户在当前Family中的角色
   family_model.FamilyRole? get currentRole {
     if (currentFamily == null) return null;
-    
+
     final familyInfo = userFamilies.firstWhere(
       (info) => info.family.id == currentFamily!.id,
       orElse: () => family_model.UserFamilyInfo(
@@ -45,7 +45,7 @@ class FamilyState {
         joinedAt: DateTime.now(),
       ),
     );
-    
+
     return familyInfo.role;
   }
 
@@ -64,7 +64,8 @@ class FamilyController extends StateNotifier<FamilyState> {
   final FamilyService _familyService;
   final Ref _ref;
 
-  FamilyController(this._familyService, this._ref) : super(const FamilyState()) {
+  FamilyController(this._familyService, this._ref)
+      : super(const FamilyState()) {
     _initialize();
   }
 
@@ -95,7 +96,7 @@ class FamilyController extends StateNotifier<FamilyState> {
     try {
       // 获取用户的所有Family
       final families = await _familyService.getUserFamilies();
-      
+
       // 获取当前Family
       family_model.Family? currentFamily;
       if (families.isNotEmpty) {
@@ -200,11 +201,13 @@ class FamilyController extends StateNotifier<FamilyState> {
   }
 
   /// 更新Family信息
-  Future<bool> updateFamily(String familyId, Map<String, dynamic> updates) async {
+  Future<bool> updateFamily(
+      String familyId, Map<String, dynamic> updates) async {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      final updatedFamily = await _familyService.updateFamily(familyId, updates);
+      final updatedFamily =
+          await _familyService.updateFamily(familyId, updates);
 
       // 更新本地状态
       final updatedFamilies = state.userFamilies.map((f) {
@@ -221,8 +224,8 @@ class FamilyController extends StateNotifier<FamilyState> {
 
       state = state.copyWith(
         userFamilies: updatedFamilies,
-        currentFamily: state.currentFamily?.id == familyId 
-            ? updatedFamily 
+        currentFamily: state.currentFamily?.id == familyId
+            ? updatedFamily
             : state.currentFamily,
         isLoading: false,
       );
@@ -252,9 +255,8 @@ class FamilyController extends StateNotifier<FamilyState> {
       await _familyService.leaveFamily(familyId);
 
       // 从列表中移除
-      final updatedFamilies = state.userFamilies
-          .where((f) => f.family.id != familyId)
-          .toList();
+      final updatedFamilies =
+          state.userFamilies.where((f) => f.family.id != familyId).toList();
 
       // 如果离开的是当前Family，切换到另一个
       family_model.Family? newCurrentFamily = state.currentFamily;
@@ -298,7 +300,8 @@ final familyServiceProvider = Provider<FamilyService>((ref) {
   return FamilyService();
 });
 
-final familyControllerProvider = StateNotifierProvider<FamilyController, FamilyState>((ref) {
+final familyControllerProvider =
+    StateNotifierProvider<FamilyController, FamilyState>((ref) {
   final familyService = ref.watch(familyServiceProvider);
   return FamilyController(familyService, ref);
 });

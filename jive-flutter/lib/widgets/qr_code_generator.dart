@@ -58,7 +58,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
       parent: _animationController,
       curve: Curves.elasticOut,
     ));
-    
+
     // 延迟显示动画
     Future.delayed(const Duration(milliseconds: 100), () {
       if (mounted) {
@@ -82,7 +82,8 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
 
       // 保存到临时文件
       final directory = await getTemporaryDirectory();
-      final imagePath = '${directory.path}/qr_code_${DateTime.now().millisecondsSinceEpoch}.png';
+      final imagePath =
+          '${directory.path}/qr_code_${DateTime.now().millisecondsSinceEpoch}.png';
       final imageFile = File(imagePath);
       await imageFile.writeAsBytes(image);
 
@@ -108,7 +109,8 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
       RenderRepaintBoundary boundary =
           _qrKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
       ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-      ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
       return byteData?.buffer.asUint8List();
     } catch (e) {
       return null;
@@ -134,7 +136,8 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
 
       // 获取保存路径
       final directory = await getApplicationDocumentsDirectory();
-      final imagePath = '${directory.path}/qr_code_${DateTime.now().millisecondsSinceEpoch}.png';
+      final imagePath =
+          '${directory.path}/qr_code_${DateTime.now().millisecondsSinceEpoch}.png';
       final imageFile = File(imagePath);
       await imageFile.writeAsBytes(image);
 
@@ -163,8 +166,10 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final qrForegroundColor = widget.foregroundColor ?? theme.colorScheme.onSurface;
-    final qrBackgroundColor = widget.backgroundColor ?? theme.colorScheme.surface;
+    final qrForegroundColor =
+        widget.foregroundColor ?? theme.colorScheme.onSurface;
+    final qrBackgroundColor =
+        widget.backgroundColor ?? theme.colorScheme.surface;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -185,9 +190,9 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
             textAlign: TextAlign.center,
           ),
         ],
-        
+
         const SizedBox(height: 24),
-        
+
         // 二维码
         Center(
           child: _isGenerating
@@ -235,9 +240,9 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
                   ),
                 ),
         ),
-        
+
         const SizedBox(height: 24),
-        
+
         // 数据内容
         Container(
           padding: const EdgeInsets.all(12),
@@ -263,7 +268,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
             ],
           ),
         ),
-        
+
         // 操作按钮
         if (widget.showActions) ...[
           const SizedBox(height: 16),
@@ -317,7 +322,7 @@ class _ActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Material(
       color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
       borderRadius: BorderRadius.circular(12),
@@ -364,7 +369,7 @@ class InvitationQrCodeDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final daysLeft = expiresAt.difference(DateTime.now()).inDays;
-    
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -382,7 +387,7 @@ class InvitationQrCodeDialog extends StatelessWidget {
                 onPressed: () => Navigator.pop(context),
               ),
             ),
-            
+
             // 二维码
             QrCodeGenerator(
               data: inviteLink,
@@ -391,9 +396,9 @@ class InvitationQrCodeDialog extends StatelessWidget {
               size: 200,
               showActions: false,
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // 邀请信息
             Container(
               padding: const EdgeInsets.all(12),
@@ -425,9 +430,9 @@ class InvitationQrCodeDialog extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // 操作按钮
             Row(
               children: [
@@ -488,7 +493,7 @@ class _InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Row(
       children: [
         Icon(icon, size: 16, color: theme.colorScheme.onSurfaceVariant),

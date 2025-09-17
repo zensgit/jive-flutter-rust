@@ -9,17 +9,20 @@ final categoryServiceProvider = Provider<CategoryServiceIntegrated>((ref) {
 });
 
 /// 系统模板状态提供器
-final systemTemplatesProvider = StateNotifierProvider<SystemTemplatesNotifier, AsyncValue<List<SystemCategoryTemplate>>>((ref) {
+final systemTemplatesProvider = StateNotifierProvider<SystemTemplatesNotifier,
+    AsyncValue<List<SystemCategoryTemplate>>>((ref) {
   return SystemTemplatesNotifier(ref.watch(categoryServiceProvider));
 });
 
 /// 用户分类状态提供器
-final userCategoriesProvider = StateNotifierProvider<UserCategoriesNotifier, List<models.Category>>((ref) {
+final userCategoriesProvider =
+    StateNotifierProvider<UserCategoriesNotifier, List<models.Category>>((ref) {
   return UserCategoriesNotifier(ref.watch(categoryServiceProvider));
 });
 
 /// 系统模板状态管理器
-class SystemTemplatesNotifier extends StateNotifier<AsyncValue<List<SystemCategoryTemplate>>> {
+class SystemTemplatesNotifier
+    extends StateNotifier<AsyncValue<List<SystemCategoryTemplate>>> {
   final CategoryServiceIntegrated _service;
 
   SystemTemplatesNotifier(this._service) : super(const AsyncValue.loading()) {
@@ -41,7 +44,8 @@ class SystemTemplatesNotifier extends StateNotifier<AsyncValue<List<SystemCatego
   Future<void> refresh({bool forceRefresh = false}) async {
     try {
       state = const AsyncValue.loading();
-      final templates = await _service.getAllTemplates(forceRefresh: forceRefresh);
+      final templates =
+          await _service.getAllTemplates(forceRefresh: forceRefresh);
       state = AsyncValue.data(templates);
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
@@ -49,10 +53,12 @@ class SystemTemplatesNotifier extends StateNotifier<AsyncValue<List<SystemCatego
   }
 
   /// 按分类获取模板
-  Future<void> loadByClassification(models.CategoryClassification classification) async {
+  Future<void> loadByClassification(
+      models.CategoryClassification classification) async {
     try {
       state = const AsyncValue.loading();
-      final templates = await _service.getTemplatesByClassification(classification);
+      final templates =
+          await _service.getTemplatesByClassification(classification);
       state = AsyncValue.data(templates);
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
@@ -147,7 +153,8 @@ class UserCategoriesNotifier extends StateNotifier<List<models.Category>> {
     String ledgerId,
   ) async {
     try {
-      final category = await _service.importTemplateAsCategory(template, ledgerId);
+      final category =
+          await _service.importTemplateAsCategory(template, ledgerId);
       state = [...state, category];
     } catch (error) {
       rethrow;
@@ -156,7 +163,8 @@ class UserCategoriesNotifier extends StateNotifier<List<models.Category>> {
 }
 
 /// 网络状态提供器
-final networkStatusProvider = StateNotifierProvider<NetworkStatusNotifier, NetworkStatus>((ref) {
+final networkStatusProvider =
+    StateNotifierProvider<NetworkStatusNotifier, NetworkStatus>((ref) {
   return NetworkStatusNotifier(ref.watch(categoryServiceProvider));
 });
 

@@ -26,7 +26,7 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           // 用户信息卡片
           if (user != null) _buildUserCard(context, user),
-          
+
           // 家庭管理
           _buildSection(
             title: '家庭管理',
@@ -41,7 +41,8 @@ class SettingsScreen extends ConsumerWidget {
               ListTile(
                 leading: const Icon(Icons.swap_horiz),
                 title: const Text('家庭切换'),
-                subtitle: Text(ref.watch(currentLedgerProvider)?.name ?? '默认家庭'),
+                subtitle:
+                    Text(ref.watch(currentLedgerProvider)?.name ?? '默认家庭'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () => _showLedgerSwitcher(context, ref),
               ),
@@ -61,7 +62,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ],
           ),
-          
+
           // 账户设置
           _buildSection(
             title: '账户设置',
@@ -82,7 +83,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ],
           ),
-          
+
           // 货币设置（精简为统一入口，直接进入 V2 管理页）
           _buildSection(
             title: '多币种设置',
@@ -103,7 +104,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ],
           ),
-          
+
           // 预算设置
           _buildSection(
             title: '预算设置',
@@ -121,12 +122,14 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: const Text('接近预算限额时提醒'),
                 value: settings.budgetNotifications ?? true,
                 onChanged: (value) {
-                  ref.read(settingsProvider.notifier).updateSetting('budgetNotifications', value);
+                  ref
+                      .read(settingsProvider.notifier)
+                      .updateSetting('budgetNotifications', value);
                 },
               ),
             ],
           ),
-          
+
           // 数据管理
           _buildSection(
             title: '数据管理',
@@ -154,7 +157,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ],
           ),
-          
+
           // 通用设置
           _buildSection(
             title: '通用设置',
@@ -189,7 +192,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ],
           ),
-          
+
           // 关于
           _buildSection(
             title: '关于',
@@ -209,7 +212,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ],
           ),
-          
+
           // 退出登录
           Padding(
             padding: const EdgeInsets.all(16),
@@ -223,7 +226,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 20),
         ],
       ),
@@ -232,13 +235,14 @@ class SettingsScreen extends ConsumerWidget {
 
   Widget _buildUserCard(BuildContext context, dynamic user) {
     // Safely extract user data with fallbacks
-    final userName = user?.name?.toString().isNotEmpty == true ? user.name.toString() : '用户';
+    final userName =
+        user?.name?.toString().isNotEmpty == true ? user.name.toString() : '用户';
     final userEmail = user?.email?.toString() ?? '';
     final userAvatar = user?.avatar?.toString();
-    
+
     // Get safe initial for avatar
     final initial = StringUtils.safeInitial(userName);
-    
+
     return Card(
       margin: const EdgeInsets.all(16),
       child: Material(
@@ -273,7 +277,8 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSection({required String title, required List<Widget> children}) {
+  Widget _buildSection(
+      {required String title, required List<Widget> children}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -343,11 +348,11 @@ class SettingsScreen extends ConsumerWidget {
     // Navigate to exchange rate screen
     context.go('/settings/exchange-rate');
   }
-  
+
   void _showBaseCurrencyPicker(BuildContext context, WidgetRef ref) {
     final currencies = ref.read(availableCurrenciesProvider);
     final currentBase = ref.read(baseCurrencyProvider);
-    
+
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -407,14 +412,17 @@ class SettingsScreen extends ConsumerWidget {
                             ),
                             ElevatedButton(
                               onPressed: () => Navigator.pop(ctx, true),
-                              style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.orange),
                               child: const Text('确定更换'),
                             ),
                           ],
                         ),
                       );
                       if (confirmed == true) {
-                        await ref.read(currencyProvider.notifier).setBaseCurrency(currency.code);
+                        await ref
+                            .read(currencyProvider.notifier)
+                            .setBaseCurrency(currency.code);
                         if (context.mounted) Navigator.pop(context);
                       }
                     },
@@ -427,7 +435,6 @@ class SettingsScreen extends ConsumerWidget {
       ),
     );
   }
-  
 
   void _navigateToBudgetTemplates(BuildContext context) {
     // TODO: 实现预算模板页面
@@ -552,12 +559,11 @@ class LedgerManagementScreen extends ConsumerWidget {
 
   Widget _buildLedgerTile(BuildContext context, WidgetRef ref, dynamic ledger) {
     final isDefault = ref.watch(currentLedgerProvider)?.id == ledger.id;
-    
+
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: isDefault 
-            ? Theme.of(context).primaryColor 
-            : Colors.grey[300],
+        backgroundColor:
+            isDefault ? Theme.of(context).primaryColor : Colors.grey[300],
         child: Icon(
           _getLedgerIcon(ledger.type),
           color: isDefault ? Colors.white : Colors.grey[600],
@@ -692,9 +698,9 @@ class CurrencySelectionScreen extends ConsumerWidget {
             subtitle: Text(currency['code']!),
             onTap: () {
               ref.read(settingsProvider.notifier).updateSetting(
-                'defaultCurrency',
-                '${currency['code']} - ${currency['name']}',
-              );
+                    'defaultCurrency',
+                    '${currency['code']} - ${currency['name']}',
+                  );
               Navigator.pop(context);
             },
           );

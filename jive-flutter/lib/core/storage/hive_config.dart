@@ -23,7 +23,8 @@ class HiveConfig {
   static const String transactionsBox = 'transactions_box';
   static const String ledgersBox = 'ledgers_box';
   static const String categoriesBox = 'categories_box';
-  static const String preferencesBox = 'preferences'; // For currency preferences
+  static const String preferencesBox =
+      'preferences'; // For currency preferences
 
   // 类型ID常量
   static const int userTypeId = 0;
@@ -39,7 +40,7 @@ class HiveConfig {
   static Future<void> init() async {
     // Flutter环境初始化
     await Hive.initFlutter();
-    
+
     // Web平台不需要设置路径
     if (!kIsWeb) {
       // 获取文档目录路径
@@ -49,14 +50,14 @@ class HiveConfig {
         await hiveDir.create(recursive: true);
       }
     }
-    
+
     // 注册适配器（如果尚未注册）
     _registerAdapters();
-    
+
     // 打开常用的 Box
     await Future.wait([
       Hive.openBox<User>(userBox),
-      Hive.openBox(settingsBox), 
+      Hive.openBox(settingsBox),
       Hive.openBox(cacheBox),
       Hive.openBox(preferencesBox), // Open preferences box for currency
       Hive.openBox<Account>(accountsBox),
@@ -65,7 +66,7 @@ class HiveConfig {
       Hive.openBox<TransactionCategory>(categoriesBox),
     ]);
   }
-  
+
   /// 注册类型适配器
   static void _registerAdapters() {
     if (!Hive.isAdapterRegistered(userTypeId)) {
@@ -96,28 +97,30 @@ class HiveConfig {
 
   /// 获取用户数据 Box
   static Box<User> getUserBox() => Hive.box<User>(userBox);
-  
-  /// 获取设置数据 Box  
+
+  /// 获取设置数据 Box
   static Box getSettingsBox() => Hive.box(settingsBox);
-  
+
   /// 获取偏好设置数据 Box
   static Box getPreferencesBox() => Hive.box(preferencesBox);
-  
+
   /// 获取缓存数据 Box
   static Box getCacheBox() => Hive.box(cacheBox);
-  
+
   /// 获取账户数据 Box
   static Box<Account> getAccountsBox() => Hive.box<Account>(accountsBox);
-  
+
   /// 获取交易数据 Box
-  static Box<Transaction> getTransactionsBox() => Hive.box<Transaction>(transactionsBox);
-  
+  static Box<Transaction> getTransactionsBox() =>
+      Hive.box<Transaction>(transactionsBox);
+
   /// 获取账本数据 Box
   static Box<Ledger> getLedgersBox() => Hive.box<Ledger>(ledgersBox);
-  
+
   /// 获取分类数据 Box
-  static Box<TransactionCategory> getCategoriesBox() => Hive.box<TransactionCategory>(categoriesBox);
-  
+  static Box<TransactionCategory> getCategoriesBox() =>
+      Hive.box<TransactionCategory>(categoriesBox);
+
   /// 清理所有数据
   static Future<void> clearAll() async {
     await Future.wait([
@@ -130,34 +133,35 @@ class HiveConfig {
       getCategoriesBox().clear(),
     ]);
   }
-  
+
   /// 清理缓存数据
   static Future<void> clearCache() async {
     await getCacheBox().clear();
   }
-  
+
   /// 保存用户数据
   static Future<void> saveUser(User user) async {
     await getUserBox().put('current_user', user);
   }
-  
+
   /// 获取当前用户
   static User? getCurrentUser() {
     return getUserBox().get('current_user');
   }
-  
+
   /// 保存设置
   static Future<void> saveSetting(String key, dynamic value) async {
     await getSettingsBox().put(key, value);
   }
-  
+
   /// 获取设置
   static T? getSetting<T>(String key, {T? defaultValue}) {
     return getSettingsBox().get(key, defaultValue: defaultValue) as T?;
   }
-  
+
   /// 缓存数据
-  static Future<void> cacheData(String key, dynamic data, {Duration? expiry}) async {
+  static Future<void> cacheData(String key, dynamic data,
+      {Duration? expiry}) async {
     final cacheEntry = {
       'data': data,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
@@ -165,15 +169,15 @@ class HiveConfig {
     };
     await getCacheBox().put(key, cacheEntry);
   }
-  
+
   /// 获取缓存数据
   static T? getCachedData<T>(String key) {
     final cache = getCacheBox().get(key);
     if (cache == null) return null;
-    
+
     final timestamp = cache['timestamp'] as int;
     final expiry = cache['expiry'] as int?;
-    
+
     if (expiry != null) {
       final now = DateTime.now().millisecondsSinceEpoch;
       if (now - timestamp > expiry) {
@@ -181,10 +185,10 @@ class HiveConfig {
         return null;
       }
     }
-    
+
     return cache['data'] as T?;
   }
-  
+
   /// 关闭所有Box
   static Future<void> closeAll() async {
     await Hive.close();

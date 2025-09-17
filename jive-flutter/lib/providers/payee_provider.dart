@@ -23,13 +23,13 @@ class PayeeNotifier extends StateNotifier<List<Payee>> {
       Payee(
         id: '2',
         name: '李四',
-        color: PayeeColors.colors[1], 
+        color: PayeeColors.colors[1],
         payeeType: PayeeType.familyPayee,
         source: PayeeSource.manual,
         transactionsCount: 18,
         createdAt: DateTime.now().subtract(const Duration(days: 50)),
       ),
-      
+
       // 商户
       Payee(
         id: '3',
@@ -73,7 +73,7 @@ class PayeeNotifier extends StateNotifier<List<Payee>> {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
-    
+
     state = [...state, newPayee];
     // TODO: 保存到存储
   }
@@ -99,17 +99,18 @@ class PayeeNotifier extends StateNotifier<List<Payee>> {
   void mergePayees(String fromPayeeId, String toPayeeId) {
     final fromPayee = state.firstWhere((p) => p.id == fromPayeeId);
     final toPayee = state.firstWhere((p) => p.id == toPayeeId);
-    
+
     // 更新目标交易对方的交易次数
     final updatedToPayee = toPayee.copyWith(
-      transactionsCount: toPayee.transactionsCount + fromPayee.transactionsCount,
+      transactionsCount:
+          toPayee.transactionsCount + fromPayee.transactionsCount,
       updatedAt: DateTime.now(),
     );
-    
+
     updatePayee(updatedToPayee);
-    
+
     // TODO: 更新所有使用fromPayee的交易
-    
+
     // 删除源交易对方
     deletePayee(fromPayeeId);
   }
@@ -158,11 +159,11 @@ class PayeeNotifier extends StateNotifier<List<Payee>> {
   /// 搜索交易对方
   List<Payee> searchPayees(String query) {
     if (query.isEmpty) return state;
-    
+
     final lowerQuery = query.toLowerCase();
-    return state.where((payee) =>
-      payee.name.toLowerCase().contains(lowerQuery)
-    ).toList();
+    return state
+        .where((payee) => payee.name.toLowerCase().contains(lowerQuery))
+        .toList();
   }
 }
 
@@ -172,7 +173,8 @@ final payeesProvider = StateNotifierProvider<PayeeNotifier, List<Payee>>((ref) {
 });
 
 /// 按类型过滤的交易对方Provider
-final payeesByTypeProvider = Provider.family<List<Payee>, PayeeType>((ref, type) {
+final payeesByTypeProvider =
+    Provider.family<List<Payee>, PayeeType>((ref, type) {
   final payees = ref.watch(payeesProvider);
   return payees.where((payee) => payee.payeeType == type).toList();
 });
@@ -191,7 +193,8 @@ final providerPayeesProvider = Provider<List<Payee>>((ref) {
 final popularPayeesProvider = Provider<List<Payee>>((ref) {
   final payees = ref.watch(payeesProvider);
   final sortedPayees = [...payees];
-  sortedPayees.sort((a, b) => b.transactionsCount.compareTo(a.transactionsCount));
+  sortedPayees
+      .sort((a, b) => b.transactionsCount.compareTo(a.transactionsCount));
   return sortedPayees.take(10).toList();
 });
 
@@ -208,7 +211,8 @@ final recentPayeesProvider = Provider<List<Payee>>((ref) {
 });
 
 /// 按来源分类的交易对方Provider
-final payeesBySourceProvider = Provider.family<List<Payee>, PayeeSource>((ref, source) {
+final payeesBySourceProvider =
+    Provider.family<List<Payee>, PayeeSource>((ref, source) {
   final payees = ref.watch(payeesProvider);
   return payees.where((payee) => payee.source == source).toList();
 });

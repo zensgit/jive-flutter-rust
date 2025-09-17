@@ -33,7 +33,7 @@ class BalanceChart extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final primaryColor = lineColor ?? theme.primaryColor;
-    
+
     if (data.isEmpty) {
       return _buildEmptyState(context);
     }
@@ -88,7 +88,8 @@ class BalanceChart extends ConsumerWidget {
                       showTitles: true,
                       interval: _calculateInterval(),
                       reservedSize: 60,
-                      getTitlesWidget: (value, meta) => _buildLeftTitle(context, ref, value, meta),
+                      getTitlesWidget: (value, meta) =>
+                          _buildLeftTitle(context, ref, value, meta),
                     ),
                   ),
                 ),
@@ -152,7 +153,8 @@ class BalanceChart extends ConsumerWidget {
                         final index = touchedSpot.spotIndex;
                         if (index < data.length) {
                           final point = data[index];
-                          final amountStr = formatter.formatCurrency(point.amount, point.currencyCode ?? base);
+                          final amountStr = formatter.formatCurrency(
+                              point.amount, point.currencyCode ?? base);
                           return LineTooltipItem(
                             '${point.formattedDate}\n$amountStr',
                             textStyle,
@@ -163,8 +165,8 @@ class BalanceChart extends ConsumerWidget {
                     },
                   ),
                   touchCallback: (event, response) {
-                    if (event is FlTapUpEvent && 
-                        response != null && 
+                    if (event is FlTapUpEvent &&
+                        response != null &&
                         response.lineBarSpots != null &&
                         onPointTap != null) {
                       final spotIndex = response.lineBarSpots!.first.spotIndex;
@@ -184,7 +186,7 @@ class BalanceChart extends ConsumerWidget {
 
   Widget _buildEmptyState(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       height: height,
       padding: const EdgeInsets.all(16),
@@ -253,9 +255,11 @@ class BalanceChart extends ConsumerWidget {
     return Container();
   }
 
-  Widget _buildLeftTitle(BuildContext context, WidgetRef ref, double value, TitleMeta meta) {
+  Widget _buildLeftTitle(
+      BuildContext context, WidgetRef ref, double value, TitleMeta meta) {
     final base = ref.watch(baseCurrencyProvider).code;
-    final formatted = ref.read(currencyProvider.notifier).formatCurrency(value, base);
+    final formatted =
+        ref.read(currencyProvider.notifier).formatCurrency(value, base);
     // Compact large values to keep axis tidy
     String label;
     final abs = value.abs();
@@ -297,7 +301,7 @@ class BalanceChart extends ConsumerWidget {
         fontWeight: FontWeight.bold,
         fontSize: 12,
       );
-      
+
       final index = touchedSpot.spotIndex;
       if (index < data.length) {
         final point = data[index];
@@ -306,7 +310,7 @@ class BalanceChart extends ConsumerWidget {
           textStyle,
         );
       }
-      
+
       return LineTooltipItem('', textStyle);
     }).toList();
   }
@@ -327,10 +331,10 @@ class BalancePoint {
 
   String get formattedDate {
     if (label != null) return label!;
-    
+
     final now = DateTime.now();
     final difference = now.difference(date).inDays;
-    
+
     if (difference == 0) {
       return '今天';
     } else if (difference == 1) {

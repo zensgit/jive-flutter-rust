@@ -18,7 +18,7 @@ class Payee with _$Payee {
     int? position,
     DateTime? createdAt,
     DateTime? updatedAt,
-    
+
     // 分类关联
     @Default([]) List<String> categoryIds,
     String? primaryCategoryId,
@@ -30,7 +30,7 @@ class Payee with _$Payee {
 /// 交易对方类型
 enum PayeeType {
   @JsonValue('family_payee')
-  familyPayee,  // 家庭成员
+  familyPayee, // 家庭成员
   @JsonValue('provider_payee')
   providerPayee, // 外部商户
 }
@@ -38,20 +38,28 @@ enum PayeeType {
 /// 交易对方来源
 enum PayeeSource {
   @JsonValue('manual')
-  manual,   // 手动创建
+  manual, // 手动创建
   @JsonValue('plaid')
-  plaid,    // 从Plaid同步
+  plaid, // 从Plaid同步
   @JsonValue('synth')
-  synth,    // 系统生成
+  synth, // 系统生成
   @JsonValue('ai')
-  ai,       // AI识别
+  ai, // AI识别
 }
 
 /// 交易对方颜色
 class PayeeColors {
   static const List<String> colors = [
-    '#e99537', '#4da568', '#6471eb', '#db5a54', '#df4e92',
-    '#c44fe9', '#eb5429', '#61c9ea', '#805dee', '#6ad28a',
+    '#e99537',
+    '#4da568',
+    '#6471eb',
+    '#db5a54',
+    '#df4e92',
+    '#c44fe9',
+    '#eb5429',
+    '#61c9ea',
+    '#805dee',
+    '#6ad28a',
   ];
 }
 
@@ -66,5 +74,6 @@ class PayeeCategory with _$PayeeCategory {
     DateTime? lastUsedAt,
   }) = _PayeeCategory;
 
-  factory PayeeCategory.fromJson(Map<String, dynamic> json) => _$PayeeCategoryFromJson(json);
+  factory PayeeCategory.fromJson(Map<String, dynamic> json) =>
+      _$PayeeCategoryFromJson(json);
 }

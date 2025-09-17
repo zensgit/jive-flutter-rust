@@ -162,24 +162,25 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
                   ),
                 ),
                 const SizedBox(height: 16),
-                ...models.ThemeMode.values.map((mode) => RadioListTile<models.ThemeMode>(
-                  title: Text(mode.displayName),
-                  subtitle: Text(_getThemeModeDescription(mode)),
-                  value: mode,
-                  groupValue: _themeService.currentSettings.themeMode,
-                  onChanged: (value) {
-                    if (value != null) {
-                      _themeService.setThemeMode(value);
-                    }
-                  },
-                )),
+                ...models.ThemeMode.values
+                    .map((mode) => RadioListTile<models.ThemeMode>(
+                          title: Text(mode.displayName),
+                          subtitle: Text(_getThemeModeDescription(mode)),
+                          value: mode,
+                          groupValue: _themeService.currentSettings.themeMode,
+                          onChanged: (value) {
+                            if (value != null) {
+                              _themeService.setThemeMode(value);
+                            }
+                          },
+                        )),
               ],
             ),
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // 当前主题信息
         if (_themeService.activeTheme != null) ...[
           Card(
@@ -235,8 +236,9 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
           itemCount: _themeService.presetThemes.length,
           itemBuilder: (context, index) {
             final theme = _themeService.presetThemes[index];
-            final isActive = _themeService.currentSettings.presetThemeId == theme.id;
-            
+            final isActive =
+                _themeService.currentSettings.presetThemeId == theme.id;
+
             return ThemePreviewCard(
               theme: theme,
               isActive: isActive,
@@ -294,9 +296,9 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
             ),
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // 自定义主题列表
         if (_themeService.customThemes.isNotEmpty) ...[
           const Text(
@@ -319,8 +321,9 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
             itemCount: _themeService.customThemes.length,
             itemBuilder: (context, index) {
               final theme = _themeService.customThemes[index];
-              final isActive = _themeService.currentSettings.customThemeId == theme.id;
-              
+              final isActive =
+                  _themeService.currentSettings.customThemeId == theme.id;
+
               return ThemePreviewCard(
                 theme: theme,
                 isActive: isActive,
@@ -415,7 +418,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
         await ThemeService().applyPresetTheme('preset_eye_bluegrey');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('已应用护眼·蓝灰')), 
+            const SnackBar(content: Text('已应用护眼·蓝灰')),
           );
         }
         break;
@@ -458,7 +461,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
         builder: (context) => const CustomThemeEditor(),
       ),
     );
-    
+
     if (result != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -475,7 +478,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
         builder: (context) => CustomThemeEditor(theme: theme),
       ),
     );
-    
+
     if (result != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -501,7 +504,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
         description: theme.description,
         baseTheme: theme,
       );
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('主题"${newTheme.name}"创建成功'),
@@ -610,7 +613,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
 
   Future<void> _showImportCodeDialog() async {
     final controller = TextEditingController();
-    
+
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -624,7 +627,8 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
               controller: controller,
               decoration: const InputDecoration(
                 labelText: '分享码或链接',
-                hintText: 'ABCD1234 或 https://jivemoney.com/theme/import/ABCD1234',
+                hintText:
+                    'ABCD1234 或 https://jivemoney.com/theme/import/ABCD1234',
                 border: OutlineInputBorder(),
               ),
               textCapitalization: TextCapitalization.characters,
@@ -657,7 +661,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
   Future<void> _importTheme(String input) async {
     try {
       models.CustomThemeData theme;
-      
+
       if (input.startsWith('http')) {
         // 从URL导入
         theme = await _themeService.importThemeFromUrl(input);
@@ -665,7 +669,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
         // 从分享码导入
         theme = await _themeService.importSharedTheme(input);
       }
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('主题"${theme.name}"导入成功'),

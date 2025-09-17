@@ -9,25 +9,26 @@ class DraggableCategoryList extends ConsumerStatefulWidget {
   final String? ledgerId;
   final CategoryClassification? filterClassification;
   final bool enableDragSort;
-  
+
   const DraggableCategoryList({
     Key? key,
     this.ledgerId,
     this.filterClassification,
     this.enableDragSort = true,
   }) : super(key: key);
-  
+
   @override
-  ConsumerState<DraggableCategoryList> createState() => _DraggableCategoryListState();
+  ConsumerState<DraggableCategoryList> createState() =>
+      _DraggableCategoryListState();
 }
 
-class _DraggableCategoryListState extends ConsumerState<DraggableCategoryList> 
+class _DraggableCategoryListState extends ConsumerState<DraggableCategoryList>
     with TickerProviderStateMixin {
   late List<Category> _categories;
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   late AnimationController _dragIndicatorController;
   bool _isDragging = false;
-  
+
   @override
   void initState() {
     super.initState();
@@ -36,35 +37,34 @@ class _DraggableCategoryListState extends ConsumerState<DraggableCategoryList>
       vsync: this,
     );
   }
-  
+
   @override
   void dispose() {
     _dragIndicatorController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final allCategories = ref.watch(userCategoriesProvider);
-    
+
     // 过滤分类
     _categories = [...allCategories];
     if (widget.ledgerId != null) {
-      _categories = _categories
-          .where((c) => c.ledgerId == widget.ledgerId)
-          .toList();
+      _categories =
+          _categories.where((c) => c.ledgerId == widget.ledgerId).toList();
     }
     if (widget.filterClassification != null) {
       _categories = _categories
           .where((c) => c.classification == widget.filterClassification)
           .toList();
     }
-    
+
     // 按位置排序
     _categories.sort((a, b) => (a.position ?? 0).compareTo(b.position ?? 0));
-    
+
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('分类管理'),
@@ -76,9 +76,7 @@ class _DraggableCategoryListState extends ConsumerState<DraggableCategoryList>
               builder: (context, child) {
                 return Icon(
                   widget.enableDragSort ? Icons.drag_handle : Icons.sort,
-                  color: _isDragging 
-                      ? theme.colorScheme.primary 
-                      : null,
+                  color: _isDragging ? theme.colorScheme.primary : null,
                 );
               },
             ),
@@ -101,7 +99,7 @@ class _DraggableCategoryListState extends ConsumerState<DraggableCategoryList>
           : _buildNormalList(),
     );
   }
-  
+
   Widget _buildDraggableList() {
     return ReorderableListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -119,7 +117,7 @@ class _DraggableCategoryListState extends ConsumerState<DraggableCategoryList>
       proxyDecorator: _buildDragProxy,
     );
   }
-  
+
   Widget _buildNormalList() {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -134,7 +132,7 @@ class _DraggableCategoryListState extends ConsumerState<DraggableCategoryList>
       },
     );
   }
-  
+
   Widget _buildDragProxy(Widget child, int index, Animation<double> animation) {
     return AnimatedBuilder(
       animation: animation,
@@ -143,7 +141,7 @@ class _DraggableCategoryListState extends ConsumerState<DraggableCategoryList>
           begin: 0,
           end: 6,
         ).evaluate(animation);
-        
+
         return Material(
           elevation: elevation,
           borderRadius: BorderRadius.circular(8),
@@ -153,7 +151,7 @@ class _DraggableCategoryListState extends ConsumerState<DraggableCategoryList>
       child: child,
     );
   }
-  
+
   void _onReorder(int oldIndex, int newIndex) {
     setState(() {
       if (oldIndex < newIndex) {
@@ -161,15 +159,15 @@ class _DraggableCategoryListState extends ConsumerState<DraggableCategoryList>
       }
       final Category item = _categories.removeAt(oldIndex);
       _categories.insert(newIndex, item);
-      
+
       // 更新位置
       _updatePositions();
     });
   }
-  
+
   void _updatePositions() async {
     final service = CategoryService();
-    
+
     // 批量更新位置
     for (int i = 0; i < _categories.length; i++) {
       final category = _categories[i];
@@ -179,12 +177,12 @@ class _DraggableCategoryListState extends ConsumerState<DraggableCategoryList>
           category.id,
           position: i,
         );
-        
+
         // 更新本地状态
         _categories[i] = category.copyWith(position: i);
       }
     }
-    
+
     // 显示保存成功提示
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -195,7 +193,7 @@ class _DraggableCategoryListState extends ConsumerState<DraggableCategoryList>
       );
     }
   }
-  
+
   void _showCategoryOptions(Category category) {
     showModalBottomSheet(
       context: context,
@@ -209,18 +207,18 @@ class _DraggableCategoryItem extends StatelessWidget {
   final Category category;
   final int index;
   final bool isDragging;
-  
+
   const _DraggableCategoryItem({
     Key? key,
     required this.category,
     required this.index,
     required this.isDragging,
   }) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: ListTile(
@@ -243,7 +241,8 @@ class _DraggableCategoryItem extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Color(int.parse(category.color.replaceFirst('#', '0xFF'))),
+                color:
+                    Color(int.parse(category.color.replaceFirst('#', '0xFF'))),
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -273,7 +272,7 @@ class _DraggableCategoryItem extends StatelessWidget {
       ),
     );
   }
-  
+
   String _getClassificationText(CategoryClassification classification) {
     switch (classification) {
       case CategoryClassification.income:
@@ -291,18 +290,18 @@ class _CategoryListItem extends StatelessWidget {
   final Category category;
   final int index;
   final VoidCallback onTap;
-  
+
   const _CategoryListItem({
     Key? key,
     required this.category,
     required this.index,
     required this.onTap,
   }) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: InkWell(
@@ -317,7 +316,8 @@ class _CategoryListItem extends StatelessWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: Color(int.parse(category.color.replaceFirst('#', '0xFF'))),
+                  color: Color(
+                      int.parse(category.color.replaceFirst('#', '0xFF'))),
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -343,7 +343,8 @@ class _CategoryListItem extends StatelessWidget {
                         Icon(
                           _getClassificationIcon(category.classification),
                           size: 14,
-                          color: _getClassificationColor(category.classification),
+                          color:
+                              _getClassificationColor(category.classification),
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -351,7 +352,8 @@ class _CategoryListItem extends StatelessWidget {
                           style: theme.textTheme.bodySmall,
                         ),
                         const SizedBox(width: 12),
-                        Icon(Icons.receipt_long, size: 14, color: theme.colorScheme.outline),
+                        Icon(Icons.receipt_long,
+                            size: 14, color: theme.colorScheme.outline),
                         const SizedBox(width: 4),
                         Text(
                           '${category.transactionCount}',
@@ -373,7 +375,7 @@ class _CategoryListItem extends StatelessWidget {
       ),
     );
   }
-  
+
   IconData _getClassificationIcon(CategoryClassification classification) {
     switch (classification) {
       case CategoryClassification.income:
@@ -384,7 +386,7 @@ class _CategoryListItem extends StatelessWidget {
         return Icons.swap_horiz;
     }
   }
-  
+
   Color _getClassificationColor(CategoryClassification classification) {
     switch (classification) {
       case CategoryClassification.income:
@@ -395,7 +397,7 @@ class _CategoryListItem extends StatelessWidget {
         return Colors.blue;
     }
   }
-  
+
   String _getClassificationText(CategoryClassification classification) {
     switch (classification) {
       case CategoryClassification.income:
@@ -411,16 +413,16 @@ class _CategoryListItem extends StatelessWidget {
 /// 分类选项底部弹窗
 class _CategoryOptionsSheet extends StatelessWidget {
   final Category category;
-  
+
   const _CategoryOptionsSheet({
     Key? key,
     required this.category,
   }) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
@@ -435,7 +437,8 @@ class _CategoryOptionsSheet extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: Color(int.parse(category.color.replaceFirst('#', '0xFF'))),
+                    color: Color(
+                        int.parse(category.color.replaceFirst('#', '0xFF'))),
                     shape: BoxShape.circle,
                   ),
                   child: Center(
@@ -466,16 +469,17 @@ class _CategoryOptionsSheet extends StatelessWidget {
               ],
             ),
           ),
-          
+
           const Divider(height: 32),
-          
+
           // 操作选项
           ListTile(
             leading: const Icon(Icons.edit),
             title: const Text('编辑分类'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushNamed(context, '/category/edit', arguments: category);
+              Navigator.pushNamed(context, '/category/edit',
+                  arguments: category);
             },
           ),
           ListTile(
@@ -506,7 +510,8 @@ class _CategoryOptionsSheet extends StatelessWidget {
           const Divider(),
           ListTile(
             leading: Icon(Icons.delete, color: theme.colorScheme.error),
-            title: Text('删除分类', style: TextStyle(color: theme.colorScheme.error)),
+            title:
+                Text('删除分类', style: TextStyle(color: theme.colorScheme.error)),
             onTap: () {
               Navigator.pop(context);
               // TODO: 显示删除确认对话框

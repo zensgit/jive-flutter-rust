@@ -14,7 +14,7 @@ class TransactionsScreen extends ConsumerStatefulWidget {
   ConsumerState<TransactionsScreen> createState() => _TransactionsScreenState();
 }
 
-class _TransactionsScreenState extends ConsumerState<TransactionsScreen> 
+class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _selectedFilter = 'all';
@@ -83,7 +83,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
     if (transactionState.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    
+
     if (transactionState.error != null) {
       final errorText = transactionState.error.toString();
       return Center(
@@ -98,7 +98,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
               spacing: 12,
               children: [
                 ElevatedButton(
-                  onPressed: () => ref.read(transactionControllerProvider.notifier).refresh(),
+                  onPressed: () => ref
+                      .read(transactionControllerProvider.notifier)
+                      .refresh(),
                   child: const Text('重试'),
                 ),
                 OutlinedButton.icon(
@@ -119,14 +121,16 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         ),
       );
     }
-    
-    final filtered = _filterTransactions(transactionState.filteredTransactions, type);
+
+    final filtered =
+        _filterTransactions(transactionState.filteredTransactions, type);
     if (filtered.isEmpty) {
       return _buildEmptyState(type);
     }
-    
+
     return RefreshIndicator(
-      onRefresh: () => ref.read(transactionControllerProvider.notifier).refresh(),
+      onRefresh: () =>
+          ref.read(transactionControllerProvider.notifier).refresh(),
       child: ListView.builder(
         padding: const EdgeInsets.only(bottom: 80),
         itemCount: filtered.length,
@@ -146,7 +150,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
   Widget _buildEmptyState(String type) {
     String message;
     IconData icon;
-    
+
     switch (type) {
       case 'expense':
         message = '暂无支出记录';
@@ -164,7 +168,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         message = '暂无交易记录';
         icon = Icons.receipt_long;
     }
-    
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -193,9 +197,10 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
     );
   }
 
-  List<Transaction> _filterTransactions(List<Transaction> transactions, String type) {
+  List<Transaction> _filterTransactions(
+      List<Transaction> transactions, String type) {
     if (type == 'all') return transactions;
-    
+
     return transactions.where((t) {
       switch (type) {
         case 'expense':

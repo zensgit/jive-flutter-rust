@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers/category_provider_simple.dart';
@@ -41,7 +42,9 @@ class NetworkTestScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              ref.read(systemTemplatesProvider.notifier).refresh(forceRefresh: true);
+              ref
+                  .read(systemTemplatesProvider.notifier)
+                  .refresh(forceRefresh: true);
             },
           ),
         ],
@@ -50,14 +53,21 @@ class NetworkTestScreen extends ConsumerWidget {
         children: [
           // Network Status Card
           Card(
-            color: networkStatus.hasNetworkData ? Colors.green[100] : Colors.orange[100],
+            color: networkStatus.hasNetworkData
+                ? Colors.green[100]
+                : Colors.orange[100],
             child: ListTile(
               leading: Icon(
-                networkStatus.hasNetworkData ? Icons.cloud_done : Icons.cloud_off,
-                color: networkStatus.hasNetworkData ? Colors.green : Colors.orange,
+                networkStatus.hasNetworkData
+                    ? Icons.cloud_done
+                    : Icons.cloud_off,
+                color:
+                    networkStatus.hasNetworkData ? Colors.green : Colors.orange,
               ),
               title: Text(
-                networkStatus.hasNetworkData ? 'Network Data Available' : 'Using Local Data',
+                networkStatus.hasNetworkData
+                    ? 'Network Data Available'
+                    : 'Using Local Data',
               ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,14 +76,15 @@ class NetworkTestScreen extends ConsumerWidget {
                   if (networkStatus.lastSync != null)
                     Text('Last Sync: ${networkStatus.lastSync!.toLocal()}'),
                   if (networkStatus.error != null)
-                    Text('Error: ${networkStatus.error}', style: const TextStyle(color: Colors.red)),
+                    Text('Error: ${networkStatus.error}',
+                        style: const TextStyle(color: Colors.red)),
                 ],
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Templates List
           Expanded(
             child: templatesAsync.when(
@@ -91,13 +102,16 @@ class NetworkTestScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                    const Icon(Icons.error_outline,
+                        size: 64, color: Colors.red),
                     const SizedBox(height: 16),
                     Text('Error: $error'),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
-                        ref.read(systemTemplatesProvider.notifier).refresh(forceRefresh: true);
+                        ref
+                            .read(systemTemplatesProvider.notifier)
+                            .refresh(forceRefresh: true);
                       },
                       child: const Text('Retry'),
                     ),
@@ -129,18 +143,18 @@ class NetworkTestScreen extends ConsumerWidget {
     try {
       final service = ref.read(categoryServiceProvider);
       final templates = await service.getAllTemplates(forceRefresh: true);
-      print('✅ Network test successful: Loaded ${templates.length} templates');
-      
+      debugPrint(
+          '✅ Network test successful: Loaded ${templates.length} templates');
+
       // Test featured templates
       final featured = await service.getFeaturedTemplates();
-      print('✅ Featured templates: ${featured.length}');
-      
+      debugPrint('✅ Featured templates: ${featured.length}');
+
       // Test search
       final searchResults = await service.searchTemplates('工资');
-      print('✅ Search results for "工资": ${searchResults.length}');
-      
+      debugPrint('✅ Search results for "工资": ${searchResults.length}');
     } catch (e) {
-      print('❌ Network test failed: $e');
+      debugPrint('❌ Network test failed: $e');
     }
   }
 }
@@ -177,10 +191,14 @@ class TemplateCard extends StatelessWidget {
             if (template.tags.isNotEmpty)
               Wrap(
                 spacing: 4,
-                children: template.tags.map((tag) => Chip(
-                  label: Text(tag, style: const TextStyle(fontSize: 10)),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                )).toList(),
+                children: template.tags
+                    .map((tag) => Chip(
+                          label:
+                              Text(tag, style: const TextStyle(fontSize: 10)),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ))
+                    .toList(),
               ),
           ],
         ),

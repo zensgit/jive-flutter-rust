@@ -9,38 +9,88 @@ class PayeeManagementPage extends StatefulWidget {
   State<PayeeManagementPage> createState() => _PayeeManagementPageState();
 }
 
-class _PayeeManagementPageState extends State<PayeeManagementPage> 
+class _PayeeManagementPageState extends State<PayeeManagementPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _searchQuery = '';
-  
+
   // 模拟数据
   final List<Map<String, dynamic>> _samplePayees = [
-    {'id': '1', 'name': '张三', 'type': 'family', 'email': 'zhangsan@email.com', 'phone': '13800138001', 'color': Colors.blue, 'transactionCount': 25},
-    {'id': '2', 'name': '李四', 'type': 'family', 'email': 'lisi@email.com', 'phone': '13800138002', 'color': Colors.green, 'transactionCount': 18},
-    {'id': '3', 'name': '王五', 'type': 'family', 'email': '', 'phone': '13800138003', 'color': Colors.orange, 'transactionCount': 12},
-    {'id': '4', 'name': '阿里巴巴', 'type': 'provider', 'email': 'support@alibaba.com', 'phone': '400-800-1688', 'color': Colors.purple, 'transactionCount': 45},
-    {'id': '5', 'name': '腾讯科技', 'type': 'provider', 'email': 'service@tencent.com', 'phone': '400-600-0700', 'color': Colors.teal, 'transactionCount': 32},
-    {'id': '6', 'name': '京东商城', 'type': 'provider', 'email': 'service@jd.com', 'phone': '400-606-5500', 'color': Colors.red, 'transactionCount': 28},
+    {
+      'id': '1',
+      'name': '张三',
+      'type': 'family',
+      'email': 'zhangsan@email.com',
+      'phone': '13800138001',
+      'color': Colors.blue,
+      'transactionCount': 25
+    },
+    {
+      'id': '2',
+      'name': '李四',
+      'type': 'family',
+      'email': 'lisi@email.com',
+      'phone': '13800138002',
+      'color': Colors.green,
+      'transactionCount': 18
+    },
+    {
+      'id': '3',
+      'name': '王五',
+      'type': 'family',
+      'email': '',
+      'phone': '13800138003',
+      'color': Colors.orange,
+      'transactionCount': 12
+    },
+    {
+      'id': '4',
+      'name': '阿里巴巴',
+      'type': 'provider',
+      'email': 'support@alibaba.com',
+      'phone': '400-800-1688',
+      'color': Colors.purple,
+      'transactionCount': 45
+    },
+    {
+      'id': '5',
+      'name': '腾讯科技',
+      'type': 'provider',
+      'email': 'service@tencent.com',
+      'phone': '400-600-0700',
+      'color': Colors.teal,
+      'transactionCount': 32
+    },
+    {
+      'id': '6',
+      'name': '京东商城',
+      'type': 'provider',
+      'email': 'service@jd.com',
+      'phone': '400-606-5500',
+      'color': Colors.red,
+      'transactionCount': 28
+    },
   ];
-  
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    final familyPayees = _samplePayees.where((p) => p['type'] == 'family').toList();
-    final providerPayees = _samplePayees.where((p) => p['type'] == 'provider').toList();
-    
+    final familyPayees =
+        _samplePayees.where((p) => p['type'] == 'family').toList();
+    final providerPayees =
+        _samplePayees.where((p) => p['type'] == 'provider').toList();
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -69,11 +119,15 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
                 const SizedBox(width: 12),
                 _buildStatCard('服务提供商', providerPayees.length, Colors.orange),
                 const SizedBox(width: 12),
-                _buildStatCard('总交易', _samplePayees.fold<int>(0, (sum, p) => sum + (p['transactionCount'] as int)), Colors.purple),
+                _buildStatCard(
+                    '总交易',
+                    _samplePayees.fold<int>(
+                        0, (sum, p) => sum + (p['transactionCount'] as int)),
+                    Colors.purple),
               ],
             ),
           ),
-          
+
           // 搜索栏
           Container(
             color: Colors.white,
@@ -91,11 +145,12 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: Colors.grey[300]!),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
             ),
           ),
-          
+
           // Tab栏
           Container(
             color: Colors.white,
@@ -109,7 +164,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
               ],
             ),
           ),
-          
+
           // 交易对方列表
           Expanded(
             child: TabBarView(
@@ -129,7 +184,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
       ),
     );
   }
-  
+
   Widget _buildStatCard(String label, int value, Color color) {
     return Expanded(
       child: Container(
@@ -162,17 +217,23 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
       ),
     );
   }
-  
+
   Widget _buildPayeeList(String type) {
     final filteredPayees = _samplePayees.where((payee) {
       final matchesType = payee['type'] == type;
       final matchesSearch = _searchQuery.isEmpty ||
-          payee['name'].toString().toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          payee['email'].toString().toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          payee['name']
+              .toString()
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase()) ||
+          payee['email']
+              .toString()
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase()) ||
           payee['phone'].toString().contains(_searchQuery);
       return matchesType && matchesSearch;
     }).toList();
-    
+
     if (filteredPayees.isEmpty) {
       return Center(
         child: Column(
@@ -203,7 +264,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
         ),
       );
     }
-    
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: filteredPayees.length,
@@ -213,7 +274,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
       },
     );
   }
-  
+
   Widget _buildPayeeCard(Map<String, dynamic> payee) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -274,7 +335,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
       ),
     );
   }
-  
+
   void _showAddPayeeDialog() {
     showDialog(
       context: context,
@@ -299,7 +360,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
       ),
     );
   }
-  
+
   void _showEditPayeeDialog(Map<String, dynamic> payee) {
     showDialog(
       context: context,
@@ -324,7 +385,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
       ),
     );
   }
-  
+
   void _showDeletePayeeDialog(Map<String, dynamic> payee) {
     showDialog(
       context: context,
@@ -352,7 +413,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
       ),
     );
   }
-  
+
   void _showPayeeDetails(Map<String, dynamic> payee) {
     showModalBottomSheet(
       context: context,

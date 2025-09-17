@@ -59,17 +59,18 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
     }
   }
 
-  Future<void> _handleBind(WeChatAuthResult authResult, WeChatUserInfo userInfo) async {
+  Future<void> _handleBind(
+      WeChatAuthResult authResult, WeChatUserInfo userInfo) async {
     setState(() {
       _isLoading = true;
     });
 
     try {
       final result = await _authService.bindWechat();
-      
+
       if (result.success) {
         await _loadWeChatInfo(); // 重新加载绑定信息
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -133,7 +134,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
 
     try {
       final result = await _authService.unbindWechat();
-      
+
       if (result.success) {
         setState(() {
           _weChatInfo = null;
@@ -221,9 +222,9 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // 微信绑定卡片
                   if (_weChatInfo != null) ...[
                     // 已绑定状态
@@ -235,7 +236,8 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.wechat, color: Color(0xFF07C160)),
+                                const Icon(Icons.wechat,
+                                    color: Color(0xFF07C160)),
                                 const SizedBox(width: 8),
                                 const Text(
                                   '已绑定微信账户',
@@ -247,12 +249,12 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                               ],
                             ),
                             const SizedBox(height: 16),
-                            
                             Row(
                               children: [
                                 CircleAvatar(
                                   radius: 30,
-                                  backgroundImage: _weChatInfo!.headImgUrl.isNotEmpty
+                                  backgroundImage: _weChatInfo!
+                                          .headImgUrl.isNotEmpty
                                       ? NetworkImage(_weChatInfo!.headImgUrl)
                                       : null,
                                   child: _weChatInfo!.headImgUrl.isEmpty
@@ -262,7 +264,8 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         _weChatInfo!.nickname,
@@ -291,9 +294,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                                 ),
                               ],
                             ),
-                            
                             const SizedBox(height: 20),
-                            
                             SizedBox(
                               width: double.infinity,
                               child: OutlinedButton(
@@ -308,7 +309,9 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                                         height: 20,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
-                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.red),
                                         ),
                                       )
                                     : const Text('解绑微信账户'),
@@ -328,7 +331,8 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.wechat_outlined, color: Color(0xFF07C160)),
+                                const Icon(Icons.wechat_outlined,
+                                    color: Color(0xFF07C160)),
                                 const SizedBox(width: 8),
                                 const Text(
                                   '绑定微信账户',
@@ -340,7 +344,6 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                               ],
                             ),
                             const SizedBox(height: 12),
-                            
                             const Text(
                               '绑定微信账户后，您可以使用微信快速登录，让使用更加便捷。',
                               style: TextStyle(
@@ -348,9 +351,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                                 color: Colors.grey,
                               ),
                             ),
-                            
                             const SizedBox(height: 20),
-                            
                             WeChatLoginButton(
                               buttonText: '绑定微信账户',
                               isBinding: true,
@@ -366,9 +367,9 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                       ),
                     ),
                   ],
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // 安全提示
                   Card(
                     color: Colors.orange[50],

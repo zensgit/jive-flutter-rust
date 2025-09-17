@@ -11,7 +11,7 @@ class BatchOperationBar extends ConsumerStatefulWidget {
   final VoidCallback onSelectAll;
   final bool isAllSelected;
   final String operationType; // 'category' or 'tag'
-  
+
   const BatchOperationBar({
     Key? key,
     required this.selectedIds,
@@ -20,16 +20,16 @@ class BatchOperationBar extends ConsumerStatefulWidget {
     required this.isAllSelected,
     this.operationType = 'category',
   }) : super(key: key);
-  
+
   @override
   ConsumerState<BatchOperationBar> createState() => _BatchOperationBarState();
 }
 
-class _BatchOperationBarState extends ConsumerState<BatchOperationBar> 
+class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _slideAnimation;
-  
+
   @override
   void initState() {
     super.initState();
@@ -46,18 +46,18 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
     ));
     _animationController.forward();
   }
-  
+
   @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     return SlideTransition(
       position: _slideAnimation.drive(
         Tween<Offset>(
@@ -88,7 +88,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
                   onPressed: widget.onCancel,
                   tooltip: '取消批量操作',
                 ),
-                
+
                 // 选中数量
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -100,20 +100,18 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
                     ),
                   ),
                 ),
-                
+
                 // 全选/取消全选
                 TextButton.icon(
                   icon: Icon(
-                    widget.isAllSelected 
-                        ? Icons.deselect 
-                        : Icons.select_all,
+                    widget.isAllSelected ? Icons.deselect : Icons.select_all,
                   ),
                   label: Text(widget.isAllSelected ? '取消全选' : '全选'),
                   onPressed: widget.onSelectAll,
                 ),
-                
+
                 const Spacer(),
-                
+
                 // 批量操作按钮
                 if (widget.selectedIds.isNotEmpty) ...[
                   // 批量移动
@@ -124,7 +122,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
                       onPressed: () => _showBatchMoveDialog(context),
                       color: colorScheme.primary,
                     ),
-                  
+
                   // 批量转换（分类转标签）
                   if (widget.operationType == 'category')
                     _buildActionButton(
@@ -133,7 +131,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
                       onPressed: () => _showBatchConvertDialog(context),
                       color: colorScheme.secondary,
                     ),
-                  
+
                   // 批量归档
                   _buildActionButton(
                     icon: Icons.archive_outlined,
@@ -141,7 +139,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
                     onPressed: () => _showBatchArchiveDialog(context),
                     color: colorScheme.tertiary,
                   ),
-                  
+
                   // 批量删除
                   _buildActionButton(
                     icon: Icons.delete_outline,
@@ -157,7 +155,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
       ),
     );
   }
-  
+
   Widget _buildActionButton({
     required IconData icon,
     required String label,
@@ -193,7 +191,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
       ),
     );
   }
-  
+
   void _showBatchMoveDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -205,7 +203,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
       ),
     );
   }
-  
+
   void _showBatchConvertDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -217,7 +215,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
       ),
     );
   }
-  
+
   void _showBatchArchiveDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -246,7 +244,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
       ),
     );
   }
-  
+
   void _showBatchDeleteDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -330,20 +328,20 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
 class BatchMoveDialog extends ConsumerStatefulWidget {
   final List<String> selectedIds;
   final VoidCallback onConfirm;
-  
+
   const BatchMoveDialog({
     Key? key,
     required this.selectedIds,
     required this.onConfirm,
   }) : super(key: key);
-  
+
   @override
   ConsumerState<BatchMoveDialog> createState() => _BatchMoveDialogState();
 }
 
 class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
   String? _targetParentId;
-  
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -408,21 +406,23 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
 class BatchConvertToTagDialog extends ConsumerStatefulWidget {
   final List<String> selectedIds;
   final VoidCallback onConfirm;
-  
+
   const BatchConvertToTagDialog({
     Key? key,
     required this.selectedIds,
     required this.onConfirm,
   }) : super(key: key);
-  
+
   @override
-  ConsumerState<BatchConvertToTagDialog> createState() => _BatchConvertToTagDialogState();
+  ConsumerState<BatchConvertToTagDialog> createState() =>
+      _BatchConvertToTagDialogState();
 }
 
-class _BatchConvertToTagDialogState extends ConsumerState<BatchConvertToTagDialog> {
+class _BatchConvertToTagDialogState
+    extends ConsumerState<BatchConvertToTagDialog> {
   bool _applyToTransactions = true;
   bool _deleteCategories = false;
-  
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -463,7 +463,7 @@ class _BatchConvertToTagDialogState extends ConsumerState<BatchConvertToTagDialo
         ElevatedButton(
           onPressed: () async {
             final provider = ref.read(categoryManagementProvider);
-            
+
             for (final categoryId in widget.selectedIds) {
               // TODO: 获取分类名称
               await provider.convertCategoryToTag(
@@ -473,7 +473,7 @@ class _BatchConvertToTagDialogState extends ConsumerState<BatchConvertToTagDialo
                 deleteCategory: _deleteCategories,
               );
             }
-            
+
             Navigator.pop(context);
             widget.onConfirm();
             ScaffoldMessenger.of(context).showSnackBar(

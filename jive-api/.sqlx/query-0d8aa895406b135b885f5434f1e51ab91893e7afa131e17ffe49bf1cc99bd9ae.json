@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT currency_code, is_primary, display_order\n            FROM user_currency_preferences\n            WHERE user_id = $1\n            ORDER BY display_order, currency_code\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "currency_code",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "is_primary",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 2,
+        "name": "display_order",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "0d8aa895406b135b885f5434f1e51ab91893e7afa131e17ffe49bf1cc99bd9ae"
+}

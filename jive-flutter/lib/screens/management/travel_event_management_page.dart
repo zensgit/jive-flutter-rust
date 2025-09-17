@@ -5,14 +5,15 @@ class TravelEventManagementPage extends StatefulWidget {
   const TravelEventManagementPage({super.key});
 
   @override
-  State<TravelEventManagementPage> createState() => _TravelEventManagementPageState();
+  State<TravelEventManagementPage> createState() =>
+      _TravelEventManagementPageState();
 }
 
-class _TravelEventManagementPageState extends State<TravelEventManagementPage> 
+class _TravelEventManagementPageState extends State<TravelEventManagementPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _searchQuery = '';
-  
+
   // 模拟数据
   final List<Map<String, dynamic>> _sampleEvents = [
     {
@@ -68,26 +69,30 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
       'color': Colors.purple,
     },
   ];
-  
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    final upcomingEvents = _sampleEvents.where((e) => e['status'] == 'upcoming').length;
-    final activeEvents = _sampleEvents.where((e) => e['status'] == 'active').length;
-    final completedEvents = _sampleEvents.where((e) => e['status'] == 'completed').length;
-    final totalBudget = _sampleEvents.fold<double>(0, (sum, e) => sum + (e['budget'] as double));
-    
+    final upcomingEvents =
+        _sampleEvents.where((e) => e['status'] == 'upcoming').length;
+    final activeEvents =
+        _sampleEvents.where((e) => e['status'] == 'active').length;
+    final completedEvents =
+        _sampleEvents.where((e) => e['status'] == 'completed').length;
+    final totalBudget = _sampleEvents.fold<double>(
+        0, (sum, e) => sum + (e['budget'] as double));
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -120,7 +125,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
               ],
             ),
           ),
-          
+
           // 搜索栏
           Container(
             color: Colors.white,
@@ -138,11 +143,12 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: Colors.grey[300]!),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
             ),
           ),
-          
+
           // Tab栏
           Container(
             color: Colors.white,
@@ -157,7 +163,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
               ],
             ),
           ),
-          
+
           // 事件列表
           Expanded(
             child: TabBarView(
@@ -178,7 +184,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
       ),
     );
   }
-  
+
   Widget _buildStatCard(String label, int value, Color color) {
     return Expanded(
       child: Container(
@@ -211,17 +217,26 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
       ),
     );
   }
-  
+
   Widget _buildEventList(String status) {
     final filteredEvents = _sampleEvents.where((event) {
       final matchesStatus = event['status'] == status;
       final matchesSearch = _searchQuery.isEmpty ||
-          event['name'].toString().toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          event['destination'].toString().toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          event['description'].toString().toLowerCase().contains(_searchQuery.toLowerCase());
+          event['name']
+              .toString()
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase()) ||
+          event['destination']
+              .toString()
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase()) ||
+          event['description']
+              .toString()
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase());
       return matchesStatus && matchesSearch;
     }).toList();
-    
+
     if (filteredEvents.isEmpty) {
       return Center(
         child: Column(
@@ -252,7 +267,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
         ),
       );
     }
-    
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: filteredEvents.length,
@@ -262,10 +277,10 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
       },
     );
   }
-  
+
   Widget _buildEventCard(Map<String, dynamic> event) {
     final spentRatio = (event['spent'] as double) / (event['budget'] as double);
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(
@@ -324,22 +339,25 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
             const SizedBox(height: 4),
             Wrap(
               spacing: 4,
-              children: ((event['tags'] as List).map((tag) => 
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: (event['color'] as Color).withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    tag as String,
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: event['color'] as Color,
+              children: ((event['tags'] as List)
+                  .map(
+                    (tag) => Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: (event['color'] as Color).withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        tag as String,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: event['color'] as Color,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ).toList()),
+                  )
+                  .toList()),
             ),
           ],
         ),
@@ -363,7 +381,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
       ),
     );
   }
-  
+
   void _showAddEventDialog() {
     showDialog(
       context: context,
@@ -388,7 +406,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
       ),
     );
   }
-  
+
   void _showEditEventDialog(Map<String, dynamic> event) {
     showDialog(
       context: context,
@@ -413,7 +431,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
       ),
     );
   }
-  
+
   void _showDeleteEventDialog(Map<String, dynamic> event) {
     showDialog(
       context: context,
@@ -441,7 +459,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
       ),
     );
   }
-  
+
   void _showEventDetails(Map<String, dynamic> event) {
     showModalBottomSheet(
       context: context,
@@ -551,7 +569,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
       ),
     );
   }
-  
+
   String _getStatusText(String status) {
     switch (status) {
       case 'upcoming':

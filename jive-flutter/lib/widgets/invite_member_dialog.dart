@@ -29,8 +29,7 @@ class _InviteMemberDialogState extends State<InviteMemberDialog> {
     final random = Random();
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     return String.fromCharCodes(Iterable.generate(
-      8, (_) => chars.codeUnitAt(random.nextInt(chars.length))
-    ));
+        8, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
   }
 
   // 发送邀请
@@ -44,21 +43,20 @@ class _InviteMemberDialogState extends State<InviteMemberDialog> {
     try {
       // 模拟发送邀请请求
       await Future.delayed(const Duration(seconds: 2));
-      
+
       // 生成邀请码和链接
       _inviteCode = _generateInviteCode();
       _inviteLink = 'https://jivemoney.com/invite/${_inviteCode}';
-      
+
       setState(() {
         _showInviteResult = true;
         _isLoading = false;
       });
-
     } catch (e) {
       setState(() {
         _isLoading = false;
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('邀请发送失败: $e'),
@@ -95,7 +93,7 @@ class _InviteMemberDialogState extends State<InviteMemberDialog> {
   String _generateEmailContent() {
     final currentUser = 'superadmin'; // 获取当前用户名
     final familyName = 'Jive Money Family'; // 获取家庭名称
-    
+
     return '''
 🏠 Jive Money - 家庭财务管理邀请
 
@@ -134,7 +132,7 @@ Jive Money - 集腋记账
     if (_showInviteResult) {
       return _buildInviteResultDialog();
     }
-    
+
     return _buildInviteFormDialog();
   }
 
@@ -174,7 +172,7 @@ Jive Money - 集腋记账
               },
             ),
             const SizedBox(height: 16),
-            
+
             // 角色选择
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(
@@ -184,9 +182,12 @@ Jive Money - 集腋记账
               ),
               initialValue: _selectedRole,
               items: const [
-                DropdownMenuItem(value: 'Admin', child: Text('管理员 (Admin) - 管理家庭和成员')),
-                DropdownMenuItem(value: 'Member', child: Text('成员 (Member) - 记录和查看交易')),
-                DropdownMenuItem(value: 'Viewer', child: Text('查看者 (Viewer) - 仅查看数据')),
+                DropdownMenuItem(
+                    value: 'Admin', child: Text('管理员 (Admin) - 管理家庭和成员')),
+                DropdownMenuItem(
+                    value: 'Member', child: Text('成员 (Member) - 记录和查看交易')),
+                DropdownMenuItem(
+                    value: 'Viewer', child: Text('查看者 (Viewer) - 仅查看数据')),
               ],
               onChanged: (value) {
                 setState(() {
@@ -195,7 +196,7 @@ Jive Money - 集腋记账
               },
             ),
             const SizedBox(height: 16),
-            
+
             // 说明文本
             Container(
               padding: const EdgeInsets.all(12),
@@ -280,7 +281,7 @@ Jive Money - 集腋记账
               ],
             ),
             const SizedBox(height: 24),
-            
+
             // 邀请信息卡片
             Container(
               width: double.infinity,
@@ -334,9 +335,9 @@ Jive Money - 集腋记账
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // 操作按钮
             Column(
               children: [
@@ -377,9 +378,9 @@ Jive Money - 集腋记账
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // 提示信息
             Container(
               padding: const EdgeInsets.all(12),

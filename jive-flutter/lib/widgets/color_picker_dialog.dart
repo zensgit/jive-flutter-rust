@@ -19,12 +19,12 @@ class ColorPickerDialog extends StatefulWidget {
 class _ColorPickerDialogState extends State<ColorPickerDialog> {
   late Color _selectedColor;
   late TextEditingController _hexController;
-  
+
   // 预设颜色
   static const List<Color> _presetColors = [
     // 红色系
     Color(0xFFFF5722), Color(0xFFF44336), Color(0xFFE91E63), Color(0xFF9C27B0),
-    // 蓝色系  
+    // 蓝色系
     Color(0xFF3F51B5), Color(0xFF2196F3), Color(0xFF03DAC6), Color(0xFF00BCD4),
     // 绿色系
     Color(0xFF4CAF50), Color(0xFF8BC34A), Color(0xFFCDDC39), Color(0xFFFFEB3B),
@@ -71,9 +71,9 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
                 border: Border.all(color: Colors.grey[300]!),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // 十六进制输入
             TextField(
               controller: _hexController,
@@ -90,14 +90,14 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
               ],
               onChanged: _onHexChanged,
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // RGB滑块
             _buildRGBSliders(),
-            
+
             const SizedBox(height: 16),
-            
+
             // 预设颜色
             const Text(
               '预设颜色',
@@ -240,7 +240,8 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
   void _selectColor(Color color) {
     setState(() {
       _selectedColor = color;
-      _hexController.text = color.value.toRadixString(16).substring(2).toUpperCase();
+      _hexController.text =
+          color.value.toRadixString(16).substring(2).toUpperCase();
     });
   }
 
@@ -252,7 +253,8 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
         green ?? _selectedColor.green,
         blue ?? _selectedColor.blue,
       );
-      _hexController.text = _selectedColor.value.toRadixString(16).substring(2).toUpperCase();
+      _hexController.text =
+          _selectedColor.value.toRadixString(16).substring(2).toUpperCase();
     });
   }
 

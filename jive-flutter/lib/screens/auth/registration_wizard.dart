@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import '../../services/auth_service.dart';
@@ -20,10 +21,10 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
   final PageController _pageController = PageController();
   final AuthService _authService = AuthService();
   final ApiService _apiService = ApiService();
-  
+
   int _currentPage = 0;
   bool _isLoading = false;
-  
+
   // Step 1: Account Info
   final _formKey1 = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
@@ -33,18 +34,18 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _agreeToTerms = false;
-  
+
   // Password strength
   bool _hasMinLength = false;
   bool _hasUpperLower = false;
   bool _hasNumber = false;
   bool _hasSpecialChar = false;
-  
+
   // Step 2: Profile Setup
   final _formKey2 = GlobalKey<FormState>();
   File? _profileImage;
   final ImagePicker _picker = ImagePicker();
-  
+
   // Step 3: Preferences
   final _formKey3 = GlobalKey<FormState>();
   String _selectedCountry = 'CN';
@@ -52,16 +53,16 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
   String _selectedLanguage = 'zh-CN';
   String _selectedTimezone = 'Asia/Shanghai';
   String _selectedDateFormat = 'YYYY-MM-DD';
-  
+
   // Locale data
   Map<String, dynamic>? _localeData;
-  
+
   @override
   void initState() {
     super.initState();
     _loadLocaleData();
   }
-  
+
   Future<void> _loadLocaleData() async {
     try {
       final response = await _apiService.get('/locales');
@@ -71,10 +72,10 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         });
       }
     } catch (e) {
-      print('Failed to load locale data: $e');
+      debugPrint('Failed to load locale data: $e');
     }
   }
-  
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -84,17 +85,17 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
     _confirmPasswordController.dispose();
     super.dispose();
   }
-  
+
   void _checkPasswordStrength(String password) {
     setState(() {
       _hasMinLength = password.length >= 8;
-      _hasUpperLower = password.contains(RegExp(r'[A-Z]')) && 
-                       password.contains(RegExp(r'[a-z]'));
+      _hasUpperLower = password.contains(RegExp(r'[A-Z]')) &&
+          password.contains(RegExp(r'[a-z]'));
       _hasNumber = password.contains(RegExp(r'\d'));
       _hasSpecialChar = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
     });
   }
-  
+
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(
       source: ImageSource.gallery,
@@ -102,19 +103,19 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       maxHeight: 512,
       imageQuality: 85,
     );
-    
+
     if (image != null) {
       setState(() {
         _profileImage = File(image.path);
       });
     }
   }
-  
+
   Future<void> _register() async {
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
       // Call enhanced registration API
       final response = await _apiService.post('/auth/register-enhanced', {
@@ -127,12 +128,12 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         'timezone': _selectedTimezone,
         'date_format': _selectedDateFormat,
       });
-      
+
       if (response['success'] == true) {
         // Save token and user info
         final token = response['data']['token'];
         final userId = response['data']['user_id'];
-        
+
         await _authService.saveToken(token);
         await _authService.saveUserId(userId);
         // Also persist token to global TokenStorage for API Authorization headers
@@ -147,21 +148,23 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         } catch (e) {
           debugPrint('Failed to persist token to TokenStorage: $e');
         }
-        
+
         // Sync selected currency to global base currency preferences
         // This keeps Settings > 多币种设置 > 基础货币 in sync with registration selection
         try {
-          await ref.read(currencyProvider.notifier).setBaseCurrency(_selectedCurrency);
+          await ref
+              .read(currencyProvider.notifier)
+              .setBaseCurrency(_selectedCurrency);
         } catch (e) {
           // Non-fatal: continue navigation even if currency save fails
           debugPrint('Failed to set base currency: $e');
         }
-        
+
         // Upload profile image if selected
         if (_profileImage != null) {
           // TODO: Implement profile image upload
         }
-        
+
         if (mounted) {
           // Navigate to main app
           Navigator.of(context).pushReplacementNamed('/main');
@@ -186,7 +189,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       }
     }
   }
-  
+
   void _nextPage() {
     if (_currentPage == 0 && !_formKey1.currentState!.validate()) return;
     if (_currentPage == 0 && !_agreeToTerms) {
@@ -198,7 +201,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       );
       return;
     }
-    
+
     if (_currentPage < 2) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
@@ -208,7 +211,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       _register();
     }
   }
-  
+
   void _previousPage() {
     if (_currentPage > 0) {
       _pageController.previousPage(
@@ -217,7 +220,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       );
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -247,7 +250,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                 ],
               ),
             ),
-            
+
             // Content
             Expanded(
               child: PageView(
@@ -265,7 +268,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                 ],
               ),
             ),
-            
+
             // Navigation Buttons
             Container(
               padding: const EdgeInsets.all(24),
@@ -299,7 +302,8 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                               width: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
                           : Text(
@@ -316,7 +320,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       ),
     );
   }
-  
+
   Widget _buildAccountInfoStep() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -342,7 +346,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               ),
             ),
             const SizedBox(height: 32),
-            
+
             // Username
             TextFormField(
               controller: _usernameController,
@@ -373,7 +377,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               },
             ),
             const SizedBox(height: 16),
-            
+
             // Email
             TextFormField(
               controller: _emailController,
@@ -398,14 +402,15 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                 if (value == null || value.isEmpty) {
                   return '请输入邮箱地址';
                 }
-                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                    .hasMatch(value)) {
                   return '请输入有效的邮箱地址';
                 }
                 return null;
               },
             ),
             const SizedBox(height: 16),
-            
+
             // Password
             TextFormField(
               controller: _passwordController,
@@ -418,7 +423,9 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                 prefixIcon: Icon(Icons.lock, color: Colors.grey[400]),
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    _isPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
                     color: Colors.grey[400],
                   ),
                   onPressed: () {
@@ -442,18 +449,21 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                 if (value == null || value.isEmpty) {
                   return '请输入密码';
                 }
-                if (!_hasMinLength || !_hasUpperLower || !_hasNumber || !_hasSpecialChar) {
+                if (!_hasMinLength ||
+                    !_hasUpperLower ||
+                    !_hasNumber ||
+                    !_hasSpecialChar) {
                   return '密码不符合安全要求';
                 }
                 return null;
               },
             ),
             const SizedBox(height: 8),
-            
+
             // Password strength indicator
             _buildPasswordStrengthIndicator(),
             const SizedBox(height: 16),
-            
+
             // Confirm Password
             TextFormField(
               controller: _confirmPasswordController,
@@ -465,7 +475,9 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                 prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[400]),
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    _isConfirmPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
                     color: Colors.grey[400],
                   ),
                   onPressed: () {
@@ -496,7 +508,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               },
             ),
             const SizedBox(height: 24),
-            
+
             // Terms checkbox
             Row(
               children: [
@@ -534,7 +546,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       ),
     );
   }
-  
+
   Widget _buildProfileSetupStep() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -560,7 +572,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               ),
             ),
             const SizedBox(height: 48),
-            
+
             // Profile Image
             GestureDetector(
               onTap: _pickImage,
@@ -598,7 +610,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Upload button
             OutlinedButton.icon(
               onPressed: _pickImage,
@@ -608,7 +620,8 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                 style: TextStyle(color: Colors.grey[300]),
               ),
               style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 side: BorderSide(color: Colors.grey[700]!),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24),
@@ -624,7 +637,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               ),
             ),
             const SizedBox(height: 48),
-            
+
             // Info card
             Container(
               padding: const EdgeInsets.all(16),
@@ -654,7 +667,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       ),
     );
   }
-  
+
   Widget _buildPreferencesStep() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -680,7 +693,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               ),
             ),
             const SizedBox(height: 32),
-            
+
             // Preview Card
             Container(
               padding: const EdgeInsets.all(20),
@@ -746,7 +759,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               ),
             ),
             const SizedBox(height: 32),
-            
+
             // Country Selection
             DropdownButtonFormField<String>(
               value: _selectedCountry,
@@ -777,7 +790,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               },
             ),
             const SizedBox(height: 16),
-            
+
             // Currency Selection
             DropdownButtonFormField<String>(
               value: _selectedCurrency,
@@ -806,7 +819,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               },
             ),
             const SizedBox(height: 16),
-            
+
             // Language Selection
             DropdownButtonFormField<String>(
               value: _selectedLanguage,
@@ -835,7 +848,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               },
             ),
             const SizedBox(height: 16),
-            
+
             // Timezone Selection
             DropdownButtonFormField<String>(
               value: _selectedTimezone,
@@ -865,7 +878,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               isExpanded: true,
             ),
             const SizedBox(height: 16),
-            
+
             // Date Format Selection
             DropdownButtonFormField<String>(
               value: _selectedDateFormat,
@@ -898,7 +911,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       ),
     );
   }
-  
+
   Widget _buildPasswordStrengthIndicator() {
     return Column(
       children: [
@@ -960,7 +973,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       ],
     );
   }
-  
+
   Widget _buildRequirement(String text, bool met) {
     return Row(
       children: [
@@ -980,7 +993,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       ],
     );
   }
-  
+
   List<DropdownMenuItem<String>> _getCountryItems() {
     if (_localeData == null) {
       return [
@@ -988,7 +1001,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         const DropdownMenuItem(value: 'US', child: Text('美国')),
       ];
     }
-    
+
     final countries = _localeData!['countries'] as List<dynamic>? ?? [];
     return countries.map((country) {
       return DropdownMenuItem<String>(
@@ -997,7 +1010,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       );
     }).toList();
   }
-  
+
   List<DropdownMenuItem<String>> _getCurrencyItems() {
     if (_localeData == null) {
       return [
@@ -1005,7 +1018,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         const DropdownMenuItem(value: 'USD', child: Text('美元 (\$)')),
       ];
     }
-    
+
     final currencies = _localeData!['currencies'] as List<dynamic>? ?? [];
     return currencies.map((currency) {
       return DropdownMenuItem<String>(
@@ -1014,7 +1027,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       );
     }).toList();
   }
-  
+
   List<DropdownMenuItem<String>> _getLanguageItems() {
     if (_localeData == null) {
       return [
@@ -1022,7 +1035,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         const DropdownMenuItem(value: 'en-US', child: Text('English')),
       ];
     }
-    
+
     final languages = _localeData!['languages'] as List<dynamic>? ?? [];
     return languages.map((language) {
       return DropdownMenuItem<String>(
@@ -1031,7 +1044,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       );
     }).toList();
   }
-  
+
   List<DropdownMenuItem<String>> _getTimezoneItems() {
     // 常用时区列表，按地区分组
     final timezones = [
@@ -1041,7 +1054,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       {'value': 'Asia/Taipei', 'display': '台北时间 (UTC+8)'},
       {'value': 'Asia/Tokyo', 'display': '日本标准时间 (UTC+9)'},
       {'value': 'Asia/Seoul', 'display': '韩国标准时间 (UTC+9)'},
-      
+
       // 东南亚
       {'value': 'Asia/Singapore', 'display': '新加坡时间 (UTC+8)'},
       {'value': 'Asia/Kuala_Lumpur', 'display': '马来西亚时间 (UTC+8)'},
@@ -1049,18 +1062,18 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       {'value': 'Asia/Bangkok', 'display': '曼谷时间 (UTC+7)'},
       {'value': 'Asia/Ho_Chi_Minh', 'display': '越南时间 (UTC+7)'},
       {'value': 'Asia/Manila', 'display': '菲律宾时间 (UTC+8)'},
-      
+
       // 南亚
       {'value': 'Asia/Kolkata', 'display': '印度标准时间 (UTC+5:30)'},
       {'value': 'Asia/Dhaka', 'display': '孟加拉时间 (UTC+6)'},
       {'value': 'Asia/Karachi', 'display': '巴基斯坦时间 (UTC+5)'},
-      
+
       // 中东
       {'value': 'Asia/Dubai', 'display': '迪拜时间 (UTC+4)'},
       {'value': 'Asia/Riyadh', 'display': '沙特时间 (UTC+3)'},
       {'value': 'Asia/Jerusalem', 'display': '以色列时间 (UTC+2/+3)'},
       {'value': 'Europe/Istanbul', 'display': '土耳其时间 (UTC+3)'},
-      
+
       // 欧洲
       {'value': 'Europe/London', 'display': '伦敦时间 (UTC+0/+1)'},
       {'value': 'Europe/Paris', 'display': '巴黎时间 (UTC+1/+2)'},
@@ -1071,13 +1084,13 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       {'value': 'Europe/Zurich', 'display': '苏黎世时间 (UTC+1/+2)'},
       {'value': 'Europe/Stockholm', 'display': '斯德哥尔摩时间 (UTC+1/+2)'},
       {'value': 'Europe/Moscow', 'display': '莫斯科时间 (UTC+3)'},
-      
+
       // 大洋洲
       {'value': 'Australia/Sydney', 'display': '悉尼时间 (UTC+10/+11)'},
       {'value': 'Australia/Melbourne', 'display': '墨尔本时间 (UTC+10/+11)'},
       {'value': 'Australia/Perth', 'display': '珀斯时间 (UTC+8)'},
       {'value': 'Pacific/Auckland', 'display': '奥克兰时间 (UTC+12/+13)'},
-      
+
       // 北美
       {'value': 'America/New_York', 'display': '纽约时间 (UTC-5/-4)'},
       {'value': 'America/Chicago', 'display': '芝加哥时间 (UTC-6/-5)'},
@@ -1086,20 +1099,20 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       {'value': 'America/Toronto', 'display': '多伦多时间 (UTC-5/-4)'},
       {'value': 'America/Vancouver', 'display': '温哥华时间 (UTC-8/-7)'},
       {'value': 'America/Mexico_City', 'display': '墨西哥城时间 (UTC-6/-5)'},
-      
+
       // 南美
       {'value': 'America/Sao_Paulo', 'display': '圣保罗时间 (UTC-3)'},
       {'value': 'America/Buenos_Aires', 'display': '布宜诺斯艾利斯时间 (UTC-3)'},
       {'value': 'America/Santiago', 'display': '圣地亚哥时间 (UTC-4/-3)'},
       {'value': 'America/Lima', 'display': '利马时间 (UTC-5)'},
-      
+
       // 非洲
       {'value': 'Africa/Cairo', 'display': '开罗时间 (UTC+2)'},
       {'value': 'Africa/Johannesburg', 'display': '约翰内斯堡时间 (UTC+2)'},
       {'value': 'Africa/Lagos', 'display': '拉各斯时间 (UTC+1)'},
       {'value': 'Africa/Nairobi', 'display': '内罗毕时间 (UTC+3)'},
     ];
-    
+
     return timezones.map((tz) {
       return DropdownMenuItem<String>(
         value: tz['value'] as String,
@@ -1110,7 +1123,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       );
     }).toList();
   }
-  
+
   List<DropdownMenuItem<String>> _getDateFormatItems() {
     if (_localeData == null) {
       return [
@@ -1119,7 +1132,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         const DropdownMenuItem(value: 'DD/MM/YYYY', child: Text('31/12/2024')),
       ];
     }
-    
+
     final formats = _localeData!['date_formats'] as List<dynamic>? ?? [];
     return formats.map((format) {
       return DropdownMenuItem<String>(
@@ -1128,7 +1141,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       );
     }).toList();
   }
-  
+
   String _getCurrencySymbol(String currency) {
     switch (currency) {
       case 'CNY':
@@ -1145,7 +1158,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         return '\$';
     }
   }
-  
+
   String _formatDate(String format) {
     final now = DateTime.now();
     switch (format) {
@@ -1161,7 +1174,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         return '${now.month}-${now.day}-${now.year}';
     }
   }
-  
+
   void _autoAdjustCurrency(String country) {
     switch (country) {
       // 东亚地区
@@ -1201,7 +1214,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         _selectedTimezone = 'Asia/Seoul';
         _selectedDateFormat = 'YYYY-MM-DD';
         break;
-      
+
       // 东南亚地区
       case 'SG':
         _selectedCurrency = 'SGD';
@@ -1239,7 +1252,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         _selectedTimezone = 'Asia/Manila';
         _selectedDateFormat = 'MM/DD/YYYY';
         break;
-      
+
       // 南亚地区
       case 'IN':
         _selectedCurrency = 'INR';
@@ -1265,7 +1278,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         _selectedTimezone = 'Asia/Colombo';
         _selectedDateFormat = 'DD/MM/YYYY';
         break;
-      
+
       // 大洋洲
       case 'AU':
         _selectedCurrency = 'AUD';
@@ -1279,7 +1292,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         _selectedTimezone = 'Pacific/Auckland';
         _selectedDateFormat = 'DD/MM/YYYY';
         break;
-      
+
       // 北美洲
       case 'US':
         _selectedCurrency = 'USD';
@@ -1299,7 +1312,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         _selectedTimezone = 'America/Mexico_City';
         _selectedDateFormat = 'DD/MM/YYYY';
         break;
-      
+
       // 南美洲
       case 'BR':
         _selectedCurrency = 'BRL';
@@ -1331,7 +1344,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         _selectedTimezone = 'America/Lima';
         _selectedDateFormat = 'DD/MM/YYYY';
         break;
-      
+
       // 欧洲
       case 'GB':
         _selectedCurrency = 'GBP';
@@ -1405,7 +1418,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         _selectedTimezone = 'Europe/Dublin';
         _selectedDateFormat = 'DD/MM/YYYY';
         break;
-      
+
       // 北欧
       case 'SE':
         _selectedCurrency = 'SEK';
@@ -1437,7 +1450,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         _selectedTimezone = 'Atlantic/Reykjavik';
         _selectedDateFormat = 'DD.MM.YYYY';
         break;
-      
+
       // 东欧
       case 'RU':
         _selectedCurrency = 'RUB';
@@ -1475,7 +1488,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         _selectedTimezone = 'Europe/Kiev';
         _selectedDateFormat = 'DD.MM.YYYY';
         break;
-      
+
       // 中东
       case 'AE':
         _selectedCurrency = 'AED';
@@ -1537,7 +1550,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         _selectedTimezone = 'Asia/Beirut';
         _selectedDateFormat = 'DD/MM/YYYY';
         break;
-      
+
       // 非洲
       case 'ZA':
         _selectedCurrency = 'ZAR';

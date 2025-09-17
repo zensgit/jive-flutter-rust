@@ -10,7 +10,7 @@ class StorageService {
 
   // 存储键常量
   static const String _keyUserData = 'user_data';
-  static const String _keyWeChatData = 'wechat_data'; 
+  static const String _keyWeChatData = 'wechat_data';
   static const String _keyAuthToken = 'auth_token';
   static const String _keyLoginHistory = 'login_history';
   static const String _keyAppSettings = 'app_settings';
@@ -122,12 +122,12 @@ class StorageService {
     try {
       List<dynamic> history = _storage[_keyLoginHistory] ?? [];
       history.insert(0, item.toJson()); // 最新的在前面
-      
+
       // 只保留最近20条记录
       if (history.length > 20) {
         history = history.take(20).toList();
       }
-      
+
       _storage[_keyLoginHistory] = history;
       await _simulateDelay();
       debugPrint('登录历史已记录: ${item.loginMethod}');
@@ -234,7 +234,8 @@ class StorageService {
   }
 
   /// 保存分享主题数据
-  Future<bool> saveSharedTheme(String shareCode, SharedThemeData sharedTheme) async {
+  Future<bool> saveSharedTheme(
+      String shareCode, SharedThemeData sharedTheme) async {
     try {
       Map<String, dynamic> sharedThemes = _storage[_keySharedThemes] ?? {};
       sharedThemes[shareCode] = sharedTheme.toJson();
@@ -268,7 +269,7 @@ class StorageService {
     try {
       Map<String, dynamic> sharedThemes = _storage[_keySharedThemes] ?? {};
       final now = DateTime.now();
-      
+
       final validThemes = <String, dynamic>{};
       for (final entry in sharedThemes.entries) {
         try {
@@ -281,7 +282,7 @@ class StorageService {
           debugPrint('跳过无效的分享主题: ${entry.key}');
         }
       }
-      
+
       _storage[_keySharedThemes] = validThemes;
       debugPrint('清理过期分享主题完成，剩余 ${validThemes.length} 个');
     } catch (e) {
@@ -346,7 +347,8 @@ class StorageService {
   }
 
   /// 保存记住的登录凭据
-  Future<bool> saveRememberedCredentials(RememberedCredentials credentials) async {
+  Future<bool> saveRememberedCredentials(
+      RememberedCredentials credentials) async {
     try {
       _storage[_keyRememberedCredentials] = credentials.toJson();
       await _simulateDelay();
@@ -416,8 +418,10 @@ class UserData {
       email: json['email'] ?? '',
       avatar: json['avatar'],
       realName: json['real_name'],
-      registerTime: DateTime.parse(json['register_time'] ?? DateTime.now().toIso8601String()),
-      lastLoginTime: DateTime.parse(json['last_login_time'] ?? DateTime.now().toIso8601String()),
+      registerTime: DateTime.parse(
+          json['register_time'] ?? DateTime.now().toIso8601String()),
+      lastLoginTime: DateTime.parse(
+          json['last_login_time'] ?? DateTime.now().toIso8601String()),
       role: json['role'] ?? 'Owner',
     );
   }
@@ -481,10 +485,11 @@ class RememberedCredentials {
       password: json['password'] ?? '',
       rememberPassword: json['remember_password'] ?? false,
       rememberPermanently: json['remember_permanently'] ?? false,
-      savedAt: DateTime.parse(json['saved_at'] ?? DateTime.now().toIso8601String()),
-      lastUsedAt: json['last_used_at'] != null 
-        ? DateTime.parse(json['last_used_at']) 
-        : null,
+      savedAt:
+          DateTime.parse(json['saved_at'] ?? DateTime.now().toIso8601String()),
+      lastUsedAt: json['last_used_at'] != null
+          ? DateTime.parse(json['last_used_at'])
+          : null,
     );
   }
 
@@ -521,7 +526,7 @@ class RememberedCredentials {
   bool get isExpired {
     // 如果设置了永久记住，则永不过期
     if (rememberPermanently) return false;
-    
+
     // 否则检查30天有效期
     final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
     return savedAt.isBefore(thirtyDaysAgo);
@@ -562,7 +567,8 @@ class WeChatBindingData {
       province: json['province'] ?? '',
       city: json['city'] ?? '',
       country: json['country'] ?? '',
-      bindTime: DateTime.parse(json['bind_time'] ?? DateTime.now().toIso8601String()),
+      bindTime:
+          DateTime.parse(json['bind_time'] ?? DateTime.now().toIso8601String()),
     );
   }
 
@@ -610,7 +616,8 @@ class LoginHistoryItem {
 
   factory LoginHistoryItem.fromJson(Map<String, dynamic> json) {
     return LoginHistoryItem(
-      loginTime: DateTime.parse(json['login_time'] ?? DateTime.now().toIso8601String()),
+      loginTime: DateTime.parse(
+          json['login_time'] ?? DateTime.now().toIso8601String()),
       loginMethod: json['login_method'] ?? '',
       deviceInfo: json['device_info'],
       location: json['location'],

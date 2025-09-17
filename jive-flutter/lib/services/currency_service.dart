@@ -10,9 +10,9 @@ import '../utils/constants.dart';
 class CurrencyService {
   final String? token;
   final String baseUrl = ApiConstants.baseUrl; // 仍保留用于兼容旧逻辑的字段
-  
+
   CurrencyService(this.token);
-  
+
   Future<Map<String, String>> _headers() async {
     final t = token ?? await TokenStorage.getAccessToken();
     return {
@@ -20,15 +20,17 @@ class CurrencyService {
       if (t != null) 'Authorization': 'Bearer $t',
     };
   }
-  
+
   /// Result wrapper for currency catalog with ETag support
-  Future<CurrencyCatalogResult> getSupportedCurrenciesWithEtag({String? etag}) async {
+  Future<CurrencyCatalogResult> getSupportedCurrenciesWithEtag(
+      {String? etag}) async {
     try {
       final dio = HttpClient.instance.dio;
       await ApiReadiness.ensureReady(dio);
-      final resp = await dio.get('/currencies', options: Options(headers: {
-        if (etag != null && etag.isNotEmpty) 'If-None-Match': etag,
-      }));
+      final resp = await dio.get('/currencies',
+          options: Options(headers: {
+            if (etag != null && etag.isNotEmpty) 'If-None-Match': etag,
+          }));
       if (resp.statusCode == 200) {
         final data = resp.data;
         final List<dynamic> currencies = data['data'] ?? data;
@@ -68,7 +70,7 @@ class CurrencyService {
     }
     return res.items;
   }
-  
+
   /// Get user currency preferences
   Future<List<CurrencyPreference>> getUserCurrencyPreferences() async {
     try {
@@ -78,7 +80,9 @@ class CurrencyService {
       if (resp.statusCode == 200) {
         final data = resp.data;
         final List<dynamic> preferences = data['data'] ?? data;
-        return preferences.map((json) => CurrencyPreference.fromJson(json)).toList();
+        return preferences
+            .map((json) => CurrencyPreference.fromJson(json))
+            .toList();
       } else {
         throw Exception('Failed to load preferences: ${resp.statusCode}');
       }
@@ -87,9 +91,10 @@ class CurrencyService {
       return [];
     }
   }
-  
+
   /// Set user currency preferences
-  Future<void> setUserCurrencyPreferences(List<String> currencies, String primaryCurrency) async {
+  Future<void> setUserCurrencyPreferences(
+      List<String> currencies, String primaryCurrency) async {
     try {
       final dio = HttpClient.instance.dio;
       await ApiReadiness.ensureReady(dio);
@@ -105,7 +110,7 @@ class CurrencyService {
       rethrow;
     }
   }
-  
+
   /// Get family currency settings
   Future<FamilyCurrencySettings> getFamilyCurrencySettings() async {
     try {
@@ -129,9 +134,10 @@ class CurrencyService {
       );
     }
   }
-  
+
   /// Update family currency settings
-  Future<void> updateFamilyCurrencySettings(Map<String, dynamic> updates) async {
+  Future<void> updateFamilyCurrencySettings(
+      Map<String, dynamic> updates) async {
     try {
       final dio = HttpClient.instance.dio;
       await ApiReadiness.ensureReady(dio);
@@ -144,25 +150,27 @@ class CurrencyService {
       rethrow;
     }
   }
-  
+
   /// Get exchange rate
-  Future<double> getExchangeRate(String from, String to, {DateTime? date}) async {
+  Future<double> getExchangeRate(String from, String to,
+      {DateTime? date}) async {
     try {
       final queryParams = {
         'from': from,
         'to': to,
         if (date != null) 'date': date.toIso8601String().substring(0, 10),
       };
-      
+
       final dio = HttpClient.instance.dio;
       await ApiReadiness.ensureReady(dio);
-      final resp = await dio.get('/currencies/rate', queryParameters: queryParams);
+      final resp =
+          await dio.get('/currencies/rate', queryParameters: queryParams);
       if (resp.statusCode == 200) {
         final data = resp.data;
         final rateData = data['data'] ?? data;
-        
+
         if (rateData is Map && rateData.containsKey('rate')) {
-          return (rateData['rate'] is String) 
+          return (rateData['rate'] is String)
               ? double.parse(rateData['rate'])
               : rateData['rate'].toDouble();
         } else if (rateData is num) {
@@ -181,9 +189,10 @@ class CurrencyService {
       return _getApproximateRate(from, to);
     }
   }
-  
+
   /// Get batch exchange rates
-  Future<Map<String, double>> getBatchExchangeRates(String baseCurrency, List<String> targetCurrencies) async {
+  Future<Map<String, double>> getBatchExchangeRates(
+      String baseCurrency, List<String> targetCurrencies) async {
     try {
       final dio = HttpClient.instance.dio;
       await ApiReadiness.ensureReady(dio);
@@ -194,12 +203,13 @@ class CurrencyService {
       if (resp.statusCode == 200) {
         final data = resp.data;
         final ratesData = data['data'] ?? data;
-        
+
         final Map<String, double> rates = {};
         ratesData.forEach((key, value) {
-          rates[key] = (value is String) ? double.parse(value) : value.toDouble();
+          rates[key] =
+              (value is String) ? double.parse(value) : value.toDouble();
         });
-        
+
         return rates;
       } else {
         throw Exception('Failed to get batch rates: ${resp.statusCode}');
@@ -214,9 +224,11 @@ class CurrencyService {
       return rates;
     }
   }
-  
+
   /// Convert amount between currencies
-  Future<ConvertAmountResponse> convertAmount(double amount, String from, String to, {DateTime? date}) async {
+  Future<ConvertAmountResponse> convertAmount(
+      double amount, String from, String to,
+      {DateTime? date}) async {
     try {
       final dio = HttpClient.instance.dio;
       await ApiReadiness.ensureReady(dio);
@@ -245,19 +257,21 @@ class CurrencyService {
       );
     }
   }
-  
+
   /// Get exchange rate history
-  Future<List<ExchangeRate>> getExchangeRateHistory(String from, String to, int days) async {
+  Future<List<ExchangeRate>> getExchangeRateHistory(
+      String from, String to, int days) async {
     try {
       final queryParams = {
         'from': from,
         'to': to,
         'days': days.toString(),
       };
-      
+
       final dio = HttpClient.instance.dio;
       await ApiReadiness.ensureReady(dio);
-      final resp = await dio.get('/currencies/history', queryParameters: queryParams);
+      final resp =
+          await dio.get('/currencies/history', queryParameters: queryParams);
       if (resp.statusCode == 200) {
         final data = resp.data;
         final List<dynamic> history = data['data'] ?? data;
@@ -270,7 +284,7 @@ class CurrencyService {
       return [];
     }
   }
-  
+
   /// Get popular exchange pairs
   Future<List<ExchangePair>> getPopularExchangePairs() async {
     try {
@@ -297,7 +311,7 @@ class CurrencyService {
       ];
     }
   }
-  
+
   /// Refresh exchange rates
   Future<void> refreshExchangeRates() async {
     try {
@@ -312,35 +326,35 @@ class CurrencyService {
       rethrow;
     }
   }
-  
+
   // Helper methods
-  
+
   String _getChineseName(String code) {
-    final currency = CurrencyDefaults.getAllCurrencies()
-        .firstWhere((c) => c.code == code, 
+    final currency =
+        CurrencyDefaults.getAllCurrencies().firstWhere((c) => c.code == code,
             orElse: () => Currency(
-              code: code,
-              name: code,
-              nameZh: code,
-              symbol: '',
-              decimalPlaces: 2,
-            ));
+                  code: code,
+                  name: code,
+                  nameZh: code,
+                  symbol: '',
+                  decimalPlaces: 2,
+                ));
     return currency.nameZh;
   }
-  
+
   String? _getFlag(String code) {
-    final currency = CurrencyDefaults.getAllCurrencies()
-        .firstWhere((c) => c.code == code,
+    final currency =
+        CurrencyDefaults.getAllCurrencies().firstWhere((c) => c.code == code,
             orElse: () => Currency(
-              code: code,
-              name: code,
-              nameZh: code,
-              symbol: '',
-              decimalPlaces: 2,
-            ));
+                  code: code,
+                  name: code,
+                  nameZh: code,
+                  symbol: '',
+                  decimalPlaces: 2,
+                ));
     return currency.flag;
   }
-  
+
   double _getApproximateRate(String from, String to) {
     // Approximate exchange rates for fallback
     final rates = {
@@ -357,7 +371,7 @@ class CurrencyService {
       'USD-JPY': 147.5,
       'JPY-USD': 0.0068,
     };
-    
+
     final key = '$from-$to';
     return rates[key] ?? 1.0;
   }

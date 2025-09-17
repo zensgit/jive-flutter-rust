@@ -8,18 +8,18 @@ class ExchangeRateConverterPage extends ConsumerStatefulWidget {
   const ExchangeRateConverterPage({super.key});
 
   @override
-  ConsumerState<ExchangeRateConverterPage> createState() => 
+  ConsumerState<ExchangeRateConverterPage> createState() =>
       _ExchangeRateConverterPageState();
 }
 
-class _ExchangeRateConverterPageState 
+class _ExchangeRateConverterPageState
     extends ConsumerState<ExchangeRateConverterPage> {
   final TextEditingController _amountController = TextEditingController();
   model.Currency? _fromCurrency;
   model.Currency? _toCurrency;
   double _convertedAmount = 0.0;
   bool _isCalculating = false;
-  
+
   // 历史记录
   final List<ConversionHistory> _history = [];
 
@@ -50,7 +50,7 @@ class _ExchangeRateConverterPageState
 
   void _calculateConversion() {
     if (_fromCurrency == null || _toCurrency == null) return;
-    
+
     final amount = double.tryParse(_amountController.text) ?? 0;
     if (amount <= 0) {
       setState(() {
@@ -58,19 +58,19 @@ class _ExchangeRateConverterPageState
       });
       return;
     }
-    
+
     setState(() {
       _isCalculating = true;
     });
-    
+
     // 获取汇率
     final exchangeRates = ref.read(exchangeRatesProvider);
     final cryptoPrices = ref.read(cryptoPricesProvider);
     final baseCurrency = ref.read(baseCurrencyProvider);
-    
+
     double fromRate = 1.0;
     double toRate = 1.0;
-    
+
     // 获取源货币汇率
     if (_fromCurrency!.code != baseCurrency.code) {
       if (_fromCurrency!.isCrypto) {
@@ -79,7 +79,7 @@ class _ExchangeRateConverterPageState
         fromRate = exchangeRates[_fromCurrency!.code] ?? 1.0;
       }
     }
-    
+
     // 获取目标货币汇率
     if (_toCurrency!.code != baseCurrency.code) {
       if (_toCurrency!.isCrypto) {
@@ -88,33 +88,35 @@ class _ExchangeRateConverterPageState
         toRate = exchangeRates[_toCurrency!.code] ?? 1.0;
       }
     }
-    
+
     // 计算转换金额
     // 先转换到基础货币，再转换到目标货币
-    final baseAmount = _fromCurrency!.isCrypto 
-        ? amount * fromRate  // 加密货币：金额 * 价格
+    final baseAmount = _fromCurrency!.isCrypto
+        ? amount * fromRate // 加密货币：金额 * 价格
         : amount / fromRate; // 法定货币：金额 / 汇率
-    
+
     final converted = _toCurrency!.isCrypto
-        ? baseAmount / toRate  // 转换到加密货币：基础金额 / 价格
+        ? baseAmount / toRate // 转换到加密货币：基础金额 / 价格
         : baseAmount * toRate; // 转换到法定货币：基础金额 * 汇率
-    
+
     setState(() {
       _convertedAmount = converted;
       _isCalculating = false;
-      
+
       // 添加到历史记录
       if (_history.length >= 10) {
         _history.removeLast();
       }
-      _history.insert(0, ConversionHistory(
-        from: _fromCurrency!,
-        to: _toCurrency!,
-        amount: amount,
-        result: converted,
-        rate: converted / amount,
-        timestamp: DateTime.now(),
-      ));
+      _history.insert(
+          0,
+          ConversionHistory(
+            from: _fromCurrency!,
+            to: _toCurrency!,
+            amount: amount,
+            result: converted,
+            rate: converted / amount,
+            timestamp: DateTime.now(),
+          ));
     });
   }
 
@@ -196,8 +198,7 @@ class _ExchangeRateConverterPageState
                   )
                 : Row(
                     children: [
-                      Icon(Icons.add_circle_outline, 
-                        color: Colors.grey[400]),
+                      Icon(Icons.add_circle_outline, color: Colors.grey[400]),
                       const SizedBox(width: 12),
                       Text(
                         '选择货币',
@@ -280,7 +281,7 @@ class _ExchangeRateConverterPageState
                     },
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // 源货币选择
                   _buildCurrencySelector(
                     label: '从',
@@ -292,7 +293,7 @@ class _ExchangeRateConverterPageState
                       });
                     },
                   ),
-                  
+
                   // 交换按钮
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -305,7 +306,7 @@ class _ExchangeRateConverterPageState
                       ),
                     ),
                   ),
-                  
+
                   // 目标货币选择
                   _buildCurrencySelector(
                     label: '到',
@@ -317,9 +318,9 @@ class _ExchangeRateConverterPageState
                       });
                     },
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // 转换结果
                   if (_toCurrency != null && _convertedAmount > 0)
                     Container(
@@ -353,7 +354,7 @@ class _ExchangeRateConverterPageState
                 ],
               ),
             ),
-            
+
             // 历史记录
             if (_history.isNotEmpty) ...[
               Padding(
@@ -379,14 +380,14 @@ class _ExchangeRateConverterPageState
                 (index) => _buildHistoryItem(_history[index]),
               ),
             ],
-            
+
             const SizedBox(height: 24),
           ],
         ),
       ),
     );
   }
-  
+
   Widget _buildHistoryItem(ConversionHistory history) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -405,12 +406,16 @@ class _ExchangeRateConverterPageState
                 Row(
                   children: [
                     Text(
-                      ref.read(currencyProvider.notifier).formatCurrency(history.amount, history.from.code),
+                      ref
+                          .read(currencyProvider.notifier)
+                          .formatCurrency(history.amount, history.from.code),
                       style: const TextStyle(fontWeight: FontWeight.w500),
                     ),
                     const Icon(Icons.arrow_forward, size: 16),
                     Text(
-                      ref.read(currencyProvider.notifier).formatCurrency(history.result, history.to.code),
+                      ref
+                          .read(currencyProvider.notifier)
+                          .formatCurrency(history.result, history.to.code),
                       style: const TextStyle(fontWeight: FontWeight.w500),
                     ),
                   ],
@@ -437,11 +442,11 @@ class _ExchangeRateConverterPageState
       ),
     );
   }
-  
+
   String _formatTime(DateTime time) {
     final now = DateTime.now();
     final diff = now.difference(time);
-    
+
     if (diff.inMinutes < 1) {
       return '刚刚';
     } else if (diff.inHours < 1) {
@@ -462,7 +467,7 @@ class ConversionHistory {
   final double result;
   final double rate;
   final DateTime timestamp;
-  
+
   ConversionHistory({
     required this.from,
     required this.to,
@@ -476,44 +481,44 @@ class ConversionHistory {
 // 货币选择底部弹窗
 class _CurrencyPickerSheet extends ConsumerStatefulWidget {
   final model.Currency? currentCurrency;
-  
+
   const _CurrencyPickerSheet({this.currentCurrency});
-  
+
   @override
-  ConsumerState<_CurrencyPickerSheet> createState() => 
+  ConsumerState<_CurrencyPickerSheet> createState() =>
       _CurrencyPickerSheetState();
 }
 
 class _CurrencyPickerSheetState extends ConsumerState<_CurrencyPickerSheet> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  
+
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
-  
+
   List<model.Currency> _getFilteredCurrencies() {
     final selectedCurrencies = ref.watch(selectedCurrenciesProvider);
     final availableCurrencies = ref.watch(availableCurrenciesProvider);
-    
+
     // 只显示已选择的货币
     List<model.Currency> currencies = availableCurrencies
         .where((c) => selectedCurrencies.contains(c))
         .toList();
-    
+
     // 搜索过滤
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
       currencies = currencies.where((currency) {
         return currency.code.toLowerCase().contains(query) ||
-               currency.name.toLowerCase().contains(query) ||
-               currency.nameZh.toLowerCase().contains(query) ||
-               currency.symbol.toLowerCase().contains(query);
+            currency.name.toLowerCase().contains(query) ||
+            currency.nameZh.toLowerCase().contains(query) ||
+            currency.symbol.toLowerCase().contains(query);
       }).toList();
     }
-    
+
     // 排序
     currencies.sort((a, b) {
       // 当前选中的排第一
@@ -521,22 +526,22 @@ class _CurrencyPickerSheetState extends ConsumerState<_CurrencyPickerSheet> {
         if (a.code == widget.currentCurrency!.code) return -1;
         if (b.code == widget.currentCurrency!.code) return 1;
       }
-      
+
       // 加密货币和法定货币分开
       if (a.isCrypto != b.isCrypto) {
         return a.isCrypto ? 1 : -1;
       }
-      
+
       return a.code.compareTo(b.code);
     });
-    
+
     return currencies;
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final currencies = _getFilteredCurrencies();
-    
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.75,
       padding: const EdgeInsets.only(top: 16),
@@ -562,7 +567,7 @@ class _CurrencyPickerSheetState extends ConsumerState<_CurrencyPickerSheet> {
               ],
             ),
           ),
-          
+
           // 搜索框
           Padding(
             padding: const EdgeInsets.all(16),
@@ -586,15 +591,16 @@ class _CurrencyPickerSheetState extends ConsumerState<_CurrencyPickerSheet> {
               ),
             ),
           ),
-          
+
           // 货币列表
           Expanded(
             child: ListView.builder(
               itemCount: currencies.length,
               itemBuilder: (context, index) {
                 final currency = currencies[index];
-                final isSelected = widget.currentCurrency?.code == currency.code;
-                
+                final isSelected =
+                    widget.currentCurrency?.code == currency.code;
+
                 return ListTile(
                   leading: Container(
                     width: 40,
@@ -615,7 +621,8 @@ class _CurrencyPickerSheetState extends ConsumerState<_CurrencyPickerSheet> {
                   title: Text(
                     '${currency.code} (${currency.symbol})',
                     style: TextStyle(
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
                   subtitle: Text(currency.nameZh),

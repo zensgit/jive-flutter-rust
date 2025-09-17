@@ -14,19 +14,19 @@ class AuthInterceptor extends Interceptor {
   ) async {
     // 从存储中获取令牌
     final token = await TokenStorage.getAccessToken();
-    
+
     if (token != null && token.isNotEmpty) {
       // 添加认证头
       options.headers['Authorization'] = 'Bearer $token';
     }
-    
+
     // 添加其他必要的头部
     options.headers['X-Request-ID'] = _generateRequestId();
     options.headers['X-Timestamp'] = DateTime.now().toIso8601String();
-    
+
     handler.next(options);
   }
-  
+
   @override
   Future<void> onResponse(
     Response response,
@@ -37,10 +37,10 @@ class AuthInterceptor extends Interceptor {
     if (newToken != null) {
       await TokenStorage.saveAccessToken(newToken);
     }
-    
+
     handler.next(response);
   }
-  
+
   @override
   Future<void> onError(
     DioException err,
@@ -49,13 +49,14 @@ class AuthInterceptor extends Interceptor {
     // 如果是401错误，尝试刷新令牌
     if (err.response?.statusCode == 401) {
       final now = DateTime.now();
-      if (_lastRefreshAttempt != null && now.difference(_lastRefreshAttempt!) < _refreshBackoff) {
+      if (_lastRefreshAttempt != null &&
+          now.difference(_lastRefreshAttempt!) < _refreshBackoff) {
         handler.next(err);
         return;
       }
       _lastRefreshAttempt = now;
       final refreshed = await _refreshToken();
-      
+
       if (refreshed) {
         // 重试原始请求
         try {
@@ -67,16 +68,16 @@ class AuthInterceptor extends Interceptor {
           return;
         }
       }
-      
+
       // 刷新失败，清除令牌并跳转到登录页
       await TokenStorage.clearTokens();
       // 通知应用需要跳转登录
       AuthEvents.notify(AuthEvent.unauthorized);
     }
-    
+
     handler.next(err);
   }
-  
+
   /// 刷新令牌
   Future<bool> _refreshToken() async {
     try {
@@ -89,15 +90,15 @@ class AuthInterceptor extends Interceptor {
       return false;
     }
   }
-  
+
   /// 重试请求
   Future<Response> _retry(RequestOptions requestOptions) async {
     final token = await TokenStorage.getAccessToken();
-    
+
     if (token != null) {
       requestOptions.headers['Authorization'] = 'Bearer $token';
     }
-    
+
     final dio = Dio();
     return dio.request(
       requestOptions.path,
@@ -109,18 +110,19 @@ class AuthInterceptor extends Interceptor {
       ),
     );
   }
-  
+
   /// 生成请求ID
   String _generateRequestId() {
     return '${DateTime.now().millisecondsSinceEpoch}-${_randomString(8)}';
   }
-  
+
   /// 生成随机字符串
   String _randomString(int length) {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
     return List.generate(
       length,
-      (index) => chars[(DateTime.now().millisecondsSinceEpoch + index) % chars.length],
+      (index) =>
+          chars[(DateTime.now().millisecondsSinceEpoch + index) % chars.length],
     ).join();
   }
 }

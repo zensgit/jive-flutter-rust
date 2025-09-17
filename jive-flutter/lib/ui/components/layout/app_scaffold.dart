@@ -44,7 +44,7 @@ class AppScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       backgroundColor: backgroundColor ?? theme.scaffoldBackgroundColor,
       extendBody: extendBody,
@@ -62,7 +62,7 @@ class AppScaffold extends StatelessWidget {
 
   PreferredSizeWidget _buildAppBar(ThemeData theme) {
     return AppBar(
-      title: title != null 
+      title: title != null
           ? Text(
               title!,
               style: theme.textTheme.titleLarge?.copyWith(
@@ -83,7 +83,7 @@ class AppScaffold extends StatelessWidget {
 
   Widget? _buildNavigationBar() {
     if (onNavigationTap == null) return null;
-    
+
     return AppNavigationBar(
       currentIndex: currentNavigationIndex,
       onTap: onNavigationTap!,
@@ -201,20 +201,20 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       margin: margin ?? const EdgeInsets.all(8),
       elevation: elevation ?? 1,
       backgroundColor: backgroundColor ?? theme.cardColor,
       shadowColor: theme.shadowColor.withOpacity(0.1),
       shape: RoundedRectangleBorder(
-        borderRadius: borderRadius ?? 
-            BorderRadius.circular(AppConstants.borderRadius),
+        borderRadius:
+            borderRadius ?? BorderRadius.circular(AppConstants.borderRadius),
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: borderRadius ?? 
-            BorderRadius.circular(AppConstants.borderRadius),
+        borderRadius:
+            borderRadius ?? BorderRadius.circular(AppConstants.borderRadius),
         child: Padding(
           padding: padding ?? const EdgeInsets.all(16),
           child: child,
@@ -244,9 +244,10 @@ class AppSectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Padding(
-      padding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding:
+          padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: InkWell(
         onTap: onTap,
         child: Row(

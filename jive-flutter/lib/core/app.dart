@@ -18,7 +18,7 @@ import '../providers/settings_provider.dart' as global_settings;
 /// 主应用类
 class JiveApp extends ConsumerStatefulWidget {
   final ProviderContainer? container;
-  
+
   const JiveApp({super.key, this.container});
 
   @override
@@ -32,7 +32,7 @@ class _JiveAppState extends ConsumerState<JiveApp> {
     // 在应用启动时自动更新汇率
     _initializeApp();
   }
-  
+
   Future<void> _initializeApp() async {
     // 延迟：等待路由/本地化就绪
     await Future.delayed(const Duration(milliseconds: 800));
@@ -40,7 +40,8 @@ class _JiveAppState extends ConsumerState<JiveApp> {
     final token = await TokenStorage.getAccessToken();
     final expired = await TokenStorage.isTokenExpired();
     if (token == null || expired) {
-      debugPrint('ℹ️ Skip auto refresh (token ${token == null ? 'absent' : 'expired'})');
+      debugPrint(
+          'ℹ️ Skip auto refresh (token ${token == null ? 'absent' : 'expired'})');
       return;
     }
     try {
@@ -54,7 +55,7 @@ class _JiveAppState extends ConsumerState<JiveApp> {
       debugPrint('⚠️ Failed to update exchange rates: $e');
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(appRouterProvider);
@@ -87,11 +88,12 @@ class _JiveAppState extends ConsumerState<JiveApp> {
 
       // 构建器 - 添加文本缩放控制
       builder: (context, child) {
-        debugPrint('@@ App.builder start (has Directionality=${Directionality.maybeOf(context)!=null})');
-        
+        debugPrint(
+            '@@ App.builder start (has Directionality=${Directionality.maybeOf(context) != null})');
+
         // Ensure child is never null and has proper constraints
         final safeChild = child ?? const SizedBox.expand();
-        
+
         // Wrap in a layout builder to ensure proper constraints
         return LayoutBuilder(
           builder: (context, constraints) {
@@ -100,7 +102,9 @@ class _JiveAppState extends ConsumerState<JiveApp> {
             final isCompact = settings.listDensity == 'compact';
             final radius = settings.cornerRadius == 'small'
                 ? 8.0
-                : settings.cornerRadius == 'large' ? 16.0 : 12.0;
+                : settings.cornerRadius == 'large'
+                    ? 16.0
+                    : 12.0;
             final mediaWrapped = MediaQuery(
               data: MediaQuery.of(context).copyWith(
                 textScaler: TextScaler.linear(
@@ -110,28 +114,37 @@ class _JiveAppState extends ConsumerState<JiveApp> {
               ),
               child: Theme(
                 data: Theme.of(context).copyWith(
-                  visualDensity: isCompact ? const VisualDensity(horizontal: -2, vertical: -2) : VisualDensity.adaptivePlatformDensity,
+                  visualDensity: isCompact
+                      ? const VisualDensity(horizontal: -2, vertical: -2)
+                      : VisualDensity.adaptivePlatformDensity,
                   cardTheme: Theme.of(context).cardTheme.copyWith(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(radius),
-                    ),
-                  ),
-                  inputDecorationTheme: Theme.of(context).inputDecorationTheme.copyWith(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(radius),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(radius),
-                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
-                    ),
-                  ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(radius),
+                        ),
+                      ),
+                  inputDecorationTheme:
+                      Theme.of(context).inputDecorationTheme.copyWith(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(radius),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(radius),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.primary),
+                            ),
+                          ),
                   checkboxTheme: Theme.of(context).checkboxTheme.copyWith(
-                    visualDensity: isCompact ? const VisualDensity(horizontal: -2, vertical: -2) : null,
-                  ),
+                        visualDensity: isCompact
+                            ? const VisualDensity(horizontal: -2, vertical: -2)
+                            : null,
+                      ),
                   listTileTheme: Theme.of(context).listTileTheme.copyWith(
-                    dense: isCompact,
-                    contentPadding: isCompact ? const EdgeInsets.symmetric(horizontal: 12, vertical: 4) : null,
-                  ),
+                        dense: isCompact,
+                        contentPadding: isCompact
+                            ? const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 4)
+                            : null,
+                      ),
                 ),
                 child: safeChild,
               ),
@@ -150,7 +163,8 @@ class _JiveAppState extends ConsumerState<JiveApp> {
         // 提示并跳转登录
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('登录已过期，请重新登录'), duration: Duration(seconds: 2)),
+            const SnackBar(
+                content: Text('登录已过期，请重新登录'), duration: Duration(seconds: 2)),
           );
         }
         router.go('/login');
@@ -231,7 +245,7 @@ class LocaleNotifier extends StateNotifier<Locale> {
   Future<void> _loadLocale() async {
     final settings = _ref.read(settingsProvider);
     final savedLanguage = await settings.getLanguage();
-    if (savedLanguage != null && 
+    if (savedLanguage != null &&
         AppConstants.supportedLanguages.contains(savedLanguage)) {
       state = Locale(savedLanguage);
     }
@@ -273,7 +287,7 @@ class AppStateNotifier extends StateNotifier<AppState> {
     try {
       // 检查认证状态
       final authState = _ref.read(authProvider);
-      
+
       if (authState.isAuthenticated) {
         state = AppState.authenticated;
       } else {

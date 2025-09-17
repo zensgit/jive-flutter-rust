@@ -12,7 +12,7 @@ class ThemeService extends ChangeNotifier {
   ThemeService._internal();
 
   final StorageService _storage = StorageService();
-  
+
   models.AppThemeSettings _currentSettings = const models.AppThemeSettings();
   List<models.CustomThemeData> _customThemes = [];
   List<models.CustomThemeData> _presetThemes = [];
@@ -21,16 +21,18 @@ class ThemeService extends ChangeNotifier {
 
   /// 当前主题设置
   models.AppThemeSettings get currentSettings => _currentSettings;
-  
+
   /// 自定义主题列表
-  List<models.CustomThemeData> get customThemes => List.unmodifiable(_customThemes);
-  
+  List<models.CustomThemeData> get customThemes =>
+      List.unmodifiable(_customThemes);
+
   /// 预设主题列表
-  List<models.CustomThemeData> get presetThemes => List.unmodifiable(_presetThemes);
-  
+  List<models.CustomThemeData> get presetThemes =>
+      List.unmodifiable(_presetThemes);
+
   /// 当前激活的主题
   models.CustomThemeData? get activeTheme => _activeTheme;
-  
+
   /// 系统是否为深色模式
   bool get systemIsDark => _systemIsDark;
 
@@ -39,16 +41,16 @@ class ThemeService extends ChangeNotifier {
     try {
       // 加载保存的主题设置
       await _loadThemeSettings();
-      
+
       // 加载自定义主题
       await _loadCustomThemes();
-      
+
       // 初始化预设主题
       _initializePresetThemes();
-      
+
       // 设置当前激活主题
       await _setActiveTheme();
-      
+
       // 监听系统主题变化
       _listenToSystemTheme();
     } catch (e) {
@@ -62,7 +64,7 @@ class ThemeService extends ChangeNotifier {
       bool shouldUseDark = _shouldUseDarkTheme();
       return _activeTheme!.toFlutterThemeData(isDark: shouldUseDark);
     }
-    
+
     // 默认主题
     return _shouldUseDarkTheme() ? ThemeData.dark() : ThemeData.light();
   }
@@ -171,41 +173,43 @@ class ThemeService extends ChangeNotifier {
     models.CustomThemeData? baseTheme,
   }) async {
     final theme = baseTheme?.copyWith(
-      id: _generateThemeId(),
-      name: name,
-      author: author,
-      description: description,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      isShared: false,
-      downloads: 0,
-      rating: 0.0,
-    ) ?? _createDefaultCustomTheme(
-      id: _generateThemeId(),
-      name: name,
-      author: author,
-      description: description,
-    );
+          id: _generateThemeId(),
+          name: name,
+          author: author,
+          description: description,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          isShared: false,
+          downloads: 0,
+          rating: 0.0,
+        ) ??
+        _createDefaultCustomTheme(
+          id: _generateThemeId(),
+          name: name,
+          author: author,
+          description: description,
+        );
 
     _customThemes.add(theme);
     await _saveCustomThemes();
     notifyListeners();
-    
+
     return theme;
   }
 
   /// 更新自定义主题
-  Future<void> updateCustomTheme(String themeId, models.CustomThemeData updatedTheme) async {
+  Future<void> updateCustomTheme(
+      String themeId, models.CustomThemeData updatedTheme) async {
     final index = _customThemes.indexWhere((theme) => theme.id == themeId);
     if (index != -1) {
       _customThemes[index] = updatedTheme.copyWith(updatedAt: DateTime.now());
       await _saveCustomThemes();
-      
+
       // 如果更新的是当前激活主题，重新设置
       if (_currentSettings.customThemeId == themeId) {
         await _setActiveTheme();
       }
-      
+
       notifyListeners();
     }
   }
@@ -214,12 +218,12 @@ class ThemeService extends ChangeNotifier {
   Future<void> deleteCustomTheme(String themeId) async {
     _customThemes.removeWhere((theme) => theme.id == themeId);
     await _saveCustomThemes();
-    
+
     // 如果删除的是当前激活主题，重置为系统主题
     if (_currentSettings.customThemeId == themeId) {
       await resetToSystemTheme();
     }
-    
+
     notifyListeners();
   }
 
@@ -240,7 +244,7 @@ class ThemeService extends ChangeNotifier {
 
     // 保存分享数据
     await _storage.saveSharedTheme(shareCode, sharedTheme);
-    
+
     return shareCode;
   }
 
@@ -420,7 +424,7 @@ class ThemeService extends ChangeNotifier {
         primaryColor: const Color(0xFF2196F3),
         secondaryColor: const Color(0xFF03DAC6),
       ),
-      
+
       // 温暖橙色主题
       _createPresetTheme(
         id: 'preset_orange',
@@ -428,7 +432,7 @@ class ThemeService extends ChangeNotifier {
         primaryColor: const Color(0xFFFF9800),
         secondaryColor: const Color(0xFFFF5722),
       ),
-      
+
       // 清新绿色主题
       _createPresetTheme(
         id: 'preset_green',
@@ -436,7 +440,7 @@ class ThemeService extends ChangeNotifier {
         primaryColor: const Color(0xFF4CAF50),
         secondaryColor: const Color(0xFF8BC34A),
       ),
-      
+
       // 优雅紫色主题
       _createPresetTheme(
         id: 'preset_purple',
@@ -444,7 +448,7 @@ class ThemeService extends ChangeNotifier {
         primaryColor: const Color(0xFF9C27B0),
         secondaryColor: const Color(0xFFE91E63),
       ),
-      
+
       // 深邃蓝色主题
       _createPresetTheme(
         id: 'preset_indigo',
@@ -452,7 +456,7 @@ class ThemeService extends ChangeNotifier {
         primaryColor: const Color(0xFF3F51B5),
         secondaryColor: const Color(0xFF2196F3),
       ),
-      
+
       // 活力红色主题
       _createPresetTheme(
         id: 'preset_red',
@@ -460,7 +464,7 @@ class ThemeService extends ChangeNotifier {
         primaryColor: const Color(0xFFF44336),
         secondaryColor: const Color(0xFFE91E63),
       ),
-      
+
       // 自然棕色主题
       _createPresetTheme(
         id: 'preset_brown',
@@ -468,7 +472,7 @@ class ThemeService extends ChangeNotifier {
         primaryColor: const Color(0xFF795548),
         secondaryColor: const Color(0xFF8D6E63),
       ),
-      
+
       // 科技青色主题
       _createPresetTheme(
         id: 'preset_cyan',
@@ -703,7 +707,6 @@ class ThemeService extends ChangeNotifier {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     final random = Random();
     return String.fromCharCodes(Iterable.generate(
-      8, (_) => chars.codeUnitAt(random.nextInt(chars.length))
-    ));
+        8, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
   }
 }

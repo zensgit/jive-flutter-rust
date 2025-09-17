@@ -19,7 +19,7 @@ class AppSettings {
   // Appearance extensions
   final String listDensity; // 'comfortable' | 'compact'
   final String cornerRadius; // 'small' | 'medium' | 'large'
-  
+
   AppSettings({
     this.defaultCurrency = 'CNY - 人民币',
     this.autoUpdateRates = true,
@@ -36,7 +36,7 @@ class AppSettings {
     this.listDensity = 'comfortable',
     this.cornerRadius = 'medium',
   });
-  
+
   // Helper methods for compatibility
   String? getThemeMode() {
     switch (themeMode) {
@@ -49,15 +49,15 @@ class AppSettings {
         return 'system';
     }
   }
-  
+
   Future<void> setThemeMode(String? mode) async {
     // This will be handled by the notifier
   }
-  
+
   String? getLanguage() {
     return language;
   }
-  
+
   Future<void> setLanguage(String? lang) async {
     // This will be handled by the notifier
   }
@@ -100,14 +100,14 @@ class AppSettings {
 // 设置状态管理
 class SettingsNotifier extends StateNotifier<AppSettings> {
   late SharedPreferences _prefs;
-  
+
   SettingsNotifier() : super(AppSettings()) {
     _loadSettings();
   }
 
   Future<void> _loadSettings() async {
     _prefs = await SharedPreferences.getInstance();
-    
+
     state = AppSettings(
       defaultCurrency: _prefs.getString('defaultCurrency') ?? 'CNY - 人民币',
       autoUpdateRates: _prefs.getBool('autoUpdateRates') ?? true,
@@ -184,31 +184,32 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
   Future<void> resetSettings() async {
     // 清除所有设置
     await _prefs.clear();
-    
+
     // 重置为默认值
     state = AppSettings();
   }
 }
 
 // 设置Provider
-final settingsProvider = StateNotifierProvider<SettingsNotifier, AppSettings>((ref) {
+final settingsProvider =
+    StateNotifierProvider<SettingsNotifier, AppSettings>((ref) {
   return SettingsNotifier();
 });
 
 // ThemeMode Provider
 class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   late SharedPreferences _prefs;
-  
+
   ThemeModeNotifier() : super(ThemeMode.system) {
     _loadThemeMode();
   }
-  
+
   Future<void> _loadThemeMode() async {
     _prefs = await SharedPreferences.getInstance();
     final mode = _prefs.getString('themeMode') ?? 'system';
     state = _themeModeFromString(mode);
   }
-  
+
   ThemeMode _themeModeFromString(String mode) {
     switch (mode) {
       case 'light':
@@ -220,7 +221,7 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
         return ThemeMode.system;
     }
   }
-  
+
   String _themeModeToString(ThemeMode mode) {
     switch (mode) {
       case ThemeMode.light:
@@ -232,14 +233,15 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
         return 'system';
     }
   }
-  
+
   Future<void> setThemeMode(ThemeMode mode) async {
     state = mode;
     await _prefs.setString('themeMode', _themeModeToString(mode));
   }
 }
 
-final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
+final themeModeProvider =
+    StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
   return ThemeModeNotifier();
 });
 

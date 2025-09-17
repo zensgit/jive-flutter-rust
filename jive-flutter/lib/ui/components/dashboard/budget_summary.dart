@@ -25,14 +25,15 @@ class BudgetSummary extends ConsumerWidget {
         // 计算总预算和总支出
         double totalBudget = 0;
         double totalSpent = 0;
-        
+
         for (final budget in budgetList) {
           totalBudget += budget.amount ?? 0;
           totalSpent += budget.spent ?? 0;
         }
-        
+
         final remaining = totalBudget - totalSpent;
-        final spentPercentage = totalBudget > 0 ? (totalSpent / totalBudget) : 0.0;
+        final spentPercentage =
+            totalBudget > 0 ? (totalSpent / totalBudget) : 0.0;
 
         return Column(
           children: [
@@ -47,12 +48,12 @@ class BudgetSummary extends ConsumerWidget {
               daysRemaining,
             ),
             const SizedBox(height: 16),
-            
+
             // 分类预算列表（显示前3个）
-            ...budgetList.take(3).map((budget) => 
-              _buildCategoryBudgetItem(context, budget)
-            ),
-            
+            ...budgetList
+                .take(3)
+                .map((budget) => _buildCategoryBudgetItem(context, budget)),
+
             // 查看全部按钮
             if (budgetList.length > 3)
               TextButton(
@@ -129,7 +130,7 @@ class BudgetSummary extends ConsumerWidget {
   ) {
     final isOverBudget = totalSpent > totalBudget;
     final warningLevel = _getWarningLevel(spentPercentage, monthProgress);
-    
+
     return Card(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -179,7 +180,8 @@ class BudgetSummary extends ConsumerWidget {
                       child: CircularProgressIndicator(
                         value: spentPercentage.clamp(0.0, 1.0),
                         backgroundColor: Colors.grey[200],
-                        valueColor: AlwaysStoppedAnimation<Color>(warningLevel.color),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(warningLevel.color),
                         strokeWidth: 8,
                       ),
                     ),
@@ -207,7 +209,7 @@ class BudgetSummary extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 20),
-            
+
             // 预算状态
             Container(
               padding: const EdgeInsets.all(12),
@@ -236,14 +238,16 @@ class BudgetSummary extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // 统计信息
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildStatItem('已支出', totalSpent, Colors.orange),
-                _buildStatItem('剩余', remaining.abs(), isOverBudget ? Colors.red : Colors.green),
-                _buildStatItem('剩余天数', daysRemaining.toDouble(), Colors.blue, suffix: '天'),
+                _buildStatItem('剩余', remaining.abs(),
+                    isOverBudget ? Colors.red : Colors.green),
+                _buildStatItem('剩余天数', daysRemaining.toDouble(), Colors.blue,
+                    suffix: '天'),
               ],
             ),
           ],
@@ -252,7 +256,8 @@ class BudgetSummary extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatItem(String label, double value, Color color, {String suffix = ''}) {
+  Widget _buildStatItem(String label, double value, Color color,
+      {String suffix = ''}) {
     return Column(
       children: [
         Text(
@@ -264,7 +269,7 @@ class BudgetSummary extends ConsumerWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          suffix.isEmpty 
+          suffix.isEmpty
               ? '¥${value.toStringAsFixed(2)}'
               : '${value.toInt()}$suffix',
           style: TextStyle(
@@ -283,7 +288,7 @@ class BudgetSummary extends ConsumerWidget {
     final remaining = amount - spent;
     final progress = amount > 0 ? (spent / amount).clamp(0.0, 1.0) : 0.0;
     final isOverBudget = spent > amount;
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
@@ -299,7 +304,8 @@ class BudgetSummary extends ConsumerWidget {
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: _getCategoryColor(budget.category).withOpacity(0.1),
+                      color:
+                          _getCategoryColor(budget.category).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -359,8 +365,11 @@ class BudgetSummary extends ConsumerWidget {
                   minHeight: 6,
                   backgroundColor: Colors.grey[200],
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    isOverBudget ? Colors.red : 
-                    progress > 0.8 ? Colors.orange : Colors.green,
+                    isOverBudget
+                        ? Colors.red
+                        : progress > 0.8
+                            ? Colors.orange
+                            : Colors.green,
                   ),
                 ),
               ),

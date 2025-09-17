@@ -254,7 +254,8 @@ class AppTheme {
   }
 
   /// 构建悬浮按钮主题
-  static ElevatedButtonThemeData _buildElevatedButtonTheme(ColorScheme colorScheme) {
+  static ElevatedButtonThemeData _buildElevatedButtonTheme(
+      ColorScheme colorScheme) {
     return ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         elevation: 2,
@@ -274,7 +275,8 @@ class AppTheme {
   }
 
   /// 构建轮廓按钮主题
-  static OutlinedButtonThemeData _buildOutlinedButtonTheme(ColorScheme colorScheme) {
+  static OutlinedButtonThemeData _buildOutlinedButtonTheme(
+      ColorScheme colorScheme) {
     return OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(
@@ -316,7 +318,8 @@ class AppTheme {
   }
 
   /// 构建输入装饰主题
-  static InputDecorationTheme _buildInputDecorationTheme(ColorScheme colorScheme) {
+  static InputDecorationTheme _buildInputDecorationTheme(
+      ColorScheme colorScheme) {
     return InputDecorationTheme(
       filled: true,
       fillColor: colorScheme.surface,
@@ -402,7 +405,8 @@ class AppTheme {
     );
   }
 
-  static BottomNavigationBarThemeData _buildBottomNavigationBarTheme(ColorScheme colorScheme) {
+  static BottomNavigationBarThemeData _buildBottomNavigationBarTheme(
+      ColorScheme colorScheme) {
     return BottomNavigationBarThemeData(
       backgroundColor: colorScheme.surface,
       selectedItemColor: colorScheme.primary,
@@ -412,7 +416,8 @@ class AppTheme {
     );
   }
 
-  static NavigationBarThemeData _buildNavigationBarTheme(ColorScheme colorScheme) {
+  static NavigationBarThemeData _buildNavigationBarTheme(
+      ColorScheme colorScheme) {
     return NavigationBarThemeData(
       backgroundColor: colorScheme.surface,
       indicatorColor: colorScheme.primaryContainer,
@@ -492,12 +497,22 @@ class AppTheme {
   }
 
   // 其他组件主题方法的简化实现
-  static SwitchThemeData _buildSwitchTheme(ColorScheme colorScheme) => const SwitchThemeData();
-  static CheckboxThemeData _buildCheckboxTheme(ColorScheme colorScheme) => const CheckboxThemeData();
-  static RadioThemeData _buildRadioTheme(ColorScheme colorScheme) => const RadioThemeData();
-  static SliderThemeData _buildSliderTheme(ColorScheme colorScheme) => const SliderThemeData();
-  static ProgressIndicatorThemeData _buildProgressIndicatorTheme(ColorScheme colorScheme) => const ProgressIndicatorThemeData();
-  static TabBarThemeData _buildTabBarTheme(ColorScheme colorScheme) => const TabBarThemeData();
-  static ListTileThemeData _buildListTileTheme(ColorScheme colorScheme) => const ListTileThemeData();
-  static ExpansionTileThemeData _buildExpansionTileTheme(ColorScheme colorScheme) => const ExpansionTileThemeData();
+  static SwitchThemeData _buildSwitchTheme(ColorScheme colorScheme) =>
+      const SwitchThemeData();
+  static CheckboxThemeData _buildCheckboxTheme(ColorScheme colorScheme) =>
+      const CheckboxThemeData();
+  static RadioThemeData _buildRadioTheme(ColorScheme colorScheme) =>
+      const RadioThemeData();
+  static SliderThemeData _buildSliderTheme(ColorScheme colorScheme) =>
+      const SliderThemeData();
+  static ProgressIndicatorThemeData _buildProgressIndicatorTheme(
+          ColorScheme colorScheme) =>
+      const ProgressIndicatorThemeData();
+  static TabBarThemeData _buildTabBarTheme(ColorScheme colorScheme) =>
+      const TabBarThemeData();
+  static ListTileThemeData _buildListTileTheme(ColorScheme colorScheme) =>
+      const ListTileThemeData();
+  static ExpansionTileThemeData _buildExpansionTileTheme(
+          ColorScheme colorScheme) =>
+      const ExpansionTileThemeData();
 }

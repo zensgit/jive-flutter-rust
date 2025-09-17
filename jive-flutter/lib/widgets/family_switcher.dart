@@ -29,7 +29,7 @@ class FamilySwitcher extends ConsumerWidget {
     List<Ledger> ledgers,
   ) {
     final theme = Theme.of(context);
-    
+
     return PopupMenuButton<String>(
       offset: const Offset(0, 40),
       shape: RoundedRectangleBorder(
@@ -77,7 +77,7 @@ class FamilySwitcher extends ConsumerWidget {
         ...ledgers.map((ledger) {
           final isSelected = currentLedger?.id == ledger.id;
           final memberCount = ledger.memberIds?.length ?? 1;
-          
+
           return PopupMenuItem<String>(
             value: ledger.id,
             child: Container(
@@ -101,7 +101,7 @@ class FamilySwitcher extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  
+
                   // 名称和信息
                   Expanded(
                     child: Column(
@@ -113,8 +113,8 @@ class FamilySwitcher extends ConsumerWidget {
                               child: Text(
                                 ledger.name,
                                 style: TextStyle(
-                                  fontWeight: isSelected 
-                                      ? FontWeight.bold 
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
                                       : FontWeight.normal,
                                 ),
                               ),
@@ -176,7 +176,7 @@ class FamilySwitcher extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  
+
                   // 选中标记
                   if (isSelected)
                     Icon(
@@ -189,9 +189,9 @@ class FamilySwitcher extends ConsumerWidget {
             ),
           );
         }).toList(),
-        
+
         const PopupMenuDivider(),
-        
+
         // 创建新家庭选项
         PopupMenuItem<String>(
           value: 'create_new',
@@ -239,7 +239,7 @@ class FamilySwitcher extends ConsumerWidget {
             ),
           ),
         ),
-        
+
         // 管理家庭选项
         PopupMenuItem<String>(
           value: 'manage',
@@ -284,8 +284,10 @@ class FamilySwitcher extends ConsumerWidget {
         } else {
           // 切换到选中的账本
           final selectedLedger = ledgers.firstWhere((l) => l.id == value);
-          await ref.read(currentLedgerProvider.notifier).switchLedger(selectedLedger);
-          
+          await ref
+              .read(currentLedgerProvider.notifier)
+              .switchLedger(selectedLedger);
+
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -343,7 +345,7 @@ class FamilySwitcher extends ConsumerWidget {
               await Clipboard.setData(ClipboardData(text: text));
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('已复制')), 
+                  const SnackBar(content: Text('已复制')),
                 );
               }
             },

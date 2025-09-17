@@ -10,7 +10,7 @@ class CurrencyConverter extends ConsumerStatefulWidget {
   final String? initialFromCurrency;
   final String? initialToCurrency;
   final double? initialAmount;
-  
+
   const CurrencyConverter({
     super.key,
     this.initialFromCurrency,
@@ -29,29 +29,29 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
   double? _convertedAmount;
   bool _isConverting = false;
   DateTime? _lastFetchTime;
-  
+
   @override
   void initState() {
     super.initState();
     _fromCurrency = widget.initialFromCurrency ?? 'USD';
     _toCurrency = widget.initialToCurrency ?? 'CNY';
     _amountController.text = widget.initialAmount?.toString() ?? '100';
-    
+
     // Auto-fetch rates and convert on init
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _autoFetchAndConvert();
     });
   }
-  
+
   @override
   void dispose() {
     _amountController.dispose();
     super.dispose();
   }
-  
+
   Future<void> _autoFetchAndConvert() async {
     final currencyNotifier = ref.read(currencyProvider.notifier);
-    
+
     // Check if we need to refresh rates (older than 15 minutes)
     if (currencyNotifier.ratesNeedUpdate) {
       try {
@@ -61,42 +61,42 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
         debugPrint('Failed to fetch exchange rates: $e');
       }
     }
-    
+
     // Perform initial conversion
     await _performConversion();
   }
-  
+
   Future<void> _performConversion() async {
     if (_fromCurrency == null || _toCurrency == null) return;
-    
+
     final amountText = _amountController.text.trim();
     if (amountText.isEmpty) return;
-    
+
     final amount = double.tryParse(amountText);
     if (amount == null || amount <= 0) return;
-    
+
     setState(() {
       _isConverting = true;
     });
-    
+
     try {
       final currencyNotifier = ref.read(currencyProvider.notifier);
-      
+
       // Auto-fetch rates if stale (older than 15 minutes)
       final now = DateTime.now();
-      if (_lastFetchTime == null || 
+      if (_lastFetchTime == null ||
           now.difference(_lastFetchTime!).inMinutes > 15) {
         await currencyNotifier.refreshExchangeRates();
         _lastFetchTime = now;
       }
-      
+
       // Perform conversion
       final converted = await currencyNotifier.convertAmount(
         amount,
         _fromCurrency!,
         _toCurrency!,
       );
-      
+
       if (mounted) {
         setState(() {
           _convertedAmount = converted;
@@ -117,13 +117,13 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
       }
     }
   }
-  
+
   void _swapCurrencies() {
     setState(() {
       final temp = _fromCurrency;
       _fromCurrency = _toCurrency;
       _toCurrency = temp;
-      
+
       if (_convertedAmount != null) {
         _amountController.text = _convertedAmount!.toStringAsFixed(2);
         _convertedAmount = null;
@@ -131,23 +131,25 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
     });
     _performConversion();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final selectedCurrencies = ref.watch(selectedCurrenciesProvider);
     final baseCurrency = ref.watch(baseCurrencyProvider);
-    
+
     // Ensure selected currencies are available
     if (!selectedCurrencies.any((c) => c.code == _fromCurrency)) {
       _fromCurrency = baseCurrency.code;
     }
     if (!selectedCurrencies.any((c) => c.code == _toCurrency)) {
-      _toCurrency = selectedCurrencies.firstWhere(
-        (c) => c.code != _fromCurrency,
-        orElse: () => baseCurrency,
-      ).code;
+      _toCurrency = selectedCurrencies
+          .firstWhere(
+            (c) => c.code != _fromCurrency,
+            orElse: () => baseCurrency,
+          )
+          .code;
     }
-    
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -178,14 +180,15 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                     height: 16,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[600]!),
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(Colors.blue[600]!),
                     ),
                   ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // From currency section
             Row(
               children: [
@@ -201,7 +204,8 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      _buildCurrencySelector(_fromCurrency, selectedCurrencies, (currency) {
+                      _buildCurrencySelector(_fromCurrency, selectedCurrencies,
+                          (currency) {
                         setState(() {
                           _fromCurrency = currency;
                         });
@@ -210,7 +214,6 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                     ],
                   ),
                 ),
-                
                 Padding(
                   padding: const EdgeInsets.only(top: 20),
                   child: IconButton(
@@ -219,7 +222,6 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                     tooltip: '交换货币',
                   ),
                 ),
-                
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,7 +234,8 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      _buildCurrencySelector(_toCurrency, selectedCurrencies, (currency) {
+                      _buildCurrencySelector(_toCurrency, selectedCurrencies,
+                          (currency) {
                         setState(() {
                           _toCurrency = currency;
                         });
@@ -243,31 +246,35 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Amount input
             TextField(
               controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
               ],
               decoration: InputDecoration(
                 labelText: '金额',
-                prefixText: _fromCurrency != null ? _getCurrencySymbol(_fromCurrency) : '',
+                prefixText: _fromCurrency != null
+                    ? _getCurrencySymbol(_fromCurrency)
+                    : '',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
               onChanged: (value) {
                 _performConversion();
               },
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Result display
             Container(
               width: double.infinity,
@@ -326,9 +333,10 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                           // Try to show source if available in provider's cache
                           Builder(
                             builder: (context) {
-                              final rates = ref.watch(exchangeRateObjectsProvider);
+                              final rates =
+                                  ref.watch(exchangeRateObjectsProvider);
                               final source = rates[_toCurrency ?? '']?.source;
-                              return source != null 
+                              return source != null
                                   ? SourceBadge(source: source)
                                   : const SizedBox.shrink();
                             },
@@ -339,7 +347,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                 ],
               ),
             ),
-            
+
             // Last update time
             if (_lastFetchTime != null)
               Padding(
@@ -364,7 +372,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
       ),
     );
   }
-  
+
   Widget _buildCurrencySelector(
     String? selectedCode,
     List<Currency> currencies,
@@ -374,7 +382,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
       (c) => c.code == selectedCode,
       orElse: () => currencies.first,
     );
-    
+
     return InkWell(
       onTap: () => _showCurrencyPicker(currencies, selectedCode, onChanged),
       borderRadius: BorderRadius.circular(8),
@@ -419,7 +427,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
       ),
     );
   }
-  
+
   void _showCurrencyPicker(
     List<Currency> currencies,
     String? selectedCode,
@@ -449,7 +457,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                 itemBuilder: (context, index) {
                   final currency = currencies[index];
                   final isSelected = currency.code == selectedCode;
-                  
+
                   return ListTile(
                     selected: isSelected,
                     selectedTileColor: Colors.blue[50],
@@ -457,7 +465,9 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: currency.isCrypto ? Colors.purple[100] : Colors.blue[100],
+                        color: currency.isCrypto
+                            ? Colors.purple[100]
+                            : Colors.blue[100],
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Center(
@@ -488,7 +498,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
       ),
     );
   }
-  
+
   String _getCurrencySymbol(String? code) {
     if (code == null) return '';
     final currencies = ref.read(availableCurrenciesProvider);
@@ -504,11 +514,11 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
     );
     return currency.symbol;
   }
-  
+
   String _formatUpdateTime(DateTime time) {
     final now = DateTime.now();
     final diff = now.difference(time);
-    
+
     if (diff.inMinutes < 1) {
       return '刚刚';
     } else if (diff.inMinutes < 60) {

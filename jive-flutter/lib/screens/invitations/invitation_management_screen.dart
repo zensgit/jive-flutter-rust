@@ -10,7 +10,7 @@ import '../../widgets/sheets/generate_invite_code_sheet.dart';
 class InvitationManagementScreen extends ConsumerStatefulWidget {
   final String familyId;
   final String familyName;
-  
+
   const InvitationManagementScreen({
     super.key,
     required this.familyId,
@@ -18,48 +18,47 @@ class InvitationManagementScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<InvitationManagementScreen> createState() => 
+  ConsumerState<InvitationManagementScreen> createState() =>
       _InvitationManagementScreenState();
 }
 
-class _InvitationManagementScreenState 
-    extends ConsumerState<InvitationManagementScreen> 
+class _InvitationManagementScreenState
+    extends ConsumerState<InvitationManagementScreen>
     with SingleTickerProviderStateMixin {
-  
   late TabController _tabController;
   final _invitationService = InvitationService();
-  
+
   List<Invitation> _pendingInvitations = [];
   List<Invitation> _expiredInvitations = [];
   List<Invitation> _acceptedInvitations = [];
   InvitationStatistics? _statistics;
   bool _isLoading = true;
-  
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _loadInvitations();
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
-  
+
   Future<void> _loadInvitations() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final invitations = await _invitationService.getFamilyInvitations(
         widget.familyId,
       );
-      
+
       final stats = await _invitationService.getFamilyInvitationStatistics(
         widget.familyId,
       );
-      
+
       setState(() {
         _pendingInvitations = invitations
             .where((i) => i.status == InvitationStatus.pending && !i.isExpired)
@@ -80,7 +79,7 @@ class _InvitationManagementScreenState
       }
     }
   }
-  
+
   Future<void> _cancelInvitation(Invitation invitation) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -99,7 +98,7 @@ class _InvitationManagementScreenState
         ],
       ),
     );
-    
+
     if (confirmed == true) {
       try {
         await _invitationService.cancelInvitation(invitation.id);
@@ -114,7 +113,7 @@ class _InvitationManagementScreenState
       }
     }
   }
-  
+
   Future<void> _resendInvitation(Invitation invitation) async {
     try {
       await _invitationService.resendInvitation(invitation.id);
@@ -127,11 +126,11 @@ class _InvitationManagementScreenState
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('邀请管理'),
@@ -207,7 +206,7 @@ class _InvitationManagementScreenState
                 ],
               ),
             ),
-          
+
           // Tab内容
           Expanded(
             child: _isLoading
@@ -252,10 +251,10 @@ class _InvitationManagementScreenState
       ),
     );
   }
-  
+
   Widget _buildStatItem(String label, String value, IconData icon) {
     final theme = Theme.of(context);
-    
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -283,7 +282,7 @@ class _InvitationManagementScreenState
       ],
     );
   }
-  
+
   Widget _buildInvitationList(
     List<Invitation> invitations, {
     required String emptyMessage,
@@ -313,18 +312,19 @@ class _InvitationManagementScreenState
         ),
       );
     }
-    
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: invitations.length,
       itemBuilder: (context, index) {
         final invitation = invitations[index];
-        
+
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: _getStatusColor(invitation.status).withOpacity(0.2),
+              backgroundColor:
+                  _getStatusColor(invitation.status).withOpacity(0.2),
               child: Icon(
                 _getStatusIcon(invitation.status),
                 color: _getStatusColor(invitation.status),
@@ -348,9 +348,8 @@ class _InvitationManagementScreenState
                     invitation.remainingTimeDescription,
                     style: TextStyle(
                       fontSize: 12,
-                      color: invitation.hoursRemaining < 24
-                          ? Colors.orange
-                          : null,
+                      color:
+                          invitation.hoursRemaining < 24 ? Colors.orange : null,
                     ),
                   ),
               ],
@@ -381,7 +380,7 @@ class _InvitationManagementScreenState
       },
     );
   }
-  
+
   Color _getStatusColor(InvitationStatus status) {
     switch (status) {
       case InvitationStatus.pending:
@@ -396,7 +395,7 @@ class _InvitationManagementScreenState
         return Colors.grey;
     }
   }
-  
+
   IconData _getStatusIcon(InvitationStatus status) {
     switch (status) {
       case InvitationStatus.pending:
@@ -411,7 +410,7 @@ class _InvitationManagementScreenState
         return Icons.block;
     }
   }
-  
+
   String _getRoleDisplay(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:
@@ -424,7 +423,7 @@ class _InvitationManagementScreenState
         return '查看者';
     }
   }
-  
+
   String _formatDateTime(DateTime dateTime) {
     return '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-'
         '${dateTime.day.toString().padLeft(2, '0')} '

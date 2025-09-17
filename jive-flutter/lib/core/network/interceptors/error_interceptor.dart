@@ -7,18 +7,18 @@ class ErrorInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     // 记录错误日志
     _logError(err);
-    
+
     // 处理特定错误
     final error = _transformError(err);
-    
+
     handler.next(error);
   }
-  
+
   /// 记录错误日志
   void _logError(DioException err) {
     final request = err.requestOptions;
     final response = err.response;
-    
+
     AppLogger.error('''
     ==================== API Error ====================
     URL: ${request.method} ${request.uri}
@@ -34,11 +34,11 @@ class ErrorInterceptor extends Interceptor {
     ===================================================
     ''');
   }
-  
+
   /// 转换错误信息
   DioException _transformError(DioException err) {
     String message = err.message ?? '未知错误';
-    
+
     // 根据错误类型自定义错误信息
     switch (err.type) {
       case DioExceptionType.connectionTimeout:
@@ -71,7 +71,7 @@ class ErrorInterceptor extends Interceptor {
         }
         break;
     }
-    
+
     return DioException(
       requestOptions: err.requestOptions,
       response: err.response,
@@ -80,16 +80,16 @@ class ErrorInterceptor extends Interceptor {
       message: message,
     );
   }
-  
+
   /// 获取响应错误信息
   String _getResponseErrorMessage(Response? response) {
     if (response == null) {
       return '服务器无响应';
     }
-    
+
     final data = response.data;
     String message = '请求失败';
-    
+
     // 尝试从响应中提取错误信息
     if (data is Map<String, dynamic>) {
       // 优先使用message字段
@@ -118,7 +118,7 @@ class ErrorInterceptor extends Interceptor {
     } else if (data is String) {
       message = data;
     }
-    
+
     // 添加状态码信息
     final statusCode = response.statusCode ?? 0;
     switch (statusCode) {
@@ -153,7 +153,7 @@ class ErrorInterceptor extends Interceptor {
         message = '网关超时';
         break;
     }
-    
+
     return message;
   }
 }

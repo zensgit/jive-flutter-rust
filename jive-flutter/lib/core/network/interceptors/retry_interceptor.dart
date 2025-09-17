@@ -16,7 +16,7 @@ class RetryInterceptor extends Interceptor {
   final Duration circuitOpenDuration;
   // 达到多少连续失败开启熔断
   final int circuitFailureThreshold;
-  
+
   RetryInterceptor({
     required this.dio,
     this.maxRetries = 2,
@@ -25,7 +25,7 @@ class RetryInterceptor extends Interceptor {
     this.circuitOpenDuration = const Duration(seconds: 8),
     this.circuitFailureThreshold = 8,
   });
-  
+
   @override
   Future<void> onError(
     DioException err,
@@ -36,7 +36,7 @@ class RetryInterceptor extends Interceptor {
       handler.next(err);
       return;
     }
-    
+
     // 熔断状态下直接返回错误，避免风暴
     if (_circuitOpen) {
       final since = DateTime.now().difference(_circuitOpenedAt!);
@@ -63,7 +63,7 @@ class RetryInterceptor extends Interceptor {
     try {
       // 更新重试次数
       err.requestOptions.extra['retryCount'] = retryCount + 1;
-      
+
       // 重新发起请求
       final response = await dio.request(
         err.requestOptions.path,
@@ -75,7 +75,7 @@ class RetryInterceptor extends Interceptor {
           extra: err.requestOptions.extra,
         ),
       );
-      
+
       _recordSuccess();
       handler.resolve(response);
     } catch (e) {
@@ -88,7 +88,7 @@ class RetryInterceptor extends Interceptor {
       }
     }
   }
-  
+
   /// 判断是否应该重试
   bool _shouldRetry(DioException err) {
     // 只重试特定类型的错误
@@ -98,31 +98,32 @@ class RetryInterceptor extends Interceptor {
         err.type == DioExceptionType.connectionError) {
       return true;
     }
-    
+
     // 网络错误
-    if (err.error is SocketException || 
+    if (err.error is SocketException ||
         err.error is HttpException ||
         err.error is TimeoutException) {
       return true;
     }
-    
+
     // 服务器错误（5xx）
     final statusCode = err.response?.statusCode;
     if (statusCode != null && statusCode >= 500 && statusCode < 600) {
       return true;
     }
-    
+
     // 429 Too Many Requests
     if (statusCode == 429) {
       return true;
     }
-    
+
     // 其他错误不重试
     return false;
   }
 
   Duration _calcBackoff(int retryCount) {
-    final ms = (baseDelay.inMilliseconds * (1 << retryCount)).clamp(baseDelay.inMilliseconds, maxDelay.inMilliseconds);
+    final ms = (baseDelay.inMilliseconds * (1 << retryCount))
+        .clamp(baseDelay.inMilliseconds, maxDelay.inMilliseconds);
     return Duration(milliseconds: ms);
   }
 

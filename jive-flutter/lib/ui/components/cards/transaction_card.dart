@@ -13,7 +13,7 @@ class TransactionCard extends ConsumerWidget {
   final bool? compact;
   final EdgeInsets? margin;
   final double? elevation;
-  
+
   // 原有的构造参数
   final String? id;
   final String? title;
@@ -39,17 +39,17 @@ class TransactionCard extends ConsumerWidget {
     this.elevation,
     this.onTap,
     this.onLongPress,
-  }) : id = null,
-       title = null,
-       description = null,
-       amount = null,
-       date = null,
-       category = null,
-       categoryColor = null,
-       categoryIcon = null,
-       isIncome = null,
-       payee = null,
-       tags = null;
+  })  : id = null,
+        title = null,
+        description = null,
+        amount = null,
+        date = null,
+        category = null,
+        categoryColor = null,
+        categoryIcon = null,
+        isIncome = null,
+        payee = null,
+        tags = null;
 
   // 原有的构造方法
   const TransactionCard.legacy({
@@ -67,33 +67,34 @@ class TransactionCard extends ConsumerWidget {
     this.tags,
     this.onTap,
     this.onLongPress,
-  }) : transaction = null,
-       showDate = true,
-       compact = false,
-       margin = null,
-       elevation = null;
+  })  : transaction = null,
+        showDate = true,
+        compact = false,
+        margin = null,
+        elevation = null;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final formatter = ref.read(currencyProvider.notifier);
-    
+
     // 从transaction对象或直接参数获取数据
     final cardTitle = transaction?.description ?? title ?? '';
     final cardDescription = transaction?.note ?? description;
     final cardAmount = transaction?.amount ?? amount ?? 0.0;
     final cardDate = transaction?.date ?? date ?? DateTime.now();
     final cardCategory = transaction?.category ?? category ?? '';
-    final cardIsIncome = transaction?.type == TransactionType.income ?? (isIncome ?? false);
+    final cardIsIncome =
+        transaction?.type == TransactionType.income ?? (isIncome ?? false);
     final cardPayee = transaction?.payee ?? payee;
     final cardTags = transaction?.tags ?? tags;
-    
-    final cardMargin = margin ?? 
-        (compact == true 
+
+    final cardMargin = margin ??
+        (compact == true
             ? const EdgeInsets.symmetric(horizontal: 16, vertical: 2)
             : const EdgeInsets.symmetric(horizontal: 16, vertical: 4));
     final cardElevation = elevation ?? (compact == true ? 0 : 1);
-    
+
     return Card(
       margin: cardMargin,
       elevation: cardElevation,
@@ -112,7 +113,7 @@ class TransactionCard extends ConsumerWidget {
               // 分类图标
               _buildCategoryIcon(theme),
               const SizedBox(width: 12),
-              
+
               // 交易信息
               Expanded(
                 child: Column(
@@ -139,9 +140,9 @@ class TransactionCard extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 4),
-                    
+
                     // 分类和收款方
                     Row(
                       children: [
@@ -152,25 +153,30 @@ class TransactionCard extends ConsumerWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: (transaction?.type.color ?? categoryColor ?? theme.primaryColor)
+                            color: (transaction?.type.color ??
+                                    categoryColor ??
+                                    theme.primaryColor)
                                 .withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             cardCategory,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: transaction?.type.color ?? categoryColor ?? theme.primaryColor,
+                              color: transaction?.type.color ??
+                                  categoryColor ??
+                                  theme.primaryColor,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
-                        
+
                         if (cardPayee != null) ...[
                           const SizedBox(width: 8),
                           Text(
                             '• $cardPayee',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withOpacity(0.6),
+                              color:
+                                  theme.colorScheme.onSurface.withOpacity(0.6),
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -178,9 +184,10 @@ class TransactionCard extends ConsumerWidget {
                         ],
                       ],
                     ),
-                    
+
                     // 描述
-                    if (cardDescription != null && cardDescription.isNotEmpty) ...[
+                    if (cardDescription != null &&
+                        cardDescription.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
                         cardDescription,
@@ -191,7 +198,7 @@ class TransactionCard extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
-                    
+
                     // 标签
                     if (cardTags != null && cardTags.isNotEmpty) ...[
                       const SizedBox(height: 8),
@@ -205,7 +212,8 @@ class TransactionCard extends ConsumerWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.secondary.withOpacity(0.1),
+                              color:
+                                  theme.colorScheme.secondary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -222,9 +230,9 @@ class TransactionCard extends ConsumerWidget {
                   ],
                 ),
               ),
-              
+
               const SizedBox(width: 12),
-              
+
               // 金额
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -233,7 +241,7 @@ class TransactionCard extends ConsumerWidget {
                     '${cardIsIncome ? '+' : '-'}${formatter.formatCurrency(cardAmount.abs(), ref.read(baseCurrencyProvider).code)}',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: cardIsIncome 
+                      color: cardIsIncome
                           ? AppConstants.successColor
                           : AppConstants.errorColor,
                     ),
@@ -269,9 +277,10 @@ class TransactionCard extends ConsumerWidget {
   }
 
   Widget _buildCategoryIcon(ThemeData theme) {
-    final iconColor = transaction?.type.color ?? categoryColor ?? theme.primaryColor;
+    final iconColor =
+        transaction?.type.color ?? categoryColor ?? theme.primaryColor;
     final iconData = transaction?.type.icon ?? categoryIcon ?? Icons.category;
-    
+
     return Container(
       width: 40,
       height: 40,

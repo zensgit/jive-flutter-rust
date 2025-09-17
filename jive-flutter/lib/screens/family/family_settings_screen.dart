@@ -23,7 +23,8 @@ class FamilySettingsScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<FamilySettingsScreen> createState() => _FamilySettingsScreenState();
+  ConsumerState<FamilySettingsScreen> createState() =>
+      _FamilySettingsScreenState();
 }
 
 class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
@@ -32,7 +33,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
   late LedgerType _selectedType;
   // 货币字段已移除，但保留原值以兼容性
   late bool _isDefault;
-  
+
   File? _avatarImage;
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
@@ -44,7 +45,8 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.ledger.name);
-    _descriptionController = TextEditingController(text: widget.ledger.description);
+    _descriptionController =
+        TextEditingController(text: widget.ledger.description);
     _selectedType = widget.ledger.type;
     // 货币字段已移除
     _isDefault = widget.ledger.isDefault;
@@ -75,7 +77,8 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final statisticsAsync = ref.watch(ledgerStatisticsProvider(widget.ledger.id!));
+    final statisticsAsync =
+        ref.watch(ledgerStatisticsProvider(widget.ledger.id!));
     final membersAsync = ref.watch(ledgerMembersProvider(widget.ledger.id!));
 
     return Scaffold(
@@ -148,7 +151,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // 统计信息
                   statisticsAsync.when(
                     data: (stats) => Row(
@@ -157,7 +160,8 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                         _buildStatItem('账户', stats.accountCount.toString()),
                         _buildStatItem('交易', stats.transactionCount.toString()),
                         membersAsync.when(
-                          data: (members) => _buildStatItem('成员', members.length.toString()),
+                          data: (members) =>
+                              _buildStatItem('成员', members.length.toString()),
                           loading: () => _buildStatItem('成员', '...'),
                           error: (_, __) => _buildStatItem('成员', '0'),
                         ),
@@ -176,7 +180,8 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
               children: [
                 // 名称
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: TextField(
                     controller: _nameController,
                     decoration: InputDecoration(
@@ -188,10 +193,11 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                     ),
                   ),
                 ),
-                
+
                 // 类型
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: DropdownButtonFormField<LedgerType>(
                     value: _selectedType,
                     decoration: InputDecoration(
@@ -223,12 +229,13 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                     },
                   ),
                 ),
-                
+
                 // 货币选项已移除
-                
+
                 // 描述
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: TextField(
                     controller: _descriptionController,
                     decoration: InputDecoration(
@@ -241,10 +248,11 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                     maxLines: 3,
                   ),
                 ),
-                
+
                 // 设为默认
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: SwitchListTile(
                     title: const Text('设为默认家庭'),
                     subtitle: const Text('登录后自动选择此家庭'),
@@ -277,7 +285,8 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => FamilyMembersScreen(ledger: widget.ledger),
+                        builder: (context) =>
+                            FamilyMembersScreen(ledger: widget.ledger),
                       ),
                     );
                   },
@@ -340,14 +349,17 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
               children: [
                 ListTile(
                   leading: const Icon(Icons.exit_to_app, color: Colors.orange),
-                  title: const Text('退出家庭', style: TextStyle(color: Colors.orange)),
+                  title: const Text('退出家庭',
+                      style: TextStyle(color: Colors.orange)),
                   subtitle: const Text('退出后需要重新邀请才能加入'),
                   onTap: _leaveFamily,
                 ),
                 if (widget.ledger.ownerId == ref.read(currentUserProvider)?.id)
                   ListTile(
-                    leading: const Icon(Icons.delete_forever, color: Colors.red),
-                    title: const Text('删除家庭', style: TextStyle(color: Colors.red)),
+                    leading:
+                        const Icon(Icons.delete_forever, color: Colors.red),
+                    title:
+                        const Text('删除家庭', style: TextStyle(color: Colors.red)),
                     subtitle: const Text('此操作不可恢复，所有数据将被永久删除'),
                     onTap: _deleteFamily,
                   ),
@@ -434,7 +446,9 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
         isDefault: _isDefault,
       );
 
-      await ref.read(currentLedgerProvider.notifier).updateLedger(updatedLedger);
+      await ref
+          .read(currentLedgerProvider.notifier)
+          .updateLedger(updatedLedger);
 
       // TODO: 上传头像
       // if (_avatarImage != null) {
@@ -570,7 +584,8 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
       // 如果没有统计信息，先获取
       try {
         final familyService = FamilyService();
-        final stats = await familyService.getFamilyStatistics(widget.ledger.id!);
+        final stats =
+            await familyService.getFamilyStatistics(widget.ledger.id!);
         // 保存原始统计数据用于显示
         _familyStats = stats;
       } catch (e) {
@@ -585,7 +600,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
         return;
       }
     }
-    
+
     // 创建Family对象用于删除对话框
     final family = family_model.Family(
       id: widget.ledger.id!,
@@ -599,17 +614,18 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
         'start_of_week': 1,
       },
     );
-    
+
     // 使用已经获取的familyStats或创建一个默认值
-    final familyStats = _familyStats ?? FamilyStatistics(
-      memberCount: 1,
-      ledgerCount: 0,
-      accountCount: _statistics?.accountCount ?? 0,
-      transactionCount: _statistics?.transactionCount ?? 0,
-      totalBalance: {},
-      lastActivity: DateTime.now(),
-    );
-    
+    final familyStats = _familyStats ??
+        FamilyStatistics(
+          memberCount: 1,
+          ledgerCount: 0,
+          accountCount: _statistics?.accountCount ?? 0,
+          transactionCount: _statistics?.transactionCount ?? 0,
+          totalBalance: {},
+          lastActivity: DateTime.now(),
+        );
+
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -618,7 +634,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
         statistics: familyStats,
       ),
     );
-    
+
     if (result == true && mounted) {
       // Family已删除，对话框会处理导航
     }
@@ -645,7 +661,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
 // 需要导入的包
 class InviteMemberDialog extends StatelessWidget {
   final Ledger ledger;
-  
+
   const InviteMemberDialog({super.key, required this.ledger});
 
   @override

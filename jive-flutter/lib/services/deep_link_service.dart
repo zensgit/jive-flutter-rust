@@ -14,9 +14,9 @@ class DeepLinkService {
 
   StreamSubscription? _linkSubscription;
   final _linkController = StreamController<DeepLinkData>.broadcast();
-  
+
   Stream<DeepLinkData> get linkStream => _linkController.stream;
-  
+
   /// 初始化深链接监听
   Future<void> initialize() async {
     // 处理应用启动时的链接
@@ -28,7 +28,7 @@ class DeepLinkService {
     } catch (e) {
       debugPrint('Failed to get initial link: $e');
     }
-    
+
     // 监听应用运行时的链接
     _linkSubscription = linkStream.listen((link) {
       _handleDeepLink(link.url);
@@ -36,17 +36,17 @@ class DeepLinkService {
       debugPrint('Link stream error: $err');
     });
   }
-  
+
   /// 处理深链接
   void _handleDeepLink(String link) {
     final uri = Uri.parse(link);
     final data = _parseDeepLink(uri);
-    
+
     if (data != null) {
       _linkController.add(data);
     }
   }
-  
+
   /// 解析深链接
   DeepLinkData? _parseDeepLink(Uri uri) {
     // 支持的链接格式：
@@ -55,12 +55,12 @@ class DeepLinkService {
     // jivemoney://family/{familyId}
     // jivemoney://transaction/{transactionId}
     // jivemoney://share/{type}/{id}
-    
+
     if (uri.scheme == 'jivemoney' || uri.host == 'jivemoney.app') {
       final pathSegments = uri.pathSegments;
-      
+
       if (pathSegments.isEmpty) return null;
-      
+
       switch (pathSegments[0]) {
         case 'invite':
           if (pathSegments.length > 1) {
@@ -71,7 +71,7 @@ class DeepLinkService {
             );
           }
           break;
-          
+
         case 'family':
           if (pathSegments.length > 1) {
             return DeepLinkData(
@@ -81,7 +81,7 @@ class DeepLinkService {
             );
           }
           break;
-          
+
         case 'transaction':
           if (pathSegments.length > 1) {
             return DeepLinkData(
@@ -91,7 +91,7 @@ class DeepLinkService {
             );
           }
           break;
-          
+
         case 'share':
           if (pathSegments.length > 2) {
             return DeepLinkData(
@@ -104,7 +104,7 @@ class DeepLinkService {
             );
           }
           break;
-          
+
         case 'auth':
           if (pathSegments.length > 1) {
             return DeepLinkData(
@@ -116,10 +116,10 @@ class DeepLinkService {
           break;
       }
     }
-    
+
     return null;
   }
-  
+
   /// 导航到深链接目标
   static Future<void> navigateToDeepLink(
     BuildContext context,
@@ -129,25 +129,25 @@ class DeepLinkService {
       case DeepLinkType.invitation:
         await _navigateToInvitation(context, data);
         break;
-        
+
       case DeepLinkType.family:
         await _navigateToFamily(context, data);
         break;
-        
+
       case DeepLinkType.transaction:
         await _navigateToTransaction(context, data);
         break;
-        
+
       case DeepLinkType.share:
         await _navigateToShare(context, data);
         break;
-        
+
       case DeepLinkType.auth:
         await _navigateToAuth(context, data);
         break;
     }
   }
-  
+
   /// 导航到邀请页面
   static Future<void> _navigateToInvitation(
     BuildContext context,
@@ -155,10 +155,10 @@ class DeepLinkService {
   ) async {
     final token = data.data['token'];
     if (token == null) return;
-    
+
     // 检查是否已登录
     final isLoggedIn = await _checkLoginStatus();
-    
+
     if (!isLoggedIn) {
       // 先导航到登录页面，登录后再处理邀请
       if (context.mounted) {
@@ -186,7 +186,7 @@ class DeepLinkService {
       }
     }
   }
-  
+
   /// 导航到家庭页面
   static Future<void> _navigateToFamily(
     BuildContext context,
@@ -194,9 +194,9 @@ class DeepLinkService {
   ) async {
     final familyId = data.data['familyId'];
     if (familyId == null) return;
-    
+
     final isLoggedIn = await _checkLoginStatus();
-    
+
     if (!isLoggedIn) {
       if (context.mounted) {
         Navigator.pushAndRemoveUntil(
@@ -214,7 +214,7 @@ class DeepLinkService {
         currency: 'CNY',
         isDefault: false,
       );
-      
+
       if (context.mounted) {
         Navigator.push(
           context,
@@ -225,7 +225,7 @@ class DeepLinkService {
       }
     }
   }
-  
+
   /// 导航到交易页面
   static Future<void> _navigateToTransaction(
     BuildContext context,
@@ -233,9 +233,9 @@ class DeepLinkService {
   ) async {
     final transactionId = data.data['transactionId'];
     if (transactionId == null) return;
-    
+
     final isLoggedIn = await _checkLoginStatus();
-    
+
     if (!isLoggedIn) {
       if (context.mounted) {
         Navigator.pushAndRemoveUntil(
@@ -255,7 +255,7 @@ class DeepLinkService {
       }
     }
   }
-  
+
   /// 导航到分享页面
   static Future<void> _navigateToShare(
     BuildContext context,
@@ -263,9 +263,9 @@ class DeepLinkService {
   ) async {
     final shareType = data.data['shareType'];
     final shareId = data.data['shareId'];
-    
+
     if (shareType == null || shareId == null) return;
-    
+
     // 根据分享类型处理
     switch (shareType) {
       case 'statistics':
@@ -278,14 +278,14 @@ class DeepLinkService {
         break;
     }
   }
-  
+
   /// 导航到认证页面
   static Future<void> _navigateToAuth(
     BuildContext context,
     DeepLinkData data,
   ) async {
     final action = data.data['action'];
-    
+
     switch (action) {
       case 'login':
         if (context.mounted) {
@@ -296,13 +296,13 @@ class DeepLinkService {
           );
         }
         break;
-        
+
       case 'register':
         if (context.mounted) {
           Navigator.pushNamed(context, '/auth/register');
         }
         break;
-        
+
       case 'reset-password':
         final token = data.queryParams['token'];
         if (token != null && context.mounted) {
@@ -313,7 +313,7 @@ class DeepLinkService {
           );
         }
         break;
-        
+
       case 'verify-email':
         final token = data.queryParams['token'];
         if (token != null && context.mounted) {
@@ -326,14 +326,14 @@ class DeepLinkService {
         break;
     }
   }
-  
+
   /// 检查登录状态
   static Future<bool> _checkLoginStatus() async {
     // TODO: 实际检查登录状态
     // 这里应该检查本地存储的token是否有效
     return false;
   }
-  
+
   /// 生成深链接
   static String generateDeepLink({
     required DeepLinkType type,
@@ -341,43 +341,41 @@ class DeepLinkService {
     Map<String, String>? queryParams,
     bool useHttps = true,
   }) {
-    String baseUrl = useHttps 
-        ? 'https://jivemoney.app' 
-        : 'jivemoney://';
-    
+    String baseUrl = useHttps ? 'https://jivemoney.app' : 'jivemoney://';
+
     String path = '';
-    
+
     switch (type) {
       case DeepLinkType.invitation:
         path = 'invite/${data['token']}';
         break;
-        
+
       case DeepLinkType.family:
         path = 'family/${data['familyId']}';
         break;
-        
+
       case DeepLinkType.transaction:
         path = 'transaction/${data['transactionId']}';
         break;
-        
+
       case DeepLinkType.share:
         path = 'share/${data['shareType']}/${data['shareId']}';
         break;
-        
+
       case DeepLinkType.auth:
         path = 'auth/${data['action']}';
         break;
     }
-    
+
     final uri = Uri.parse('$baseUrl/$path');
-    
+
     if (queryParams != null && queryParams.isNotEmpty) {
       return uri.replace(queryParameters: queryParams).toString();
     }
-    
+
     return uri.toString();
   }
-  
+
   /// 生成邀请链接
   static String generateInvitationLink(String token, {bool useHttps = true}) {
     return generateDeepLink(
@@ -386,7 +384,7 @@ class DeepLinkService {
       useHttps: useHttps,
     );
   }
-  
+
   /// 生成家庭链接
   static String generateFamilyLink(String familyId, {bool useHttps = true}) {
     return generateDeepLink(
@@ -395,7 +393,7 @@ class DeepLinkService {
       useHttps: useHttps,
     );
   }
-  
+
   /// 生成分享链接
   static String generateShareLink(
     String shareType,
@@ -413,7 +411,7 @@ class DeepLinkService {
       useHttps: useHttps,
     );
   }
-  
+
   /// 释放资源
   void dispose() {
     _linkSubscription?.cancel();
@@ -438,11 +436,11 @@ class DeepLinkData {
 
 /// 深链接类型
 enum DeepLinkType {
-  invitation,   // 邀请链接
-  family,       // 家庭链接
-  transaction,  // 交易链接
-  share,        // 分享链接
-  auth,         // 认证链接
+  invitation, // 邀请链接
+  family, // 家庭链接
+  transaction, // 交易链接
+  share, // 分享链接
+  auth, // 认证链接
 }
 
 /// 接受邀请页面（示例）
@@ -472,7 +470,7 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
   Future<void> _loadInvitation() async {
     // TODO: 调用API验证邀请token
     await Future.delayed(const Duration(seconds: 2));
-    
+
     setState(() {
       _isLoading = false;
       _invitationData = {
@@ -486,11 +484,11 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
 
   Future<void> _acceptInvitation() async {
     setState(() => _isLoading = true);
-    
+
     try {
       // TODO: 调用API接受邀请
       await Future.delayed(const Duration(seconds: 2));
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('成功加入家庭！')),
@@ -508,7 +506,7 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     if (_isLoading) {
       return const Scaffold(
         body: Center(
@@ -516,7 +514,7 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
         ),
       );
     }
-    
+
     if (_error != null) {
       return Scaffold(
         body: Center(
@@ -541,7 +539,8 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () => Navigator.pushReplacementNamed(context, '/home'),
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, '/home'),
                 child: const Text('返回首页'),
               ),
             ],
@@ -549,7 +548,7 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
         ),
       );
     }
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('接受邀请'),

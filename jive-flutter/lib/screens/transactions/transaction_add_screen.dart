@@ -13,7 +13,8 @@ class TransactionAddScreen extends ConsumerStatefulWidget {
   const TransactionAddScreen({super.key, this.type});
 
   @override
-  ConsumerState<TransactionAddScreen> createState() => _TransactionAddScreenState();
+  ConsumerState<TransactionAddScreen> createState() =>
+      _TransactionAddScreenState();
 }
 
 class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
@@ -22,7 +23,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _noteController = TextEditingController();
-  
+
   String? _selectedCategory;
   String? _selectedAccountId;
   String? _selectedToAccountId; // 用于转账
@@ -30,17 +31,24 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
   TimeOfDay _selectedTime = TimeOfDay.now();
   bool _isRecurring = false;
   String? _recurringPeriod; // daily, weekly, monthly, yearly
-  
+
   // 分类列表
   final Map<String, List<String>> _categories = {
     'expense': [
-      '餐饮', '交通', '购物', '娱乐', '居住', '医疗', 
-      '教育', '通讯', '日用品', '服饰', '运动', '其他'
+      '餐饮',
+      '交通',
+      '购物',
+      '娱乐',
+      '居住',
+      '医疗',
+      '教育',
+      '通讯',
+      '日用品',
+      '服饰',
+      '运动',
+      '其他'
     ],
-    'income': [
-      '工资', '奖金', '投资收益', '兼职', '生意', 
-      '退款', '报销', '红包', '其他'
-    ],
+    'income': ['工资', '奖金', '投资收益', '兼职', '生意', '退款', '报销', '红包', '其他'],
   };
 
   @override
@@ -120,9 +128,9 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                   ),
                 ),
               ),
-            
+
             const SizedBox(height: 16),
-            
+
             // 金额输入
             Card(
               child: Padding(
@@ -137,9 +145,11 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _amountController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d*\.?\d{0,2}')),
                       ],
                       style: const TextStyle(
                         fontSize: 24,
@@ -172,9 +182,9 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // 账户选择
             Card(
               child: Padding(
@@ -231,7 +241,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                         return null;
                       },
                     ),
-                    
+
                     // 转账目标账户
                     if (_type == 'transfer') ...[
                       const SizedBox(height: 16),
@@ -249,7 +259,8 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                           ),
                         ),
                         items: accounts
-                            .where((account) => account.id != _selectedAccountId)
+                            .where(
+                                (account) => account.id != _selectedAccountId)
                             .map((account) {
                           return DropdownMenuItem(
                             value: account.id,
@@ -291,9 +302,9 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // 分类选择（非转账）
             if (_type != 'transfer')
               Card(
@@ -311,25 +322,27 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                         spacing: 8,
                         runSpacing: 8,
                         children: _categories[_type]?.map((category) {
-                          final isSelected = _selectedCategory == category;
-                          return FilterChip(
-                            label: Text(category),
-                            selected: isSelected,
-                            onSelected: (selected) {
-                              setState(() {
-                                _selectedCategory = selected ? category : null;
-                              });
-                            },
-                          );
-                        }).toList() ?? [],
+                              final isSelected = _selectedCategory == category;
+                              return FilterChip(
+                                label: Text(category),
+                                selected: isSelected,
+                                onSelected: (selected) {
+                                  setState(() {
+                                    _selectedCategory =
+                                        selected ? category : null;
+                                  });
+                                },
+                              );
+                            }).toList() ??
+                            [],
                       ),
                     ],
                   ),
                 ),
               ),
-            
+
             const SizedBox(height: 16),
-            
+
             // 日期时间选择
             Card(
               child: Padding(
@@ -369,9 +382,9 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // 描述和备注
             Card(
               child: Padding(
@@ -419,9 +432,9 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // 定期交易设置
             Card(
               child: Padding(
@@ -473,7 +486,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 80),
           ],
         ),

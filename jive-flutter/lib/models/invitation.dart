@@ -15,9 +15,9 @@ enum InvitationStatus {
 
   final String value;
   final String label;
-  
+
   const InvitationStatus(this.value, this.label);
-  
+
   static InvitationStatus fromString(String? value) {
     return InvitationStatus.values.firstWhere(
       (status) => status.value == value,
@@ -39,7 +39,7 @@ class Invitation {
   final DateTime? acceptedAt;
   final String? acceptedBy;
   final InvitationStatus status;
-  
+
   Invitation({
     required this.id,
     required this.familyId,
@@ -53,7 +53,7 @@ class Invitation {
     this.acceptedBy,
     this.status = InvitationStatus.pending,
   });
-  
+
   /// 从JSON创建
   factory Invitation.fromJson(Map<String, dynamic> json) {
     return Invitation(
@@ -65,14 +65,14 @@ class Invitation {
       invitedBy: json['invited_by'],
       createdAt: DateTime.parse(json['created_at']),
       expiresAt: DateTime.parse(json['expires_at']),
-      acceptedAt: json['accepted_at'] != null 
-          ? DateTime.parse(json['accepted_at']) 
+      acceptedAt: json['accepted_at'] != null
+          ? DateTime.parse(json['accepted_at'])
           : null,
       acceptedBy: json['accepted_by'],
       status: InvitationStatus.fromString(json['status']),
     );
   }
-  
+
   /// 转换为JSON
   Map<String, dynamic> toJson() {
     return {
@@ -89,24 +89,23 @@ class Invitation {
       'status': status.value,
     };
   }
-  
+
   /// 检查是否已过期
   bool get isExpired => DateTime.now().isAfter(expiresAt);
-  
+
   /// 检查是否可以接受
-  bool get canAccept => 
-      status == InvitationStatus.pending && !isExpired;
-  
+  bool get canAccept => status == InvitationStatus.pending && !isExpired;
+
   /// 获取剩余时间（小时）
   int get hoursRemaining {
     if (isExpired) return 0;
     return expiresAt.difference(DateTime.now()).inHours;
   }
-  
+
   /// 获取剩余时间描述
   String get remainingTimeDescription {
     if (isExpired) return '已过期';
-    
+
     final diff = expiresAt.difference(DateTime.now());
     if (diff.inDays > 0) {
       return '${diff.inDays}天后过期';
@@ -118,7 +117,7 @@ class Invitation {
       return '即将过期';
     }
   }
-  
+
   /// 复制并更新
   Invitation copyWith({
     String? id,
@@ -154,13 +153,13 @@ class InvitationWithDetails {
   final Invitation invitation;
   final Family family;
   final User inviter;
-  
+
   InvitationWithDetails({
     required this.invitation,
     required this.family,
     required this.inviter,
   });
-  
+
   /// 从JSON创建
   factory InvitationWithDetails.fromJson(Map<String, dynamic> json) {
     return InvitationWithDetails(
@@ -169,7 +168,7 @@ class InvitationWithDetails {
       inviter: User.fromJson(json['inviter']),
     );
   }
-  
+
   /// 转换为JSON
   Map<String, dynamic> toJson() {
     return {
@@ -189,7 +188,7 @@ class InvitationStatistics {
   final int expiredCount;
   final DateTime? lastSentAt;
   final DateTime? lastAcceptedAt;
-  
+
   InvitationStatistics({
     required this.totalSent,
     required this.pendingCount,
@@ -199,7 +198,7 @@ class InvitationStatistics {
     this.lastSentAt,
     this.lastAcceptedAt,
   });
-  
+
   /// 从JSON创建
   factory InvitationStatistics.fromJson(Map<String, dynamic> json) {
     return InvitationStatistics(
@@ -208,15 +207,15 @@ class InvitationStatistics {
       acceptedCount: json['accepted_count'] ?? 0,
       declinedCount: json['declined_count'] ?? 0,
       expiredCount: json['expired_count'] ?? 0,
-      lastSentAt: json['last_sent_at'] != null 
-          ? DateTime.parse(json['last_sent_at']) 
+      lastSentAt: json['last_sent_at'] != null
+          ? DateTime.parse(json['last_sent_at'])
           : null,
-      lastAcceptedAt: json['last_accepted_at'] != null 
-          ? DateTime.parse(json['last_accepted_at']) 
+      lastAcceptedAt: json['last_accepted_at'] != null
+          ? DateTime.parse(json['last_accepted_at'])
           : null,
     );
   }
-  
+
   /// 转换为JSON
   Map<String, dynamic> toJson() {
     return {
@@ -229,13 +228,13 @@ class InvitationStatistics {
       'last_accepted_at': lastAcceptedAt?.toIso8601String(),
     };
   }
-  
+
   /// 接受率
   double get acceptanceRate {
     if (totalSent == 0) return 0;
     return (acceptedCount / totalSent) * 100;
   }
-  
+
   /// 活跃邀请数
   int get activeInvitations => pendingCount;
 }
@@ -247,7 +246,7 @@ class BatchInvitationRequest {
   final FamilyRole defaultRole;
   final String? message;
   final DateTime? customExpiresAt;
-  
+
   BatchInvitationRequest({
     required this.familyId,
     required this.emails,
@@ -255,7 +254,7 @@ class BatchInvitationRequest {
     this.message,
     this.customExpiresAt,
   });
-  
+
   /// 转换为JSON
   Map<String, dynamic> toJson() {
     return {
@@ -273,20 +272,20 @@ class InvitationValidation {
   final bool isValid;
   final String? errorMessage;
   final InvitationWithDetails? details;
-  
+
   InvitationValidation({
     required this.isValid,
     this.errorMessage,
     this.details,
   });
-  
+
   /// 从JSON创建
   factory InvitationValidation.fromJson(Map<String, dynamic> json) {
     return InvitationValidation(
       isValid: json['is_valid'] ?? false,
       errorMessage: json['error_message'],
-      details: json['details'] != null 
-          ? InvitationWithDetails.fromJson(json['details']) 
+      details: json['details'] != null
+          ? InvitationWithDetails.fromJson(json['details'])
           : null,
     );
   }

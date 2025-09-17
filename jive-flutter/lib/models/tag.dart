@@ -26,10 +26,10 @@ class Tag with _$Tag {
 
   /// 获取标签的显示颜色
   String get displayColor => color ?? TagColors.defaultColor;
-  
+
   /// 是否是活跃标签
   bool get isActive => !archived;
-  
+
   /// 获取使用频率级别
   String get usageLevel {
     if (usageCount == 0) return 'unused';
@@ -54,16 +54,25 @@ class TagGroup with _$TagGroup {
     @Default([]) List<Tag> tags,
   }) = _TagGroup;
 
-  factory TagGroup.fromJson(Map<String, dynamic> json) => _$TagGroupFromJson(json);
+  factory TagGroup.fromJson(Map<String, dynamic> json) =>
+      _$TagGroupFromJson(json);
 }
 
 /// 标签颜色
 class TagColors {
   static const List<String> colors = [
-    '#e99537', '#4da568', '#6471eb', '#db5a54', '#df4e92',
-    '#c44fe9', '#eb5429', '#61c9ea', '#805dee', '#6ad28a',
+    '#e99537',
+    '#4da568',
+    '#6471eb',
+    '#db5a54',
+    '#df4e92',
+    '#c44fe9',
+    '#eb5429',
+    '#61c9ea',
+    '#805dee',
+    '#6ad28a',
   ];
-  
+
   static const String defaultColor = '#737373';
 }
 
@@ -78,5 +87,6 @@ class QuickTag with _$QuickTag {
     DateTime? createdAt,
   }) = _QuickTag;
 
-  factory QuickTag.fromJson(Map<String, dynamic> json) => _$QuickTagFromJson(json);
+  factory QuickTag.fromJson(Map<String, dynamic> json) =>
+      _$QuickTagFromJson(json);
 }

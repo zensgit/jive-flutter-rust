@@ -15,7 +15,7 @@ class AccountState {
   final double totalAssets;
   final double totalLiabilities;
   final double netWorth;
-  
+
   const AccountState({
     this.accounts = const [],
     this.groups = const [],
@@ -27,7 +27,7 @@ class AccountState {
     this.totalLiabilities = 0.0,
     this.netWorth = 0.0,
   });
-  
+
   AccountState copyWith({
     List<Account>? accounts,
     List<AccountGroup>? groups,
@@ -57,7 +57,7 @@ class AccountState {
 class AccountNotifier extends StateNotifier<AccountState> {
   final AccountService _accountService;
   final SyncService _syncService;
-  
+
   AccountNotifier(this._accountService, this._syncService)
       : super(const AccountState()) {
     loadAccounts();
@@ -66,12 +66,12 @@ class AccountNotifier extends StateNotifier<AccountState> {
   /// 加载账户列表
   Future<void> loadAccounts({bool refresh = false}) async {
     if (state.isLoading) return;
-    
+
     state = state.copyWith(
       isLoading: true,
       errorMessage: null,
     );
-    
+
     try {
       // 先从缓存加载
       if (!refresh) {
@@ -83,15 +83,15 @@ class AccountNotifier extends StateNotifier<AccountState> {
           );
         }
       }
-      
+
       // 从 API加载
       final accounts = await _accountService.getAllAccounts(
         ledgerId: state.currentLedgerId,
       );
-      
+
       // 缓存数据
       await _cacheAccounts(accounts);
-      
+
       state = state.copyWith(
         accounts: accounts,
         isLoading: false,
@@ -112,7 +112,7 @@ class AccountNotifier extends StateNotifier<AccountState> {
   /// 创建账户
   Future<bool> createAccount(Map<String, dynamic> data) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
-    
+
     try {
       // Convert the data to Account object
       final account = Account.fromJson(data);
@@ -132,7 +132,7 @@ class AccountNotifier extends StateNotifier<AccountState> {
   /// 更新账户
   Future<bool> updateAccount(String id, Map<String, dynamic> data) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
-    
+
     try {
       final updatedAccount = await _accountService.updateAccount(id, data);
       final updatedAccounts = state.accounts.map((a) {
@@ -152,7 +152,7 @@ class AccountNotifier extends StateNotifier<AccountState> {
   /// 删除账户
   Future<bool> deleteAccount(String id) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
-    
+
     try {
       await _accountService.deleteAccount(id);
       final updatedAccounts = state.accounts.where((a) => a.id != id).toList();
@@ -178,9 +178,10 @@ class AccountNotifier extends StateNotifier<AccountState> {
   }
 
   /// 转账
-  Future<bool> transfer(String fromId, String toId, double amount, String? note) async {
+  Future<bool> transfer(
+      String fromId, String toId, double amount, String? note) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
-    
+
     try {
       // TODO: Implement transfer method in AccountService
       // await _accountService.transfer(fromId, toId, amount, note);
@@ -205,7 +206,7 @@ class AccountNotifier extends StateNotifier<AccountState> {
     // TODO: 实现从Hive加载缓存
     return [];
   }
-  
+
   /// 缓存账户数据
   Future<void> _cacheAccounts(List<Account> accounts) async {
     // TODO: 实现保存到Hive缓存
@@ -217,13 +218,13 @@ class AccountNotifier extends StateNotifier<AccountState> {
     double totalLiabilities = 0;
 
     for (final account in accounts) {
-      if (account.type == AccountType.checking || 
-          account.type == AccountType.savings || 
+      if (account.type == AccountType.checking ||
+          account.type == AccountType.savings ||
           account.type == AccountType.cash ||
           account.type == AccountType.investment) {
         totalAssets += account.balance;
-      } else if (account.type == AccountType.creditCard || 
-                 account.type == AccountType.loan) {
+      } else if (account.type == AccountType.creditCard ||
+          account.type == AccountType.loan) {
         totalLiabilities += account.balance.abs();
       }
     }
@@ -244,7 +245,8 @@ final accountServiceProvider = Provider<AccountService>((ref) {
   return AccountService();
 });
 
-final accountProvider = StateNotifierProvider<AccountNotifier, AccountState>((ref) {
+final accountProvider =
+    StateNotifierProvider<AccountNotifier, AccountState>((ref) {
   final accountService = ref.watch(accountServiceProvider);
   final syncService = SyncService.instance;
   return AccountNotifier(accountService, syncService);
@@ -267,11 +269,11 @@ final netWorthProvider = Provider<double>((ref) {
 final accountsByTypeProvider = Provider<Map<AccountType, List<Account>>>((ref) {
   final accounts = ref.watch(accountsProvider);
   final Map<AccountType, List<Account>> grouped = {};
-  
+
   for (final account in accounts) {
     grouped.putIfAbsent(account.type, () => []).add(account);
   }
-  
+
   return grouped;
 });
 

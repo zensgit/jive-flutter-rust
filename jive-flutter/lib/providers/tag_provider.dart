@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/tag.dart';
 import '../services/storage_service.dart';
@@ -5,7 +6,7 @@ import '../services/storage_service.dart';
 /// 标签状态管理 - 基于Riverpod
 class TagNotifier extends StateNotifier<List<Tag>> {
   final _storage = StorageService();
-  
+
   TagNotifier() : super([]) {
     _loadTags();
   }
@@ -20,9 +21,9 @@ class TagNotifier extends StateNotifier<List<Tag>> {
         return;
       }
     } catch (e) {
-      print('从存储加载标签失败: $e');
+      debugPrint('从存储加载标签失败: $e');
     }
-    
+
     // 如果存储中没有数据，使用示例数据并保存
     final defaultTags = [
       Tag(
@@ -34,7 +35,7 @@ class TagNotifier extends StateNotifier<List<Tag>> {
         createdAt: DateTime.now().subtract(const Duration(days: 30)),
       ),
       Tag(
-        id: '2', 
+        id: '2',
         name: '旅行',
         color: TagColors.colors[1],
         groupId: 'lifestyle',
@@ -59,7 +60,7 @@ class TagNotifier extends StateNotifier<List<Tag>> {
         createdAt: DateTime.now().subtract(const Duration(days: 60)),
       ),
     ];
-    
+
     state = defaultTags;
     _saveTags(); // 保存默认数据到存储
   }
@@ -70,7 +71,7 @@ class TagNotifier extends StateNotifier<List<Tag>> {
       final tagData = state.map((tag) => tag.toJson()).toList();
       await _storage.saveTags(tagData);
     } catch (e) {
-      print('保存标签到存储失败: $e');
+      debugPrint('保存标签到存储失败: $e');
     }
   }
 
@@ -81,7 +82,7 @@ class TagNotifier extends StateNotifier<List<Tag>> {
       createdAt: tag.createdAt ?? DateTime.now(),
       updatedAt: tag.updatedAt ?? DateTime.now(),
     );
-    
+
     state = [...state, newTag];
     await _saveTags();
   }
@@ -148,7 +149,7 @@ class TagNotifier extends StateNotifier<List<Tag>> {
 /// 标签组状态管理
 class TagGroupNotifier extends StateNotifier<List<TagGroup>> {
   final _storage = StorageService();
-  
+
   TagGroupNotifier() : super([]) {
     _loadTagGroups();
   }
@@ -158,14 +159,15 @@ class TagGroupNotifier extends StateNotifier<List<TagGroup>> {
       // 从存储加载标签组
       final groupData = await _storage.getTagGroups();
       if (groupData.isNotEmpty) {
-        final groups = groupData.map((json) => TagGroup.fromJson(json)).toList();
+        final groups =
+            groupData.map((json) => TagGroup.fromJson(json)).toList();
         state = groups;
         return;
       }
     } catch (e) {
-      print('从存储加载标签组失败: $e');
+      debugPrint('从存储加载标签组失败: $e');
     }
-    
+
     // 如果存储中没有数据，使用示例数据并保存
     final defaultGroups = [
       TagGroup(
@@ -178,7 +180,7 @@ class TagGroupNotifier extends StateNotifier<List<TagGroup>> {
       TagGroup(
         id: 'lifestyle',
         name: '生活方式',
-        color: TagColors.colors[1], 
+        color: TagColors.colors[1],
         icon: 'lifestyle',
         createdAt: DateTime.now().subtract(const Duration(days: 25)),
       ),
@@ -197,7 +199,7 @@ class TagGroupNotifier extends StateNotifier<List<TagGroup>> {
         createdAt: DateTime.now().subtract(const Duration(days: 15)),
       ),
     ];
-    
+
     state = defaultGroups;
     _saveTagGroups(); // 保存默认数据到存储
   }
@@ -208,7 +210,7 @@ class TagGroupNotifier extends StateNotifier<List<TagGroup>> {
       final groupData = state.map((group) => group.toJson()).toList();
       await _storage.saveTagGroups(groupData);
     } catch (e) {
-      print('保存标签组到存储失败: $e');
+      debugPrint('保存标签组到存储失败: $e');
     }
   }
 
@@ -219,7 +221,7 @@ class TagGroupNotifier extends StateNotifier<List<TagGroup>> {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
-    
+
     state = [...state, newGroup];
     await _saveTagGroups();
   }
@@ -262,7 +264,8 @@ final tagsProvider = StateNotifierProvider<TagNotifier, List<Tag>>((ref) {
 });
 
 /// 标签组Provider
-final tagGroupsProvider = StateNotifierProvider<TagGroupNotifier, List<TagGroup>>((ref) {
+final tagGroupsProvider =
+    StateNotifierProvider<TagGroupNotifier, List<TagGroup>>((ref) {
   return TagGroupNotifier();
 });
 

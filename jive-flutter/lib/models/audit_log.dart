@@ -1,8 +1,6 @@
 /// 审计日志模型
 /// 用于记录系统中的所有重要操作
 
-import 'package:flutter/foundation.dart';
-
 /// 审计日志操作类型
 enum AuditActionType {
   // 认证相关
@@ -10,14 +8,14 @@ enum AuditActionType {
   userLogout('user_logout', '用户登出'),
   userRegister('user_register', '用户注册'),
   passwordChange('password_change', '密码修改'),
-  
+
   // 家庭管理
   familyCreate('family_create', '创建家庭'),
   familyUpdate('family_update', '更新家庭'),
   familyDelete('family_delete', '删除家庭'),
   familyArchive('family_archive', '归档家庭'),
   familyRestore('family_restore', '恢复家庭'),
-  
+
   // 成员管理
   memberInvite('member_invite', '邀请成员'),
   memberAccept('member_accept', '接受邀请'),
@@ -25,36 +23,36 @@ enum AuditActionType {
   memberRemove('member_remove', '移除成员'),
   memberLeave('member_leave', '退出家庭'),
   memberRoleChange('member_role_change', '角色变更'),
-  
+
   // 交易管理
   transactionCreate('transaction_create', '创建交易'),
   transactionUpdate('transaction_update', '更新交易'),
   transactionDelete('transaction_delete', '删除交易'),
   transactionBulkImport('transaction_bulk_import', '批量导入交易'),
   transactionExport('transaction_export', '导出交易'),
-  
+
   // 分类管理
   categoryCreate('category_create', '创建分类'),
   categoryUpdate('category_update', '更新分类'),
   categoryDelete('category_delete', '删除分类'),
   categoryMerge('category_merge', '合并分类'),
-  
+
   // 标签管理
   tagCreate('tag_create', '创建标签'),
   tagUpdate('tag_update', '更新标签'),
   tagDelete('tag_delete', '删除标签'),
-  
+
   // 设置变更
   settingsUpdate('settings_update', '更新设置'),
   currencyChange('currency_change', '货币变更'),
   timezoneChange('timezone_change', '时区变更'),
-  
+
   // 数据操作
   dataExport('data_export', '数据导出'),
   dataImport('data_import', '数据导入'),
   dataBackup('data_backup', '数据备份'),
   dataRestore('data_restore', '数据恢复'),
-  
+
   // 安全相关
   permissionGrant('permission_grant', '授予权限'),
   permissionRevoke('permission_revoke', '撤销权限'),
@@ -63,9 +61,9 @@ enum AuditActionType {
 
   final String value;
   final String label;
-  
+
   const AuditActionType(this.value, this.label);
-  
+
   static AuditActionType fromString(String? value) {
     return AuditActionType.values.firstWhere(
       (type) => type.value == value,
@@ -84,9 +82,9 @@ enum AuditSeverity {
   final String value;
   final String label;
   final int level;
-  
+
   const AuditSeverity(this.value, this.label, this.level);
-  
+
   static AuditSeverity fromString(String? value) {
     return AuditSeverity.values.firstWhere(
       (severity) => severity.value == value,
@@ -115,7 +113,7 @@ class AuditLog {
   final String? deviceInfo;
   final DateTime createdAt;
   final bool isSystemGenerated;
-  
+
   AuditLog({
     required this.id,
     required this.familyId,
@@ -136,7 +134,7 @@ class AuditLog {
     required this.createdAt,
     this.isSystemGenerated = false,
   });
-  
+
   /// 从JSON创建
   factory AuditLog.fromJson(Map<String, dynamic> json) {
     return AuditLog(
@@ -160,7 +158,7 @@ class AuditLog {
       isSystemGenerated: json['is_system_generated'] ?? false,
     );
   }
-  
+
   /// 转换为JSON
   Map<String, dynamic> toJson() {
     return {
@@ -184,33 +182,33 @@ class AuditLog {
       'is_system_generated': isSystemGenerated,
     };
   }
-  
+
   /// 获取变更摘要
   String get changeSummary {
     if (oldValue == null || newValue == null) {
       return actionDescription;
     }
-    
+
     final changes = <String>[];
     final allKeys = {...oldValue!.keys, ...newValue!.keys};
-    
+
     for (final key in allKeys) {
       final oldVal = oldValue![key];
       final newVal = newValue![key];
-      
+
       if (oldVal != newVal) {
         changes.add('$key: $oldVal → $newVal');
       }
     }
-    
+
     return changes.isEmpty ? actionDescription : changes.join(', ');
   }
-  
+
   /// 获取时间描述
   String get timeAgo {
     final now = DateTime.now();
     final difference = now.difference(createdAt);
-    
+
     if (difference.inDays > 365) {
       return '${(difference.inDays / 365).floor()}年前';
     } else if (difference.inDays > 30) {
@@ -225,7 +223,7 @@ class AuditLog {
       return '刚刚';
     }
   }
-  
+
   /// 复制并更新
   AuditLog copyWith({
     String? id,
@@ -281,7 +279,7 @@ class AuditLogStatistics {
   final List<UserActivitySummary> topUsers;
   final List<String> recentAlerts;
   final DateTime? lastActivityAt;
-  
+
   AuditLogStatistics({
     required this.totalLogs,
     required this.todayLogs,
@@ -293,7 +291,7 @@ class AuditLogStatistics {
     required this.recentAlerts,
     this.lastActivityAt,
   });
-  
+
   /// 从JSON创建
   factory AuditLogStatistics.fromJson(Map<String, dynamic> json) {
     final actionCounts = <AuditActionType, int>{};
@@ -302,14 +300,14 @@ class AuditLogStatistics {
         actionCounts[AuditActionType.fromString(key)] = value as int;
       });
     }
-    
+
     final severityCounts = <AuditSeverity, int>{};
     if (json['severity_counts'] != null) {
       (json['severity_counts'] as Map<String, dynamic>).forEach((key, value) {
         severityCounts[AuditSeverity.fromString(key)] = value as int;
       });
     }
-    
+
     return AuditLogStatistics(
       totalLogs: json['total_logs'] ?? 0,
       todayLogs: json['today_logs'] ?? 0,
@@ -318,28 +316,29 @@ class AuditLogStatistics {
       actionCounts: actionCounts,
       severityCounts: severityCounts,
       topUsers: (json['top_users'] as List<dynamic>?)
-          ?.map((u) => UserActivitySummary.fromJson(u))
-          .toList() ?? [],
-      recentAlerts: (json['recent_alerts'] as List<dynamic>?)
-          ?.cast<String>() ?? [],
+              ?.map((u) => UserActivitySummary.fromJson(u))
+              .toList() ??
+          [],
+      recentAlerts:
+          (json['recent_alerts'] as List<dynamic>?)?.cast<String>() ?? [],
       lastActivityAt: json['last_activity_at'] != null
           ? DateTime.parse(json['last_activity_at'])
           : null,
     );
   }
-  
+
   /// 转换为JSON
   Map<String, dynamic> toJson() {
     final actionCountsJson = <String, int>{};
     actionCounts.forEach((key, value) {
       actionCountsJson[key.value] = value;
     });
-    
+
     final severityCountsJson = <String, int>{};
     severityCounts.forEach((key, value) {
       severityCountsJson[key.value] = value;
     });
-    
+
     return {
       'total_logs': totalLogs,
       'today_logs': todayLogs,
@@ -361,7 +360,7 @@ class UserActivitySummary {
   final int actionCount;
   final DateTime lastActivityAt;
   final List<AuditActionType> recentActions;
-  
+
   UserActivitySummary({
     required this.userId,
     required this.userName,
@@ -369,7 +368,7 @@ class UserActivitySummary {
     required this.lastActivityAt,
     required this.recentActions,
   });
-  
+
   /// 从JSON创建
   factory UserActivitySummary.fromJson(Map<String, dynamic> json) {
     return UserActivitySummary(
@@ -378,11 +377,12 @@ class UserActivitySummary {
       actionCount: json['action_count'] ?? 0,
       lastActivityAt: DateTime.parse(json['last_activity_at']),
       recentActions: (json['recent_actions'] as List<dynamic>?)
-          ?.map((a) => AuditActionType.fromString(a))
-          .toList() ?? [],
+              ?.map((a) => AuditActionType.fromString(a))
+              .toList() ??
+          [],
     );
   }
-  
+
   /// 转换为JSON
   Map<String, dynamic> toJson() {
     return {
@@ -406,7 +406,7 @@ class AuditLogFilter {
   final String? searchQuery;
   final String? targetType;
   final bool? systemGenerated;
-  
+
   AuditLogFilter({
     this.familyId,
     this.userId,
@@ -418,11 +418,11 @@ class AuditLogFilter {
     this.targetType,
     this.systemGenerated,
   });
-  
+
   /// 转换为查询参数
   Map<String, dynamic> toQueryParams() {
     final params = <String, dynamic>{};
-    
+
     if (familyId != null) params['family_id'] = familyId;
     if (userId != null) params['user_id'] = userId;
     if (actionTypes != null && actionTypes!.isNotEmpty) {
@@ -436,10 +436,10 @@ class AuditLogFilter {
     if (searchQuery != null) params['q'] = searchQuery;
     if (targetType != null) params['target_type'] = targetType;
     if (systemGenerated != null) params['system_generated'] = systemGenerated;
-    
+
     return params;
   }
-  
+
   /// 复制并更新
   AuditLogFilter copyWith({
     String? familyId,

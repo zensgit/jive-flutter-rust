@@ -78,11 +78,12 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
     );
   }
 
-  Widget _buildBody(AccountState accountState, List<Account> accounts, List<AccountGroup> accountGroups) {
+  Widget _buildBody(AccountState accountState, List<Account> accounts,
+      List<AccountGroup> accountGroups) {
     if (accountState.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    
+
     if (accountState.errorMessage != null) {
       return Center(
         child: Column(
@@ -100,7 +101,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
         ),
       );
     }
-    
+
     if (accounts.isEmpty) {
       return _buildEmptyState();
     }
@@ -169,7 +170,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
         itemBuilder: (context, index) {
           final type = accountsByType.keys.elementAt(index);
           final typeAccounts = accountsByType[type]!;
-          
+
           return _buildAccountSection(type, typeAccounts);
         },
       ),
@@ -180,7 +181,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
     if (groups.isEmpty) {
       return _buildListView(accounts);
     }
-    
+
     return DefaultTabController(
       length: groups.length + 1,
       child: Column(
@@ -251,7 +252,8 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                 ],
               ),
               Text(
-                ref.read(currencyProvider.notifier).formatCurrency(totalBalance, ref.read(baseCurrencyProvider).code),
+                ref.read(currencyProvider.notifier).formatCurrency(
+                    totalBalance, ref.read(baseCurrencyProvider).code),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -344,7 +346,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
 
   Widget _buildAccountCard(Account account) {
     final balance = account.balance;
-    
+
     return Card(
       elevation: 2,
       child: InkWell(
@@ -407,7 +409,6 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
       ),
     );
   }
-
 
   void _showAccountActions(Account account) {
     showModalBottomSheet(

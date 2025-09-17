@@ -32,11 +32,12 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
     final activeTags = tags.where((tag) => !tag.archived).toList();
     final archivedTags = tags.where((tag) => tag.archived).toList();
     final tagGroups = ref.watch(tagGroupsProvider);
-    
+
     // 搜索过滤
     final searchQuery = _searchController.text.toLowerCase();
     final filteredTags = tags.where((tag) {
-      if (searchQuery.isNotEmpty && !tag.name.toLowerCase().contains(searchQuery)) {
+      if (searchQuery.isNotEmpty &&
+          !tag.name.toLowerCase().contains(searchQuery)) {
         return false;
       }
       if (!_showArchived && tag.archived) {
@@ -46,7 +47,9 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
     }).toList();
 
     // 按组分类
-    final ungroupedTags = filteredTags.where((tag) => tag.groupId == null && !tag.archived).toList();
+    final ungroupedTags = filteredTags
+        .where((tag) => tag.groupId == null && !tag.archived)
+        .toList();
     final Map<String, List<Tag>> tagsByGroup = {};
     for (final tag in filteredTags) {
       if (tag.groupId != null && !tag.archived) {
@@ -66,7 +69,8 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
             backgroundColor: Colors.white,
             elevation: 0.5,
             flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 16, bottom: 16, right: 16),
+              titlePadding:
+                  const EdgeInsets.only(left: 16, bottom: 16, right: 16),
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -224,15 +228,14 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                   ),
                   const SizedBox(height: 16),
                 ],
-                
-                
+
                 // 分组标签
                 ...tagGroups.map((group) {
                   final groupTags = tagsByGroup[group.id] ?? [];
                   // 显示所有分组，即使是空的分组也显示
                   return _buildGroupSection(group, groupTags);
                 }).toList(),
-                
+
                 // 归档标签
                 if (_showArchived && archivedTags.isNotEmpty) ...[
                   const SizedBox(height: 16),
@@ -423,7 +426,8 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                   tooltip: '快速添加标签',
                   onPressed: () => _showAddTagDialog(),
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  constraints:
+                      const BoxConstraints(minWidth: 32, minHeight: 32),
                 ),
             ],
           ),
@@ -431,7 +435,8 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: tags.map((tag) => _buildTagChip(tag, isArchived)).toList(),
+            children:
+                tags.map((tag) => _buildTagChip(tag, isArchived)).toList(),
           ),
         ],
       ),
@@ -440,9 +445,8 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
 
   Widget _buildGroupSection(TagGroup group, List<Tag> groupTags) {
     final isExpanded = _expandedGroups[group.id] ?? false;
-    final groupColor = Color(int.parse(
-      (group.color ?? '#6471eb').replaceFirst('#', '0xff')
-    ));
+    final groupColor =
+        Color(int.parse((group.color ?? '#6471eb').replaceFirst('#', '0xff')));
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -480,7 +484,8 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: groupColor.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(16),
@@ -508,7 +513,8 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(12),
@@ -542,14 +548,13 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                         icon: Icon(
                           Icons.delete,
                           size: 18,
-                          color: groupTags.isEmpty ? Colors.red : Colors.grey[400],
+                          color:
+                              groupTags.isEmpty ? Colors.red : Colors.grey[400],
                         ),
                         onPressed: groupTags.isEmpty
                             ? () => _deleteGroup(group)
                             : null,
-                        tooltip: groupTags.isEmpty
-                            ? '删除分组'
-                            : '分组内有标签，无法删除',
+                        tooltip: groupTags.isEmpty ? '删除分组' : '分组内有标签，无法删除',
                       ),
                     ],
                   ),
@@ -577,9 +582,9 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                   : Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: groupTags.map((tag) => 
-                        _buildTagChip(tag, false)
-                      ).toList(),
+                      children: groupTags
+                          .map((tag) => _buildTagChip(tag, false))
+                          .toList(),
                     ),
             ),
           ],
@@ -589,10 +594,9 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
   }
 
   Widget _buildTagChip(Tag tag, bool isArchived) {
-    final color = Color(int.parse(
-      (tag.color ?? '#6471eb').replaceFirst('#', '0xff')
-    ));
-    
+    final color =
+        Color(int.parse((tag.color ?? '#6471eb').replaceFirst('#', '0xff')));
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
@@ -715,16 +719,15 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: Color(int.parse(
-                        (tag.color ?? '#6471eb').replaceFirst('#', '0xff')
-                      )).withOpacity(0.2),
+                      color: Color(int.parse((tag.color ?? '#6471eb')
+                              .replaceFirst('#', '0xff')))
+                          .withOpacity(0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Icon(
                       tag.icon != null ? _getIconData(tag.icon!) : Icons.label,
                       color: Color(int.parse(
-                        (tag.color ?? '#6471eb').replaceFirst('#', '0xff')
-                      )),
+                          (tag.color ?? '#6471eb').replaceFirst('#', '0xff'))),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -806,20 +809,20 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
   }
 
   void _showAddTagDialog({String? groupId}) {
-    print('DEBUG: _showAddTagDialog called with groupId: $groupId');
+    debugPrint('DEBUG: _showAddTagDialog called with groupId: $groupId');
     showDialog(
       context: context,
       builder: (context) => TagCreateDialog(
         initialGroupId: groupId,
         onCreated: () {
-          print('DEBUG: Tag created successfully');
+          debugPrint('DEBUG: Tag created successfully');
           setState(() {});
         },
       ),
     ).then((_) {
-      print('DEBUG: Dialog closed');
+      debugPrint('DEBUG: Dialog closed');
     }).catchError((error) {
-      print('ERROR: Failed to show dialog: $error');
+      debugPrint('ERROR: Failed to show dialog: $error');
     });
   }
 
@@ -848,12 +851,12 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
   }
 
   void _showAddGroupDialog() {
-    print('DEBUG: _showAddGroupDialog called');
+    debugPrint('DEBUG: _showAddGroupDialog called');
     showDialog(
       context: context,
       builder: (context) => TagGroupDialog(
         onSaved: () {
-          print('DEBUG: Group saved successfully');
+          debugPrint('DEBUG: Group saved successfully');
           setState(() {
             // 展开新创建的分组（最后一个分组）
             final groups = ref.read(tagGroupsProvider);
@@ -865,9 +868,9 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
         },
       ),
     ).then((_) {
-      print('DEBUG: Group dialog closed');
+      debugPrint('DEBUG: Group dialog closed');
     }).catchError((error) {
-      print('ERROR: Failed to show group dialog: $error');
+      debugPrint('ERROR: Failed to show group dialog: $error');
     });
   }
 
@@ -923,15 +926,12 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
     final updatedTag = tag.copyWith(archived: !tag.archived);
     await tagNotifier.updateTag(updatedTag);
     setState(() {});
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            tag.archived 
-                ? '标签"${tag.name}"已恢复' 
-                : '标签"${tag.name}"已归档'
-          ),
+          content:
+              Text(tag.archived ? '标签"${tag.name}"已恢复' : '标签"${tag.name}"已归档'),
           action: SnackBarAction(
             label: '撤销',
             onPressed: () => _toggleArchive(updatedTag),

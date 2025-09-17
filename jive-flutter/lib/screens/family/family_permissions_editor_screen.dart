@@ -24,13 +24,13 @@ class FamilyPermissionsEditorScreen extends ConsumerStatefulWidget {
 class _FamilyPermissionsEditorScreenState
     extends ConsumerState<FamilyPermissionsEditorScreen> {
   final FamilyService _familyService = FamilyService();
-  
+
   bool _isLoading = false;
   late List<RolePermissions> _rolePermissions;
   late List<CustomRole> _customRoles;
   String? _selectedRole;
   final Map<String, bool> _pendingChanges = {};
-  
+
   // 权限分类
   final Map<String, List<Permission>> _permissionCategories = {
     '交易管理': [
@@ -102,7 +102,7 @@ class _FamilyPermissionsEditorScreenState
         isSystem: true,
       ),
     ];
-    
+
     _customRoles = [];
   }
 
@@ -147,12 +147,13 @@ class _FamilyPermissionsEditorScreenState
 
   Future<void> _loadPermissions() async {
     setState(() => _isLoading = true);
-    
+
     try {
       // 从服务器加载权限配置
-      final permissions = await _familyService.getFamilyPermissions(widget.familyId);
+      final permissions =
+          await _familyService.getFamilyPermissions(widget.familyId);
       final customRoles = await _familyService.getCustomRoles(widget.familyId);
-      
+
       setState(() {
         if (permissions != null) {
           _rolePermissions = permissions;
@@ -173,21 +174,21 @@ class _FamilyPermissionsEditorScreenState
       _showMessage('没有需要保存的更改');
       return;
     }
-    
+
     setState(() => _isLoading = true);
-    
+
     try {
       // 应用待处理的更改
       if (_selectedRole != null) {
         final roleIndex = _rolePermissions.indexWhere(
           (rp) => rp.roleKey == _selectedRole,
         );
-        
+
         if (roleIndex >= 0) {
           final updatedPermissions = List<String>.from(
             _rolePermissions[roleIndex].permissions,
           );
-          
+
           _pendingChanges.forEach((permissionId, enabled) {
             if (enabled) {
               if (!updatedPermissions.contains(permissionId)) {
@@ -197,17 +198,18 @@ class _FamilyPermissionsEditorScreenState
               updatedPermissions.remove(permissionId);
             }
           });
-          
+
           // 保存到服务器
           final success = await _familyService.updateRolePermissions(
             widget.familyId,
             _selectedRole!,
             updatedPermissions,
           );
-          
+
           if (success) {
             setState(() {
-              _rolePermissions[roleIndex] = _rolePermissions[roleIndex].copyWith(
+              _rolePermissions[roleIndex] =
+                  _rolePermissions[roleIndex].copyWith(
                 permissions: updatedPermissions,
               );
               _pendingChanges.clear();
@@ -231,13 +233,13 @@ class _FamilyPermissionsEditorScreenState
       builder: (context) => _CreateCustomRoleDialog(
         onCreateRole: (name, description, baseRole) async {
           setState(() => _isLoading = true);
-          
+
           try {
             // 获取基础角色的权限
             final basePermissions = _rolePermissions
                 .firstWhere((rp) => rp.roleKey == baseRole)
                 .permissions;
-            
+
             final customRole = CustomRole(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
               name: name,
@@ -245,12 +247,12 @@ class _FamilyPermissionsEditorScreenState
               permissions: basePermissions,
               createdAt: DateTime.now(),
             );
-            
+
             final success = await _familyService.createCustomRole(
               widget.familyId,
               customRole,
             );
-            
+
             if (success) {
               setState(() {
                 _customRoles.add(customRole);
@@ -290,13 +292,13 @@ class _FamilyPermissionsEditorScreenState
             onPressed: () async {
               Navigator.pop(context);
               setState(() => _isLoading = true);
-              
+
               try {
                 final success = await _familyService.deleteCustomRole(
                   widget.familyId,
                   roleId,
                 );
-                
+
                 if (success) {
                   setState(() {
                     _customRoles.removeWhere((r) => r.id == roleId);
@@ -330,7 +332,7 @@ class _FamilyPermissionsEditorScreenState
         onApplyTemplate: (template) {
           setState(() {
             _pendingChanges.clear();
-            
+
             // 应用模板
             final templatePermissions = _getTemplatePermissions(template);
             final currentPermissions = _selectedRole != null
@@ -338,12 +340,12 @@ class _FamilyPermissionsEditorScreenState
                     .firstWhere((rp) => rp.roleKey == _selectedRole)
                     .permissions
                 : [];
-            
+
             // 计算差异
             for (final permissionId in _getAllPermissionIds()) {
               final shouldHave = templatePermissions.contains(permissionId);
               final currentlyHas = currentPermissions.contains(permissionId);
-              
+
               if (shouldHave != currentlyHas) {
                 _pendingChanges[permissionId] = shouldHave;
               }
@@ -384,7 +386,7 @@ class _FamilyPermissionsEditorScreenState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return LoadingOverlay(
       isLoading: _isLoading,
       child: Scaffold(
@@ -491,17 +493,19 @@ class _FamilyPermissionsEditorScreenState
                         ..._rolePermissions
                             .where((rp) => rp.isSystem)
                             .map((rp) => _buildRoleItem(rp)),
-                        
+
                         // 自定义角色
                         if (_customRoles.isNotEmpty) ...[
                           const Padding(
                             padding: EdgeInsets.all(16),
                             child: Text(
                               '自定义角色',
-                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.grey),
                             ),
                           ),
-                          ..._customRoles.map((role) => _buildCustomRoleItem(role)),
+                          ..._customRoles
+                              .map((role) => _buildCustomRoleItem(role)),
                         ],
                       ],
                     ),
@@ -509,7 +513,7 @@ class _FamilyPermissionsEditorScreenState
                 ],
               ),
             ),
-            
+
             // 右侧：权限矩阵
             Expanded(
               child: _selectedRole == null
@@ -543,7 +547,7 @@ class _FamilyPermissionsEditorScreenState
   Widget _buildRoleItem(RolePermissions rolePermissions) {
     final isSelected = _selectedRole == rolePermissions.roleKey;
     final theme = Theme.of(context);
-    
+
     return ListTile(
       selected: isSelected,
       leading: Icon(
@@ -574,7 +578,7 @@ class _FamilyPermissionsEditorScreenState
   Widget _buildCustomRoleItem(CustomRole role) {
     final isSelected = _selectedRole == role.id;
     final theme = Theme.of(context);
-    
+
     return ListTile(
       selected: isSelected,
       leading: Icon(
@@ -607,10 +611,10 @@ class _FamilyPermissionsEditorScreenState
     final isSystemRole = _rolePermissions
         .firstWhere((rp) => rp.roleKey == _selectedRole)
         .isSystem;
-    
+
     // Owner角色不能编辑
     final isOwner = _selectedRole == family_model.FamilyRole.owner.toString();
-    
+
     return Column(
       children: [
         // 头部信息
@@ -625,15 +629,14 @@ class _FamilyPermissionsEditorScreenState
                   children: [
                     Text(
                       _rolePermissions
-                          .firstWhere((rp) => rp.roleKey == _selectedRole)
-                          .roleName ?? _selectedRole!,
+                              .firstWhere((rp) => rp.roleKey == _selectedRole)
+                              .roleName ??
+                          _selectedRole!,
                       style: theme.textTheme.titleLarge,
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      isOwner
-                          ? '拥有者角色拥有所有权限，不可修改'
-                          : '勾选权限项以授予该角色相应权限',
+                      isOwner ? '拥有者角色拥有所有权限，不可修改' : '勾选权限项以授予该角色相应权限',
                       style: theme.textTheme.bodySmall,
                     ),
                   ],
@@ -647,7 +650,7 @@ class _FamilyPermissionsEditorScreenState
             ],
           ),
         ),
-        
+
         // 权限列表
         Expanded(
           child: ListView(
@@ -662,12 +665,14 @@ class _FamilyPermissionsEditorScreenState
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   children: category.value.map((permission) {
-                    final hasPermission = currentPermissions.contains(permission.id);
-                    final hasPendingChange = _pendingChanges.containsKey(permission.id);
+                    final hasPermission =
+                        currentPermissions.contains(permission.id);
+                    final hasPendingChange =
+                        _pendingChanges.containsKey(permission.id);
                     final willHavePermission = hasPendingChange
                         ? _pendingChanges[permission.id]!
                         : hasPermission;
-                    
+
                     return ListTile(
                       leading: Checkbox(
                         value: willHavePermission,
@@ -807,12 +812,14 @@ enum PermissionTemplate {
 
 /// 创建自定义角色对话框
 class _CreateCustomRoleDialog extends StatefulWidget {
-  final Function(String name, String? description, String baseRole) onCreateRole;
+  final Function(String name, String? description, String baseRole)
+      onCreateRole;
 
   const _CreateCustomRoleDialog({required this.onCreateRole});
 
   @override
-  State<_CreateCustomRoleDialog> createState() => _CreateCustomRoleDialogState();
+  State<_CreateCustomRoleDialog> createState() =>
+      _CreateCustomRoleDialogState();
 }
 
 class _CreateCustomRoleDialogState extends State<_CreateCustomRoleDialog> {

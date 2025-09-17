@@ -30,10 +30,14 @@ class ThemeSettingsScreen extends ConsumerWidget {
                   child: OutlinedButton.icon(
                     icon: const Icon(Icons.phone_iphone, size: 18),
                     label: const Text('跟随系统'),
-                    onPressed: () => ref.read(core.themeModeProvider.notifier).setThemeMode(ThemeMode.system),
+                    onPressed: () => ref
+                        .read(core.themeModeProvider.notifier)
+                        .setThemeMode(ThemeMode.system),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: themeMode == ThemeMode.system ? cs.onPrimary : null,
-                      backgroundColor: themeMode == ThemeMode.system ? cs.primary : null,
+                      foregroundColor:
+                          themeMode == ThemeMode.system ? cs.onPrimary : null,
+                      backgroundColor:
+                          themeMode == ThemeMode.system ? cs.primary : null,
                     ),
                   ),
                 ),
@@ -42,10 +46,14 @@ class ThemeSettingsScreen extends ConsumerWidget {
                   child: OutlinedButton.icon(
                     icon: const Icon(Icons.wb_sunny_outlined, size: 18),
                     label: const Text('浅色'),
-                    onPressed: () => ref.read(core.themeModeProvider.notifier).setThemeMode(ThemeMode.light),
+                    onPressed: () => ref
+                        .read(core.themeModeProvider.notifier)
+                        .setThemeMode(ThemeMode.light),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: themeMode == ThemeMode.light ? cs.onPrimary : null,
-                      backgroundColor: themeMode == ThemeMode.light ? cs.primary : null,
+                      foregroundColor:
+                          themeMode == ThemeMode.light ? cs.onPrimary : null,
+                      backgroundColor:
+                          themeMode == ThemeMode.light ? cs.primary : null,
                     ),
                   ),
                 ),
@@ -54,10 +62,14 @@ class ThemeSettingsScreen extends ConsumerWidget {
                   child: OutlinedButton.icon(
                     icon: const Icon(Icons.nightlight_round, size: 18),
                     label: const Text('深色'),
-                    onPressed: () => ref.read(core.themeModeProvider.notifier).setThemeMode(ThemeMode.dark),
+                    onPressed: () => ref
+                        .read(core.themeModeProvider.notifier)
+                        .setThemeMode(ThemeMode.dark),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: themeMode == ThemeMode.dark ? cs.onPrimary : null,
-                      backgroundColor: themeMode == ThemeMode.dark ? cs.primary : null,
+                      foregroundColor:
+                          themeMode == ThemeMode.dark ? cs.onPrimary : null,
+                      backgroundColor:
+                          themeMode == ThemeMode.dark ? cs.primary : null,
                     ),
                   ),
                 ),

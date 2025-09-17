@@ -22,8 +22,10 @@ class TransactionListItem extends ConsumerWidget {
     final isIncome = transaction.type == 'income';
     final isTransfer = transaction.type == 'transfer';
     final base = ref.watch(baseCurrencyProvider).code;
-    final formatted = ref.read(currencyProvider.notifier).formatCurrency(amount.abs(), transaction.currency ?? base);
-    
+    final formatted = ref
+        .read(currencyProvider.notifier)
+        .formatCurrency(amount.abs(), transaction.currency ?? base);
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: InkWell(
@@ -49,7 +51,7 @@ class TransactionListItem extends ConsumerWidget {
                 ),
               ),
               const SizedBox(width: 16),
-              
+
               // 信息
               Expanded(
                 child: Column(
@@ -126,7 +128,7 @@ class TransactionListItem extends ConsumerWidget {
                   ],
                 ),
               ),
-              
+
               // 金额和日期
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -162,7 +164,7 @@ class TransactionListItem extends ConsumerWidget {
 
   IconData _getIcon() {
     final category = transaction.category?.toLowerCase() ?? '';
-    
+
     if (category.contains('餐') || category.contains('食')) {
       return Icons.restaurant;
     } else if (category.contains('交通') || category.contains('车')) {
@@ -204,7 +206,7 @@ class TransactionListItem extends ConsumerWidget {
 
   String _formatDate(dynamic date) {
     if (date == null) return '';
-    
+
     DateTime dateTime;
     if (date is DateTime) {
       dateTime = date;
@@ -213,12 +215,13 @@ class TransactionListItem extends ConsumerWidget {
     } else {
       return '';
     }
-    
+
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
-    final transactionDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
-    
+    final transactionDate =
+        DateTime(dateTime.year, dateTime.month, dateTime.day);
+
     if (transactionDate == today) {
       return '今天 ${DateFormat('HH:mm').format(dateTime)}';
     } else if (transactionDate == yesterday) {

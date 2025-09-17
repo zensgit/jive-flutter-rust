@@ -11,8 +11,9 @@ import '../providers/currency_provider.dart';
 
 /// 分享服务
 class ShareService {
-  static final ScreenshotController _screenshotController = ScreenshotController();
-  
+  static final ScreenshotController _screenshotController =
+      ScreenshotController();
+
   /// 分享家庭邀请
   static Future<void> shareFamilyInvitation({
     required BuildContext context,
@@ -23,7 +24,7 @@ class ShareService {
     required DateTime expiresAt,
   }) async {
     final daysLeft = expiresAt.difference(DateTime.now()).inDays;
-    
+
     final shareText = '''
 🏠 邀请你加入家庭账本「$familyName」
 
@@ -50,7 +51,7 @@ Jive Money - 您的智能家庭财务管家
       _showError(context, '分享失败: $e');
     }
   }
-  
+
   /// 分享统计报告
   static Future<void> shareStatisticsReport({
     required BuildContext context,
@@ -113,13 +114,14 @@ Jive Money - 您的智能家庭财务管家
             ),
           ),
         );
-        
+
         // 保存图片
         final directory = await getTemporaryDirectory();
-        final imagePath = '${directory.path}/statistics_${DateTime.now().millisecondsSinceEpoch}.png';
+        final imagePath =
+            '${directory.path}/statistics_${DateTime.now().millisecondsSinceEpoch}.png';
         final imageFile = File(imagePath);
         await imageFile.writeAsBytes(image);
-        
+
         // 分享图片和文字
         await Share.shareXFiles(
           [XFile(imagePath)],
@@ -133,7 +135,7 @@ Jive Money - 您的智能家庭财务管家
       _showError(context, '分享失败: $e');
     }
   }
-  
+
   /// 分享交易详情
   static Future<void> shareTransaction({
     required BuildContext context,
@@ -146,7 +148,7 @@ Jive Money - 您的智能家庭财务管家
     final base = container.read(baseCurrencyProvider).code;
     final formatter = container.read(currencyProvider.notifier);
     final amountStr = formatter.formatCurrency(transaction.amount, base);
-    
+
     final shareText = '''
 $icon $typeText记录
 
@@ -169,7 +171,7 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
       _showError(context, '分享失败: $e');
     }
   }
-  
+
   /// 复制到剪贴板
   static Future<void> copyToClipboard({
     required BuildContext context,
@@ -190,7 +192,7 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
       _showError(context, '复制失败: $e');
     }
   }
-  
+
   /// 分享到特定平台
   static Future<void> shareToSocialMedia({
     required BuildContext context,
@@ -200,17 +202,17 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
     List<String>? hashtags,
   }) async {
     String shareContent = text;
-    
+
     // 添加话题标签
     if (hashtags != null && hashtags.isNotEmpty) {
       shareContent += '\n\n${hashtags.map((tag) => '#$tag').join(' ')}';
     }
-    
+
     // 添加链接
     if (url != null) {
       shareContent += '\n\n$url';
     }
-    
+
     try {
       // 根据平台定制分享内容
       switch (platform) {
@@ -218,7 +220,7 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
           // 微信分享需要特殊处理
           await _shareToWechat(context, shareContent);
           break;
-          
+
         case SocialPlatform.weibo:
           // 微博分享
           final weiboUrl = Uri.encodeFull(
@@ -226,12 +228,12 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
           );
           await Share.share(shareContent);
           break;
-          
+
         case SocialPlatform.qq:
           // QQ分享
           await Share.share(shareContent);
           break;
-          
+
         default:
           await Share.share(shareContent);
       }
@@ -239,7 +241,7 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
       _showError(context, '分享失败: $e');
     }
   }
-  
+
   /// 分享二维码图片
   static Future<void> shareQrCode({
     required BuildContext context,
@@ -257,13 +259,13 @@ ${description ?? ''}
 扫描二维码或访问：
 $data
 ''';
-      
+
       await Share.share(shareText);
     } catch (e) {
       _showError(context, '分享失败: $e');
     }
   }
-  
+
   /// 分享文件
   static Future<void> shareFile({
     required BuildContext context,
@@ -280,7 +282,7 @@ $data
       _showError(context, '分享失败: $e');
     }
   }
-  
+
   /// 批量分享图片
   static Future<void> shareImages({
     required BuildContext context,
@@ -294,14 +296,15 @@ $data
       _showError(context, '分享失败: $e');
     }
   }
-  
+
   /// 分享到微信（需要集成微信SDK）
-  static Future<void> _shareToWechat(BuildContext context, String content) async {
+  static Future<void> _shareToWechat(
+      BuildContext context, String content) async {
     // TODO: 集成微信SDK后实现
     // 暂时使用系统分享
     await Share.share(content);
   }
-  
+
   static String _getRoleDisplayName(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:
@@ -314,11 +317,11 @@ $data
         return '观察者';
     }
   }
-  
+
   static String _formatDate(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
-  
+
   static void _showError(BuildContext context, String message) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -368,7 +371,7 @@ class ShareDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -383,7 +386,7 @@ class ShareDialog extends StatelessWidget {
               style: theme.textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
-            
+
             // 内容预览
             Container(
               padding: const EdgeInsets.all(12),
@@ -398,11 +401,12 @@ class ShareDialog extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            
+
             if (url != null) ...[
               const SizedBox(height: 12),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   border: Border.all(color: theme.colorScheme.outline),
                   borderRadius: BorderRadius.circular(8),
@@ -420,13 +424,14 @@ class ShareDialog extends StatelessWidget {
                     ),
                     IconButton(
                       icon: const Icon(Icons.copy, size: 16),
-                      onPressed: onCopy ?? () {
-                        ShareService.copyToClipboard(
-                          context: context,
-                          text: url!,
-                          message: '链接已复制',
-                        );
-                      },
+                      onPressed: onCopy ??
+                          () {
+                            ShareService.copyToClipboard(
+                              context: context,
+                              text: url!,
+                              message: '链接已复制',
+                            );
+                          },
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                     ),
@@ -434,16 +439,16 @@ class ShareDialog extends StatelessWidget {
                 ),
               ),
             ],
-            
+
             const SizedBox(height: 24),
-            
+
             // 分享平台
             Text(
               '分享到',
               style: theme.textTheme.titleSmall,
             ),
             const SizedBox(height: 16),
-            
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -451,60 +456,64 @@ class ShareDialog extends StatelessWidget {
                   icon: Icons.wechat,
                   label: '微信',
                   color: const Color(0xFF07C160),
-                  onPressed: onShareWechat ?? () {
-                    ShareService.shareToSocialMedia(
-                      context: context,
-                      text: content,
-                      platform: SocialPlatform.wechat,
-                      url: url,
-                    );
-                    Navigator.pop(context);
-                  },
+                  onPressed: onShareWechat ??
+                      () {
+                        ShareService.shareToSocialMedia(
+                          context: context,
+                          text: content,
+                          platform: SocialPlatform.wechat,
+                          url: url,
+                        );
+                        Navigator.pop(context);
+                      },
                 ),
                 _SharePlatformButton(
                   icon: Icons.wb_sunny,
                   label: '微博',
                   color: const Color(0xFFE6162D),
-                  onPressed: onShareWeibo ?? () {
-                    ShareService.shareToSocialMedia(
-                      context: context,
-                      text: content,
-                      platform: SocialPlatform.weibo,
-                      url: url,
-                    );
-                    Navigator.pop(context);
-                  },
+                  onPressed: onShareWeibo ??
+                      () {
+                        ShareService.shareToSocialMedia(
+                          context: context,
+                          text: content,
+                          platform: SocialPlatform.weibo,
+                          url: url,
+                        );
+                        Navigator.pop(context);
+                      },
                 ),
                 _SharePlatformButton(
                   icon: Icons.chat_bubble,
                   label: 'QQ',
                   color: const Color(0xFF12B7F5),
-                  onPressed: onShareQQ ?? () {
-                    ShareService.shareToSocialMedia(
-                      context: context,
-                      text: content,
-                      platform: SocialPlatform.qq,
-                      url: url,
-                    );
-                    Navigator.pop(context);
-                  },
+                  onPressed: onShareQQ ??
+                      () {
+                        ShareService.shareToSocialMedia(
+                          context: context,
+                          text: content,
+                          platform: SocialPlatform.qq,
+                          url: url,
+                        );
+                        Navigator.pop(context);
+                      },
                 ),
                 _SharePlatformButton(
                   icon: Icons.more_horiz,
                   label: '更多',
                   color: theme.colorScheme.primary,
-                  onPressed: onShareMore ?? () async {
-                    await Share.share('$content\n\n$url');
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                    }
-                  },
+                  onPressed: onShareMore ??
+                      () async {
+                        await Share.share('$content\n\n$url');
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                        }
+                      },
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // 取消按钮
             TextButton(
               onPressed: () => Navigator.pop(context),

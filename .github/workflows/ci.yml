@@ -51,12 +51,12 @@ jobs:
       run: |
         flutter pub run build_runner build --delete-conflicting-outputs || true
 
-    - name: Analyze code
+    - name: Analyze code (non-fatal for now)
       working-directory: jive-flutter
       run: |
-        flutter analyze --no-fatal-warnings || true
-        # Save analyzer output for review
-        flutter analyze > ../flutter-analyze-output.txt || true
+        set -o pipefail
+        # Temporarily non-fatal due to high analyzer warnings; see CI_TEST_RESULT_REPORT.md
+        flutter analyze --no-fatal-warnings 2>&1 | tee ../flutter-analyze-output.txt
 
     - name: Upload analyzer output
       if: always()
@@ -162,14 +162,14 @@ jobs:
         psql "$DATABASE_URL" -c 'SELECT 1' || (echo "DB not ready" && exit 1)
         ./scripts/migrate_local.sh --force
 
-    - name: Prepare SQLx offline cache
+    - name: Validate SQLx offline cache (no generation)
       working-directory: jive-api
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jive_money_test
       run: |
         cargo install sqlx-cli --no-default-features --features postgres || true
-        ./prepare-sqlx.sh
-        SQLX_OFFLINE=true cargo sqlx prepare --check || echo "Warning: SQLx cache validation failed"
+        # Validate committed offline cache only. Do not generate in CI.
+        SQLX_OFFLINE=true cargo sqlx prepare --check
 
     - name: Run tests (SQLx offline)
       working-directory: jive-api
@@ -236,10 +236,16 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Download analyzer output
+    - name: Download Flutter test report
       uses: actions/download-artifact@v4
       with:
         name: test-report
+        path: .
+
+    - name: Download Flutter analyzer output
+      uses: actions/download-artifact@v4
+      with:
+        name: flutter-analyze-output
         path: .
 
     - name: Upload analyzer output

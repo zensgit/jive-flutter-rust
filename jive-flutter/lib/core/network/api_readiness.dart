@@ -12,6 +12,7 @@ class ApiReadiness {
 
   /// 最长等待时长
   static const Duration maxWait = Duration(seconds: 25);
+
   /// 轮询间隔（指数退避上限）
   static const Duration maxInterval = Duration(seconds: 3);
 
@@ -28,7 +29,9 @@ class ApiReadiness {
 
       try {
         final resp = await dio.get('${ApiConfig.baseUrl}/health',
-            options: Options(sendTimeout: const Duration(seconds: 3), receiveTimeout: const Duration(seconds: 3)));
+            options: Options(
+                sendTimeout: const Duration(seconds: 3),
+                receiveTimeout: const Duration(seconds: 3)));
         if (resp.statusCode == 200) {
           _ready = true;
           return true;
@@ -38,7 +41,8 @@ class ApiReadiness {
       }
 
       _attempts++;
-      final backoffMs = (400 * (_attempts + 1)).clamp(400, maxInterval.inMilliseconds);
+      final backoffMs =
+          (400 * (_attempts + 1)).clamp(400, maxInterval.inMilliseconds);
       await Future.delayed(Duration(milliseconds: backoffMs));
     }
   }

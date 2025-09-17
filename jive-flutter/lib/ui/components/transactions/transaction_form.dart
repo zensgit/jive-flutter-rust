@@ -29,18 +29,18 @@ class _TransactionFormState extends State<TransactionForm> {
   late final TextEditingController _descriptionController;
   late final TextEditingController _noteController;
   late final TextEditingController _payeeController;
-  
+
   late TransactionType _type;
   late DateTime _selectedDate;
   String? _selectedCategory;
   String? _selectedAccount;
   List<String> _selectedTags = [];
-  
+
   @override
   void initState() {
     super.initState();
     _formKey = GlobalKey<FormState>();
-    
+
     final initial = widget.initialData;
     _amountController = TextEditingController(
       text: initial?.amount.toStringAsFixed(2) ?? '',
@@ -54,8 +54,9 @@ class _TransactionFormState extends State<TransactionForm> {
     _payeeController = TextEditingController(
       text: initial?.payee ?? '',
     );
-    
-    _type = initial?.type ?? (widget.isExpense ? TransactionType.expense : TransactionType.income);
+
+    _type = initial?.type ??
+        (widget.isExpense ? TransactionType.expense : TransactionType.income);
     _selectedDate = initial?.date ?? DateTime.now();
     _selectedCategory = initial?.category;
     _selectedAccount = initial?.account;
@@ -74,7 +75,7 @@ class _TransactionFormState extends State<TransactionForm> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Form(
       key: _formKey,
       child: Column(
@@ -82,49 +83,49 @@ class _TransactionFormState extends State<TransactionForm> {
         children: [
           // 交易类型选择
           _buildTypeSelector(theme),
-          
+
           const SizedBox(height: 20),
-          
+
           // 金额输入
           _buildAmountField(theme),
-          
+
           const SizedBox(height: 16),
-          
+
           // 描述输入
           _buildDescriptionField(theme),
-          
+
           const SizedBox(height: 16),
-          
+
           // 日期选择
           _buildDateSelector(theme),
-          
+
           const SizedBox(height: 16),
-          
+
           // 账户选择
           _buildAccountSelector(theme),
-          
+
           const SizedBox(height: 16),
-          
+
           // 分类选择
           _buildCategorySelector(theme),
-          
+
           const SizedBox(height: 16),
-          
+
           // 收款方/付款方
           _buildPayeeField(theme),
-          
+
           const SizedBox(height: 16),
-          
+
           // 标签选择
           _buildTagSelector(theme),
-          
+
           const SizedBox(height: 16),
-          
+
           // 备注输入
           _buildNoteField(theme),
-          
+
           const SizedBox(height: 24),
-          
+
           // 操作按钮
           _buildActionButtons(),
         ],
@@ -186,7 +187,7 @@ class _TransactionFormState extends State<TransactionForm> {
     Color color,
   ) {
     final isSelected = _type == type;
-    
+
     return Material(
       color: isSelected ? color.withOpacity(0.1) : Colors.transparent,
       borderRadius: BorderRadius.circular(AppConstants.smallBorderRadius),
@@ -201,13 +202,17 @@ class _TransactionFormState extends State<TransactionForm> {
               Icon(
                 icon,
                 size: 20,
-                color: isSelected ? color : theme.colorScheme.onSurface.withOpacity(0.6),
+                color: isSelected
+                    ? color
+                    : theme.colorScheme.onSurface.withOpacity(0.6),
               ),
               const SizedBox(width: 8),
               Text(
                 label,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isSelected ? color : theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: isSelected
+                      ? color
+                      : theme.colorScheme.onSurface.withOpacity(0.6),
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
@@ -295,7 +300,7 @@ class _TransactionFormState extends State<TransactionForm> {
   Widget _buildAccountSelector(ThemeData theme) {
     // 这里应该从状态管理中获取账户列表
     final accounts = ['现金', '支付宝', '微信', '银行卡'];
-    
+
     return DropdownButtonFormField<String>(
       initialValue: _selectedAccount,
       decoration: InputDecoration(
@@ -304,12 +309,14 @@ class _TransactionFormState extends State<TransactionForm> {
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         ),
       ),
-      items: accounts.map((account) => 
-        DropdownMenuItem(
-          value: account,
-          child: Text(account),
-        ),
-      ).toList(),
+      items: accounts
+          .map(
+            (account) => DropdownMenuItem(
+              value: account,
+              child: Text(account),
+            ),
+          )
+          .toList(),
       onChanged: (value) => setState(() => _selectedAccount = value),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -322,10 +329,10 @@ class _TransactionFormState extends State<TransactionForm> {
 
   Widget _buildCategorySelector(ThemeData theme) {
     // 这里应该从状态管理中获取分类列表
-    final categories = _type == TransactionType.expense 
+    final categories = _type == TransactionType.expense
         ? ['餐饮', '交通', '购物', '娱乐', '住房']
         : ['工资', '奖金', '投资', '生意', '其他'];
-    
+
     return DropdownButtonFormField<String>(
       initialValue: _selectedCategory,
       decoration: InputDecoration(
@@ -334,25 +341,27 @@ class _TransactionFormState extends State<TransactionForm> {
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         ),
       ),
-      items: categories.map((category) => 
-        DropdownMenuItem(
-          value: category,
-          child: Row(
-            children: [
-              Container(
-                width: 8,
-                height: 8,
-                margin: const EdgeInsets.only(right: 8),
-                decoration: BoxDecoration(
-                  color: _getCategoryColor(category),
-                  shape: BoxShape.circle,
-                ),
+      items: categories
+          .map(
+            (category) => DropdownMenuItem(
+              value: category,
+              child: Row(
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    margin: const EdgeInsets.only(right: 8),
+                    decoration: BoxDecoration(
+                      color: _getCategoryColor(category),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  Text(category),
+                ],
               ),
-              Text(category),
-            ],
-          ),
-        ),
-      ).toList(),
+            ),
+          )
+          .toList(),
       onChanged: (value) => setState(() => _selectedCategory = value),
     );
   }
@@ -392,13 +401,17 @@ class _TransactionFormState extends State<TransactionForm> {
               )
             : Wrap(
                 spacing: 8,
-                children: _selectedTags.map((tag) => 
-                  Chip(
-                    label: Text(tag),
-                    onDeleted: () => setState(() => _selectedTags.remove(tag)),
-                    deleteIconColor: theme.colorScheme.onSurface.withOpacity(0.6),
-                  ),
-                ).toList(),
+                children: _selectedTags
+                    .map(
+                      (tag) => Chip(
+                        label: Text(tag),
+                        onDeleted: () =>
+                            setState(() => _selectedTags.remove(tag)),
+                        deleteIconColor:
+                            theme.colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                    )
+                    .toList(),
               ),
       ),
     );
@@ -429,8 +442,7 @@ class _TransactionFormState extends State<TransactionForm> {
               text: '取消',
             ),
           ),
-        if (widget.onCancel != null)
-          const SizedBox(width: 16),
+        if (widget.onCancel != null) const SizedBox(width: 16),
         Expanded(
           child: PrimaryButton(
             onPressed: _handleSubmit,
@@ -480,7 +492,7 @@ class _TransactionFormState extends State<TransactionForm> {
       firstDate: DateTime(2000),
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
-    
+
     if (picked != null && picked != _selectedDate) {
       setState(() => _selectedDate = picked);
     }
@@ -490,7 +502,7 @@ class _TransactionFormState extends State<TransactionForm> {
     // 这里应该显示标签选择对话框
     // 暂时使用硬编码的标签列表
     final availableTags = ['日常', '旅行', '医疗', '教育', '娱乐', '投资'];
-    
+
     final selected = await showDialog<List<String>>(
       context: context,
       builder: (context) => _TagSelectionDialog(
@@ -498,7 +510,7 @@ class _TransactionFormState extends State<TransactionForm> {
         selectedTags: _selectedTags,
       ),
     );
-    
+
     if (selected != null) {
       setState(() => _selectedTags = selected);
     }
@@ -507,7 +519,7 @@ class _TransactionFormState extends State<TransactionForm> {
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
       final amount = double.parse(_amountController.text);
-      
+
       widget.onSubmit(TransactionFormData(
         amount: amount,
         description: _descriptionController.text,
@@ -553,21 +565,23 @@ class _TagSelectionDialogState extends State<_TagSelectionDialog> {
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: widget.availableTags.map((tag) => 
-            CheckboxListTile(
-              title: Text(tag),
-              value: _selected.contains(tag),
-              onChanged: (checked) {
-                setState(() {
-                  if (checked == true) {
-                    _selected.add(tag);
-                  } else {
-                    _selected.remove(tag);
-                  }
-                });
-              },
-            ),
-          ).toList(),
+          children: widget.availableTags
+              .map(
+                (tag) => CheckboxListTile(
+                  title: Text(tag),
+                  value: _selected.contains(tag),
+                  onChanged: (checked) {
+                    setState(() {
+                      if (checked == true) {
+                        _selected.add(tag);
+                      } else {
+                        _selected.remove(tag);
+                      }
+                    });
+                  },
+                ),
+              )
+              .toList(),
         ),
       ),
       actions: [

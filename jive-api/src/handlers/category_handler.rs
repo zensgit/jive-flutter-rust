@@ -203,3 +203,218 @@ pub async fn import_template(
     }))
 }
 
+// -------- Batch import from system templates --------
+
+#[derive(Debug, Deserialize)]
+pub struct ImportOverride {
+    pub name: Option<String>,
+    pub color: Option<String>,
+    pub icon: Option<String>,
+    pub classification: Option<String>,
+    pub parent_id: Option<Uuid>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ImportItem {
+    pub template_id: Uuid,
+    #[serde(default)]
+    pub overrides: Option<ImportOverride>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct BatchImportRequest {
+    pub ledger_id: Uuid,
+    #[serde(default)]
+    pub items: Option<Vec<ImportItem>>, // Preferred shape
+    // Back-compat shape used by some clients
+    #[serde(default)]
+    pub template_ids: Option<Vec<Uuid>>,
+    #[serde(default)]
+    pub on_conflict: Option<String>, // skip|rename|update (default: skip)
+    // Back-compat nested options: { skip_existing: bool, customize: {..} }
+    #[serde(default)]
+    pub options: Option<serde_json::Value>,
+    #[serde(default)]
+    pub dry_run: Option<bool>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct BatchImportResult {
+    pub imported: i32,
+    pub skipped: i32,
+    pub failed: i32,
+    pub categories: Vec<CategoryDto>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub details: Vec<ImportActionDetail>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ImportActionKind { Imported, Updated, Renamed, Skipped, Failed }
+
+#[derive(Debug, Serialize)]
+pub struct ImportActionDetail {
+    pub template_id: Uuid,
+    pub action: ImportActionKind,
+    pub original_name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub final_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub category_id: Option<Uuid>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+}
+
+pub async fn batch_import_templates(
+    claims: Claims,
+    State(pool): State<PgPool>,
+    Json(req): Json<BatchImportRequest>,
+) -> Result<Json<BatchImportResult>, StatusCode> {
+    let _user_id = claims.user_id().map_err(|_| StatusCode::UNAUTHORIZED)?;
+
+    // Normalize request into items
+    let mut items: Vec<ImportItem> = Vec::new();
+    if let Some(list) = req.items {
+        items = list;
+    } else if let Some(ids) = req.template_ids.clone() {
+        // Map template_ids to items without overrides
+        items = ids.into_iter().map(|id| ImportItem { template_id: id, overrides: None }).collect();
+    }
+    if items.is_empty() { return Err(StatusCode::BAD_REQUEST); }
+
+    // Resolve conflict strategy
+    let mut strategy = req.on_conflict.unwrap_or_else(|| "skip".to_string());
+    if let Some(opts) = &req.options {
+        if let Some(skip) = opts.get("skip_existing").and_then(|v| v.as_bool()) {
+            if skip { strategy = "skip".to_string(); }
+        }
+    }
+
+    let dry_run = req.dry_run.unwrap_or(false);
+
+    let mut imported = 0i32;
+    let mut skipped = 0i32;
+    let mut failed = 0i32;
+    let mut result_items: Vec<CategoryDto> = Vec::new();
+    let mut details: Vec<ImportActionDetail> = Vec::new();
+
+    'outer: for it in items {
+        // Load template
+        let tpl = match sqlx::query(
+            r#"SELECT id, name, name_en, name_zh, classification, color, icon, version FROM system_category_templates WHERE id = $1 AND is_active = true"#
+        ).bind(it.template_id).fetch_optional(&pool).await {
+            Ok(Some(row)) => row,
+            Ok(None) => { failed += 1; details.push(ImportActionDetail{ template_id: it.template_id, action: ImportActionKind::Failed, original_name: "".into(), final_name: None, category_id: None, reason: Some("template_not_found".into())}); continue 'outer; },
+            Err(_) => { failed += 1; details.push(ImportActionDetail{ template_id: it.template_id, action: ImportActionKind::Failed, original_name: "".into(), final_name: None, category_id: None, reason: Some("template_query_error".into())}); continue 'outer; }
+        };
+
+        // Resolve fields with overrides
+        let mut name: String = it.overrides.as_ref().and_then(|o| o.name.clone()).unwrap_or_else(|| tpl.get::<String, _>("name"));
+        let color: Option<String> = it.overrides.as_ref().and_then(|o| o.color.clone()).or_else(|| tpl.try_get("color").ok());
+        let icon: Option<String> = it.overrides.as_ref().and_then(|o| o.icon.clone()).or_else(|| tpl.try_get("icon").ok());
+        let classification: String = it.overrides.as_ref().and_then(|o| o.classification.clone()).unwrap_or_else(|| tpl.get::<String, _>("classification"));
+        let parent_id: Option<Uuid> = it.overrides.as_ref().and_then(|o| o.parent_id);
+        let template_version: String = tpl.get::<String, _>("version");
+        let template_id: Uuid = tpl.get::<Uuid, _>("id");
+
+        // Try insert; handle conflict strategy
+        // First, check existence by name (case-insensitive) for active categories within ledger
+        let exists: Option<(Uuid,)> = sqlx::query_as(
+            "SELECT id FROM categories WHERE ledger_id=$1 AND LOWER(name)=LOWER($2) AND is_deleted=false LIMIT 1"
+        ).bind(&req.ledger_id).bind(&name).fetch_optional(&pool).await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+        if let Some((existing_id,)) = exists {
+            match strategy.as_str() {
+                "skip" => { skipped += 1; details.push(ImportActionDetail{ template_id, action: ImportActionKind::Skipped, original_name: name.clone(), final_name: Some(name.clone()), category_id: Some(existing_id), reason: Some("duplicate_name".into())}); continue 'outer; }
+                "update" => {
+                    // Update existing entry fields
+                    if !dry_run {
+                        let _ = sqlx::query(
+                            "UPDATE categories SET color=COALESCE($1,color), icon=COALESCE($2,icon), classification=$3, updated_at=NOW() WHERE id=$4"
+                        )
+                        .bind(&color)
+                        .bind(&icon)
+                        .bind(&classification)
+                        .bind(existing_id)
+                        .execute(&pool).await.map_err(|_| StatusCode::BAD_REQUEST)?;
+                        // Return updated row
+                        let row = sqlx::query(
+                            "SELECT id, ledger_id, name, color, icon, classification, parent_id, position, usage_count, last_used_at FROM categories WHERE id=$1"
+                        ).bind(existing_id).fetch_one(&pool).await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+                        result_items.push(CategoryDto{
+                            id: row.get("id"), ledger_id: row.get("ledger_id"), name: row.get("name"),
+                            color: row.try_get("color").ok(), icon: row.try_get("icon").ok(), classification: row.get("classification"),
+                            parent_id: row.try_get("parent_id").ok(), position: row.try_get("position").unwrap_or(0),
+                            usage_count: row.try_get("usage_count").unwrap_or(0), last_used_at: row.try_get("last_used_at").ok(),
+                        });
+                    }
+                    imported += 1; // treat update as success
+                    details.push(ImportActionDetail{ template_id, action: ImportActionKind::Updated, original_name: name.clone(), final_name: Some(name.clone()), category_id: Some(existing_id), reason: None});
+                    continue 'outer;
+                }
+                "rename" => {
+                    // Find unique name by suffix
+                    let mut suffix = 2;
+                    let base = name.clone();
+                    loop {
+                        let candidate = format!("{} ({})", base, suffix);
+                        let taken: Option<(Uuid,)> = sqlx::query_as(
+                            "SELECT id FROM categories WHERE ledger_id=$1 AND LOWER(name)=LOWER($2) AND is_deleted=false LIMIT 1"
+                        ).bind(&req.ledger_id).bind(&candidate).fetch_optional(&pool).await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+                        if taken.is_none() { name = candidate; break; }
+                        suffix += 1;
+                        if suffix > 100 { failed += 1; details.push(ImportActionDetail{ template_id, action: ImportActionKind::Failed, original_name: base.clone(), final_name: None, category_id: None, reason: Some("rename_exhausted".into())}); continue 'outer; }
+                    }
+                }
+                _ => { skipped += 1; continue 'outer; }
+            }
+        }
+
+        // Insert new row (or simulate in dry_run)
+        let rec = if dry_run {
+            // Skip actual DB write
+            Err(sqlx::Error::Protocol("dry_run".into()))
+        } else { sqlx::query(
+            r#"INSERT INTO categories (id, ledger_id, name, color, icon, classification, parent_id, position, usage_count, source_type, template_id, template_version)
+               VALUES ($1,$2,$3,$4,$5,$6,$7,
+                       COALESCE((SELECT COALESCE(MAX(position),-1)+1 FROM categories WHERE ledger_id=$2 AND parent_id IS NOT DISTINCT FROM $7),0),
+                       0,'system',$8,$9)
+               RETURNING id, ledger_id, name, color, icon, classification, parent_id, position, usage_count, last_used_at"#
+        ) }
+        .bind(Uuid::new_v4())
+        .bind(&req.ledger_id)
+        .bind(&name)
+        .bind(&color)
+        .bind(&icon)
+        .bind(&classification)
+        .bind(&parent_id)
+        .bind(template_id)
+        .bind(template_version)
+        .fetch_one(&pool).await;
+
+        match rec {
+            Ok(row) => {
+                result_items.push(CategoryDto{
+                    id: row.get("id"), ledger_id: row.get("ledger_id"), name: row.get("name"),
+                    color: row.try_get("color").ok(), icon: row.try_get("icon").ok(), classification: row.get("classification"),
+                    parent_id: row.try_get("parent_id").ok(), position: row.try_get("position").unwrap_or(0),
+                    usage_count: row.try_get("usage_count").unwrap_or(0), last_used_at: row.try_get("last_used_at").ok(),
+                });
+                imported += 1;
+                details.push(ImportActionDetail{ template_id, action: if exists.is_some() { ImportActionKind::Renamed } else { ImportActionKind::Imported }, original_name: tpl.get::<String,_>("name"), final_name: Some(name.clone()), category_id: Some(row.get("id")), reason: None});
+            }
+            Err(e) => {
+                if dry_run {
+                    imported += 1;
+                    details.push(ImportActionDetail{ template_id, action: if exists.is_some() { ImportActionKind::Renamed } else { ImportActionKind::Imported }, original_name: tpl.get::<String,_>("name"), final_name: Some(name.clone()), category_id: None, reason: None});
+                } else {
+                    eprintln!("batch_import insert error: {:?}", e);
+                    failed += 1;
+                    details.push(ImportActionDetail{ template_id, action: ImportActionKind::Failed, original_name: name.clone(), final_name: None, category_id: None, reason: Some("insert_error".into())});
+                }
+            }
+        }
+    }
+
+    Ok(Json(BatchImportResult{ imported, skipped, failed, categories: result_items, details }))
+}

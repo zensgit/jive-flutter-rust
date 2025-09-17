@@ -22,7 +22,7 @@ class RecentTransactions extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final displayTransactions = transactions.take(maxItems).toList();
-    
+
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(
@@ -75,13 +75,13 @@ class RecentTransactions extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // 交易列表
           if (displayTransactions.isNotEmpty)
             ...displayTransactions.asMap().entries.map((entry) {
               final index = entry.key;
               final transaction = entry.value;
-              
+
               return Column(
                 children: [
                   if (index > 0) const Divider(height: 1),
@@ -95,7 +95,7 @@ class RecentTransactions extends StatelessWidget {
                 ],
               );
             }),
-          
+
           // 空状态
           if (displayTransactions.isEmpty)
             Padding(
@@ -145,7 +145,7 @@ class GroupedRecentTransactions extends StatelessWidget {
     final theme = Theme.of(context);
     final groupedTransactions = _groupTransactionsByDate();
     final displayGroups = groupedTransactions.entries.take(maxDays).toList();
-    
+
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(
@@ -174,13 +174,13 @@ class GroupedRecentTransactions extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // 按日期分组的交易
           if (displayGroups.isNotEmpty)
-            ...displayGroups.map((group) => 
-              _buildDateGroup(theme, group.key, group.value),
+            ...displayGroups.map(
+              (group) => _buildDateGroup(theme, group.key, group.value),
             ),
-          
+
           // 空状态
           if (displayGroups.isEmpty)
             Padding(
@@ -209,7 +209,8 @@ class GroupedRecentTransactions extends StatelessWidget {
     );
   }
 
-  Widget _buildDateGroup(ThemeData theme, DateTime date, List<Transaction> transactions) {
+  Widget _buildDateGroup(
+      ThemeData theme, DateTime date, List<Transaction> transactions) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -235,10 +236,10 @@ class GroupedRecentTransactions extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // 该日期的交易
-        ...transactions.map((transaction) => 
-          TransactionCard(
+        ...transactions.map(
+          (transaction) => TransactionCard(
             transaction: transaction,
             showDate: false,
             compact: true,
@@ -252,20 +253,20 @@ class GroupedRecentTransactions extends StatelessWidget {
 
   Map<DateTime, List<Transaction>> _groupTransactionsByDate() {
     final Map<DateTime, List<Transaction>> grouped = {};
-    
+
     for (final transaction in transactions) {
       final date = DateTime(
         transaction.date.year,
         transaction.date.month,
         transaction.date.day,
       );
-      
+
       if (!grouped.containsKey(date)) {
         grouped[date] = [];
       }
       grouped[date]!.add(transaction);
     }
-    
+
     return Map.fromEntries(
       grouped.entries.toList()..sort((a, b) => b.key.compareTo(a.key)),
     );
@@ -275,7 +276,7 @@ class GroupedRecentTransactions extends StatelessWidget {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
-    
+
     if (date == today) {
       return '今天';
     } else if (date == yesterday) {

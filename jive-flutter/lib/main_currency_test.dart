@@ -7,11 +7,11 @@ import 'widgets/currency_converter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Hive for currency preferences
   await Hive.initFlutter();
   await Hive.openBox('preferences');
-  
+
   runApp(const ProviderScope(child: CurrencyTestApp()));
 }
 
@@ -53,9 +53,9 @@ class HomePage extends StatelessWidget {
                 initialToCurrency: 'CNY',
                 initialAmount: 100,
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // Navigation Buttons
               ElevatedButton.icon(
                 onPressed: () {
@@ -69,12 +69,13 @@ class HomePage extends StatelessWidget {
                 icon: const Icon(Icons.settings),
                 label: const Text('货币管理设置'),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               ElevatedButton.icon(
                 onPressed: () {
                   Navigator.push(
@@ -87,7 +88,8 @@ class HomePage extends StatelessWidget {
                 icon: const Icon(Icons.calculate),
                 label: const Text('货币转换器页面'),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 ),
               ),
             ],

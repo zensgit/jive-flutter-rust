@@ -11,9 +11,10 @@ class SuperAdminScreen extends ConsumerStatefulWidget {
   ConsumerState<SuperAdminScreen> createState() => _SuperAdminScreenState();
 }
 
-class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen> with TickerProviderStateMixin {
+class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
+    with TickerProviderStateMixin {
   late TabController _tabController;
-  
+
   final List<Map<String, dynamic>> _users = [
     {
       'id': '1',
@@ -25,7 +26,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen> with Ticker
       'createdAt': '2024-01-15',
     },
     {
-      'id': '2', 
+      'id': '2',
       'name': '李四',
       'email': 'lisi@example.com',
       'role': 'Admin',
@@ -36,7 +37,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen> with Ticker
     {
       'id': '3',
       'name': '王五',
-      'email': 'wangwu@example.com', 
+      'email': 'wangwu@example.com',
       'role': 'Member',
       'families': 1,
       'status': 'suspended',
@@ -45,10 +46,30 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen> with Ticker
   ];
 
   final List<Map<String, dynamic>> _systemStats = [
-    {'title': '总用户数', 'value': '1,234', 'icon': Icons.people, 'color': Colors.blue},
-    {'title': '活跃用户', 'value': '987', 'icon': Icons.person_add, 'color': Colors.green},
-    {'title': '家庭数量', 'value': '456', 'icon': Icons.family_restroom, 'color': Colors.orange},
-    {'title': '交易笔数', 'value': '12,345', 'icon': Icons.receipt_long, 'color': Colors.purple},
+    {
+      'title': '总用户数',
+      'value': '1,234',
+      'icon': Icons.people,
+      'color': Colors.blue
+    },
+    {
+      'title': '活跃用户',
+      'value': '987',
+      'icon': Icons.person_add,
+      'color': Colors.green
+    },
+    {
+      'title': '家庭数量',
+      'value': '456',
+      'icon': Icons.family_restroom,
+      'color': Colors.orange
+    },
+    {
+      'title': '交易笔数',
+      'value': '12,345',
+      'icon': Icons.receipt_long,
+      'color': Colors.purple
+    },
   ];
 
   @override
@@ -103,7 +124,10 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen> with Ticker
           _buildUserManagementTab(),
           _buildSystemConfigTab(),
           _buildLogsTab(),
-          if ((ref.read(currentUserProvider)?.isAdmin ?? false)) const CurrencyAdminScreen() else const SizedBox.shrink(),
+          if ((ref.read(currentUserProvider)?.isAdmin ?? false))
+            const CurrencyAdminScreen()
+          else
+            const SizedBox.shrink(),
         ],
       ),
     );
@@ -120,7 +144,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen> with Ticker
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
-          
+
           // 统计卡片
           GridView.builder(
             shrinkWrap: true,
@@ -174,9 +198,9 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen> with Ticker
               );
             },
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // 最近活动
           const Text(
             '最近活动',
@@ -188,8 +212,10 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen> with Ticker
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               children: [
-                _buildActivityItem(Icons.person_add, '新用户注册', '张三 刚刚注册', '2分钟前'),
-                _buildActivityItem(Icons.family_restroom, '创建家庭', '李四 创建了新家庭', '10分钟前'),
+                _buildActivityItem(
+                    Icons.person_add, '新用户注册', '张三 刚刚注册', '2分钟前'),
+                _buildActivityItem(
+                    Icons.family_restroom, '创建家庭', '李四 创建了新家庭', '10分钟前'),
                 _buildActivityItem(Icons.warning, '异常登录', '王五 异地登录检测', '1小时前'),
                 _buildActivityItem(Icons.backup, '数据备份', '系统自动备份完成', '3小时前'),
               ],
@@ -200,7 +226,8 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen> with Ticker
     );
   }
 
-  Widget _buildActivityItem(IconData icon, String title, String subtitle, String time) {
+  Widget _buildActivityItem(
+      IconData icon, String title, String subtitle, String time) {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: Colors.blue[100],
@@ -245,7 +272,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen> with Ticker
             ],
           ),
         ),
-        
+
         // 用户列表
         Expanded(
           child: ListView.builder(
@@ -276,7 +303,8 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen> with Ticker
                       const PopupMenuItem(value: 'edit', child: Text('编辑')),
                       const PopupMenuItem(value: 'suspend', child: Text('暂停')),
                       const PopupMenuItem(value: 'delete', child: Text('删除')),
-                      const PopupMenuItem(value: 'reset_password', child: Text('重置密码')),
+                      const PopupMenuItem(
+                          value: 'reset_password', child: Text('重置密码')),
                     ],
                   ),
                   isThreeLine: true,
@@ -298,25 +326,26 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen> with Ticker
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 20),
-        
         _buildConfigSection('应用设置', [
           _buildConfigItem('应用名称', 'Jive Money - 集腋记账'),
           _buildConfigItem('版本号', '1.0.0'),
-          _buildConfigItem('维护模式', '关闭', trailing: Switch(value: false, onChanged: (v) {})),
+          _buildConfigItem('维护模式', '关闭',
+              trailing: Switch(value: false, onChanged: (v) {})),
         ]),
-        
         _buildConfigSection('安全设置', [
-          _buildConfigItem('强制MFA', '启用', trailing: Switch(value: true, onChanged: (v) {})),
+          _buildConfigItem('强制MFA', '启用',
+              trailing: Switch(value: true, onChanged: (v) {})),
           _buildConfigItem('密码复杂度', '高'),
           _buildConfigItem('会话超时', '30分钟'),
         ]),
-        
         _buildConfigSection('通知设置', [
-          _buildConfigItem('邮件通知', '启用', trailing: Switch(value: true, onChanged: (v) {})),
-          _buildConfigItem('短信通知', '启用', trailing: Switch(value: true, onChanged: (v) {})),
-          _buildConfigItem('推送通知', '启用', trailing: Switch(value: true, onChanged: (v) {})),
+          _buildConfigItem('邮件通知', '启用',
+              trailing: Switch(value: true, onChanged: (v) {})),
+          _buildConfigItem('短信通知', '启用',
+              trailing: Switch(value: true, onChanged: (v) {})),
+          _buildConfigItem('推送通知', '启用',
+              trailing: Switch(value: true, onChanged: (v) {})),
         ]),
-        
         _buildConfigSection('数据设置', [
           _buildConfigItem('自动备份', '每日'),
           _buildConfigItem('数据保留', '7年'),
@@ -394,10 +423,16 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen> with Ticker
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
                 child: ListTile(
                   leading: Icon(
-                    index % 3 == 0 ? Icons.error : 
-                    index % 3 == 1 ? Icons.warning : Icons.info,
-                    color: index % 3 == 0 ? Colors.red : 
-                           index % 3 == 1 ? Colors.orange : Colors.blue,
+                    index % 3 == 0
+                        ? Icons.error
+                        : index % 3 == 1
+                            ? Icons.warning
+                            : Icons.info,
+                    color: index % 3 == 0
+                        ? Colors.red
+                        : index % 3 == 1
+                            ? Colors.orange
+                            : Colors.blue,
                   ),
                   title: Text('日志事件 ${index + 1}'),
                   subtitle: Text('2024-08-26 10:${30 + index}:00 - 系统正常运行'),

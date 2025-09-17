@@ -11,45 +11,45 @@ class PayeeManagementPageV2 extends StatefulWidget {
   State<PayeeManagementPageV2> createState() => _PayeeManagementPageV2State();
 }
 
-class _PayeeManagementPageV2State extends State<PayeeManagementPageV2> 
+class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final ApiService _apiService = ApiService();
-  
+
   String _searchQuery = '';
   List<Payee> _allPayees = [];
   List<Payee> _filteredPayees = [];
   bool _isLoading = true;
   String? _error;
-  
+
   // 使用固定的测试账本ID
   final String _ledgerId = '550e8400-e29b-41d4-a716-446655440001';
-  
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _loadPayees();
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
-  
+
   Future<void> _loadPayees() async {
     setState(() {
       _isLoading = true;
       _error = null;
     });
-    
+
     try {
       final payees = await _apiService.getPayees(
         ledgerId: _ledgerId,
         search: _searchQuery.isNotEmpty ? _searchQuery : null,
       );
-      
+
       setState(() {
         _allPayees = payees;
         _filteredPayees = payees;
@@ -62,20 +62,21 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
       });
     }
   }
-  
+
   void _filterPayees(String query) {
     setState(() {
       _searchQuery = query;
       if (query.isEmpty) {
         _filteredPayees = _allPayees;
       } else {
-        _filteredPayees = _allPayees.where((payee) =>
-          payee.name.toLowerCase().contains(query.toLowerCase())
-        ).toList();
+        _filteredPayees = _allPayees
+            .where((payee) =>
+                payee.name.toLowerCase().contains(query.toLowerCase()))
+            .toList();
       }
     });
   }
-  
+
   Future<void> _deletePayee(String payeeId) async {
     try {
       await _apiService.deletePayee(payeeId);
@@ -89,12 +90,12 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
       );
     }
   }
-  
+
   Future<void> _showAddPayeeDialog() async {
     final nameController = TextEditingController();
     final notesController = TextEditingController();
     bool isVendor = true;
-    
+
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -141,7 +142,9 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
                     id: '', // API会生成
                     ledgerId: _ledgerId,
                     name: nameController.text,
-                    notes: notesController.text.isNotEmpty ? notesController.text : null,
+                    notes: notesController.text.isNotEmpty
+                        ? notesController.text
+                        : null,
                     isVendor: isVendor,
                     isCustomer: !isVendor,
                     isActive: true,
@@ -149,7 +152,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
                     createdAt: DateTime.now(),
                     updatedAt: DateTime.now(),
                   ));
-                  
+
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('收款人已创建')),
@@ -168,12 +171,12 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
       ),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final vendors = _filteredPayees.where((p) => p.isVendor).toList();
     final customers = _filteredPayees.where((p) => p.isCustomer).toList();
-    
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -222,7 +225,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
               ),
             ),
           ),
-          
+
           // 内容区域
           Expanded(
             child: _isLoading
@@ -232,7 +235,8 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                            const Icon(Icons.error_outline,
+                                size: 48, color: Colors.red),
                             const SizedBox(height: 16),
                             Text('加载失败: $_error'),
                             const SizedBox(height: 16),
@@ -256,7 +260,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
       ),
     );
   }
-  
+
   Widget _buildPayeeList(List<Payee> payees) {
     if (payees.isEmpty) {
       return Center(
@@ -270,7 +274,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
         ),
       );
     }
-    
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: payees.length,
@@ -302,7 +306,9 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
                 if (payee.totalAmount != null)
                   Consumer(builder: (context, ref, _) {
                     final base = ref.watch(baseCurrencyProvider).code;
-                    final str = ref.read(currencyProvider.notifier).formatCurrency(payee.totalAmount ?? 0, base);
+                    final str = ref
+                        .read(currencyProvider.notifier)
+                        .formatCurrency(payee.totalAmount ?? 0, base);
                     return Text('总金额: $str');
                   }),
               ],
@@ -328,7 +334,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
       },
     );
   }
-  
+
   Color _getColorForPayee(Payee payee) {
     final colors = [
       Colors.blue,
@@ -340,7 +346,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
       Colors.indigo,
       Colors.amber,
     ];
-    
+
     final hash = payee.name.hashCode;
     return colors[hash.abs() % colors.length];
   }

@@ -27,13 +27,13 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
   @override
   void initState() {
     super.initState();
-    
+
     // 动画控制器
     _animationController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     );
-    
+
     _scaleAnimation = Tween<double>(
       begin: 0.8,
       end: 1.2,
@@ -43,10 +43,10 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
     ));
 
     _animationController.repeat(reverse: true);
-    
+
     // 开始倒计时
     _startCountdown();
-    
+
     // 实际微信绑定 - 不再使用模拟
     // Timer(const Duration(seconds: 8), () {
     //   if (mounted && _isScanning) {
@@ -83,9 +83,9 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
     setState(() {
       _isScanning = false;
     });
-    
+
     _animationController.stop();
-    
+
     // 显示成功动画
     showDialog(
       context: context,
@@ -128,7 +128,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
     });
     _animationController.repeat(reverse: true);
     _startCountdown();
-    
+
     // 实际刷新二维码 - 不再使用模拟
     // Timer(const Duration(seconds: 8), () {
     //   if (mounted && _isScanning) {
@@ -180,9 +180,9 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // 二维码区域
             Container(
               width: 200,
@@ -192,13 +192,11 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.grey[300]!),
               ),
-              child: _isScanning 
-                ? _buildQRCode()
-                : _buildExpiredQR(),
+              child: _isScanning ? _buildQRCode() : _buildExpiredQR(),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // 状态文本
             if (_isScanning) ...[
               Text(
@@ -237,7 +235,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
                 ),
               ),
             ],
-            
+
             // 测试按钮 - 仅用于演示
             if (_isScanning) ...[
               const SizedBox(height: 16),
@@ -246,14 +244,15 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 ),
                 child: const Text('模拟扫码成功 (测试用)'),
               ),
             ],
-            
+
             const SizedBox(height: 24),
-            
+
             // 说明文本
             Container(
               padding: const EdgeInsets.all(16),
@@ -418,8 +417,8 @@ class QRCodePainter extends CustomPainter {
     // 绘制随机的二维码模式
     for (int i = 0; i < 25; i++) {
       for (int j = 0; j < 25; j++) {
-        if ((i + j) % 3 == 0 || 
-            (i * j) % 7 == 0 || 
+        if ((i + j) % 3 == 0 ||
+            (i * j) % 7 == 0 ||
             (i == 0 || i == 24 || j == 0 || j == 24) ||
             (i >= 0 && i <= 6 && j >= 0 && j <= 6) ||
             (i >= 18 && i <= 24 && j >= 0 && j <= 6) ||
@@ -443,34 +442,27 @@ class QRCodePainter extends CustomPainter {
     _drawPositionMarker(canvas, paint, Offset(0, 18 * blockSize), blockSize);
   }
 
-  void _drawPositionMarker(Canvas canvas, Paint paint, Offset offset, double blockSize) {
+  void _drawPositionMarker(
+      Canvas canvas, Paint paint, Offset offset, double blockSize) {
     // 外框
     canvas.drawRect(
       Rect.fromLTWH(offset.dx, offset.dy, blockSize * 7, blockSize * 7),
       paint,
     );
-    
+
     // 内部白色
     paint.color = Colors.white;
     canvas.drawRect(
-      Rect.fromLTWH(
-        offset.dx + blockSize, 
-        offset.dy + blockSize, 
-        blockSize * 5, 
-        blockSize * 5
-      ),
+      Rect.fromLTWH(offset.dx + blockSize, offset.dy + blockSize, blockSize * 5,
+          blockSize * 5),
       paint,
     );
-    
+
     // 中心黑块
     paint.color = Colors.black;
     canvas.drawRect(
-      Rect.fromLTWH(
-        offset.dx + blockSize * 2, 
-        offset.dy + blockSize * 2, 
-        blockSize * 3, 
-        blockSize * 3
-      ),
+      Rect.fromLTWH(offset.dx + blockSize * 2, offset.dy + blockSize * 2,
+          blockSize * 3, blockSize * 3),
       paint,
     );
   }

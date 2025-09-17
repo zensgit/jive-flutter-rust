@@ -20,7 +20,8 @@ class _DevQuickActionsState extends State<DevQuickActions> {
   @override
   Widget build(BuildContext context) {
     if (!kDebugMode || !kIsWeb) return widget.child;
-    debugPrint('@@ DevQuickActions build (has Directionality=${Directionality.maybeOf(context)!=null})');
+    debugPrint(
+        '@@ DevQuickActions build (has Directionality=${Directionality.maybeOf(context) != null})');
     final content = Stack(
       alignment: Alignment.topLeft,
       children: [
@@ -33,80 +34,84 @@ class _DevQuickActionsState extends State<DevQuickActions> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-              FloatingActionButton.small(
-                heroTag: 'dev_fab',
-                onPressed: () => setState(() => _open = !_open),
-                child: Icon(_open ? Icons.close : Icons.build, size: 18),
-              ),
-              if (_open)
-                Material(
-                  color: Colors.transparent,
-                  child: Container(
-                  margin: const EdgeInsets.only(top: 8),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  width: 240,
-                  child: DefaultTextStyle(
-                    style: const TextStyle(fontSize: 12, color: Colors.white),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _actionButton(
-                          label: '清除 Token (登出)',
-                          onTap: () async {
-                            await TokenStorage.clearTokens();
-                            _toast('Tokens cleared');
-                            _reload();
-                          },
+                FloatingActionButton.small(
+                  heroTag: 'dev_fab',
+                  onPressed: () => setState(() => _open = !_open),
+                  child: Icon(_open ? Icons.close : Icons.build, size: 18),
+                ),
+                if (_open)
+                  Material(
+                      color: Colors.transparent,
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 8),
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        _actionButton(
-                          label: '清除 Hive/缓存',
-                          onTap: () async {
-                            await HiveConfig.clearAll();
-                            _toast('Hive cleared');
-                            _reload();
-                          },
+                        width: 240,
+                        child: DefaultTextStyle(
+                          style: const TextStyle(
+                              fontSize: 12, color: Colors.white),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _actionButton(
+                                label: '清除 Token (登出)',
+                                onTap: () async {
+                                  await TokenStorage.clearTokens();
+                                  _toast('Tokens cleared');
+                                  _reload();
+                                },
+                              ),
+                              _actionButton(
+                                label: '清除 Hive/缓存',
+                                onTap: () async {
+                                  await HiveConfig.clearAll();
+                                  _toast('Hive cleared');
+                                  _reload();
+                                },
+                              ),
+                              _actionButton(
+                                label: '清除 localStorage',
+                                onTap: () {
+                                  html.window.localStorage.clear();
+                                  _toast('localStorage cleared');
+                                },
+                              ),
+                              _actionButton(
+                                label: '清除全部(含刷新)',
+                                onTap: () async {
+                                  await TokenStorage.clearAll();
+                                  await HiveConfig.clearAll();
+                                  html.window.localStorage.clear();
+                                  _toast('All cleared');
+                                  _reload();
+                                },
+                              ),
+                              const Divider(color: Colors.white24),
+                              _actionButton(
+                                label: '模拟 Token 过期',
+                                onTap: () async {
+                                  await TokenStorage.saveTokenExpiry(
+                                      DateTime.now().subtract(
+                                          const Duration(minutes: 1)));
+                                  _toast('Token expiry set to past');
+                                },
+                              ),
+                              _actionButton(
+                                label: '打印 AuthInfo',
+                                onTap: () async {
+                                  final info = await TokenStorage.getAuthInfo();
+                                  debugPrint(
+                                      '[Dev] AuthInfo: ' + info.toString());
+                                  _toast('AuthInfo logged');
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                        _actionButton(
-                          label: '清除 localStorage',
-                          onTap: () {
-                            html.window.localStorage.clear();
-                            _toast('localStorage cleared');
-                          },
-                        ),
-                        _actionButton(
-                          label: '清除全部(含刷新)',
-                          onTap: () async {
-                            await TokenStorage.clearAll();
-                            await HiveConfig.clearAll();
-                            html.window.localStorage.clear();
-                            _toast('All cleared');
-                            _reload();
-                          },
-                        ),
-                        const Divider(color: Colors.white24),
-                        _actionButton(
-                          label: '模拟 Token 过期',
-                          onTap: () async {
-                            await TokenStorage.saveTokenExpiry(DateTime.now().subtract(const Duration(minutes: 1)));
-                            _toast('Token expiry set to past');
-                          },
-                        ),
-                        _actionButton(
-                          label: '打印 AuthInfo',
-                          onTap: () async {
-                            final info = await TokenStorage.getAuthInfo();
-                            debugPrint('[Dev] AuthInfo: ' + info.toString());
-                            _toast('AuthInfo logged');
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ))
+                      ))
               ],
             ),
           ),
@@ -118,7 +123,9 @@ class _DevQuickActionsState extends State<DevQuickActions> {
     if (!hasDir) {
       debugPrint('@@ DevQuickActions injecting fallback Directionality');
     }
-    return hasDir ? content : Directionality(textDirection: TextDirection.ltr, child: content);
+    return hasDir
+        ? content
+        : Directionality(textDirection: TextDirection.ltr, child: content);
   }
 
   Widget _actionButton({required String label, required VoidCallback onTap}) {

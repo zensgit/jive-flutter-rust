@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TransactionDetailScreen extends StatelessWidget {
   final String transactionId;
-  
+
   const TransactionDetailScreen({
     super.key,
     required this.transactionId,

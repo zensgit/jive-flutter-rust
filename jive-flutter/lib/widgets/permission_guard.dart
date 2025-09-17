@@ -11,7 +11,7 @@ class PermissionGuard extends ConsumerWidget {
   final Widget child;
   final Widget? fallback;
   final bool hideWhenDenied;
-  
+
   const PermissionGuard({
     super.key,
     required this.familyId,
@@ -21,16 +21,16 @@ class PermissionGuard extends ConsumerWidget {
     this.fallback,
     this.hideWhenDenied = true,
   }) : assert(
-    action != null || minimumRole != null,
-    'Either action or minimumRole must be provided',
-  );
+          action != null || minimumRole != null,
+          'Either action or minimumRole must be provided',
+        );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final permissionService = ref.watch(permissionServiceProvider);
-    
+
     bool hasPermission = false;
-    
+
     // 检查具体权限
     if (action != null) {
       hasPermission = permissionService.hasPermission(
@@ -38,7 +38,7 @@ class PermissionGuard extends ConsumerWidget {
         action: action!,
       );
     }
-    
+
     // 检查最低角色要求
     if (minimumRole != null && !hasPermission) {
       final userRole = permissionService.getUserRole(familyId);
@@ -46,7 +46,7 @@ class PermissionGuard extends ConsumerWidget {
         hasPermission = _checkRoleHierarchy(userRole, minimumRole!);
       }
     }
-    
+
     if (hasPermission) {
       return child;
     } else if (fallback != null) {
@@ -57,7 +57,7 @@ class PermissionGuard extends ConsumerWidget {
       return _buildDeniedWidget(context);
     }
   }
-  
+
   bool _checkRoleHierarchy(
     family_model.FamilyRole userRole,
     family_model.FamilyRole requiredRole,
@@ -68,13 +68,13 @@ class PermissionGuard extends ConsumerWidget {
       family_model.FamilyRole.member: 2,
       family_model.FamilyRole.viewer: 1,
     };
-    
+
     return hierarchy[userRole]! >= hierarchy[requiredRole]!;
   }
-  
+
   Widget _buildDeniedWidget(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -112,7 +112,7 @@ class PermissionButton extends ConsumerWidget {
   final Widget child;
   final VoidCallback? onPressed;
   final bool showTooltipWhenDisabled;
-  
+
   const PermissionButton({
     super.key,
     required this.familyId,
@@ -125,14 +125,14 @@ class PermissionButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final permissionService = ref.watch(permissionServiceProvider);
-    
+
     final hasPermission = permissionService.hasPermission(
       familyId: familyId,
       action: action,
     );
-    
+
     Widget button;
-    
+
     if (child is ElevatedButton) {
       final elevatedButton = child as ElevatedButton;
       button = ElevatedButton(
@@ -164,14 +164,14 @@ class PermissionButton extends ConsumerWidget {
     } else {
       button = child;
     }
-    
+
     if (!hasPermission && showTooltipWhenDisabled) {
       return Tooltip(
         message: '您没有权限执行此操作',
         child: button,
       );
     }
-    
+
     return button;
   }
 }
@@ -180,7 +180,7 @@ class PermissionButton extends ConsumerWidget {
 class RoleBadge extends StatelessWidget {
   final family_model.FamilyRole role;
   final bool showLabel;
-  
+
   const RoleBadge({
     super.key,
     required this.role,
@@ -193,7 +193,7 @@ class RoleBadge extends StatelessWidget {
     final color = _getRoleColor(role);
     final icon = _getRoleIcon(role);
     final label = _getRoleLabel(role);
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -226,7 +226,7 @@ class RoleBadge extends StatelessWidget {
       ),
     );
   }
-  
+
   Color _getRoleColor(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:
@@ -239,7 +239,7 @@ class RoleBadge extends StatelessWidget {
         return Colors.grey;
     }
   }
-  
+
   IconData _getRoleIcon(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:
@@ -252,7 +252,7 @@ class RoleBadge extends StatelessWidget {
         return Icons.visibility;
     }
   }
-  
+
   String _getRoleLabel(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:
@@ -271,7 +271,7 @@ class RoleBadge extends StatelessWidget {
 class PermissionHint extends StatelessWidget {
   final PermissionAction action;
   final String? customMessage;
-  
+
   const PermissionHint({
     super.key,
     required this.action,
@@ -281,7 +281,7 @@ class PermissionHint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -312,7 +312,7 @@ class PermissionHint extends StatelessWidget {
       ),
     );
   }
-  
+
   String _getDefaultMessage(PermissionAction action) {
     switch (action) {
       case PermissionAction.editFamily:

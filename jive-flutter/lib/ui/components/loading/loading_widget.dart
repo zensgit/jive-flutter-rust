@@ -19,7 +19,7 @@ class LoadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -64,7 +64,7 @@ class FullScreenLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return PopScope(
       canPop: dismissible,
       child: Scaffold(
@@ -118,7 +118,7 @@ class CardLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       margin: margin ?? const EdgeInsets.all(8),
       elevation: 1,
@@ -213,19 +213,20 @@ class _ShimmerCardState extends State<ShimmerCard>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
         return Container(
           width: widget.width,
           height: widget.height,
-          margin: widget.margin ?? const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 4,
-          ),
+          margin: widget.margin ??
+              const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 4,
+              ),
           decoration: BoxDecoration(
-            borderRadius: widget.borderRadius ?? 
+            borderRadius: widget.borderRadius ??
                 BorderRadius.circular(AppConstants.borderRadius),
             gradient: LinearGradient(
               begin: Alignment.centerLeft,
@@ -270,14 +271,14 @@ class EmptyWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Padding(
       padding: const EdgeInsets.all(32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // 图标或插图
-          if (illustration != null) 
+          if (illustration != null)
             illustration!
           else if (icon != null)
             Container(
@@ -293,9 +294,9 @@ class EmptyWidget extends StatelessWidget {
                 color: theme.primaryColor,
               ),
             ),
-          
+
           const SizedBox(height: 24),
-          
+
           // 标题
           Text(
             title,
@@ -304,7 +305,7 @@ class EmptyWidget extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          
+
           // 副标题
           if (subtitle != null) ...[
             const SizedBox(height: 8),
@@ -316,7 +317,7 @@ class EmptyWidget extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ],
-          
+
           // 操作按钮
           if (actionText != null && onAction != null) ...[
             const SizedBox(height: 24),
@@ -330,7 +331,8 @@ class EmptyWidget extends StatelessWidget {
                   vertical: 12,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppConstants.borderRadius),
+                  borderRadius:
+                      BorderRadius.circular(AppConstants.borderRadius),
                 ),
               ),
               child: Text(actionText!),

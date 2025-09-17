@@ -119,7 +119,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // 功能菜单
             const Text(
               '主要功能',
@@ -129,7 +129,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             Expanded(
               child: GridView.count(
                 crossAxisCount: 2,

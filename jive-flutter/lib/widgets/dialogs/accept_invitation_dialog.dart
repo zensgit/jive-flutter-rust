@@ -12,7 +12,7 @@ import '../../utils/snackbar_utils.dart';
 class AcceptInvitationDialog extends ConsumerStatefulWidget {
   final InvitationWithDetails invitationDetails;
   final VoidCallback? onAccepted;
-  
+
   const AcceptInvitationDialog({
     super.key,
     required this.invitationDetails,
@@ -20,19 +20,21 @@ class AcceptInvitationDialog extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<AcceptInvitationDialog> createState() => _AcceptInvitationDialogState();
+  ConsumerState<AcceptInvitationDialog> createState() =>
+      _AcceptInvitationDialogState();
 }
 
-class _AcceptInvitationDialogState extends ConsumerState<AcceptInvitationDialog> {
+class _AcceptInvitationDialogState
+    extends ConsumerState<AcceptInvitationDialog> {
   final _invitationService = InvitationService();
   bool _isLoading = false;
   bool _showConfirmation = false;
   String? _userNote;
-  
+
   Invitation get invitation => widget.invitationDetails.invitation;
   family_model.Family get family => widget.invitationDetails.family;
   User get inviter => widget.invitationDetails.inviter;
-  
+
   Future<void> _acceptInvitation() async {
     if (!_showConfirmation) {
       setState(() {
@@ -40,31 +42,31 @@ class _AcceptInvitationDialogState extends ConsumerState<AcceptInvitationDialog>
       });
       return;
     }
-    
+
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
       // 调用服务接受邀请
       final success = await _invitationService.acceptInvitation(
         invitationId: invitation.id,
         note: _userNote,
       );
-      
+
       if (success && mounted) {
         // 刷新家庭列表
         await ref.read(familyProvider.notifier).loadUserFamilies();
-        
+
         // 显示成功消息
         SnackbarUtils.showSuccess(
           context,
           '已成功加入 ${family.name}',
         );
-        
+
         // 关闭对话框
         Navigator.of(context).pop(true);
-        
+
         // 触发回调
         widget.onAccepted?.call();
       }
@@ -83,12 +85,12 @@ class _AcceptInvitationDialogState extends ConsumerState<AcceptInvitationDialog>
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final currentUser = ref.watch(authStateProvider).value;
-    
+
     return AlertDialog(
       title: Text(_showConfirmation ? '确认加入' : '邀请详情'),
       content: SingleChildScrollView(
@@ -177,9 +179,9 @@ class _AcceptInvitationDialogState extends ConsumerState<AcceptInvitationDialog>
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // 邀请信息
             _buildInfoRow(
               context,
@@ -187,21 +189,21 @@ class _AcceptInvitationDialogState extends ConsumerState<AcceptInvitationDialog>
               '邀请人',
               inviter.displayName ?? inviter.email,
             ),
-            
+
             _buildInfoRow(
               context,
               Icons.shield_outlined,
               '您的角色',
               _getRoleDisplay(invitation.role),
             ),
-            
+
             _buildInfoRow(
               context,
               Icons.access_time,
               '有效期',
               invitation.remainingTimeDescription,
             ),
-            
+
             if (!_showConfirmation) ...[
               const SizedBox(height: 16),
               // 角色权限说明
@@ -250,7 +252,7 @@ class _AcceptInvitationDialogState extends ConsumerState<AcceptInvitationDialog>
                 ),
               ),
             ],
-            
+
             // 确认阶段的附加信息
             if (_showConfirmation) ...[
               const SizedBox(height: 16),
@@ -276,9 +278,9 @@ class _AcceptInvitationDialogState extends ConsumerState<AcceptInvitationDialog>
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // 备注输入
               TextField(
                 decoration: InputDecoration(
@@ -325,7 +327,7 @@ class _AcceptInvitationDialogState extends ConsumerState<AcceptInvitationDialog>
       ],
     );
   }
-  
+
   Widget _buildInfoRow(
     BuildContext context,
     IconData icon,
@@ -333,7 +335,7 @@ class _AcceptInvitationDialogState extends ConsumerState<AcceptInvitationDialog>
     String value,
   ) {
     final theme = Theme.of(context);
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -364,7 +366,7 @@ class _AcceptInvitationDialogState extends ConsumerState<AcceptInvitationDialog>
       ),
     );
   }
-  
+
   Widget _buildStatItem(
     BuildContext context,
     IconData icon,
@@ -372,7 +374,7 @@ class _AcceptInvitationDialogState extends ConsumerState<AcceptInvitationDialog>
     String label,
   ) {
     final theme = Theme.of(context);
-    
+
     return Column(
       children: [
         Icon(
@@ -396,7 +398,7 @@ class _AcceptInvitationDialogState extends ConsumerState<AcceptInvitationDialog>
       ],
     );
   }
-  
+
   String _getRoleDisplay(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:
@@ -409,7 +411,7 @@ class _AcceptInvitationDialogState extends ConsumerState<AcceptInvitationDialog>
         return '查看者';
     }
   }
-  
+
   List<String> _getRolePermissions(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:

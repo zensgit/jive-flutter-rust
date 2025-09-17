@@ -18,13 +18,13 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
   final _balanceController = TextEditingController();
   final _accountNumberController = TextEditingController();
   final _descriptionController = TextEditingController();
-  
+
   String _selectedType = 'checking';
   String _selectedCurrency = 'CNY';
   bool _isDefault = false;
   bool _excludeFromStats = false;
   Color _selectedColor = Colors.blue;
-  
+
   final List<Color> _colorOptions = [
     Colors.blue,
     Colors.green,
@@ -35,7 +35,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
     Colors.pink,
     Colors.indigo,
   ];
-  
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -44,11 +44,11 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
     _descriptionController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final currentLedger = ref.watch(currentLedgerProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('添加账户'),
@@ -79,7 +79,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 账户名称
                     TextFormField(
                       controller: _nameController,
@@ -97,7 +97,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                       onChanged: (_) => setState(() {}),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 账户类型
                     DropdownButtonFormField<String>(
                       initialValue: _selectedType,
@@ -184,17 +184,20 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 初始余额
                     TextFormField(
                       controller: _balanceController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d{0,2}')),
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^-?\d*\.?\d{0,2}')),
                       ],
                       decoration: InputDecoration(
-                        labelText: _selectedType == 'credit_card' || _selectedType == 'loan' 
-                            ? '欠款金额' 
+                        labelText: _selectedType == 'credit_card' ||
+                                _selectedType == 'loan'
+                            ? '欠款金额'
                             : '初始余额',
                         hintText: '0.00',
                         prefixIcon: const Icon(Icons.attach_money),
@@ -215,7 +218,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // 附加信息
             Card(
               child: Padding(
@@ -231,7 +234,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 账户号码
                     TextFormField(
                       controller: _accountNumberController,
@@ -242,7 +245,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 货币
                     DropdownButtonFormField<String>(
                       initialValue: _selectedCurrency,
@@ -251,7 +254,8 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                         prefixIcon: Icon(Icons.currency_exchange),
                       ),
                       items: const [
-                        DropdownMenuItem(value: 'CNY', child: Text('CNY - 人民币')),
+                        DropdownMenuItem(
+                            value: 'CNY', child: Text('CNY - 人民币')),
                         DropdownMenuItem(value: 'USD', child: Text('USD - 美元')),
                         DropdownMenuItem(value: 'EUR', child: Text('EUR - 欧元')),
                         DropdownMenuItem(value: 'GBP', child: Text('GBP - 英镑')),
@@ -267,7 +271,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 颜色选择
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -319,7 +323,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 描述
                     TextFormField(
                       controller: _descriptionController,
@@ -336,7 +340,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // 设置选项
             Card(
               child: Padding(
@@ -378,7 +382,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 80),
           ],
         ),
@@ -390,45 +394,45 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
       ),
     );
   }
-  
+
   bool _isValid() {
     return _nameController.text.isNotEmpty &&
         _balanceController.text.isNotEmpty &&
         double.tryParse(_balanceController.text) != null;
   }
-  
+
   Future<void> _saveAccount() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    
+
     try {
       // TODO: 调用API保存账户
       final account = {
         'name': _nameController.text,
         'type': _selectedType,
         'balance': double.parse(_balanceController.text),
-        'account_number': _accountNumberController.text.isEmpty 
-            ? null 
+        'account_number': _accountNumberController.text.isEmpty
+            ? null
             : _accountNumberController.text,
         'currency': _selectedCurrency,
         'color': _selectedColor.value,
-        'description': _descriptionController.text.isEmpty 
-            ? null 
+        'description': _descriptionController.text.isEmpty
+            ? null
             : _descriptionController.text,
         'is_default': _isDefault,
         'exclude_from_stats': _excludeFromStats,
         'ledger_id': ref.read(currentLedgerProvider)?.id,
       };
-      
+
       // 显示成功消息
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('账户已创建')),
       );
-      
+
       // 刷新账户列表
       ref.invalidate(accountsProvider);
-      
+
       // 返回上一页
       context.pop();
     } catch (e) {

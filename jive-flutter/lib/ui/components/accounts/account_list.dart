@@ -36,9 +36,8 @@ class AccountList extends StatelessWidget {
       return _buildEmptyState(context);
     }
 
-    final content = groupByType 
-        ? _buildGroupedList(context)
-        : _buildSimpleList(context);
+    final content =
+        groupByType ? _buildGroupedList(context) : _buildSimpleList(context);
 
     if (onRefresh != null) {
       return RefreshIndicator(
@@ -52,7 +51,7 @@ class AccountList extends StatelessWidget {
 
   Widget _buildEmptyState(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -114,7 +113,7 @@ class AccountList extends StatelessWidget {
   Widget _buildGroupedList(BuildContext context) {
     final groupedAccounts = _groupAccountsByType();
     final theme = Theme.of(context);
-    
+
     return Column(
       children: [
         if (showTotal) _buildTotalSection(context),
@@ -126,16 +125,16 @@ class AccountList extends StatelessWidget {
               final group = groupedAccounts.entries.elementAt(index);
               final type = group.key;
               final typeAccounts = group.value;
-              
+
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 类型头部
                   _buildTypeHeader(theme, type, typeAccounts),
-                  
+
                   // 该类型的账户
-                  ...typeAccounts.map((account) => 
-                    AccountCard(
+                  ...typeAccounts.map(
+                    (account) => AccountCard(
                       account: account,
                       onTap: () => onAccountTap?.call(account),
                       onLongPress: () => onAccountLongPress?.call(account),
@@ -155,7 +154,7 @@ class AccountList extends StatelessWidget {
     final totalAssets = _calculateTotal(AccountType.asset);
     final totalLiabilities = _calculateTotal(AccountType.liability);
     final netWorth = totalAssets - totalLiabilities;
-    
+
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
@@ -242,9 +241,11 @@ class AccountList extends StatelessWidget {
     );
   }
 
-  Widget _buildTypeHeader(ThemeData theme, AccountType type, List<AccountData> accounts) {
-    final total = accounts.fold<double>(0, (sum, account) => sum + account.balance);
-    
+  Widget _buildTypeHeader(
+      ThemeData theme, AccountType type, List<AccountData> accounts) {
+    final total =
+        accounts.fold<double>(0, (sum, account) => sum + account.balance);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       color: theme.colorScheme.surface,
@@ -277,17 +278,18 @@ class AccountList extends StatelessWidget {
 
   Map<AccountType, List<AccountData>> _groupAccountsByType() {
     final Map<AccountType, List<AccountData>> grouped = {};
-    
+
     for (final account in accounts) {
       if (!grouped.containsKey(account.type)) {
         grouped[account.type] = [];
       }
       grouped[account.type]!.add(account);
     }
-    
+
     // 按类型排序：资产、负债
     return Map.fromEntries(
-      grouped.entries.toList()..sort((a, b) => a.key.index.compareTo(b.key.index)),
+      grouped.entries.toList()
+        ..sort((a, b) => a.key.index.compareTo(b.key.index)),
     );
   }
 
@@ -334,24 +336,24 @@ class AccountList extends StatelessWidget {
 
 /// 账户类型枚举
 enum AccountType {
-  asset,    // 资产
+  asset, // 资产
   liability, // 负债
 }
 
 /// 账户子类型枚举
 enum AccountSubType {
   // 资产子类型
-  cash,           // 现金
-  debitCard,      // 借记卡
+  cash, // 现金
+  debitCard, // 借记卡
   savingsAccount, // 储蓄账户
-  investment,     // 投资账户
-  prepaidCard,    // 预付卡
-  digitalWallet,  // 数字钱包
-  
+  investment, // 投资账户
+  prepaidCard, // 预付卡
+  digitalWallet, // 数字钱包
+
   // 负债子类型
-  creditCard,     // 信用卡
-  loan,           // 贷款
-  mortgage,       // 房贷
+  creditCard, // 信用卡
+  loan, // 贷款
+  mortgage, // 房贷
 }
 
 /// 账户分组列表
@@ -370,7 +372,7 @@ class GroupedAccountList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: groupedAccounts.length,
@@ -378,7 +380,7 @@ class GroupedAccountList extends StatelessWidget {
         final group = groupedAccounts.entries.elementAt(index);
         final groupName = group.key;
         final accounts = group.value;
-        
+
         return ExpansionTile(
           title: Row(
             children: [
@@ -405,7 +407,7 @@ class GroupedAccountList extends StatelessWidget {
               ),
             ],
           ),
-          subtitle: showGroupTotal 
+          subtitle: showGroupTotal
               ? Text(
                   '总计: ${_formatGroupTotal(accounts)}',
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -413,20 +415,24 @@ class GroupedAccountList extends StatelessWidget {
                   ),
                 )
               : null,
-          children: accounts.map((account) => 
-            AccountCard(
-              account: account,
-              onTap: () => onAccountTap?.call(account),
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            ),
-          ).toList(),
+          children: accounts
+              .map(
+                (account) => AccountCard(
+                  account: account,
+                  onTap: () => onAccountTap?.call(account),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                ),
+              )
+              .toList(),
         );
       },
     );
   }
 
   String _formatGroupTotal(List<AccountData> accounts) {
-    final total = accounts.fold<double>(0, (sum, account) => sum + account.balance);
+    final total =
+        accounts.fold<double>(0, (sum, account) => sum + account.balance);
     return total.toStringAsFixed(2);
   }
 }

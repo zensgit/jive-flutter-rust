@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        INSERT INTO user_currency_settings (\n            user_id,\n            multi_currency_enabled,\n            crypto_enabled,\n            base_currency,\n            selected_currencies,\n            show_currency_code,\n            show_currency_symbol\n        ) VALUES ($1, $2, $3, $4, $5, $6, $7)\n        ON CONFLICT (user_id) DO UPDATE SET\n            multi_currency_enabled = COALESCE($2, user_currency_settings.multi_currency_enabled),\n            crypto_enabled = COALESCE($3, user_currency_settings.crypto_enabled),\n            base_currency = COALESCE($4, user_currency_settings.base_currency),\n            selected_currencies = COALESCE($5, user_currency_settings.selected_currencies),\n            show_currency_code = COALESCE($6, user_currency_settings.show_currency_code),\n            show_currency_symbol = COALESCE($7, user_currency_settings.show_currency_symbol),\n            updated_at = CURRENT_TIMESTAMP\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Bool",
+        "Bool",
+        "Varchar",
+        "TextArray",
+        "Bool",
+        "Bool"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "98f571bb8b6ed3347275b436d338867c21198524964dfefb8186c9db19e45d02"
+}

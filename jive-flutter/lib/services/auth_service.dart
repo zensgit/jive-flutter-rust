@@ -16,7 +16,7 @@ class AuthService {
 
   /// 获取当前用户
   UserData? get currentUser => _currentUser;
-  
+
   /// 获取认证令牌
   String? get token => _token;
 
@@ -28,7 +28,7 @@ class AuthService {
     try {
       final userData = await _storage.getUserData();
       final authToken = await _storage.getAuthToken();
-      
+
       if (userData != null && authToken != null) {
         _currentUser = userData;
         _token = authToken;
@@ -38,13 +38,13 @@ class AuthService {
       debugPrint('初始化认证服务失败: $e');
     }
   }
-  
+
   /// 保存认证令牌
   Future<void> saveToken(String token) async {
     _token = token;
     await _storage.saveAuthToken(token);
   }
-  
+
   /// 保存用户ID
   Future<void> saveUserId(String userId) async {
     // 如果有当前用户，更新ID
@@ -66,12 +66,12 @@ class AuthService {
 
       // 模拟登录验证逻辑
       final loginResult = await _simulateLogin(usernameOrEmail, password);
-      
+
       if (loginResult.success && loginResult.userData != null) {
         // 保存用户数据和认证令牌
         await _storage.saveUserData(loginResult.userData!);
         await _storage.saveAuthToken(_generateToken());
-        
+
         // 更新最后登录时间
         _currentUser = loginResult.userData!.copyWith(
           lastLoginTime: DateTime.now(),
@@ -90,7 +90,7 @@ class AuthService {
 
         debugPrint('用户登录成功: ${_currentUser!.username}');
         return AuthResult(
-          success: true, 
+          success: true,
           message: '登录成功',
           userData: _currentUser,
         );
@@ -116,7 +116,8 @@ class AuthService {
   }
 
   /// 用户注册
-  Future<AuthResult> register(String username, String email, String password, {String? inviteCode}) async {
+  Future<AuthResult> register(String username, String email, String password,
+      {String? inviteCode}) async {
     try {
       await Future.delayed(const Duration(seconds: 2)); // 模拟网络请求
 
@@ -125,12 +126,14 @@ class AuthService {
         return AuthResult(success: false, message: '所有字段都必须填写');
       }
 
-      if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(email)) {
+      if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+          .hasMatch(email)) {
         return AuthResult(success: false, message: '邮箱格式不正确');
       }
 
-      if (!RegExp(r'^[a-zA-Z0-9_\u4e00-\u9fa5]+$').hasMatch(username) || 
-          username.length < 3 || username.length > 20) {
+      if (!RegExp(r'^[a-zA-Z0-9_\u4e00-\u9fa5]+$').hasMatch(username) ||
+          username.length < 3 ||
+          username.length > 20) {
         return AuthResult(success: false, message: '用户名格式不正确');
       }
 
@@ -152,7 +155,7 @@ class AuthService {
 
       // 保存用户数据
       await _storage.saveUserData(newUser);
-      
+
       debugPrint('用户注册成功: $username');
       return AuthResult(
         success: true,
@@ -194,7 +197,7 @@ class AuthService {
 
       // 检查是否已有绑定的用户账户
       final existingUser = await _findUserByWeChatOpenId(authResult.openId);
-      
+
       if (existingUser != null) {
         // 已有账户，直接登录
         await _storage.saveAuthToken(_generateToken());
@@ -278,7 +281,7 @@ class AuthService {
 
       // 保存用户数据
       await _storage.saveUserData(newUser);
-      
+
       // 保存微信绑定数据
       final wechatBinding = WeChatBindingData(
         openId: authResult.openId,
@@ -419,9 +422,10 @@ class AuthService {
         if (!emailExists.success) {
           return emailExists;
         }
-        
+
         // 验证邮箱格式
-        if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(email)) {
+        if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+            .hasMatch(email)) {
           return AuthResult(success: false, message: '邮箱格式不正确');
         }
       }
@@ -458,16 +462,41 @@ class AuthService {
   // 私有方法
 
   /// 模拟登录验证
-  Future<AuthResult> _simulateLogin(String usernameOrEmail, String password) async {
+  Future<AuthResult> _simulateLogin(
+      String usernameOrEmail, String password) async {
     // 模拟一些预设的测试账户
     final testAccounts = {
-      'demo': {'password': '123456', 'email': 'demo@jivemoney.com', 'username': 'demo'},
-      'demo@jivemoney.com': {'password': '123456', 'email': 'demo@jivemoney.com', 'username': 'demo'},
-      'test': {'password': 'Test123!', 'email': 'test@example.com', 'username': 'test'},
-      'test@example.com': {'password': 'Test123!', 'email': 'test@example.com', 'username': 'test'},
+      'demo': {
+        'password': '123456',
+        'email': 'demo@jivemoney.com',
+        'username': 'demo'
+      },
+      'demo@jivemoney.com': {
+        'password': '123456',
+        'email': 'demo@jivemoney.com',
+        'username': 'demo'
+      },
+      'test': {
+        'password': 'Test123!',
+        'email': 'test@example.com',
+        'username': 'test'
+      },
+      'test@example.com': {
+        'password': 'Test123!',
+        'email': 'test@example.com',
+        'username': 'test'
+      },
       // 添加超级管理员账户（测试阶段）
-      'superadmin': {'password': 'admin123', 'email': 'superadmin@jivemoney.com', 'username': 'superadmin'},
-      'superadmin@jivemoney.com': {'password': 'admin123', 'email': 'superadmin@jivemoney.com', 'username': 'superadmin'},
+      'superadmin': {
+        'password': 'admin123',
+        'email': 'superadmin@jivemoney.com',
+        'username': 'superadmin'
+      },
+      'superadmin@jivemoney.com': {
+        'password': 'admin123',
+        'email': 'superadmin@jivemoney.com',
+        'username': 'superadmin'
+      },
     };
 
     if (testAccounts.containsKey(usernameOrEmail)) {
@@ -530,11 +559,12 @@ class AuthService {
 
   /// 生成唯一用户名
   Future<String> _generateUniqueUsername(String nickname) async {
-    String baseUsername = nickname.replaceAll(RegExp(r'[^\w\u4e00-\u9fa5]'), '');
+    String baseUsername =
+        nickname.replaceAll(RegExp(r'[^\w\u4e00-\u9fa5]'), '');
     if (baseUsername.isEmpty) {
       baseUsername = 'user';
     }
-    
+
     // 添加随机数字确保唯一性
     final random = Random();
     return '${baseUsername}_${random.nextInt(9999).toString().padLeft(4, '0')}';

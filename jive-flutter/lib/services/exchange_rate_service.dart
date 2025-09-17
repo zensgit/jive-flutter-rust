@@ -9,10 +9,9 @@ import '../core/storage/token_storage.dart';
 
 /// Service for fetching real exchange rates from backend API
 class ExchangeRateService {
-  
   // Cache duration
   static const Duration _cacheDuration = Duration(minutes: 15);
-  
+
   // Cache storage
   final Map<String, CachedExchangeRates> _cache = {};
   bool _lastWasFallback = false;
@@ -20,18 +19,19 @@ class ExchangeRateService {
   bool get lastWasFallback => _lastWasFallback;
 
   /// Get exchange rates for a base currency
-  Future<Map<String, ExchangeRate>> getExchangeRates(String baseCurrency) async {
+  Future<Map<String, ExchangeRate>> getExchangeRates(
+      String baseCurrency) async {
     // Check cache first
     final cacheKey = baseCurrency.toUpperCase();
     final cached = _cache[cacheKey];
-    
+
     if (cached != null && !cached.isExpired) {
       return cached.rates;
     }
 
     // Fetch from backend API
     Map<String, ExchangeRate>? rates;
-    
+
     // Try backend API
     rates = await _fetchFromBackendApi(baseCurrency);
     bool usedFallback = false;
@@ -44,7 +44,8 @@ class ExchangeRateService {
       _lastWasFallback = false;
       debugPrint('✅ Live exchange rates fetched');
     }
-    _cache[cacheKey] = CachedExchangeRates(rates: rates, timestamp: DateTime.now());
+    _cache[cacheKey] =
+        CachedExchangeRates(rates: rates, timestamp: DateTime.now());
     return rates;
   }
 
@@ -53,7 +54,8 @@ class ExchangeRateService {
     String baseCurrency,
     List<String> targets,
   ) async {
-    final cacheKey = '${baseCurrency.toUpperCase()}::${targets.map((e)=>e.toUpperCase()).toList()..sort()}';
+    final cacheKey =
+        '${baseCurrency.toUpperCase()}::${targets.map((e) => e.toUpperCase()).toList()..sort()}';
     final cached = _cache[cacheKey];
     if (cached != null && !cached.isExpired) return cached.rates;
 
@@ -102,9 +104,8 @@ class ExchangeRateService {
   }
 
   /// Fetch from backend API
-  Future<Map<String, ExchangeRate>?> _fetchFromBackendApi(
-    String baseCurrency, { List<String>? targets }
-  ) async {
+  Future<Map<String, ExchangeRate>?> _fetchFromBackendApi(String baseCurrency,
+      {List<String>? targets}) async {
     final dio = HttpClient.instance.dio;
     await ApiReadiness.ensureReady(dio);
     final targetCurrencies = (targets == null || targets.isEmpty)
@@ -131,7 +132,8 @@ class ExchangeRateService {
           final Map<String, ExchangeRate> result = {};
           for (final e in ratesMap.entries) {
             final v = e.value;
-            final rate = v is num ? v.toDouble() : double.tryParse(v.toString()) ?? 0.0;
+            final rate =
+                v is num ? v.toDouble() : double.tryParse(v.toString()) ?? 0.0;
             result[e.key] = ExchangeRate(
               fromCurrency: baseCurrency,
               toCurrency: e.key,
@@ -159,7 +161,7 @@ class ExchangeRateService {
 
   // The following methods are kept for reference but not used anymore
   // as we now use the backend API
-  
+
   /*
   /// Fetch from frankfurter.app (European Central Bank data, completely free) 
   Future<Map<String, ExchangeRate>?> _fetchFromFrankfurterApi(String baseCurrency) async {
@@ -294,6 +296,7 @@ class CachedExchangeRates {
   });
 
   bool get isExpired {
-    return DateTime.now().difference(timestamp) > ExchangeRateService._cacheDuration;
+    return DateTime.now().difference(timestamp) >
+        ExchangeRateService._cacheDuration;
   }
 }

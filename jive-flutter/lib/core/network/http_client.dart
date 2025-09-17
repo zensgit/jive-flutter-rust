@@ -10,31 +10,31 @@ import 'api_readiness.dart';
 class HttpClient {
   static HttpClient? _instance;
   late final Dio _dio;
-  
+
   HttpClient._() {
     _dio = Dio(_baseOptions);
     _setupInterceptors();
   }
-  
+
   static HttpClient get instance {
     _instance ??= HttpClient._();
     return _instance!;
   }
-  
+
   Dio get dio => _dio;
-  
+
   /// 基础配置
   BaseOptions get _baseOptions => BaseOptions(
-    baseUrl: ApiConfig.apiUrl,
-    connectTimeout: ApiConfig.connectTimeout,
-    receiveTimeout: ApiConfig.receiveTimeout,
-    sendTimeout: ApiConfig.sendTimeout,
-    headers: ApiConfig.defaultHeaders,
-    responseType: ResponseType.json,
-    contentType: Headers.jsonContentType, // 使用Dio的常量
-    validateStatus: (status) => status! < 500,
-  );
-  
+        baseUrl: ApiConfig.apiUrl,
+        connectTimeout: ApiConfig.connectTimeout,
+        receiveTimeout: ApiConfig.receiveTimeout,
+        sendTimeout: ApiConfig.sendTimeout,
+        headers: ApiConfig.defaultHeaders,
+        responseType: ResponseType.json,
+        contentType: Headers.jsonContentType, // 使用Dio的常量
+        validateStatus: (status) => status! < 500,
+      );
+
   /// 设置拦截器
   void _setupInterceptors() {
     _dio.interceptors.addAll([
@@ -48,7 +48,7 @@ class HttpClient {
       if (ApiConfig.enableLogging) LoggingInterceptor(),
     ]);
   }
-  
+
   /// GET请求
   Future<Response<T>> get<T>(
     String path, {
@@ -74,7 +74,7 @@ class HttpClient {
       throw _handleError(e);
     }
   }
-  
+
   /// POST请求
   Future<Response<T>> post<T>(
     String path, {
@@ -103,7 +103,7 @@ class HttpClient {
       throw _handleError(e);
     }
   }
-  
+
   /// PUT请求
   Future<Response<T>> put<T>(
     String path, {
@@ -132,7 +132,7 @@ class HttpClient {
       throw _handleError(e);
     }
   }
-  
+
   /// DELETE请求
   Future<Response<T>> delete<T>(
     String path, {
@@ -157,7 +157,7 @@ class HttpClient {
       throw _handleError(e);
     }
   }
-  
+
   /// PATCH请求
   Future<Response<T>> patch<T>(
     String path, {
@@ -183,7 +183,7 @@ class HttpClient {
       throw _handleError(e);
     }
   }
-  
+
   /// 上传文件
   Future<Response<T>> upload<T>(
     String path, {
@@ -196,9 +196,10 @@ class HttpClient {
       final response = await _dio.post<T>(
         path,
         data: formData,
-        options: options ?? Options(
-          contentType: 'multipart/form-data',
-        ),
+        options: options ??
+            Options(
+              contentType: 'multipart/form-data',
+            ),
         cancelToken: cancelToken,
         onSendProgress: onSendProgress,
       );
@@ -207,7 +208,7 @@ class HttpClient {
       throw _handleError(e);
     }
   }
-  
+
   /// 下载文件
   Future<Response> download(
     String urlPath,
@@ -237,7 +238,7 @@ class HttpClient {
       throw _handleError(e);
     }
   }
-  
+
   /// 错误处理
   Exception _handleError(DioException error) {
     switch (error.type) {
@@ -260,22 +261,22 @@ class HttpClient {
         return ApiException('未知错误：${error.message}');
     }
   }
-  
+
   /// 处理错误响应
   Exception _handleBadResponse(Response? response) {
     if (response == null) {
       return ApiException('无响应');
     }
-    
+
     final statusCode = response.statusCode ?? 0;
     final data = response.data;
     String message = '请求失败';
-    
+
     // 尝试从响应中提取错误信息
     if (data is Map<String, dynamic>) {
       message = data['message'] ?? data['error'] ?? message;
     }
-    
+
     switch (statusCode) {
       case 400:
         return BadRequestException(message);
@@ -297,12 +298,12 @@ class HttpClient {
         return ApiException('请求失败：$message');
     }
   }
-  
+
   /// 清除认证信息
   void clearAuth() {
     _dio.options.headers.remove('Authorization');
   }
-  
+
   /// 设置认证令牌
   void setAuthToken(String token) {
     _dio.options.headers['Authorization'] = 'Bearer $token';
@@ -314,9 +315,9 @@ class ApiException implements Exception {
   final String message;
   final int? statusCode;
   final dynamic data;
-  
+
   ApiException(this.message, {this.statusCode, this.data});
-  
+
   @override
   String toString() => message;
 }
@@ -344,8 +345,8 @@ class NotFoundException extends ApiException {
 /// 验证异常
 class ValidationException extends ApiException {
   final Map<String, dynamic>? errors;
-  
-  ValidationException(String message, this.errors) 
+
+  ValidationException(String message, this.errors)
       : super(message, statusCode: 422, data: errors);
 }
 

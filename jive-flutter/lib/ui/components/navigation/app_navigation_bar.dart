@@ -82,14 +82,14 @@ class _NavigationBarItem extends StatelessWidget {
                   duration: const Duration(milliseconds: 200),
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: isSelected 
+                    color: isSelected
                         ? theme.primaryColor.withOpacity(0.1)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     isSelected ? item.selectedIcon : item.icon,
-                    color: isSelected 
+                    color: isSelected
                         ? theme.primaryColor
                         : theme.colorScheme.onSurface.withOpacity(0.6),
                     size: 24,
@@ -99,10 +99,11 @@ class _NavigationBarItem extends StatelessWidget {
                 AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 200),
                   style: theme.textTheme.bodySmall!.copyWith(
-                    color: isSelected 
+                    color: isSelected
                         ? theme.primaryColor
                         : theme.colorScheme.onSurface.withOpacity(0.6),
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    fontWeight:
+                        isSelected ? FontWeight.w600 : FontWeight.normal,
                     fontSize: 12,
                   ),
                   child: Text(
@@ -160,30 +161,30 @@ class NavigationItem {
   });
 
   static List<NavigationItem> get defaultItems => [
-    const NavigationItem(
-      label: '概览',
-      icon: Icons.dashboard_outlined,
-      selectedIcon: Icons.dashboard,
-    ),
-    const NavigationItem(
-      label: '交易',
-      icon: Icons.receipt_long_outlined,
-      selectedIcon: Icons.receipt_long,
-    ),
-    const NavigationItem(
-      label: '账户',
-      icon: Icons.account_balance_outlined,
-      selectedIcon: Icons.account_balance,
-    ),
-    const NavigationItem(
-      label: '预算',
-      icon: Icons.pie_chart_outline,
-      selectedIcon: Icons.pie_chart,
-    ),
-    const NavigationItem(
-      label: '更多',
-      icon: Icons.more_horiz_outlined,
-      selectedIcon: Icons.more_horiz,
-    ),
-  ];
+        const NavigationItem(
+          label: '概览',
+          icon: Icons.dashboard_outlined,
+          selectedIcon: Icons.dashboard,
+        ),
+        const NavigationItem(
+          label: '交易',
+          icon: Icons.receipt_long_outlined,
+          selectedIcon: Icons.receipt_long,
+        ),
+        const NavigationItem(
+          label: '账户',
+          icon: Icons.account_balance_outlined,
+          selectedIcon: Icons.account_balance,
+        ),
+        const NavigationItem(
+          label: '预算',
+          icon: Icons.pie_chart_outline,
+          selectedIcon: Icons.pie_chart,
+        ),
+        const NavigationItem(
+          label: '更多',
+          icon: Icons.more_horiz_outlined,
+          selectedIcon: Icons.more_horiz,
+        ),
+      ];
 }

@@ -142,6 +142,33 @@ make db-migrate
 
 # 查看日志
 make logs
+
+## 🧪 本地CI（不占用GitHub Actions分钟）
+
+当你的GitHub Actions分钟不足时，可以使用本地CI脚本模拟CI流程：
+
+```bash
+chmod +x scripts/ci_local.sh
+./scripts/ci_local.sh
+```
+
+该脚本会：
+- 尝试用 Docker 启动本地 Postgres/Redis（如已安装）
+- 运行迁移、校验 SQLx 离线缓存（仅校验，不生成）
+- 运行 Rust 测试 + Clippy（警告视为错误）
+- 运行 Flutter analyze（告警致命）与测试
+- 将结果保存到 `./local-artifacts`
+
+### SQLx 离线缓存策略（严格）
+
+CI 仅校验已提交的 `.sqlx` 缓存，不在CI生成缓存。若你修改了查询或迁移，需要在本地生成并提交缓存：
+
+```bash
+docker compose -f jive-api/docker-compose.db.yml up -d postgres
+cd jive-api && ./prepare-sqlx.sh && cd ..
+git add jive-api/.sqlx
+git commit -m "chore(sqlx): update offline cache"
+```
 ```
 
 ### 默认管理员账号（开发环境）

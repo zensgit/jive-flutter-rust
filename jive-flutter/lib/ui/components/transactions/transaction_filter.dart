@@ -49,7 +49,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -73,9 +73,9 @@ class _TransactionFilterState extends State<TransactionFilter> {
                 ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // 搜索框
           TextField(
             controller: _searchController,
@@ -89,39 +89,39 @@ class _TransactionFilterState extends State<TransactionFilter> {
             ),
             onChanged: (value) => _filter = _filter.copyWith(searchText: value),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // 交易类型
           _buildTypeFilter(theme),
-          
+
           const SizedBox(height: 16),
-          
+
           // 日期范围
           _buildDateRangeFilter(theme),
-          
+
           const SizedBox(height: 16),
-          
+
           // 金额范围
           _buildAmountRangeFilter(theme),
-          
+
           const SizedBox(height: 16),
-          
+
           // 账户选择
           _buildAccountFilter(theme),
-          
+
           const SizedBox(height: 16),
-          
+
           // 分类选择
           _buildCategoryFilter(theme),
-          
+
           const SizedBox(height: 16),
-          
+
           // 标签选择
           _buildTagFilter(theme),
-          
+
           const SizedBox(height: 24),
-          
+
           // 操作按钮
           _buildActionButtons(),
         ],
@@ -222,11 +222,12 @@ class _TransactionFilterState extends State<TransactionFilter> {
                   decoration: InputDecoration(
                     labelText: '开始日期',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppConstants.borderRadius),
+                      borderRadius:
+                          BorderRadius.circular(AppConstants.borderRadius),
                     ),
                   ),
                   child: Text(
-                    _filter.startDate != null 
+                    _filter.startDate != null
                         ? _formatDate(_filter.startDate!)
                         : '选择日期',
                   ),
@@ -242,11 +243,12 @@ class _TransactionFilterState extends State<TransactionFilter> {
                   decoration: InputDecoration(
                     labelText: '结束日期',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppConstants.borderRadius),
+                      borderRadius:
+                          BorderRadius.circular(AppConstants.borderRadius),
                     ),
                   ),
                   child: Text(
-                    _filter.endDate != null 
+                    _filter.endDate != null
                         ? _formatDate(_filter.endDate!)
                         : '选择日期',
                   ),
@@ -304,7 +306,8 @@ class _TransactionFilterState extends State<TransactionFilter> {
                   labelText: '最小金额',
                   prefixText: '¥',
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppConstants.borderRadius),
+                    borderRadius:
+                        BorderRadius.circular(AppConstants.borderRadius),
                   ),
                 ),
                 onChanged: (value) {
@@ -322,7 +325,8 @@ class _TransactionFilterState extends State<TransactionFilter> {
                   labelText: '最大金额',
                   prefixText: '¥',
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppConstants.borderRadius),
+                    borderRadius:
+                        BorderRadius.circular(AppConstants.borderRadius),
                   ),
                 ),
                 onChanged: (value) {
@@ -340,7 +344,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
   Widget _buildAccountFilter(ThemeData theme) {
     // 这里应该从状态管理中获取账户列表
     final accounts = ['现金', '支付宝', '微信', '银行卡'];
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -351,23 +355,25 @@ class _TransactionFilterState extends State<TransactionFilter> {
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
-          children: accounts.map((account) => 
-            FilterChip(
-              label: Text(account),
-              selected: _filter.accounts.contains(account),
-              onSelected: (selected) {
-                setState(() {
-                  final accounts = List<String>.from(_filter.accounts);
-                  if (selected) {
-                    accounts.add(account);
-                  } else {
-                    accounts.remove(account);
-                  }
-                  _filter = _filter.copyWith(accounts: accounts);
-                });
-              },
-            ),
-          ).toList(),
+          children: accounts
+              .map(
+                (account) => FilterChip(
+                  label: Text(account),
+                  selected: _filter.accounts.contains(account),
+                  onSelected: (selected) {
+                    setState(() {
+                      final accounts = List<String>.from(_filter.accounts);
+                      if (selected) {
+                        accounts.add(account);
+                      } else {
+                        accounts.remove(account);
+                      }
+                      _filter = _filter.copyWith(accounts: accounts);
+                    });
+                  },
+                ),
+              )
+              .toList(),
         ),
       ],
     );
@@ -376,7 +382,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
   Widget _buildCategoryFilter(ThemeData theme) {
     // 这里应该从状态管理中获取分类列表
     final categories = ['餐饮', '交通', '购物', '娱乐', '住房', '工资', '奖金', '投资'];
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -387,23 +393,25 @@ class _TransactionFilterState extends State<TransactionFilter> {
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
-          children: categories.map((category) => 
-            FilterChip(
-              label: Text(category),
-              selected: _filter.categories.contains(category),
-              onSelected: (selected) {
-                setState(() {
-                  final categories = List<String>.from(_filter.categories);
-                  if (selected) {
-                    categories.add(category);
-                  } else {
-                    categories.remove(category);
-                  }
-                  _filter = _filter.copyWith(categories: categories);
-                });
-              },
-            ),
-          ).toList(),
+          children: categories
+              .map(
+                (category) => FilterChip(
+                  label: Text(category),
+                  selected: _filter.categories.contains(category),
+                  onSelected: (selected) {
+                    setState(() {
+                      final categories = List<String>.from(_filter.categories);
+                      if (selected) {
+                        categories.add(category);
+                      } else {
+                        categories.remove(category);
+                      }
+                      _filter = _filter.copyWith(categories: categories);
+                    });
+                  },
+                ),
+              )
+              .toList(),
         ),
       ],
     );
@@ -412,7 +420,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
   Widget _buildTagFilter(ThemeData theme) {
     // 这里应该从状态管理中获取标签列表
     final tags = ['日常', '旅行', '医疗', '教育', '娱乐', '投资'];
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -423,23 +431,25 @@ class _TransactionFilterState extends State<TransactionFilter> {
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
-          children: tags.map((tag) => 
-            FilterChip(
-              label: Text(tag),
-              selected: _filter.tags.contains(tag),
-              onSelected: (selected) {
-                setState(() {
-                  final tags = List<String>.from(_filter.tags);
-                  if (selected) {
-                    tags.add(tag);
-                  } else {
-                    tags.remove(tag);
-                  }
-                  _filter = _filter.copyWith(tags: tags);
-                });
-              },
-            ),
-          ).toList(),
+          children: tags
+              .map(
+                (tag) => FilterChip(
+                  label: Text(tag),
+                  selected: _filter.tags.contains(tag),
+                  onSelected: (selected) {
+                    setState(() {
+                      final tags = List<String>.from(_filter.tags);
+                      if (selected) {
+                        tags.add(tag);
+                      } else {
+                        tags.remove(tag);
+                      }
+                      _filter = _filter.copyWith(tags: tags);
+                    });
+                  },
+                ),
+              )
+              .toList(),
         ),
       ],
     );
@@ -472,11 +482,12 @@ class _TransactionFilterState extends State<TransactionFilter> {
   Future<void> _selectDate(bool isStart) async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: isStart ? _filter.startDate : _filter.endDate ?? DateTime.now(),
+      initialDate:
+          isStart ? _filter.startDate : _filter.endDate ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
     );
-    
+
     if (picked != null) {
       setState(() {
         if (isStart) {
@@ -492,7 +503,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
     final now = DateTime.now();
     DateTime? start;
     DateTime? end;
-    
+
     switch (range) {
       case DateRange.today:
         start = DateTime(now.year, now.month, now.day);
@@ -517,7 +528,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
         end = now;
         break;
     }
-    
+
     setState(() {
       _filter = _filter.copyWith(
         startDate: start,
@@ -533,7 +544,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
       _minAmountController.clear();
       _maxAmountController.clear();
     });
-    
+
     widget.onReset?.call();
   }
 

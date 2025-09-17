@@ -7,7 +7,10 @@ class ThemeAppearance extends ConsumerWidget {
   final EdgeInsetsGeometry padding;
   final bool showTitle;
 
-  const ThemeAppearance({super.key, this.padding = const EdgeInsets.all(16), this.showTitle = true});
+  const ThemeAppearance(
+      {super.key,
+      this.padding = const EdgeInsets.all(16),
+      this.showTitle = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,7 +39,9 @@ class ThemeAppearance extends ConsumerWidget {
           SwitchListTile(
             value: settings.listDensity == 'compact',
             onChanged: (v) async {
-              await ref.read(settingsProvider.notifier).updateSetting('listDensity', v ? 'compact' : 'comfortable');
+              await ref
+                  .read(settingsProvider.notifier)
+                  .updateSetting('listDensity', v ? 'compact' : 'comfortable');
             },
             title: const Text('紧凑密度'),
             subtitle: const Text('减少垂直留白，显示更多列表项'),
@@ -59,7 +64,9 @@ class ThemeAppearance extends ConsumerWidget {
               ],
               onChanged: (v) async {
                 if (v != null) {
-                  await ref.read(settingsProvider.notifier).updateSetting('cornerRadius', v);
+                  await ref
+                      .read(settingsProvider.notifier)
+                      .updateSetting('cornerRadius', v);
                 }
               },
             ),
@@ -74,7 +81,8 @@ class ThemeAppearance extends ConsumerWidget {
             ),
             child: Row(
               children: [
-                Icon(Icons.info_outline, size: 16, color: cs.onPrimaryContainer),
+                Icon(Icons.info_outline,
+                    size: 16, color: cs.onPrimaryContainer),
                 const SizedBox(width: 8),
                 Text(
                   '密度与圆角设置将影响列表、卡片、输入框等组件。',
@@ -88,4 +96,3 @@ class ThemeAppearance extends ConsumerWidget {
     );
   }
 }
-

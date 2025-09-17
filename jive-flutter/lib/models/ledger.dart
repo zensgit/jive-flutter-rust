@@ -56,15 +56,15 @@ class Ledger {
       description: json['description'],
       currency: json['currency'] ?? 'CNY',
       isDefault: json['is_default'] ?? false,
-      createdAt: json['created_at'] != null 
-          ? DateTime.parse(json['created_at']) 
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
           : null,
-      updatedAt: json['updated_at'] != null 
-          ? DateTime.parse(json['updated_at']) 
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
           : null,
       settings: json['settings'],
-      memberIds: json['member_ids'] != null 
-          ? List<String>.from(json['member_ids']) 
+      memberIds: json['member_ids'] != null
+          ? List<String>.from(json['member_ids'])
           : null,
       ownerId: json['owner_id'],
     );
@@ -121,12 +121,12 @@ enum LedgerRole {
   admin('admin', '管理员'),
   editor('editor', '编辑者'),
   viewer('viewer', '查看者');
-  
+
   final String value;
   final String label;
-  
+
   const LedgerRole(this.value, this.label);
-  
+
   static LedgerRole fromString(String? value) {
     return LedgerRole.values.firstWhere(
       (role) => role.value == value,
@@ -150,7 +150,7 @@ class LedgerStatistics {
   final Map<String, double> monthlyTrend;
   final Map<String, double>? categoryBreakdown;
   final DateTime? lastTransactionDate;
-  
+
   LedgerStatistics({
     required this.ledgerId,
     required this.accountCount,
@@ -166,7 +166,7 @@ class LedgerStatistics {
     this.categoryBreakdown,
     this.lastTransactionDate,
   });
-  
+
   factory LedgerStatistics.fromJson(Map<String, dynamic> json) {
     return LedgerStatistics(
       ledgerId: json['ledger_id'],
@@ -178,7 +178,8 @@ class LedgerStatistics {
       totalIncome: (json['total_income'] ?? 0).toDouble(),
       totalExpense: (json['total_expense'] ?? 0).toDouble(),
       balance: (json['balance'] ?? 0).toDouble(),
-      accountTypeBreakdown: Map<String, double>.from(json['account_type_breakdown'] ?? {}),
+      accountTypeBreakdown:
+          Map<String, double>.from(json['account_type_breakdown'] ?? {}),
       monthlyTrend: Map<String, double>.from(json['monthly_trend'] ?? {}),
       categoryBreakdown: json['category_breakdown'] != null
           ? Map<String, double>.from(json['category_breakdown'])
@@ -200,12 +201,12 @@ class LedgerMember {
   final Map<String, bool> permissions;
   final DateTime joinedAt;
   final DateTime? lastAccessedAt;
-  
+
   // 兼容旧版本的别名getters
   String get userName => name;
   String? get userEmail => email;
   String? get userAvatar => avatar;
-  
+
   LedgerMember({
     required this.userId,
     required this.name,
@@ -216,7 +217,7 @@ class LedgerMember {
     required this.joinedAt,
     this.lastAccessedAt,
   });
-  
+
   factory LedgerMember.fromJson(Map<String, dynamic> json) {
     return LedgerMember(
       userId: json['user_id'],
@@ -231,7 +232,7 @@ class LedgerMember {
           : null,
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       'user_id': userId,

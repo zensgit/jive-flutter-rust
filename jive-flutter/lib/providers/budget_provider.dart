@@ -55,7 +55,7 @@ class BudgetController extends StateNotifier<BudgetState> {
   /// 加载预算列表
   Future<void> loadBudgets() async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
       final budgets = await _budgetService.getBudgets();
       await _updateBudgetSpending(budgets);
@@ -75,7 +75,7 @@ class BudgetController extends StateNotifier<BudgetState> {
   /// 创建预算
   Future<bool> createBudget(Map<String, dynamic> data) async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
       final budget = await _budgetService.createBudget(data);
       final updatedBudgets = [...state.budgets, budget];
@@ -93,7 +93,7 @@ class BudgetController extends StateNotifier<BudgetState> {
   /// 更新预算
   Future<bool> updateBudget(String id, Map<String, dynamic> data) async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
       final updatedBudget = await _budgetService.updateBudget(id, data);
       final updatedBudgets = state.budgets.map((b) {
@@ -113,7 +113,7 @@ class BudgetController extends StateNotifier<BudgetState> {
   /// 删除预算
   Future<bool> deleteBudget(String id) async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
       await _budgetService.deleteBudget(id);
       final updatedBudgets = state.budgets.where((b) => b.id != id).toList();
@@ -201,9 +201,9 @@ class BudgetController extends StateNotifier<BudgetState> {
 
 /// 预算状态枚举
 enum BudgetStatus {
-  good,      // 0-60%
-  normal,    // 60-80%
-  warning,   // 80-100%
+  good, // 0-60%
+  normal, // 60-80%
+  warning, // 80-100%
   overBudget // >100%
 }
 
@@ -212,7 +212,7 @@ final budgetServiceProvider = Provider<BudgetService>((ref) {
   return BudgetService();
 });
 
-final budgetControllerProvider = 
+final budgetControllerProvider =
     StateNotifierProvider<BudgetController, BudgetState>((ref) {
   final service = ref.watch(budgetServiceProvider);
   return BudgetController(service);
@@ -231,13 +231,13 @@ final selectedBudgetProvider = Provider<Budget?>((ref) {
 final activeBudgetsProvider = Provider<List<Budget>>((ref) {
   final budgets = ref.watch(budgetsProvider);
   final now = DateTime.now();
-  
+
   return budgets.where((budget) {
-    final isStarted = budget.startDate.isBefore(now) || 
-                     budget.startDate.isAtSameMomentAs(now);
-    final isNotEnded = budget.endDate == null || 
-                       budget.endDate!.isAfter(now) ||
-                       budget.endDate!.isAtSameMomentAs(now);
+    final isStarted = budget.startDate.isBefore(now) ||
+        budget.startDate.isAtSameMomentAs(now);
+    final isNotEnded = budget.endDate == null ||
+        budget.endDate!.isAfter(now) ||
+        budget.endDate!.isAtSameMomentAs(now);
     return isStarted && isNotEnded;
   }).toList();
 });
@@ -246,7 +246,7 @@ final activeBudgetsProvider = Provider<List<Budget>>((ref) {
 final overBudgetsProvider = Provider<List<Budget>>((ref) {
   final budgets = ref.watch(activeBudgetsProvider);
   final controller = ref.read(budgetControllerProvider.notifier);
-  
+
   return budgets.where((budget) {
     return controller.getBudgetStatus(budget) == BudgetStatus.overBudget;
   }).toList();
@@ -256,12 +256,12 @@ final overBudgetsProvider = Provider<List<Budget>>((ref) {
 final budgetStatsProvider = Provider<BudgetStats>((ref) {
   final state = ref.watch(budgetControllerProvider);
   final controller = ref.read(budgetControllerProvider.notifier);
-  
+
   int overBudgetCount = 0;
   int warningCount = 0;
   int normalCount = 0;
   int goodCount = 0;
-  
+
   for (final budget in state.budgets) {
     final status = controller.getBudgetStatus(budget);
     switch (status) {
@@ -279,7 +279,7 @@ final budgetStatsProvider = Provider<BudgetStats>((ref) {
         break;
     }
   }
-  
+
   return BudgetStats(
     totalBudgets: state.budgets.length,
     totalBudgeted: state.totalBudgeted,
@@ -314,7 +314,7 @@ class BudgetStats {
     required this.goodCount,
   });
 
-  double get spentPercentage => 
+  double get spentPercentage =>
       totalBudgeted > 0 ? (totalSpent / totalBudgeted) : 0;
 }
 

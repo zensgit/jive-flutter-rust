@@ -6,7 +6,7 @@ import '../../models/transaction.dart';
 /// 交易API服务
 class TransactionService {
   final _client = HttpClient.instance;
-  
+
   /// 获取交易列表
   Future<TransactionListResponse> getTransactions({
     String? ledgerId,
@@ -36,26 +36,26 @@ class TransactionService {
           'sort_order': sortOrder,
         },
       );
-      
+
       return TransactionListResponse.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 获取单个交易
   Future<Transaction> getTransaction(String id) async {
     try {
       final response = await _client.get(
         '${Endpoints.transactions}/$id',
       );
-      
+
       return Transaction.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 创建交易
   Future<Transaction> createTransaction(Transaction transaction) async {
     try {
@@ -63,27 +63,28 @@ class TransactionService {
         Endpoints.transactions,
         data: transaction.toJson(),
       );
-      
+
       return Transaction.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 更新交易
-  Future<Transaction> updateTransaction(String id, Map<String, dynamic> updates) async {
+  Future<Transaction> updateTransaction(
+      String id, Map<String, dynamic> updates) async {
     try {
       final response = await _client.put(
         '${Endpoints.transactions}/$id',
         data: updates,
       );
-      
+
       return Transaction.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 删除交易
   Future<void> deleteTransaction(String id) async {
     try {
@@ -94,9 +95,10 @@ class TransactionService {
       throw _handleError(e);
     }
   }
-  
+
   /// 批量创建交易
-  Future<List<Transaction>> createBulkTransactions(List<Transaction> transactions) async {
+  Future<List<Transaction>> createBulkTransactions(
+      List<Transaction> transactions) async {
     try {
       final response = await _client.post(
         '${Endpoints.transactions}/bulk',
@@ -104,14 +106,14 @@ class TransactionService {
           'transactions': transactions.map((t) => t.toJson()).toList(),
         },
       );
-      
+
       final List<dynamic> data = response.data['data'] ?? response.data;
       return data.map((json) => Transaction.fromJson(json)).toList();
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 批量删除交易
   Future<void> deleteBulkTransactions(List<String> ids) async {
     try {
@@ -125,35 +127,36 @@ class TransactionService {
       throw _handleError(e);
     }
   }
-  
+
   /// 获取交易分类
   Future<List<TransactionCategory>> getCategories() async {
     try {
       final response = await _client.get(
         Endpoints.transactionCategories,
       );
-      
+
       final List<dynamic> data = response.data['data'] ?? response.data;
       return data.map((json) => TransactionCategory.fromJson(json)).toList();
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 创建交易分类
-  Future<TransactionCategory> createCategory(TransactionCategory category) async {
+  Future<TransactionCategory> createCategory(
+      TransactionCategory category) async {
     try {
       final response = await _client.post(
         Endpoints.transactionCategories,
         data: category.toJson(),
       );
-      
+
       return TransactionCategory.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 获取交易统计
   Future<TransactionStatistics> getStatistics({
     String? ledgerId,
@@ -173,13 +176,13 @@ class TransactionService {
           'period': period,
         },
       );
-      
+
       return TransactionStatistics.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 搜索交易
   Future<List<Transaction>> searchTransactions({
     required String query,
@@ -193,28 +196,28 @@ class TransactionService {
           'limit': limit,
         },
       );
-      
+
       final List<dynamic> data = response.data['data'] ?? response.data;
       return data.map((json) => Transaction.fromJson(json)).toList();
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 获取定期交易
   Future<List<ScheduledTransaction>> getScheduledTransactions() async {
     try {
       final response = await _client.get(
         Endpoints.scheduledTransactions,
       );
-      
+
       final List<dynamic> data = response.data['data'] ?? response.data;
       return data.map((json) => ScheduledTransaction.fromJson(json)).toList();
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 创建定期交易
   Future<ScheduledTransaction> createScheduledTransaction(
     ScheduledTransaction scheduledTransaction,
@@ -224,26 +227,27 @@ class TransactionService {
         Endpoints.scheduledTransactions,
         data: scheduledTransaction.toJson(),
       );
-      
+
       return ScheduledTransaction.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 暂停/恢复定期交易
-  Future<ScheduledTransaction> toggleScheduledTransaction(String id, bool pause) async {
+  Future<ScheduledTransaction> toggleScheduledTransaction(
+      String id, bool pause) async {
     try {
       final response = await _client.post(
         '${Endpoints.scheduledTransactions}/$id/${pause ? "pause" : "resume"}',
       );
-      
+
       return ScheduledTransaction.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 删除定期交易
   Future<void> deleteScheduledTransaction(String id) async {
     try {
@@ -254,7 +258,7 @@ class TransactionService {
       throw _handleError(e);
     }
   }
-  
+
   /// 导出交易
   Future<String> exportTransactions({
     required String format, // csv, excel, pdf
@@ -274,13 +278,13 @@ class TransactionService {
           if (category != null) 'category': category,
         },
       );
-      
+
       return response.data['download_url'] ?? response.data['url'];
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 导入交易
   Future<ImportResult> importTransactions({
     required String filePath,
@@ -294,18 +298,18 @@ class TransactionService {
         'format': format,
         if (accountId != null) 'account_id': accountId,
       });
-      
+
       final response = await _client.upload(
         '${Endpoints.transactions}/import',
         formData: formData,
       );
-      
+
       return ImportResult.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 错误处理
   Exception _handleError(dynamic error) {
     if (error is ApiException) {
@@ -322,7 +326,7 @@ class TransactionListResponse {
   final int page;
   final int limit;
   final bool hasMore;
-  
+
   TransactionListResponse({
     required this.data,
     required this.total,
@@ -330,7 +334,7 @@ class TransactionListResponse {
     required this.limit,
     required this.hasMore,
   });
-  
+
   factory TransactionListResponse.fromJson(Map<String, dynamic> json) {
     final List<dynamic> data = json['data'] ?? [];
     return TransactionListResponse(
@@ -352,7 +356,7 @@ class TransactionStatistics {
   final Map<String, double> categoryBreakdown;
   final Map<String, double> monthlyTrend;
   final Map<String, double> dailyAverage;
-  
+
   TransactionStatistics({
     required this.totalIncome,
     required this.totalExpense,
@@ -362,14 +366,15 @@ class TransactionStatistics {
     required this.monthlyTrend,
     required this.dailyAverage,
   });
-  
+
   factory TransactionStatistics.fromJson(Map<String, dynamic> json) {
     return TransactionStatistics(
       totalIncome: (json['total_income'] ?? 0).toDouble(),
       totalExpense: (json['total_expense'] ?? 0).toDouble(),
       netIncome: (json['net_income'] ?? 0).toDouble(),
       transactionCount: json['transaction_count'] ?? 0,
-      categoryBreakdown: Map<String, double>.from(json['category_breakdown'] ?? {}),
+      categoryBreakdown:
+          Map<String, double>.from(json['category_breakdown'] ?? {}),
       monthlyTrend: Map<String, double>.from(json['monthly_trend'] ?? {}),
       dailyAverage: Map<String, double>.from(json['daily_average'] ?? {}),
     );
@@ -382,14 +387,14 @@ class ImportResult {
   final int failed;
   final int duplicates;
   final List<String> errors;
-  
+
   ImportResult({
     required this.imported,
     required this.failed,
     required this.duplicates,
     required this.errors,
   });
-  
+
   factory ImportResult.fromJson(Map<String, dynamic> json) {
     return ImportResult(
       imported: json['imported'] ?? 0,

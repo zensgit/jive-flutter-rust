@@ -22,7 +22,8 @@ class LedgerAdapter extends TypeAdapter<Ledger> {
       createdAt: fields[12] as DateTime?,
       updatedAt: fields[13] as DateTime?,
       settings: fields[11] as Map<String, dynamic>?,
-      memberIds: fields[15] != null ? (fields[15] as List).cast<String>() : null,
+      memberIds:
+          fields[15] != null ? (fields[15] as List).cast<String>() : null,
       ownerId: fields[16] as String?,
     );
   }

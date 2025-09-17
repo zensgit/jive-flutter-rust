@@ -17,7 +17,8 @@ class FamilyMembersScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<FamilyMembersScreen> createState() => _FamilyMembersScreenState();
+  ConsumerState<FamilyMembersScreen> createState() =>
+      _FamilyMembersScreenState();
 }
 
 class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
@@ -79,7 +80,8 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 16),
                     ),
                     onChanged: (value) {
                       setState(() => _searchQuery = value.toLowerCase());
@@ -104,9 +106,9 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                         child: Text('全部角色'),
                       ),
                       ...LedgerRole.values.map((role) => DropdownMenuItem(
-                        value: role,
-                        child: Text(_getRoleLabel(role)),
-                      )),
+                            value: role,
+                            child: Text(_getRoleLabel(role)),
+                          )),
                     ],
                     onChanged: (value) {
                       setState(() => _filterRole = value);
@@ -159,13 +161,15 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                    const Icon(Icons.error_outline,
+                        size: 64, color: Colors.red),
                     const SizedBox(height: 16),
                     Text('加载失败: $error'),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
-                        ref.invalidate(ledgerMembersProvider(widget.ledger.id!));
+                        ref.invalidate(
+                            ledgerMembersProvider(widget.ledger.id!));
                       },
                       child: const Text('重试'),
                     ),
@@ -197,9 +201,8 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
               CircleAvatar(
                 radius: 28,
                 backgroundColor: _getRoleColor(member.role).withOpacity(0.1),
-                backgroundImage: member.avatar != null
-                    ? NetworkImage(member.avatar!)
-                    : null,
+                backgroundImage:
+                    member.avatar != null ? NetworkImage(member.avatar!) : null,
                 child: member.avatar == null
                     ? Text(
                         StringUtils.safeInitial(member.name),
@@ -316,7 +319,8 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                         value: 'remove',
                         child: Row(
                           children: [
-                            Icon(Icons.person_remove, size: 20, color: Colors.red),
+                            Icon(Icons.person_remove,
+                                size: 20, color: Colors.red),
                             SizedBox(width: 8),
                             Text('移除成员', style: TextStyle(color: Colors.red)),
                           ],
@@ -576,7 +580,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
   String _formatRelativeTime(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
-    
+
     if (difference.inDays > 30) {
       return '${(difference.inDays / 30).floor()}个月前';
     } else if (difference.inDays > 0) {
@@ -607,9 +611,8 @@ class _MemberDetailsSheet extends StatelessWidget {
           // 头像和基本信息
           CircleAvatar(
             radius: 40,
-            backgroundImage: member.avatar != null
-                ? NetworkImage(member.avatar!)
-                : null,
+            backgroundImage:
+                member.avatar != null ? NetworkImage(member.avatar!) : null,
             child: member.avatar == null
                 ? Text(
                     StringUtils.safeInitial(member.name),
@@ -634,15 +637,17 @@ class _MemberDetailsSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // 详细信息
           _buildDetailRow(Icons.badge, '角色', _getRoleLabel(member.role)),
-          _buildDetailRow(Icons.calendar_today, '加入时间', _formatDate(member.joinedAt)),
+          _buildDetailRow(
+              Icons.calendar_today, '加入时间', _formatDate(member.joinedAt)),
           if (member.lastAccessedAt != null)
-            _buildDetailRow(Icons.access_time, '最近访问', _formatDateTime(member.lastAccessedAt!)),
-          
+            _buildDetailRow(Icons.access_time, '最近访问',
+                _formatDateTime(member.lastAccessedAt!)),
+
           const SizedBox(height: 24),
-          
+
           // 权限列表
           const Text(
             '权限列表',

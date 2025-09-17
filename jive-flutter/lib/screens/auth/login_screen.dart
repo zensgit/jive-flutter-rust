@@ -42,7 +42,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           _emailController.text = credentials.username;
           _rememberMe = true;
           _rememberPermanently = credentials.rememberPermanently;
-          
+
           if (credentials.rememberPassword) {
             _passwordController.text = credentials.password;
             _rememberPassword = true;
@@ -93,23 +93,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       // 保存登录凭据
       await _saveCredentials();
-      
-      print('DEBUG: Starting login for ${_emailController.text.trim()}');
-      
+
+      debugPrint('DEBUG: Starting login for ${_emailController.text.trim()}');
+
       // 使用AuthController的login方法
       final success = await ref.read(authControllerProvider.notifier).login(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-        rememberMe: _rememberMe,
-      );
-      
-      print('DEBUG: Login result: $success');
-      
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+            rememberMe: _rememberMe,
+          );
+
+      debugPrint('DEBUG: Login result: $success');
+
       if (mounted) {
         if (success) {
           final authState = ref.read(authControllerProvider);
-          print('DEBUG: Login successful, user: ${authState.user?.name}');
-          
+          debugPrint('DEBUG: Login successful, user: ${authState.user?.name}');
+
           // 登录成功，显示欢迎消息
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -117,14 +117,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          
+
           // 直接跳转到仪表板
-          print('DEBUG: Navigating to dashboard');
+          debugPrint('DEBUG: Navigating to dashboard');
           context.go(AppRoutes.dashboard);
         } else {
           final authState = ref.read(authControllerProvider);
-          print('DEBUG: Login failed: ${authState.errorMessage}');
-          
+          debugPrint('DEBUG: Login failed: ${authState.errorMessage}');
+
           // 登录失败，显示错误消息
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -135,9 +135,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         }
       }
     } catch (e, stack) {
-      print('DEBUG: Login exception: $e');
-      print('DEBUG: Stack trace: $stack');
-      
+      debugPrint('DEBUG: Login exception: $e');
+      debugPrint('DEBUG: Stack trace: $stack');
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -195,7 +195,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 48),
-                    
+
                     // 用户名或邮箱输入框
                     TextFormField(
                       controller: _emailController,
@@ -212,10 +212,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           return '请输入用户名或邮箱地址';
                         }
                         // 检查是否为有效的邮箱格式
-                        bool isEmail = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value);
+                        bool isEmail = RegExp(
+                                r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                            .hasMatch(value);
                         // 检查是否为有效的用户名格式
-                        bool isUsername = RegExp(r'^[a-zA-Z0-9_\u4e00-\u9fa5]+$').hasMatch(value) && value.length >= 3 && value.length <= 20;
-                        
+                        bool isUsername =
+                            RegExp(r'^[a-zA-Z0-9_\u4e00-\u9fa5]+$')
+                                    .hasMatch(value) &&
+                                value.length >= 3 &&
+                                value.length <= 20;
+
                         if (!isEmail && !isUsername) {
                           return '请输入有效的用户名或邮箱地址';
                         }
@@ -223,7 +229,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 密码输入框
                     TextFormField(
                       controller: _passwordController,
@@ -256,7 +262,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 记住密码选项
                     Column(
                       children: [
@@ -278,18 +284,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             const SizedBox(width: 16),
                             Checkbox(
                               value: _rememberPassword && _rememberMe,
-                              onChanged: _rememberMe ? (value) {
-                                setState(() {
-                                  _rememberPassword = value ?? false;
-                                });
-                              } : null,
+                              onChanged: _rememberMe
+                                  ? (value) {
+                                      setState(() {
+                                        _rememberPassword = value ?? false;
+                                      });
+                                    }
+                                  : null,
                             ),
                             const Text('记住密码'),
                             const Spacer(),
                             TextButton(
                               onPressed: () async {
                                 // 清除保存的凭据
-                                await _storageService.clearRememberedCredentials();
+                                await _storageService
+                                    .clearRememberedCredentials();
                                 setState(() {
                                   _emailController.clear();
                                   _passwordController.clear();
@@ -352,17 +361,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                       ],
                     ),
-                    
+
                     // 安全提示
                     if (_rememberPassword)
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: _rememberPermanently ? Colors.red[50] : Colors.orange[50],
+                          color: _rememberPermanently
+                              ? Colors.red[50]
+                              : Colors.orange[50],
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
-                            color: _rememberPermanently ? Colors.red[200]! : Colors.orange[200]!
-                          ),
+                              color: _rememberPermanently
+                                  ? Colors.red[200]!
+                                  : Colors.orange[200]!),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -370,9 +382,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             Row(
                               children: [
                                 Icon(
-                                  _rememberPermanently ? Icons.warning : Icons.security,
+                                  _rememberPermanently
+                                      ? Icons.warning
+                                      : Icons.security,
                                   size: 16,
-                                  color: _rememberPermanently ? Colors.red[600] : Colors.orange[600],
+                                  color: _rememberPermanently
+                                      ? Colors.red[600]
+                                      : Colors.orange[600],
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
@@ -382,8 +398,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                         : '密码将保存在本地，请确保设备安全',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: _rememberPermanently ? Colors.red[700] : Colors.orange[700],
-                                      fontWeight: _rememberPermanently ? FontWeight.bold : FontWeight.normal,
+                                      color: _rememberPermanently
+                                          ? Colors.red[700]
+                                          : Colors.orange[700],
+                                      fontWeight: _rememberPermanently
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
                                     ),
                                   ),
                                 ),
@@ -414,7 +434,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ),
                     const SizedBox(height: 16),
-                    
+
                     // 登录按钮
                     SizedBox(
                       height: 50,
@@ -426,7 +446,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         child: _isLoading
                             ? const CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
                               )
                             : const Text(
                                 '登录',
@@ -435,7 +456,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 注册链接
                     TextButton(
                       onPressed: () {
@@ -443,7 +464,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       },
                       child: const Text('还没有账户？点击注册'),
                     ),
-                    
+
                     // 忘记密码链接
                     TextButton(
                       onPressed: () {
@@ -454,9 +475,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       },
                       child: const Text('忘记密码？'),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // 分割线
                     Row(
                       children: [
@@ -474,19 +495,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         const Expanded(child: Divider()),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // 微信登录按钮
                     WeChatLoginButton(
                       buttonText: '使用微信登录',
                       onSuccess: (authResult, userInfo) async {
                         final result = await _authService.wechatLogin();
-                        
+
                         if (result.success) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('欢迎回来，${result.userData?.username}！'),
+                              content:
+                                  Text('欢迎回来，${result.userData?.username}！'),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -509,9 +531,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         );
                       },
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // 系统管理员登录链接
                     TextButton(
                       onPressed: () {
@@ -526,9 +548,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // 登录提示
                     Card(
                       color: Colors.blue[50],
@@ -539,11 +561,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           children: [
                             Row(
                               children: [
-                                Icon(Icons.info, color: Colors.blue[700], size: 16),
+                                Icon(Icons.info,
+                                    color: Colors.blue[700], size: 16),
                                 const SizedBox(width: 8),
                                 const Text(
                                   '登录说明',
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14),
                                 ),
                               ],
                             ),
@@ -555,7 +580,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               '• 确保后端API服务正在运行\n'
                               '• 也可以使用微信登录（模拟）\n'
                               '• 记住功能：账号+密码（30天）或永久记住（测试用）',
-                              style: TextStyle(fontSize: 12, color: Colors.blue),
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.blue),
                             ),
                           ],
                         ),
@@ -570,5 +596,4 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ),
     );
   }
-
 }

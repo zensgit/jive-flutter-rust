@@ -53,47 +53,48 @@ class AppRoutes {
   static const currencyManagement = '/settings/currency';
   static const userCurrencyBrowser = '/settings/currency/user-browser';
   static const cryptoManagement = '/settings/crypto';
-  
+
   // 家庭管理路由
   static const familyMembers = '/family/members';
-  static const familySettings = '/family/settings';  
+  static const familySettings = '/family/settings';
   static const familyDashboard = '/family/dashboard';
 }
 
 /// 路由Provider
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authControllerProvider);
-  
+
   return GoRouter(
     initialLocation: AppRoutes.splash,
     debugLogDiagnostics: true,
     refreshListenable: _AuthStateNotifier(ref),
     redirect: (context, state) {
       final currentPath = state.uri.path;
-      final isAuthRoute = currentPath == AppRoutes.login || 
-                         currentPath == AppRoutes.register;
-      
+      final isAuthRoute =
+          currentPath == AppRoutes.login || currentPath == AppRoutes.register;
+
       // 如果认证状态还在初始化或加载中，不进行重定向，让splash页面处理
-      if (authState.status == AuthStatus.initial || authState.status == AuthStatus.loading) {
+      if (authState.status == AuthStatus.initial ||
+          authState.status == AuthStatus.loading) {
         // 只有在尝试访问认证页面时才重定向到splash
         if (isAuthRoute) {
           return AppRoutes.splash;
         }
         return null;
       }
-      
+
       final isAuthenticated = authState.isAuthenticated;
-      
+
       // 如果未认证且不在认证页面，重定向到登录页
       if (!isAuthenticated && !isAuthRoute && currentPath != AppRoutes.splash) {
         return AppRoutes.login;
       }
-      
+
       // 如果已认证且在认证页面，重定向到仪表板
       if (isAuthenticated && isAuthRoute) {
         return AppRoutes.dashboard;
       }
-      
+
       return null;
     },
     routes: [
@@ -102,7 +103,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.splash,
         builder: (context, state) => const SplashScreen(),
       ),
-      
+
       // 认证相关
       GoRoute(
         path: AppRoutes.login,
@@ -116,7 +117,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.registerWizard,
         builder: (context, state) => const RegistrationWizard(),
       ),
-      
+
       // 主页（带底部导航）
       ShellRoute(
         builder: (context, state, child) => HomeScreen(child: child),
@@ -126,7 +127,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: AppRoutes.dashboard,
             builder: (context, state) => const DashboardScreen(),
           ),
-          
+
           // 交易
           GoRoute(
             path: AppRoutes.transactions,
@@ -145,7 +146,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          
+
           // 账户
           GoRoute(
             path: AppRoutes.accounts,
@@ -164,7 +165,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          
+
           // 预算
           GoRoute(
             path: AppRoutes.budgets,
@@ -183,7 +184,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          
+
           // 设置
           GoRoute(
             path: AppRoutes.settings,
@@ -195,11 +196,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
               GoRoute(
                 path: 'security',
-                builder: (context, state) => const Scaffold(body: Center(child: Text('Security Settings'))),  // TODO: Create SecurityScreen
+                builder: (context, state) => const Scaffold(
+                    body: Center(
+                        child: Text(
+                            'Security Settings'))), // TODO: Create SecurityScreen
               ),
               GoRoute(
                 path: 'preferences',
-                builder: (context, state) => const Scaffold(body: Center(child: Text('Preferences'))),  // TODO: Create PreferencesScreen
+                builder: (context, state) => const Scaffold(
+                    body: Center(
+                        child: Text(
+                            'Preferences'))), // TODO: Create PreferencesScreen
               ),
               GoRoute(
                 path: 'theme',
@@ -219,7 +226,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
               GoRoute(
                 path: 'crypto',
-                builder: (context, state) => const CurrencyManagementPageV2(), // reuses V2; inside page navigates to crypto
+                builder: (context, state) =>
+                    const CurrencyManagementPageV2(), // reuses V2; inside page navigates to crypto
               ),
               // 标签管理
               GoRoute(
@@ -230,7 +238,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
-      
+
       // 家庭管理路由（独立页面，不在底部导航内）
       GoRoute(
         path: AppRoutes.familyMembers,
@@ -264,7 +272,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
     ],
-    
+
     // 错误页面
     errorBuilder: (context, state) => ErrorPage(error: state.error),
   );
@@ -273,7 +281,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 /// 认证状态监听器
 class _AuthStateNotifier extends ChangeNotifier {
   final Ref _ref;
-  
+
   _AuthStateNotifier(this._ref) {
     _ref.listen(authControllerProvider, (_, __) {
       notifyListeners();
@@ -284,9 +292,9 @@ class _AuthStateNotifier extends ChangeNotifier {
 /// 错误页面
 class ErrorPage extends StatelessWidget {
   final Exception? error;
-  
+
   const ErrorPage({super.key, this.error});
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO crypto_prices \n                (crypto_code, base_currency, price, source, last_updated)\n                VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)\n                ON CONFLICT (crypto_code, base_currency)\n                DO UPDATE SET \n                    price = $3,\n                    source = $4,\n                    last_updated = CURRENT_TIMESTAMP\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Varchar",
+        "Numeric",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b0c73b546ee73d66ffc75d9fe2b2bec535266cfbfe7b4734409f5d446f7a73fe"
+}

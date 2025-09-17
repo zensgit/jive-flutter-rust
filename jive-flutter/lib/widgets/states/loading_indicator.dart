@@ -6,7 +6,7 @@ class LoadingIndicator extends StatelessWidget {
   final double size;
   final Color? color;
   final EdgeInsetsGeometry padding;
-  
+
   const LoadingIndicator({
     super.key,
     this.message,
@@ -14,12 +14,12 @@ class LoadingIndicator extends StatelessWidget {
     this.color,
     this.padding = const EdgeInsets.all(16.0),
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final indicatorColor = color ?? theme.colorScheme.primary;
-    
+
     return Center(
       child: Padding(
         padding: padding,
@@ -58,7 +58,7 @@ class LoadingOverlay extends StatelessWidget {
   final String? message;
   final Color? barrierColor;
   final bool dismissible;
-  
+
   const LoadingOverlay({
     super.key,
     required this.isLoading,
@@ -67,7 +67,7 @@ class LoadingOverlay extends StatelessWidget {
     this.barrierColor,
     this.dismissible = false,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -99,7 +99,7 @@ class LoadingButton extends StatelessWidget {
   final Widget child;
   final ButtonStyle? style;
   final double loadingSize;
-  
+
   const LoadingButton({
     super.key,
     required this.isLoading,
@@ -108,7 +108,7 @@ class LoadingButton extends StatelessWidget {
     this.style,
     this.loadingSize = 20,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
@@ -136,7 +136,7 @@ class SkeletonLoader extends StatefulWidget {
   final double width;
   final BorderRadius? borderRadius;
   final EdgeInsetsGeometry? margin;
-  
+
   const SkeletonLoader({
     super.key,
     this.height = 20,
@@ -144,7 +144,7 @@ class SkeletonLoader extends StatefulWidget {
     this.borderRadius,
     this.margin,
   });
-  
+
   @override
   State<SkeletonLoader> createState() => _SkeletonLoaderState();
 }
@@ -153,7 +153,7 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  
+
   @override
   void initState() {
     super.initState();
@@ -161,7 +161,7 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     )..repeat();
-    
+
     _animation = Tween<double>(
       begin: 0.3,
       end: 0.7,
@@ -170,13 +170,13 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
       curve: Curves.easeInOut,
     ));
   }
-  
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
