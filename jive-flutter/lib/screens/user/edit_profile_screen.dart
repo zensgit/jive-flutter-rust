@@ -13,7 +13,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _realNameController = TextEditingController();
   final _emailController = TextEditingController();
-  
+
   final AuthService _authService = AuthService();
   bool _isLoading = false;
 
@@ -47,7 +47,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     try {
       final result = await _authService.updateUserInfo(
-        realName: _realNameController.text.trim().isEmpty ? null : _realNameController.text.trim(),
+        realName: _realNameController.text.trim().isEmpty
+            ? null
+            : _realNameController.text.trim(),
         email: _emailController.text.trim(),
       );
 
@@ -90,7 +92,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final currentUser = _authService.currentUser;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('编辑资料'),
@@ -125,10 +127,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         CircleAvatar(
                           radius: 60,
                           backgroundColor: Colors.blue.withOpacity(0.1),
-                          backgroundImage: currentUser?.avatar != null 
+                          backgroundImage: currentUser?.avatar != null
                               ? NetworkImage(currentUser!.avatar!)
                               : null,
-                          child: currentUser?.avatar == null 
+                          child: currentUser?.avatar == null
                               ? Icon(
                                   Icons.person,
                                   size: 60,
@@ -172,9 +174,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // 用户名（只读）
               Card(
                 child: Padding(
@@ -237,9 +239,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // 真实姓名
               Card(
                 child: Padding(
@@ -264,7 +266,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           helperText: '用于显示在家庭成员中',
                         ),
                         validator: (value) {
-                          if (value != null && value.isNotEmpty && value.length > 20) {
+                          if (value != null &&
+                              value.isNotEmpty &&
+                              value.length > 20) {
                             return '姓名不能超过20个字符';
                           }
                           return null;
@@ -274,9 +278,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // 邮箱
               Card(
                 child: Padding(
@@ -305,7 +309,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           if (value == null || value.isEmpty) {
                             return '邮箱地址不能为空';
                           }
-                          if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) {
+                          if (!RegExp(
+                                  r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                              .hasMatch(value)) {
                             return '请输入有效的邮箱地址';
                           }
                           return null;
@@ -315,9 +321,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // 保存按钮
               SizedBox(
                 width: double.infinity,
@@ -330,7 +336,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   child: _isLoading
                       ? const CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         )
                       : const Text(
                           '保存更改',
@@ -338,9 +345,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // 提示信息
               Card(
                 color: Colors.blue[50],

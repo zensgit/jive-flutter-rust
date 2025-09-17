@@ -15,7 +15,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  
+
   LedgerType _selectedType = LedgerType.family;
   String _selectedCurrency = 'CNY';
   bool _isDefault = false;
@@ -37,19 +37,19 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
       final ledger = Ledger(
         name: _nameController.text.trim(),
         type: _selectedType,
-        description: _descriptionController.text.trim().isEmpty 
-            ? null 
+        description: _descriptionController.text.trim().isEmpty
+            ? null
             : _descriptionController.text.trim(),
         currency: _selectedCurrency,
         isDefault: _isDefault,
       );
 
       await ref.read(currentLedgerProvider.notifier).createLedger(
-        name: ledger.name,
-        type: ledger.type,
-        description: ledger.description,
-        currency: ledger.currency,
-      );
+            name: ledger.name,
+            type: ledger.type,
+            description: ledger.description,
+            currency: ledger.currency,
+          );
 
       if (mounted) {
         Navigator.of(context).pop(true);
@@ -113,7 +113,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -151,7 +151,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                 ],
               ),
             ),
-            
+
             // 表单内容
             Padding(
               padding: const EdgeInsets.all(20),
@@ -182,7 +182,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 类型选择
                     DropdownButtonFormField<LedgerType>(
                       value: _selectedType,
@@ -212,7 +212,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 货币选择
                     DropdownButtonFormField<String>(
                       value: _selectedCurrency,
@@ -256,7 +256,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 描述输入
                     TextFormField(
                       controller: _descriptionController,
@@ -271,7 +271,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                       maxLines: 2,
                       maxLength: 200,
                     ),
-                    
+
                     // 设为默认
                     CheckboxListTile(
                       title: const Text('设为默认'),
@@ -282,9 +282,9 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                       },
                       controlAffinity: ListTileControlAffinity.leading,
                     ),
-                    
+
                     const SizedBox(height: 8),
-                    
+
                     // 提示信息
                     Container(
                       padding: const EdgeInsets.all(12),
@@ -317,7 +317,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                 ),
               ),
             ),
-            
+
             // 按钮栏
             Container(
               padding: const EdgeInsets.all(16),
@@ -331,7 +331,8 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                    onPressed:
+                        _isLoading ? null : () => Navigator.of(context).pop(),
                     child: const Text('取消'),
                   ),
                   const SizedBox(width: 8),

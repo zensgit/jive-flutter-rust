@@ -11,11 +11,11 @@ class AccountOverview extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final accountState = ref.watch(accountProvider);
-    
+
     if (accountState.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    
+
     if (accountState.errorMessage != null) {
       return Center(
         child: Column(
@@ -43,33 +43,33 @@ class AccountOverview extends ConsumerWidget {
     double totalLiabilities = accountState.totalLiabilities;
 
     return Column(
-          children: [
-            // 资产负债概览
-            _buildAssetLiabilityOverview(totalAssets, totalLiabilities),
-            const SizedBox(height: 16),
-            
-            // 账户列表
-            Container(
-              constraints: const BoxConstraints(maxHeight: 300),
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: accountList.take(5).length,
-                itemBuilder: (context, index) {
-                  final account = accountList[index];
-                  return _buildAccountItem(context, account);
-                },
-              ),
-            ),
-            
-            // 查看全部按钮
-            if (accountList.length > 5)
-              TextButton(
-                onPressed: () => context.go(AppRoutes.accounts),
-                child: Text('查看全部 ${accountList.length} 个账户'),
-              ),
-          ],
-        );
+      children: [
+        // 资产负债概览
+        _buildAssetLiabilityOverview(totalAssets, totalLiabilities),
+        const SizedBox(height: 16),
+
+        // 账户列表
+        Container(
+          constraints: const BoxConstraints(maxHeight: 300),
+          child: ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: accountList.take(5).length,
+            itemBuilder: (context, index) {
+              final account = accountList[index];
+              return _buildAccountItem(context, account);
+            },
+          ),
+        ),
+
+        // 查看全部按钮
+        if (accountList.length > 5)
+          TextButton(
+            onPressed: () => context.go(AppRoutes.accounts),
+            child: Text('查看全部 ${accountList.length} 个账户'),
+          ),
+      ],
+    );
   }
 
   Widget _buildEmptyState(BuildContext context) {
@@ -111,7 +111,7 @@ class AccountOverview extends ConsumerWidget {
 
   Widget _buildAssetLiabilityOverview(double assets, double liabilities) {
     final netWorth = assets - liabilities;
-    
+
     return SizedBox(
       width: double.infinity,
       child: Row(
@@ -147,7 +147,8 @@ class AccountOverview extends ConsumerWidget {
     );
   }
 
-  Widget _buildOverviewCard(String title, double amount, Color color, IconData icon) {
+  Widget _buildOverviewCard(
+      String title, double amount, Color color, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -194,7 +195,7 @@ class AccountOverview extends ConsumerWidget {
   Widget _buildAccountItem(BuildContext context, Account account) {
     final balance = account.balance;
     final isNegative = balance < 0;
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
@@ -241,10 +242,9 @@ class AccountOverview extends ConsumerWidget {
     );
   }
 
-
   String _formatLastUpdated(dynamic date) {
     if (date == null) return '';
-    
+
     DateTime dateTime;
     if (date is DateTime) {
       dateTime = date;
@@ -253,10 +253,10 @@ class AccountOverview extends ConsumerWidget {
     } else {
       return '';
     }
-    
+
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inMinutes < 60) {
       return '${difference.inMinutes}分钟前';
     } else if (difference.inHours < 24) {

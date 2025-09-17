@@ -40,8 +40,9 @@ class AccountCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final currencyFormatter = NumberFormat.currency(symbol: _getCurrencySymbol());
-    
+    final currencyFormatter =
+        NumberFormat.currency(symbol: _getCurrencySymbol());
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       elevation: 2,
@@ -130,9 +131,9 @@ class AccountCard extends ConsumerWidget {
                     ],
                   ],
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // 余额部分
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -149,7 +150,9 @@ class AccountCard extends ConsumerWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            ref.read(currencyProvider.notifier).formatCurrency(balance, currency),
+                            ref
+                                .read(currencyProvider.notifier)
+                                .formatCurrency(balance, currency),
                             style: theme.textTheme.headlineSmall?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -178,7 +181,7 @@ class AccountCard extends ConsumerWidget {
                     ],
                   ],
                 ),
-                
+
                 // 底部信息
                 if (lastSyncAt != null) ...[
                   const SizedBox(height: 16),
@@ -276,10 +279,10 @@ class AccountCard extends ConsumerWidget {
 
   String _formatLastSync() {
     if (lastSyncAt == null) return '从未';
-    
+
     final now = DateTime.now();
     final difference = now.difference(lastSyncAt!);
-    
+
     if (difference.inMinutes < 1) {
       return '刚刚';
     } else if (difference.inMinutes < 60) {

@@ -40,6 +40,10 @@ desktop.ini
 **/*.rs.bk
 Cargo.lock
 
+# SQLx 离线缓存（版本化以确保离线编译一致性）
+!jive-api/.sqlx/
+!jive-api/.sqlx/**
+
 # IDE
 .vscode/
 .idea/

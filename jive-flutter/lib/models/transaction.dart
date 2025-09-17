@@ -5,14 +5,14 @@ enum TransactionType {
   income('income', '收入', Icons.arrow_downward, Colors.green),
   expense('expense', '支出', Icons.arrow_upward, Colors.red),
   transfer('transfer', '转账', Icons.swap_horiz, Colors.blue);
-  
+
   final String value;
   final String label;
   final IconData icon;
   final Color color;
-  
+
   const TransactionType(this.value, this.label, this.icon, this.color);
-  
+
   static TransactionType fromString(String? value) {
     return TransactionType.values.firstWhere(
       (type) => type.value == value,
@@ -43,7 +43,7 @@ class Transaction {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final Map<String, dynamic>? metadata;
-  
+
   Transaction({
     this.id,
     required this.type,
@@ -66,7 +66,7 @@ class Transaction {
     this.updatedAt,
     this.metadata,
   });
-  
+
   factory Transaction.fromJson(Map<String, dynamic> json) {
     return Transaction(
       id: json['id']?.toString(),
@@ -90,16 +90,16 @@ class Transaction {
       recurringId: json['recurring_id']?.toString(),
       isPending: json['is_pending'] ?? false,
       isReconciled: json['is_reconciled'] ?? false,
-      createdAt: json['created_at'] != null 
-          ? DateTime.parse(json['created_at']) 
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
           : null,
-      updatedAt: json['updated_at'] != null 
-          ? DateTime.parse(json['updated_at']) 
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
           : null,
       metadata: json['metadata'],
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
@@ -124,7 +124,7 @@ class Transaction {
       'metadata': metadata,
     };
   }
-  
+
   Transaction copyWith({
     String? id,
     TransactionType? type,
@@ -170,24 +170,28 @@ class Transaction {
       metadata: metadata ?? this.metadata,
     );
   }
-  
+
   /// 获取显示金额（带符号）
   String get displayAmount {
     // Legacy helper; UI should prefer currencyProvider.formatCurrency
-    final sign = type == TransactionType.expense ? '-' : type == TransactionType.income ? '+' : '';
+    final sign = type == TransactionType.expense
+        ? '-'
+        : type == TransactionType.income
+            ? '+'
+            : '';
     return '$sign${amount.toStringAsFixed(2)}';
   }
-  
+
   /// 获取图标
   IconData get icon => type.icon;
-  
+
   /// 获取颜色
   Color get color => type.color;
-  
+
   /// 获取分类图标
   IconData getCategoryIcon() {
     if (category == null) return Icons.category;
-    
+
     final lowerCategory = category!.toLowerCase();
     if (lowerCategory.contains('餐') || lowerCategory.contains('食')) {
       return Icons.restaurant;
@@ -206,7 +210,7 @@ class Transaction {
     } else if (lowerCategory.contains('工资') || lowerCategory.contains('薪')) {
       return Icons.account_balance_wallet;
     }
-    
+
     return Icons.category;
   }
 }
@@ -219,7 +223,7 @@ class TransactionAttachment {
   final String? fileUrl;
   final int? fileSize;
   final DateTime? uploadedAt;
-  
+
   TransactionAttachment({
     this.id,
     required this.fileName,
@@ -228,7 +232,7 @@ class TransactionAttachment {
     this.fileSize,
     this.uploadedAt,
   });
-  
+
   factory TransactionAttachment.fromJson(Map<String, dynamic> json) {
     return TransactionAttachment(
       id: json['id']?.toString(),
@@ -236,12 +240,12 @@ class TransactionAttachment {
       fileType: json['file_type'] ?? '',
       fileUrl: json['file_url'],
       fileSize: json['file_size'],
-      uploadedAt: json['uploaded_at'] != null 
-          ? DateTime.parse(json['uploaded_at']) 
+      uploadedAt: json['uploaded_at'] != null
+          ? DateTime.parse(json['uploaded_at'])
           : null,
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
@@ -266,7 +270,7 @@ class TransactionCategory {
   final bool isSystem;
   final DateTime? createdAt;
   final DateTime? updatedAt;
-  
+
   TransactionCategory({
     this.id,
     required this.name,
@@ -279,7 +283,7 @@ class TransactionCategory {
     this.createdAt,
     this.updatedAt,
   });
-  
+
   factory TransactionCategory.fromJson(Map<String, dynamic> json) {
     return TransactionCategory(
       id: json['id']?.toString(),
@@ -291,15 +295,15 @@ class TransactionCategory {
       type: TransactionType.fromString(json['type']),
       sortOrder: json['sort_order'] ?? 0,
       isSystem: json['is_system'] ?? false,
-      createdAt: json['created_at'] != null 
-          ? DateTime.parse(json['created_at']) 
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
           : null,
-      updatedAt: json['updated_at'] != null 
-          ? DateTime.parse(json['updated_at']) 
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
           : null,
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
@@ -331,7 +335,7 @@ class ScheduledTransaction {
   final bool autoConfirm;
   final DateTime? createdAt;
   final DateTime? updatedAt;
-  
+
   ScheduledTransaction({
     this.id,
     required this.template,
@@ -347,7 +351,7 @@ class ScheduledTransaction {
     this.createdAt,
     this.updatedAt,
   });
-  
+
   factory ScheduledTransaction.fromJson(Map<String, dynamic> json) {
     return ScheduledTransaction(
       id: json['id']?.toString(),
@@ -355,25 +359,24 @@ class ScheduledTransaction {
       period: RecurrencePeriod.fromString(json['period']),
       interval: json['interval'] ?? 1,
       startDate: DateTime.parse(json['start_date']),
-      endDate: json['end_date'] != null 
-          ? DateTime.parse(json['end_date']) 
-          : null,
-      nextRunDate: json['next_run_date'] != null 
-          ? DateTime.parse(json['next_run_date']) 
+      endDate:
+          json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
+      nextRunDate: json['next_run_date'] != null
+          ? DateTime.parse(json['next_run_date'])
           : null,
       occurrences: json['occurrences'],
       executedCount: json['executed_count'] ?? 0,
       isActive: json['is_active'] ?? true,
       autoConfirm: json['auto_confirm'] ?? false,
-      createdAt: json['created_at'] != null 
-          ? DateTime.parse(json['created_at']) 
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
           : null,
-      updatedAt: json['updated_at'] != null 
-          ? DateTime.parse(json['updated_at']) 
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
           : null,
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
@@ -399,12 +402,12 @@ enum RecurrencePeriod {
   weekly('weekly', '每周'),
   monthly('monthly', '每月'),
   yearly('yearly', '每年');
-  
+
   final String value;
   final String label;
-  
+
   const RecurrencePeriod(this.value, this.label);
-  
+
   static RecurrencePeriod fromString(String? value) {
     return RecurrencePeriod.values.firstWhere(
       (period) => period.value == value,

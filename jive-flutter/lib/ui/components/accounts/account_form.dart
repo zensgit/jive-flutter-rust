@@ -31,7 +31,7 @@ class _AccountFormState extends State<AccountForm> {
   late final TextEditingController _descriptionController;
   late final TextEditingController _accountNumberController;
   late final TextEditingController _bankNameController;
-  
+
   late AccountType _type;
   late AccountSubType _subType;
   late String _currency;
@@ -39,21 +39,23 @@ class _AccountFormState extends State<AccountForm> {
   IconData _icon = Icons.account_balance_wallet;
   bool _isActive = true;
   bool _includeInTotal = true;
-  
+
   @override
   void initState() {
     super.initState();
     _formKey = GlobalKey<FormState>();
-    
+
     final initial = widget.initialData;
     _nameController = TextEditingController(text: initial?.name ?? '');
     _balanceController = TextEditingController(
       text: initial?.balance.toStringAsFixed(2) ?? '0.00',
     );
-    _descriptionController = TextEditingController(text: initial?.description ?? '');
-    _accountNumberController = TextEditingController(text: initial?.accountNumber ?? '');
+    _descriptionController =
+        TextEditingController(text: initial?.description ?? '');
+    _accountNumberController =
+        TextEditingController(text: initial?.accountNumber ?? '');
     _bankNameController = TextEditingController(text: initial?.bankName ?? '');
-    
+
     _type = initial?.type ?? AccountType.asset;
     _subType = initial?.subType ?? AccountSubType.cash;
     _currency = initial?.currency ?? 'CNY';
@@ -76,7 +78,7 @@ class _AccountFormState extends State<AccountForm> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -86,57 +88,54 @@ class _AccountFormState extends State<AccountForm> {
           children: [
             // 账户类型选择
             _buildTypeSelector(theme),
-            
+
             const SizedBox(height: 20),
-            
+
             // 账户子类型选择
             _buildSubTypeSelector(theme),
-            
+
             const SizedBox(height: 20),
-            
+
             // 账户名称
             _buildNameField(theme),
-            
+
             const SizedBox(height: 16),
-            
+
             // 初始余额
-            if (!widget.isEditMode)
-              _buildBalanceField(theme),
-            
+            if (!widget.isEditMode) _buildBalanceField(theme),
+
             const SizedBox(height: 16),
-            
+
             // 银行名称（信用卡和银行账户）
-            if (_shouldShowBankFields())
-              _buildBankNameField(theme),
-            
-            if (_shouldShowBankFields())
-              const SizedBox(height: 16),
-            
+            if (_shouldShowBankFields()) _buildBankNameField(theme),
+
+            if (_shouldShowBankFields()) const SizedBox(height: 16),
+
             // 账号（可选）
             _buildAccountNumberField(theme),
-            
+
             const SizedBox(height: 16),
-            
+
             // 货币选择
             _buildCurrencySelector(theme),
-            
+
             const SizedBox(height: 16),
-            
+
             // 颜色和图标选择
             _buildColorIconSelector(theme),
-            
+
             const SizedBox(height: 16),
-            
+
             // 描述
             _buildDescriptionField(theme),
-            
+
             const SizedBox(height: 20),
-            
+
             // 高级选项
             _buildAdvancedOptions(theme),
-            
+
             const SizedBox(height: 24),
-            
+
             // 操作按钮
             _buildActionButtons(),
           ],
@@ -199,7 +198,7 @@ class _AccountFormState extends State<AccountForm> {
     Color color,
   ) {
     final isSelected = _type == type;
-    
+
     return Material(
       color: isSelected ? color.withOpacity(0.1) : Colors.transparent,
       borderRadius: BorderRadius.circular(AppConstants.smallBorderRadius),
@@ -208,8 +207,8 @@ class _AccountFormState extends State<AccountForm> {
           setState(() {
             _type = type;
             // 重置子类型
-            _subType = type == AccountType.asset 
-                ? AccountSubType.cash 
+            _subType = type == AccountType.asset
+                ? AccountSubType.cash
                 : AccountSubType.creditCard;
           });
         },
@@ -222,13 +221,17 @@ class _AccountFormState extends State<AccountForm> {
               Icon(
                 icon,
                 size: 20,
-                color: isSelected ? color : theme.colorScheme.onSurface.withOpacity(0.6),
+                color: isSelected
+                    ? color
+                    : theme.colorScheme.onSurface.withOpacity(0.6),
               ),
               const SizedBox(width: 8),
               Text(
                 label,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isSelected ? color : theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: isSelected
+                      ? color
+                      : theme.colorScheme.onSurface.withOpacity(0.6),
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
@@ -240,7 +243,7 @@ class _AccountFormState extends State<AccountForm> {
   }
 
   Widget _buildSubTypeSelector(ThemeData theme) {
-    final subTypes = _type == AccountType.asset 
+    final subTypes = _type == AccountType.asset
         ? [
             AccountSubType.cash,
             AccountSubType.debitCard,
@@ -254,7 +257,7 @@ class _AccountFormState extends State<AccountForm> {
             AccountSubType.loan,
             AccountSubType.mortgage,
           ];
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -266,20 +269,22 @@ class _AccountFormState extends State<AccountForm> {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: subTypes.map((subType) => 
-            ChoiceChip(
-              label: Text(_getSubTypeName(subType)),
-              selected: _subType == subType,
-              onSelected: (selected) {
-                if (selected) {
-                  setState(() {
-                    _subType = subType;
-                    _icon = _getSubTypeIcon(subType);
-                  });
-                }
-              },
-            ),
-          ).toList(),
+          children: subTypes
+              .map(
+                (subType) => ChoiceChip(
+                  label: Text(_getSubTypeName(subType)),
+                  selected: _subType == subType,
+                  onSelected: (selected) {
+                    if (selected) {
+                      setState(() {
+                        _subType = subType;
+                        _icon = _getSubTypeIcon(subType);
+                      });
+                    }
+                  },
+                ),
+              )
+              .toList(),
         ),
       ],
     );
@@ -360,7 +365,7 @@ class _AccountFormState extends State<AccountForm> {
 
   Widget _buildCurrencySelector(ThemeData theme) {
     final currencies = ['CNY', 'USD', 'EUR', 'JPY', 'HKD'];
-    
+
     return DropdownButtonFormField<String>(
       initialValue: _currency,
       decoration: InputDecoration(
@@ -369,12 +374,14 @@ class _AccountFormState extends State<AccountForm> {
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         ),
       ),
-      items: currencies.map((currency) => 
-        DropdownMenuItem(
-          value: currency,
-          child: Text(_getCurrencyDisplay(currency)),
-        ),
-      ).toList(),
+      items: currencies
+          .map(
+            (currency) => DropdownMenuItem(
+              value: currency,
+              child: Text(_getCurrencyDisplay(currency)),
+            ),
+          )
+          .toList(),
       onChanged: (value) => setState(() => _currency = value!),
     );
   }
@@ -391,7 +398,8 @@ class _AccountFormState extends State<AccountForm> {
               decoration: InputDecoration(
                 labelText: '颜色',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppConstants.borderRadius),
+                  borderRadius:
+                      BorderRadius.circular(AppConstants.borderRadius),
                 ),
               ),
               child: Row(
@@ -411,9 +419,9 @@ class _AccountFormState extends State<AccountForm> {
             ),
           ),
         ),
-        
+
         const SizedBox(width: 16),
-        
+
         // 图标选择
         Expanded(
           child: InkWell(
@@ -423,7 +431,8 @@ class _AccountFormState extends State<AccountForm> {
               decoration: InputDecoration(
                 labelText: '图标',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppConstants.borderRadius),
+                  borderRadius:
+                      BorderRadius.circular(AppConstants.borderRadius),
                 ),
               ),
               child: Row(
@@ -490,8 +499,7 @@ class _AccountFormState extends State<AccountForm> {
               text: '取消',
             ),
           ),
-        if (widget.onCancel != null)
-          const SizedBox(width: 16),
+        if (widget.onCancel != null) const SizedBox(width: 16),
         Expanded(
           child: PrimaryButton(
             onPressed: _handleSubmit,
@@ -588,30 +596,32 @@ class _AccountFormState extends State<AccountForm> {
       Colors.orange,
       Colors.teal,
     ];
-    
+
     final selected = await showDialog<Color>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('选择颜色'),
         content: Wrap(
           spacing: 8,
-          children: colors.map((color) => 
-            InkWell(
-              onTap: () => Navigator.of(context).pop(color),
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
+          children: colors
+              .map(
+                (color) => InkWell(
+                  onTap: () => Navigator.of(context).pop(color),
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ).toList(),
+              )
+              .toList(),
         ),
       ),
     );
-    
+
     if (selected != null) {
       setState(() => _color = selected);
     }
@@ -630,31 +640,33 @@ class _AccountFormState extends State<AccountForm> {
       Icons.home,
       Icons.receipt_long,
     ];
-    
+
     final selected = await showDialog<IconData>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('选择图标'),
         content: Wrap(
           spacing: 8,
-          children: icons.map((icon) => 
-            InkWell(
-              onTap: () => Navigator.of(context).pop(icon),
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8),
+          children: icons
+              .map(
+                (icon) => InkWell(
+                  onTap: () => Navigator.of(context).pop(icon),
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(icon),
+                  ),
                 ),
-                child: Icon(icon),
-              ),
-            ),
-          ).toList(),
+              )
+              .toList(),
         ),
       ),
     );
-    
+
     if (selected != null) {
       setState(() => _icon = selected);
     }
@@ -663,7 +675,7 @@ class _AccountFormState extends State<AccountForm> {
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
       final balance = double.parse(_balanceController.text);
-      
+
       widget.onSubmit(AccountFormData(
         name: _nameController.text,
         type: _type,
@@ -672,9 +684,14 @@ class _AccountFormState extends State<AccountForm> {
         currency: _currency,
         color: _color,
         icon: _icon,
-        description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
-        accountNumber: _accountNumberController.text.isEmpty ? null : _accountNumberController.text,
-        bankName: _bankNameController.text.isEmpty ? null : _bankNameController.text,
+        description: _descriptionController.text.isEmpty
+            ? null
+            : _descriptionController.text,
+        accountNumber: _accountNumberController.text.isEmpty
+            ? null
+            : _accountNumberController.text,
+        bankName:
+            _bankNameController.text.isEmpty ? null : _bankNameController.text,
         isActive: _isActive,
         includeInTotal: _includeInTotal,
       ));

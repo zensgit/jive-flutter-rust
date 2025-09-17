@@ -18,7 +18,8 @@ class FamilyStatisticsScreen extends ConsumerStatefulWidget {
   }) : super(key: key);
 
   @override
-  ConsumerState<FamilyStatisticsScreen> createState() => _FamilyStatisticsScreenState();
+  ConsumerState<FamilyStatisticsScreen> createState() =>
+      _FamilyStatisticsScreenState();
 }
 
 class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
@@ -52,7 +53,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
 
   Future<void> _loadStatistics() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final service = FamilyService();
       final stats = await service.getFamilyStatistics(
@@ -60,7 +61,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
         period: _selectedPeriod,
         date: _selectedDate,
       );
-      
+
       setState(() {
         _statistics = stats;
         _isLoading = false;
@@ -78,7 +79,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -144,11 +145,11 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
 
   Widget _buildOverviewTab() {
     if (_statistics == null) return const SizedBox();
-    
+
     final stats = _statistics!;
     final theme = Theme.of(context);
     final formatter = NumberFormat.currency(symbol: '¥');
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -202,18 +203,19 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // 预算执行情况
           if (stats.budgets.isNotEmpty) ...[
             Text('预算执行', style: theme.textTheme.titleMedium),
             const SizedBox(height: 12),
-            ...stats.budgets.map((budget) => _BudgetProgressCard(budget: budget)),
+            ...stats.budgets
+                .map((budget) => _BudgetProgressCard(budget: budget)),
           ],
-          
+
           const SizedBox(height: 24),
-          
+
           // 储蓄率
           Card(
             child: Padding(
@@ -256,10 +258,10 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
 
   Widget _buildTrendsTab() {
     if (_statistics == null) return const SizedBox();
-    
+
     final stats = _statistics!;
     final theme = Theme.of(context);
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -301,9 +303,11 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                               showTitles: true,
                               getTitlesWidget: (value, meta) {
                                 final index = value.toInt();
-                                if (index >= 0 && index < stats.dailyData.length) {
+                                if (index >= 0 &&
+                                    index < stats.dailyData.length) {
                                   return Text(
-                                    DateFormat('MM/dd').format(stats.dailyData[index].date),
+                                    DateFormat('MM/dd')
+                                        .format(stats.dailyData[index].date),
                                     style: const TextStyle(fontSize: 10),
                                   );
                                 }
@@ -368,9 +372,9 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // 月度对比
           Card(
             child: Padding(
@@ -386,8 +390,9 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                       BarChartData(
                         alignment: BarChartAlignment.spaceAround,
                         maxY: stats.monthlyData
-                            .map((e) => e.total)
-                            .reduce((a, b) => a > b ? a : b) * 1.2,
+                                .map((e) => e.total)
+                                .reduce((a, b) => a > b ? a : b) *
+                            1.2,
                         barGroups: stats.monthlyData
                             .asMap()
                             .entries
@@ -413,7 +418,8 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                               showTitles: true,
                               getTitlesWidget: (value, meta) {
                                 final index = value.toInt();
-                                if (index >= 0 && index < stats.monthlyData.length) {
+                                if (index >= 0 &&
+                                    index < stats.monthlyData.length) {
                                   return Text(
                                     stats.monthlyData[index].month,
                                     style: const TextStyle(fontSize: 10),
@@ -449,10 +455,10 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
 
   Widget _buildCategoriesTab() {
     if (_statistics == null) return const SizedBox();
-    
+
     final stats = _statistics!;
     final theme = Theme.of(context);
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -476,7 +482,8 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                             .map((c) => PieChartSectionData(
                                   value: c.amount,
                                   title: '${c.percentage.toStringAsFixed(1)}%',
-                                  color: Color(int.parse(c.color.replaceFirst('#', '0xFF'))),
+                                  color: Color(int.parse(
+                                      c.color.replaceFirst('#', '0xFF'))),
                                   radius: 100,
                                   titleStyle: const TextStyle(
                                     fontSize: 12,
@@ -499,9 +506,9 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // 收入分类
           if (stats.categoryData.any((c) => c.type == 'income'))
             Card(
@@ -526,11 +533,11 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
 
   Widget _buildMembersTab() {
     if (_statistics == null) return const SizedBox();
-    
+
     final stats = _statistics!;
     final theme = Theme.of(context);
     final formatter = NumberFormat.currency(symbol: '¥');
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -546,74 +553,78 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                   Text('成员贡献', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 16),
                   ...stats.memberData.map((member) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                CircleAvatar(
-                                  radius: 20,
-                                  backgroundColor: theme.colorScheme.primaryContainer,
-                                  child: Text(
-                                    member.name.substring(0, 1),
-                                    style: TextStyle(
-                                      color: theme.colorScheme.onPrimaryContainer,
+                                Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 20,
+                                      backgroundColor:
+                                          theme.colorScheme.primaryContainer,
+                                      child: Text(
+                                        member.name.substring(0, 1),
+                                        style: TextStyle(
+                                          color: theme
+                                              .colorScheme.onPrimaryContainer,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    const SizedBox(width: 12),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          member.name,
+                                          style: theme.textTheme.titleSmall,
+                                        ),
+                                        Text(
+                                          '${member.transactionCount} 笔交易',
+                                          style: theme.textTheme.bodySmall,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(width: 12),
                                 Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(
-                                      member.name,
+                                      formatter.format(member.totalAmount),
                                       style: theme.textTheme.titleSmall,
                                     ),
                                     Text(
-                                      '${member.transactionCount} 笔交易',
-                                      style: theme.textTheme.bodySmall,
+                                      '${member.percentage.toStringAsFixed(1)}%',
+                                      style:
+                                          theme.textTheme.bodySmall?.copyWith(
+                                        color: theme.colorScheme.primary,
+                                      ),
                                     ),
                                   ],
                                 ),
                               ],
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  formatter.format(member.totalAmount),
-                                  style: theme.textTheme.titleSmall,
-                                ),
-                                Text(
-                                  '${member.percentage.toStringAsFixed(1)}%',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                ),
-                              ],
+                            const SizedBox(height: 8),
+                            LinearProgressIndicator(
+                              value: member.percentage / 100,
+                              backgroundColor: theme.colorScheme.surfaceVariant,
+                              minHeight: 4,
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
-                        LinearProgressIndicator(
-                          value: member.percentage / 100,
-                          backgroundColor: theme.colorScheme.surfaceVariant,
-                          minHeight: 4,
-                        ),
-                      ],
-                    ),
-                  )),
+                      )),
                 ],
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // 成员活跃度
           Card(
             child: Padding(
@@ -623,27 +634,27 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                 children: [
                   Text('活跃度排名', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 16),
-                  ...stats.memberData
-                      .toList()
-                      ..sort((a, b) => b.activityScore.compareTo(a.activityScore))
-                      .asMap()
-                      .entries
-                      .map((e) => ListTile(
-                            leading: CircleAvatar(
-                              radius: 16,
-                              backgroundColor: _getRankColor(e.key),
-                              child: Text(
-                                '${e.key + 1}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                  ...stats.memberData.toList()
+                    ..sort((a, b) => b.activityScore.compareTo(a.activityScore))
+                        .asMap()
+                        .entries
+                        .map((e) => ListTile(
+                              leading: CircleAvatar(
+                                radius: 16,
+                                backgroundColor: _getRankColor(e.key),
+                                child: Text(
+                                  '${e.key + 1}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                            ),
-                            title: Text(e.value.name),
-                            subtitle: Text('活跃度: ${e.value.activityScore}'),
-                            trailing: _getActivityBadge(e.value.activityScore),
-                          )),
+                              title: Text(e.value.name),
+                              subtitle: Text('活跃度: ${e.value.activityScore}'),
+                              trailing:
+                                  _getActivityBadge(e.value.activityScore),
+                            )),
                 ],
               ),
             ),
@@ -697,7 +708,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
   Widget _getActivityBadge(int score) {
     String label;
     Color color;
-    
+
     if (score >= 90) {
       label = '极活跃';
       color = Colors.green;
@@ -711,7 +722,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
       label = '不活跃';
       color = Colors.grey;
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
@@ -748,7 +759,7 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -820,7 +831,7 @@ class _BudgetProgressCard extends StatelessWidget {
     final formatter = NumberFormat.currency(symbol: '¥');
     final percentage = (budget.spent / budget.amount * 100).clamp(0, 100);
     final isOverBudget = budget.spent > budget.amount;
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
@@ -838,7 +849,8 @@ class _BudgetProgressCard extends StatelessWidget {
                 Text(
                   '${percentage.toStringAsFixed(0)}%',
                   style: TextStyle(
-                    color: isOverBudget ? Colors.red : theme.colorScheme.primary,
+                    color:
+                        isOverBudget ? Colors.red : theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -882,7 +894,7 @@ class _CategoryListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final formatter = NumberFormat.currency(symbol: '¥');
-    
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(

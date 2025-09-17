@@ -19,14 +19,15 @@ class TravelEvent with _$TravelEvent {
     String? ledgerId,
     DateTime? createdAt,
     DateTime? updatedAt,
-    
+
     // 统计信息
     @Default(0) int transactionCount,
     double? totalAmount,
     String? travelTagId,
   }) = _TravelEvent;
 
-  factory TravelEvent.fromJson(Map<String, dynamic> json) => _$TravelEventFromJson(json);
+  factory TravelEvent.fromJson(Map<String, dynamic> json) =>
+      _$TravelEventFromJson(json);
 }
 
 /// 旅行事件模板
@@ -44,23 +45,24 @@ class TravelEventTemplate with _$TravelEventTemplate {
     DateTime? updatedAt,
   }) = _TravelEventTemplate;
 
-  factory TravelEventTemplate.fromJson(Map<String, dynamic> json) => _$TravelEventTemplateFromJson(json);
+  factory TravelEventTemplate.fromJson(Map<String, dynamic> json) =>
+      _$TravelEventTemplateFromJson(json);
 }
 
 /// 模板类型
 enum TravelTemplateType {
   @JsonValue('inclusion')
-  inclusion,  // 包含指定分类
+  inclusion, // 包含指定分类
   @JsonValue('exclusion')
-  exclusion,  // 排除指定分类
+  exclusion, // 排除指定分类
 }
 
 /// 旅行事件状态
 enum TravelEventStatus {
-  upcoming,   // 即将开始
-  active,     // 进行中
-  completed,  // 已完成
-  cancelled,  // 已取消
+  upcoming, // 即将开始
+  active, // 进行中
+  completed, // 已完成
+  cancelled, // 已取消
 }
 
 /// 预设旅行事件模板库
@@ -75,7 +77,7 @@ class TravelEventTemplateLibrary {
         templateType: TravelTemplateType.inclusion,
         categoryIds: [
           'transportation',
-          'accommodation', 
+          'accommodation',
           'dining',
           'entertainment',
           'shopping',
@@ -83,7 +85,7 @@ class TravelEventTemplateLibrary {
         ],
         isSystemTemplate: true,
       ),
-      
+
       // 完整旅行模板
       TravelEventTemplate(
         id: 'complete_travel',
@@ -105,7 +107,7 @@ class TravelEventTemplateLibrary {
         ],
         isSystemTemplate: true,
       ),
-      
+
       // 国内短途旅行
       TravelEventTemplate(
         id: 'domestic_short_trip',
@@ -120,7 +122,7 @@ class TravelEventTemplateLibrary {
         ],
         isSystemTemplate: true,
       ),
-      
+
       // 商务出差
       TravelEventTemplate(
         id: 'business_trip',
@@ -136,7 +138,7 @@ class TravelEventTemplateLibrary {
         ],
         isSystemTemplate: true,
       ),
-      
+
       // 排除日常分类
       TravelEventTemplate(
         id: 'exclude_daily',
@@ -155,7 +157,7 @@ class TravelEventTemplateLibrary {
       ),
     ];
   }
-  
+
   static String getTemplateIcon(String templateId) {
     const iconMap = {
       'common_travel': '✈️',
@@ -181,18 +183,18 @@ extension TravelEventExtension on TravelEvent {
       return TravelEventStatus.active;
     }
   }
-  
+
   /// 获取持续天数
   int get duration {
     return endDate.difference(startDate).inDays + 1;
   }
-  
+
   /// 是否在旅行期间
   bool isDateInRange(DateTime date) {
     return date.isAfter(startDate.subtract(const Duration(days: 1))) &&
-           date.isBefore(endDate.add(const Duration(days: 1)));
+        date.isBefore(endDate.add(const Duration(days: 1)));
   }
-  
+
   /// 获取旅行标签名称
   String get travelTagName {
     return '旅行-$name';

@@ -120,7 +120,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return AlertDialog(
       title: Row(
         children: [
@@ -142,7 +142,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
               style: theme.textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),
-            
+
             // 数据统计
             Container(
               padding: const EdgeInsets.all(12),
@@ -158,15 +158,19 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
                     style: theme.textTheme.titleSmall,
                   ),
                   const SizedBox(height: 8),
-                  _buildStatRow(Icons.people, '成员', widget.statistics.memberCount),
-                  _buildStatRow(Icons.account_balance_wallet, '账户', widget.statistics.accountCount),
-                  _buildStatRow(Icons.receipt_long, '交易', widget.statistics.transactionCount),
-                  _buildStatRow(Icons.category, '分类', widget.statistics.ledgerCount),
+                  _buildStatRow(
+                      Icons.people, '成员', widget.statistics.memberCount),
+                  _buildStatRow(Icons.account_balance_wallet, '账户',
+                      widget.statistics.accountCount),
+                  _buildStatRow(Icons.receipt_long, '交易',
+                      widget.statistics.transactionCount),
+                  _buildStatRow(
+                      Icons.category, '分类', widget.statistics.ledgerCount),
                 ],
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // 输入确认
             Text(
               '请输入Family名称以确认删除：',

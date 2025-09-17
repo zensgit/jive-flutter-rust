@@ -31,7 +31,7 @@ class ConfirmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
@@ -46,22 +46,21 @@ class ConfirmDialog extends StatelessWidget {
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: (isDangerous 
-                    ? AppConstants.errorColor 
-                    : theme.primaryColor).withOpacity(0.1),
+                color:
+                    (isDangerous ? AppConstants.errorColor : theme.primaryColor)
+                        .withOpacity(0.1),
                 borderRadius: BorderRadius.circular(32),
               ),
               child: Icon(
                 icon,
                 size: 32,
-                color: isDangerous 
-                    ? AppConstants.errorColor 
-                    : theme.primaryColor,
+                color:
+                    isDangerous ? AppConstants.errorColor : theme.primaryColor,
               ),
             ),
             const SizedBox(height: 16),
           ],
-          
+
           // 标题
           Text(
             title,
@@ -70,9 +69,9 @@ class ConfirmDialog extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // 消息
           Text(
             message,
@@ -81,9 +80,9 @@ class ConfirmDialog extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // 按钮
           Row(
             children: [
@@ -100,7 +99,7 @@ class ConfirmDialog extends StatelessWidget {
               Expanded(
                 child: PrimaryButton(
                   text: confirmText ?? '确认',
-                  backgroundColor: isDangerous 
+                  backgroundColor: isDangerous
                       ? AppConstants.errorColor
                       : (confirmColor ?? theme.primaryColor),
                   onPressed: () {

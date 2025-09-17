@@ -82,14 +82,14 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // 分享选项
             if (_shareCode == null) ...[
               const Text('选择分享方式：'),
               const SizedBox(height: 12),
-              
+
               // 生成分享链接
               SizedBox(
                 width: double.infinity,
@@ -110,9 +110,9 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // 复制到剪贴板
               SizedBox(
                 width: double.infinity,
@@ -137,7 +137,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                 ),
               ),
               const SizedBox(height: 12),
-              
+
               // 分享码
               Container(
                 width: double.infinity,
@@ -180,9 +180,9 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // 分享链接
               Container(
                 width: double.infinity,
@@ -227,9 +227,9 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // 说明文本
               Container(
                 padding: const EdgeInsets.all(12),
@@ -299,7 +299,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
         _shareUrl = 'https://jivemoney.com/theme/import/$shareCode';
         _isSharing = false;
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('分享链接生成成功'),
@@ -310,7 +310,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
       setState(() {
         _isSharing = false;
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('生成分享链接失败: $e'),
@@ -366,7 +366,7 @@ ${widget.theme.description.isNotEmpty ? '描述：${widget.theme.description}\n'
     // 这里应该调用系统分享功能
     // 由于是演示，我们将文本复制到剪贴板
     Clipboard.setData(ClipboardData(text: shareText));
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('分享内容已复制到剪贴板，可以粘贴到其他应用分享'),

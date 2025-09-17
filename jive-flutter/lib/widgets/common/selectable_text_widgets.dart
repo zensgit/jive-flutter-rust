@@ -11,7 +11,7 @@ class SelectableTextWidget extends StatelessWidget {
   final double cursorWidth;
   final double? cursorHeight;
   final Color? cursorColor;
-  
+
   const SelectableTextWidget({
     super.key,
     required this.text,
@@ -72,7 +72,7 @@ class SelectableRichTextWidget extends StatelessWidget {
   final TextAlign? textAlign;
   final int? maxLines;
   final bool showCursor;
-  
+
   const SelectableRichTextWidget({
     super.key,
     required this.textSpan,
@@ -98,7 +98,7 @@ class SelectableContainer extends StatelessWidget {
   final Widget child;
   final String? textToCopy;
   final VoidCallback? onCopy;
-  
+
   const SelectableContainer({
     super.key,
     required this.child,
@@ -119,9 +119,9 @@ class SelectableContainer extends StatelessWidget {
   }
 
   void _showContextMenu(BuildContext context, Offset position) {
-    final RenderBox overlay = 
+    final RenderBox overlay =
         Overlay.of(context).context.findRenderObject() as RenderBox;
-    
+
     showMenu(
       context: context,
       position: RelativeRect.fromRect(
@@ -161,7 +161,7 @@ class SelectableTableCell extends StatelessWidget {
   final TextStyle? style;
   final EdgeInsets? padding;
   final AlignmentGeometry? alignment;
-  
+
   const SelectableTableCell({
     super.key,
     required this.text,
@@ -195,7 +195,7 @@ class SelectableListTile extends StatelessWidget {
   final Widget? trailing;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry? contentPadding;
-  
+
   const SelectableListTile({
     super.key,
     required this.title,

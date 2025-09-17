@@ -25,22 +25,22 @@ class ExchangeRate {
   }
 
   Map<String, dynamic> toJson() => {
-    'from_currency': fromCurrency,
-    'to_currency': toCurrency,
-    'rate': rate,
-    'date': date.toIso8601String(),
-    'source': source,
-  };
+        'from_currency': fromCurrency,
+        'to_currency': toCurrency,
+        'rate': rate,
+        'date': date.toIso8601String(),
+        'source': source,
+      };
 
   double convert(double amount) => amount * rate;
 
   ExchangeRate inverse() => ExchangeRate(
-    fromCurrency: toCurrency,
-    toCurrency: fromCurrency,
-    rate: 1.0 / rate,
-    date: date,
-    source: source,
-  );
+        fromCurrency: toCurrency,
+        toCurrency: fromCurrency,
+        rate: 1.0 / rate,
+        date: date,
+        source: source,
+      );
 
   @override
   String toString() => '$fromCurrency→$toCurrency: $rate @ ${date.toLocal()}';
@@ -91,26 +91,26 @@ class MockExchangeRates {
     'BGN': 1.65,
     'ISK': 125.0,
     // Cryptocurrencies (approximate rates)
-    'BTC': 0.000025,  // 1 USD = 0.000025 BTC (BTC = 40,000 USD)
-    'ETH': 0.0003,    // 1 USD = 0.0003 ETH (ETH = 3,333 USD)
-    'USDT': 1.0,      // Pegged to USD
-    'BNB': 0.003,     // 1 USD = 0.003 BNB (BNB = 333 USD)
-    'SOL': 0.01,      // 1 USD = 0.01 SOL (SOL = 100 USD)
-    'XRP': 1.67,      // 1 USD = 1.67 XRP (XRP = 0.60 USD)
-    'USDC': 1.0,      // Pegged to USD
-    'ADA': 1.72,      // 1 USD = 1.72 ADA (ADA = 0.58 USD)
-    'DOGE': 11.76,    // 1 USD = 11.76 DOGE (DOGE = 0.085 USD)
-    'AVAX': 0.027,    // 1 USD = 0.027 AVAX (AVAX = 37 USD)
-    'DOT': 0.14,      // 1 USD = 0.14 DOT (DOT = 7 USD)
-    'MATIC': 1.12,    // 1 USD = 1.12 MATIC (MATIC = 0.89 USD)
-    'LINK': 0.067,    // 1 USD = 0.067 LINK (LINK = 15 USD)
-    'LTC': 0.014,     // 1 USD = 0.014 LTC (LTC = 71 USD)
-    'BCH': 0.0038,    // 1 USD = 0.0038 BCH (BCH = 263 USD)
-    'UNI': 0.16,      // 1 USD = 0.16 UNI (UNI = 6.25 USD)
-    'XLM': 8.33,      // 1 USD = 8.33 XLM (XLM = 0.12 USD)
-    'ALGO': 10.0,     // 1 USD = 10 ALGO (ALGO = 0.10 USD)
-    'ATOM': 0.1,      // 1 USD = 0.1 ATOM (ATOM = 10 USD)
-    'FTM': 2.5,       // 1 USD = 2.5 FTM (FTM = 0.40 USD)
+    'BTC': 0.000025, // 1 USD = 0.000025 BTC (BTC = 40,000 USD)
+    'ETH': 0.0003, // 1 USD = 0.0003 ETH (ETH = 3,333 USD)
+    'USDT': 1.0, // Pegged to USD
+    'BNB': 0.003, // 1 USD = 0.003 BNB (BNB = 333 USD)
+    'SOL': 0.01, // 1 USD = 0.01 SOL (SOL = 100 USD)
+    'XRP': 1.67, // 1 USD = 1.67 XRP (XRP = 0.60 USD)
+    'USDC': 1.0, // Pegged to USD
+    'ADA': 1.72, // 1 USD = 1.72 ADA (ADA = 0.58 USD)
+    'DOGE': 11.76, // 1 USD = 11.76 DOGE (DOGE = 0.085 USD)
+    'AVAX': 0.027, // 1 USD = 0.027 AVAX (AVAX = 37 USD)
+    'DOT': 0.14, // 1 USD = 0.14 DOT (DOT = 7 USD)
+    'MATIC': 1.12, // 1 USD = 1.12 MATIC (MATIC = 0.89 USD)
+    'LINK': 0.067, // 1 USD = 0.067 LINK (LINK = 15 USD)
+    'LTC': 0.014, // 1 USD = 0.014 LTC (LTC = 71 USD)
+    'BCH': 0.0038, // 1 USD = 0.0038 BCH (BCH = 263 USD)
+    'UNI': 0.16, // 1 USD = 0.16 UNI (UNI = 6.25 USD)
+    'XLM': 8.33, // 1 USD = 8.33 XLM (XLM = 0.12 USD)
+    'ALGO': 10.0, // 1 USD = 10 ALGO (ALGO = 0.10 USD)
+    'ATOM': 0.1, // 1 USD = 0.1 ATOM (ATOM = 10 USD)
+    'FTM': 2.5, // 1 USD = 2.5 FTM (FTM = 0.40 USD)
   };
 
   static ExchangeRate? getRate(String from, String to) {
@@ -150,7 +150,7 @@ class MockExchangeRates {
 
   static Map<String, ExchangeRate> getAllRatesFrom(String baseCurrency) {
     final Map<String, ExchangeRate> rates = {};
-    
+
     for (final currency in _ratesAgainstUSD.keys) {
       if (currency != baseCurrency) {
         final rate = getRate(baseCurrency, currency);
@@ -159,7 +159,7 @@ class MockExchangeRates {
         }
       }
     }
-    
+
     return rates;
   }
 }

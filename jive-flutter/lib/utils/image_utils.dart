@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 /// Utility class for handling image loading with fallbacks
 class ImageUtils {
@@ -26,7 +27,7 @@ class ImageUtils {
         return placeholder ?? _defaultPlaceholder(width, height);
       },
       errorBuilder: (context, error, stackTrace) {
-        print('Error loading image from $url: $error');
+        debugPrint('Error loading image from $url: $error');
         return errorWidget ?? _defaultErrorWidget(width, height);
       },
     );
@@ -40,14 +41,14 @@ class ImageUtils {
   }) {
     // Generate initials from name
     String initials = _getInitials(name ?? 'U');
-    
+
     if (imageUrl != null && imageUrl.isNotEmpty) {
       return CircleAvatar(
         radius: radius,
         backgroundColor: Colors.grey[300],
         backgroundImage: NetworkImage(imageUrl),
         onBackgroundImageError: (exception, stackTrace) {
-          print('Error loading avatar: $exception');
+          debugPrint('Error loading avatar: $exception');
         },
         child: Text(
           initials,
@@ -58,7 +59,7 @@ class ImageUtils {
         ),
       );
     }
-    
+
     // Fallback to initials
     return CircleAvatar(
       radius: radius,
@@ -105,7 +106,7 @@ class ImageUtils {
   /// Get initials from name
   static String _getInitials(String name) {
     if (name.isEmpty) return 'U';
-    
+
     final parts = name.trim().split(RegExp(r'\s+'));
     if (parts.length >= 2) {
       return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
@@ -118,7 +119,7 @@ class ImageUtils {
     if (name == null || name.isEmpty) {
       return Colors.grey;
     }
-    
+
     // Generate color based on name hash
     final hash = name.hashCode;
     final colors = [
@@ -133,24 +134,31 @@ class ImageUtils {
       Colors.pink,
       Colors.cyan,
     ];
-    
+
     return colors[hash.abs() % colors.length];
   }
 
   /// Validate image URL
   static bool isValidImageUrl(String? url) {
     if (url == null || url.isEmpty) return false;
-    
+
     try {
       final uri = Uri.parse(url);
       if (!uri.hasScheme || (uri.scheme != 'http' && uri.scheme != 'https')) {
         return false;
       }
-      
+
       // Check for common image extensions
       final path = uri.path.toLowerCase();
-      final imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
-      
+      final imageExtensions = [
+        '.jpg',
+        '.jpeg',
+        '.png',
+        '.gif',
+        '.webp',
+        '.svg'
+      ];
+
       // Allow URLs without extensions (many CDNs don't use them)
       // but validate the URL structure
       return uri.host.isNotEmpty;

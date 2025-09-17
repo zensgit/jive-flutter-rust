@@ -8,7 +8,7 @@ class ErrorState extends StatelessWidget {
   final VoidCallback? onRetry;
   final bool showDetails;
   final EdgeInsetsGeometry padding;
-  
+
   const ErrorState({
     super.key,
     this.title,
@@ -18,12 +18,12 @@ class ErrorState extends StatelessWidget {
     this.showDetails = false,
     this.padding = const EdgeInsets.all(32.0),
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final errorMessage = _getErrorMessage();
-    
+
     return Center(
       child: Padding(
         padding: padding,
@@ -80,44 +80,40 @@ class ErrorState extends StatelessWidget {
       ),
     );
   }
-  
+
   String _getErrorMessage() {
     if (error == null) {
       return '发生了未知错误';
     }
-    
+
     final errorString = error.toString().toLowerCase();
-    
-    if (errorString.contains('network') || 
+
+    if (errorString.contains('network') ||
         errorString.contains('connection') ||
         errorString.contains('socket')) {
       return '网络连接失败，请检查您的网络设置';
     }
-    
+
     if (errorString.contains('timeout')) {
       return '请求超时，请稍后重试';
     }
-    
-    if (errorString.contains('unauthorized') || 
-        errorString.contains('401')) {
+
+    if (errorString.contains('unauthorized') || errorString.contains('401')) {
       return '认证失败，请重新登录';
     }
-    
-    if (errorString.contains('forbidden') || 
-        errorString.contains('403')) {
+
+    if (errorString.contains('forbidden') || errorString.contains('403')) {
       return '您没有权限访问此内容';
     }
-    
-    if (errorString.contains('not found') || 
-        errorString.contains('404')) {
+
+    if (errorString.contains('not found') || errorString.contains('404')) {
       return '请求的内容不存在';
     }
-    
-    if (errorString.contains('server') || 
-        errorString.contains('500')) {
+
+    if (errorString.contains('server') || errorString.contains('500')) {
       return '服务器错误，请稍后重试';
     }
-    
+
     return '加载失败，请稍后重试';
   }
 }
@@ -127,14 +123,14 @@ class ErrorBoundary extends StatefulWidget {
   final Widget child;
   final Widget Function(Object error, StackTrace? stack)? errorBuilder;
   final VoidCallback? onRetry;
-  
+
   const ErrorBoundary({
     super.key,
     required this.child,
     this.errorBuilder,
     this.onRetry,
   });
-  
+
   @override
   State<ErrorBoundary> createState() => _ErrorBoundaryState();
 }
@@ -142,7 +138,7 @@ class ErrorBoundary extends StatefulWidget {
 class _ErrorBoundaryState extends State<ErrorBoundary> {
   Object? _error;
   StackTrace? _stackTrace;
-  
+
   @override
   void initState() {
     super.initState();
@@ -154,7 +150,7 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
       });
     };
   }
-  
+
   void _retry() {
     setState(() {
       _error = null;
@@ -162,21 +158,21 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
     });
     widget.onRetry?.call();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     if (_error != null) {
       if (widget.errorBuilder != null) {
         return widget.errorBuilder!(_error!, _stackTrace);
       }
-      
+
       return ErrorState(
         error: _error,
         onRetry: _retry,
         showDetails: true,
       );
     }
-    
+
     return widget.child;
   }
 }
@@ -213,7 +209,7 @@ class ErrorDialog extends StatelessWidget {
   final String message;
   final Object? error;
   final bool showDetails;
-  
+
   const ErrorDialog({
     super.key,
     required this.title,
@@ -221,7 +217,7 @@ class ErrorDialog extends StatelessWidget {
     this.error,
     this.showDetails = false,
   });
-  
+
   static Future<void> show(
     BuildContext context, {
     required String title,
@@ -239,11 +235,11 @@ class ErrorDialog extends StatelessWidget {
       ),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return AlertDialog(
       icon: Icon(
         Icons.error_outline,

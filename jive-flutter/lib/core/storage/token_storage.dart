@@ -10,13 +10,13 @@ class TokenStorage {
   static const String _tokenExpiryKey = 'token_expiry';
   static const String _userIdKey = 'user_id';
   static const String _rememberMeKey = 'remember_me';
-  
+
   /// 保存访问令牌
   static Future<void> saveAccessToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_accessTokenKey, token);
   }
-  
+
   /// 获取访问令牌
   static Future<String?> getAccessToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -26,19 +26,19 @@ class TokenStorage {
     }
     return token;
   }
-  
+
   /// 保存刷新令牌
   static Future<void> saveRefreshToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_refreshTokenKey, token);
   }
-  
+
   /// 获取刷新令牌
   static Future<String?> getRefreshToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_refreshTokenKey);
   }
-  
+
   /// 保存令牌（同时保存访问和刷新令牌）
   static Future<void> saveTokens({
     required String accessToken,
@@ -51,13 +51,13 @@ class TokenStorage {
       if (expiryDate != null) saveTokenExpiry(expiryDate),
     ]);
   }
-  
+
   /// 保存令牌过期时间
   static Future<void> saveTokenExpiry(DateTime expiryDate) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenExpiryKey, expiryDate.toIso8601String());
   }
-  
+
   /// 获取令牌过期时间
   static Future<DateTime?> getTokenExpiry() async {
     final prefs = await SharedPreferences.getInstance();
@@ -67,7 +67,7 @@ class TokenStorage {
     }
     return null;
   }
-  
+
   /// 检查令牌是否过期
   static Future<bool> isTokenExpired() async {
     final expiry = await getTokenExpiry();
@@ -91,36 +91,37 @@ class TokenStorage {
       final map = jsonDecode(decoded);
       if (map is Map && map['exp'] is num) {
         final exp = (map['exp'] as num).toInt();
-        return DateTime.fromMillisecondsSinceEpoch(exp * 1000, isUtc: true).toLocal();
+        return DateTime.fromMillisecondsSinceEpoch(exp * 1000, isUtc: true)
+            .toLocal();
       }
     } catch (_) {}
     return null;
   }
-  
+
   /// 保存用户ID
   static Future<void> saveUserId(String userId) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_userIdKey, userId);
   }
-  
+
   /// 获取用户ID
   static Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_userIdKey);
   }
-  
+
   /// 设置记住我
   static Future<void> setRememberMe(bool remember) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_rememberMeKey, remember);
   }
-  
+
   /// 获取记住我状态
   static Future<bool> getRememberMe() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_rememberMeKey) ?? false;
   }
-  
+
   /// 清除所有令牌
   static Future<void> clearTokens() async {
     final prefs = await SharedPreferences.getInstance();
@@ -131,36 +132,36 @@ class TokenStorage {
       prefs.remove(_userIdKey),
     ]);
   }
-  
+
   /// 清除所有存储数据
   static Future<void> clearAll() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
   }
-  
+
   /// 检查是否已登录
   static Future<bool> hasValidToken() async {
     final token = await getAccessToken();
     if (token == null || token.isEmpty) {
       return false;
     }
-    
+
     // 检查是否过期
     final isExpired = await isTokenExpired();
     return !isExpired;
   }
-  
+
   /// 获取认证信息
   static Future<AuthInfo?> getAuthInfo() async {
     final accessToken = await getAccessToken();
     final refreshToken = await getRefreshToken();
     final userId = await getUserId();
     final expiry = await getTokenExpiry();
-    
+
     if (accessToken == null || refreshToken == null) {
       return null;
     }
-    
+
     return AuthInfo(
       accessToken: accessToken,
       refreshToken: refreshToken,
@@ -176,19 +177,19 @@ class AuthInfo {
   final String refreshToken;
   final String? userId;
   final DateTime? expiryDate;
-  
+
   const AuthInfo({
     required this.accessToken,
     required this.refreshToken,
     this.userId,
     this.expiryDate,
   });
-  
+
   bool get isExpired {
     if (expiryDate == null) return false;
     return DateTime.now().isAfter(expiryDate!);
   }
-  
+
   Duration get remainingTime {
     if (expiryDate == null) return Duration.zero;
     final remaining = expiryDate!.difference(DateTime.now());
@@ -196,5 +197,12 @@ class AuthInfo {
   }
 
   @override
-  String toString() => 'AuthInfo(userId: ' + (userId ?? 'null') + ', exp: ' + (expiryDate?.toIso8601String() ?? 'null') + ', expired=' + isExpired.toString() + ')';
+  String toString() =>
+      'AuthInfo(userId: ' +
+      (userId ?? 'null') +
+      ', exp: ' +
+      (expiryDate?.toIso8601String() ?? 'null') +
+      ', expired=' +
+      isExpired.toString() +
+      ')';
 }

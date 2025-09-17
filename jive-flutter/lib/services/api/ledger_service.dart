@@ -5,14 +5,14 @@ import '../../models/ledger.dart';
 /// 账本API服务
 class LedgerService {
   final _client = HttpClient.instance;
-  
+
   /// 获取所有账本
   Future<List<Ledger>> getAllLedgers() async {
     try {
       final response = await _client.get(
         Endpoints.ledgers,
       );
-      
+
       final List<dynamic> data = response.data['data'] ?? response.data;
       return data.map((json) => Ledger.fromJson(json)).toList();
     } catch (e) {
@@ -26,7 +26,7 @@ class LedgerService {
       final response = await _client.get(
         '${Endpoints.ledgers}/$id',
       );
-      
+
       return Ledger.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
@@ -40,7 +40,7 @@ class LedgerService {
         Endpoints.ledgers,
         data: ledger.toJson(),
       );
-      
+
       return Ledger.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
@@ -54,7 +54,7 @@ class LedgerService {
         '${Endpoints.ledgers}/$id',
         data: updates,
       );
-      
+
       return Ledger.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
@@ -78,13 +78,13 @@ class LedgerService {
       final response = await _client.post(
         '${Endpoints.ledgers}/$id/set-default',
       );
-      
+
       return Ledger.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 分享账本
   Future<Ledger> shareLedger(String id, List<String> userEmails) async {
     try {
@@ -94,13 +94,13 @@ class LedgerService {
           'user_emails': userEmails,
         },
       );
-      
+
       return Ledger.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 取消分享账本
   Future<Ledger> unshareLedger(String id, String userEmail) async {
     try {
@@ -110,27 +110,27 @@ class LedgerService {
           'user_email': userEmail,
         },
       );
-      
+
       return Ledger.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 获取账本统计
   Future<LedgerStatistics> getLedgerStatistics(String id) async {
     try {
       final response = await _client.get(
         '${Endpoints.ledgers}/$id/statistics',
       );
-      
+
       // 处理不同的响应格式
       dynamic responseData = response.data;
       Map<String, dynamic> statisticsData;
-      
+
       if (responseData is Map) {
         // 如果响应本身就是统计数据
-        if (responseData.containsKey('totalAccounts') || 
+        if (responseData.containsKey('totalAccounts') ||
             responseData.containsKey('totalTransactions') ||
             responseData.containsKey('totalBudgets')) {
           statisticsData = responseData as Map<String, dynamic>;
@@ -155,7 +155,7 @@ class LedgerService {
           'balance': 0.0,
         };
       }
-      
+
       return LedgerStatistics.fromJson(statisticsData);
     } catch (e) {
       throw _handleError(e);
@@ -168,11 +168,11 @@ class LedgerService {
       final response = await _client.get(
         '${Endpoints.ledgers}/$id/members',
       );
-      
+
       // 处理不同的响应格式
       dynamic responseData = response.data;
       List<dynamic> data;
-      
+
       if (responseData is List) {
         data = responseData;
       } else if (responseData is Map && responseData.containsKey('data')) {
@@ -192,7 +192,7 @@ class LedgerService {
       } else {
         data = [];
       }
-      
+
       return data.map((json) => LedgerMember.fromJson(json)).toList();
     } catch (e) {
       throw _handleError(e);
@@ -212,7 +212,7 @@ class LedgerService {
           'permissions': permissions,
         },
       );
-      
+
       return LedgerMember.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
@@ -225,7 +225,7 @@ class LedgerService {
       final response = await _client.get(
         '${Endpoints.ledgers}/current',
       );
-      
+
       return Ledger.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
@@ -250,13 +250,13 @@ class LedgerService {
         '${Endpoints.ledgers}/${ledger.id}',
         data: ledger.toJson(),
       );
-      
+
       return Ledger.fromJson(response.data);
     } catch (e) {
       throw _handleError(e);
     }
   }
-  
+
   /// 错误处理
   Exception _handleError(dynamic error) {
     if (error is ApiException) {

@@ -63,9 +63,10 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller ?? TextEditingController(text: widget.value);
+    _controller =
+        widget.controller ?? TextEditingController(text: widget.value);
     _focusNode = widget.focusNode ?? FocusNode();
-    
+
     _focusNode.addListener(() {
       setState(() {
         _isFocused = _focusNode.hasFocus;
@@ -123,11 +124,11 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
             prefixIcon: widget.prefixIcon,
             suffixIcon: widget.suffixIcon,
             filled: true,
-            fillColor: widget.fillColor ?? 
-                (widget.enabled 
+            fillColor: widget.fillColor ??
+                (widget.enabled
                     ? theme.colorScheme.surface
                     : theme.disabledColor.withOpacity(0.1)),
-            contentPadding: widget.contentPadding ?? 
+            contentPadding: widget.contentPadding ??
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             border: _buildBorder(theme, false),
             enabledBorder: _buildBorder(theme, false),
@@ -145,7 +146,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppConstants.borderRadius),
       borderSide: BorderSide(
-        color: isFocused 
+        color: isFocused
             ? theme.primaryColor
             : theme.colorScheme.outline.withOpacity(0.3),
         width: isFocused ? 2 : 1,

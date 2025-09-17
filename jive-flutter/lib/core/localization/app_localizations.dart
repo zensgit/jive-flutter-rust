@@ -73,10 +73,12 @@ class AppLocalizations {
   String get register => _localizedValues[locale.languageCode]!['register']!;
   String get email => _localizedValues[locale.languageCode]!['email']!;
   String get password => _localizedValues[locale.languageCode]!['password']!;
-  String get confirmPassword => _localizedValues[locale.languageCode]!['confirm_password']!;
+  String get confirmPassword =>
+      _localizedValues[locale.languageCode]!['confirm_password']!;
   String get dashboard => _localizedValues[locale.languageCode]!['dashboard']!;
   String get accounts => _localizedValues[locale.languageCode]!['accounts']!;
-  String get transactions => _localizedValues[locale.languageCode]!['transactions']!;
+  String get transactions =>
+      _localizedValues[locale.languageCode]!['transactions']!;
   String get budgets => _localizedValues[locale.languageCode]!['budgets']!;
   String get settings => _localizedValues[locale.languageCode]!['settings']!;
   String get logout => _localizedValues[locale.languageCode]!['logout']!;
@@ -93,19 +95,21 @@ class AppLocalizations {
   String get filter => _localizedValues[locale.languageCode]!['filter']!;
   String get sort => _localizedValues[locale.languageCode]!['sort']!;
   String get noData => _localizedValues[locale.languageCode]!['no_data']!;
-  
+
   /// 支持的语言
   static const List<Locale> supportedLocales = [
     Locale('en', 'US'),
     Locale('zh', 'CN'),
   ];
-  
+
   /// 代理
-  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
 }
 
 /// 本地化代理
-class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override

@@ -87,14 +87,14 @@ class FamilySettings {
   final String locale;
   final String timezone;
   final int startOfWeek;
-  
+
   FamilySettings({
     required this.currency,
     required this.locale,
     required this.timezone,
     required this.startOfWeek,
   });
-  
+
   factory FamilySettings.fromJson(Map<String, dynamic> json) {
     return FamilySettings(
       currency: json['currency'] ?? 'CNY',
@@ -103,7 +103,7 @@ class FamilySettings {
       startOfWeek: json['start_of_week'] ?? 1,
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       'currency': currency,
@@ -312,8 +312,8 @@ class FamilyInvitation {
       role: FamilyRole.fromString(json['role']),
       token: json['token'],
       expiresAt: DateTime.parse(json['expires_at']),
-      acceptedAt: json['accepted_at'] != null 
-          ? DateTime.parse(json['accepted_at']) 
+      acceptedAt: json['accepted_at'] != null
+          ? DateTime.parse(json['accepted_at'])
           : null,
       createdAt: DateTime.parse(json['created_at']),
     );

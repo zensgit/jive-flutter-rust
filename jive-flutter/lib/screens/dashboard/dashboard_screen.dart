@@ -57,11 +57,11 @@ class DashboardScreen extends ConsumerWidget {
             // 净资产卡片
             _buildNetWorthCard(context, accounts),
             const SizedBox(height: 16),
-            
+
             // 快速操作
             const QuickActions(),
             const SizedBox(height: 24),
-            
+
             // 账户概览
             _buildSectionTitle(context, '账户', onTap: () {
               // 导航到账户页面
@@ -69,7 +69,7 @@ class DashboardScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             const AccountOverview(),
             const SizedBox(height: 24),
-            
+
             // 最近交易
             _buildSectionTitle(context, '最近交易', onTap: () {
               // 导航到交易页面
@@ -82,7 +82,7 @@ class DashboardScreen extends ConsumerWidget {
               },
             ),
             const SizedBox(height: 24),
-            
+
             // 预算摘要
             _buildSectionTitle(context, '本月预算', onTap: () {
               // 导航到预算页面
@@ -120,8 +120,8 @@ class DashboardScreen extends ConsumerWidget {
                 Text(
                   '净资产',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.white70,
-                  ),
+                        color: Colors.white70,
+                      ),
                 ),
                 Icon(
                   Icons.trending_up,
@@ -132,14 +132,15 @@ class DashboardScreen extends ConsumerWidget {
             const SizedBox(height: 8),
             Consumer(builder: (context, ref, _) {
               final total = _calculateNetWorth(accounts);
-              final formatted = ref.read(currencyProvider.notifier)
+              final formatted = ref
+                  .read(currencyProvider.notifier)
                   .formatCurrency(total, ref.read(baseCurrencyProvider).code);
               return Text(
                 formatted,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
               );
             }),
             const SizedBox(height: 16),
@@ -147,7 +148,8 @@ class DashboardScreen extends ConsumerWidget {
               children: [
                 Expanded(
                   child: Consumer(builder: (context, ref, _) {
-                    final str = ref.read(currencyProvider.notifier)
+                    final str = ref
+                        .read(currencyProvider.notifier)
                         .formatCurrency(0, ref.read(baseCurrencyProvider).code);
                     return _buildSubAmount(
                       context,
@@ -159,7 +161,8 @@ class DashboardScreen extends ConsumerWidget {
                 ),
                 Expanded(
                   child: Consumer(builder: (context, ref, _) {
-                    final str = ref.read(currencyProvider.notifier)
+                    final str = ref
+                        .read(currencyProvider.notifier)
                         .formatCurrency(0, ref.read(baseCurrencyProvider).code);
                     return _buildSubAmount(
                       context,
@@ -177,7 +180,8 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSubAmount(BuildContext context, String label, String amount, Color color) {
+  Widget _buildSubAmount(
+      BuildContext context, String label, String amount, Color color) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -214,15 +218,16 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title, {VoidCallback? onTap}) {
+  Widget _buildSectionTitle(BuildContext context, String title,
+      {VoidCallback? onTap}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           title,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         if (onTap != null)
           TextButton(
@@ -237,7 +242,8 @@ class DashboardScreen extends ConsumerWidget {
     double total = 0.0;
     for (final account in accounts) {
       // 根据账户类型计算，负债账户（信用卡、贷款）为负值，其他为正值
-      if (account.type == AccountType.creditCard || account.type == AccountType.loan) {
+      if (account.type == AccountType.creditCard ||
+          account.type == AccountType.loan) {
         total -= account.balance;
       } else {
         total += account.balance;
@@ -275,8 +281,8 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
               Text(
                 '切换账本',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               TextButton.icon(
                 onPressed: () {
@@ -295,7 +301,7 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
                 final isSelected = ledger.id == currentLedger?.id;
                 return ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: isSelected 
+                    backgroundColor: isSelected
                         ? Theme.of(context).primaryColor
                         : Colors.grey[300],
                     child: Icon(
@@ -312,7 +318,9 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
                         )
                       : null,
                   onTap: () {
-                    ref.read(currentLedgerProvider.notifier).switchLedger(ledger);
+                    ref
+                        .read(currentLedgerProvider.notifier)
+                        .switchLedger(ledger);
                     Navigator.pop(context);
                   },
                 );

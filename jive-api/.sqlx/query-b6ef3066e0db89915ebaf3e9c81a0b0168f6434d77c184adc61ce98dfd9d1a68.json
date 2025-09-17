@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO family_currency_settings \n            (family_id, base_currency, allow_multi_currency, auto_convert)\n            VALUES ($1, $2, $3, $4)\n            ON CONFLICT (family_id) \n            DO UPDATE SET\n                base_currency = COALESCE($2, family_currency_settings.base_currency),\n                allow_multi_currency = COALESCE($3, family_currency_settings.allow_multi_currency),\n                auto_convert = COALESCE($4, family_currency_settings.auto_convert),\n                updated_at = CURRENT_TIMESTAMP\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar",
+        "Bool",
+        "Bool"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b6ef3066e0db89915ebaf3e9c81a0b0168f6434d77c184adc61ce98dfd9d1a68"
+}

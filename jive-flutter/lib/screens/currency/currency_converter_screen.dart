@@ -7,11 +7,14 @@ class CurrencyConverterScreen extends ConsumerStatefulWidget {
   const CurrencyConverterScreen({super.key});
 
   @override
-  ConsumerState<CurrencyConverterScreen> createState() => _CurrencyConverterScreenState();
+  ConsumerState<CurrencyConverterScreen> createState() =>
+      _CurrencyConverterScreenState();
 }
 
-class _CurrencyConverterScreenState extends ConsumerState<CurrencyConverterScreen> {
-  final TextEditingController _amountController = TextEditingController(text: '100');
+class _CurrencyConverterScreenState
+    extends ConsumerState<CurrencyConverterScreen> {
+  final TextEditingController _amountController =
+      TextEditingController(text: '100');
   String _fromCurrency = 'USD';
   String _toCurrency = 'CNY';
   double? _result;
@@ -40,15 +43,15 @@ class _CurrencyConverterScreenState extends ConsumerState<CurrencyConverterScree
     try {
       // Refresh exchange rates
       await ref.read(currencyProvider.notifier).refreshExchangeRates();
-      
+
       // Perform conversion
       final amount = double.tryParse(_amountController.text) ?? 0;
       if (amount > 0) {
         final result = await ref.read(currencyProvider.notifier).convertAmount(
-          amount,
-          _fromCurrency,
-          _toCurrency,
-        );
+              amount,
+              _fromCurrency,
+              _toCurrency,
+            );
         setState(() {
           _result = result;
         });
@@ -86,7 +89,8 @@ class _CurrencyConverterScreenState extends ConsumerState<CurrencyConverterScree
             // Amount input
             TextField(
               controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               decoration: const InputDecoration(
                 labelText: '金额',
                 border: OutlineInputBorder(),
@@ -94,9 +98,9 @@ class _CurrencyConverterScreenState extends ConsumerState<CurrencyConverterScree
               ),
               onChanged: (_) => _refreshAndConvert(),
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // From Currency
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -129,9 +133,9 @@ class _CurrencyConverterScreenState extends ConsumerState<CurrencyConverterScree
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 10),
-            
+
             // Swap button
             IconButton(
               icon: const Icon(Icons.swap_vert, size: 32),
@@ -144,9 +148,9 @@ class _CurrencyConverterScreenState extends ConsumerState<CurrencyConverterScree
                 _refreshAndConvert();
               },
             ),
-            
+
             const SizedBox(height: 10),
-            
+
             // To Currency
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -179,9 +183,9 @@ class _CurrencyConverterScreenState extends ConsumerState<CurrencyConverterScree
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 30),
-            
+
             // Result
             if (_isLoading)
               const CircularProgressIndicator()
@@ -194,7 +198,9 @@ class _CurrencyConverterScreenState extends ConsumerState<CurrencyConverterScree
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        formatter.formatCurrency(double.tryParse(_amountController.text) ?? 0, _fromCurrency),
+                        formatter.formatCurrency(
+                            double.tryParse(_amountController.text) ?? 0,
+                            _fromCurrency),
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 10),
@@ -202,10 +208,13 @@ class _CurrencyConverterScreenState extends ConsumerState<CurrencyConverterScree
                       const SizedBox(height: 10),
                       Text(
                         formatter.formatCurrency(_result ?? 0, _toCurrency),
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const SizedBox(height: 10),
                       Text(
@@ -216,9 +225,9 @@ class _CurrencyConverterScreenState extends ConsumerState<CurrencyConverterScree
                   ),
                 ),
               ),
-            
+
             const Spacer(),
-            
+
             // Refresh button
             ElevatedButton.icon(
               onPressed: _isLoading ? null : _refreshAndConvert,
@@ -228,15 +237,15 @@ class _CurrencyConverterScreenState extends ConsumerState<CurrencyConverterScree
                 minimumSize: const Size(double.infinity, 48),
               ),
             ),
-            
+
             const SizedBox(height: 10),
-            
+
             // Info
             Text(
               '汇率数据实时更新',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey,
-              ),
+                    color: Colors.grey,
+                  ),
             ),
           ],
         ),

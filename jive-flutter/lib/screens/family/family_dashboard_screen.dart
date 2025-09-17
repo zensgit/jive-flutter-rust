@@ -18,7 +18,8 @@ class FamilyDashboardScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<FamilyDashboardScreen> createState() => _FamilyDashboardScreenState();
+  ConsumerState<FamilyDashboardScreen> createState() =>
+      _FamilyDashboardScreenState();
 }
 
 class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
@@ -41,7 +42,8 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final statisticsAsync = ref.watch(ledgerStatisticsProvider(widget.ledger.id!));
+    final statisticsAsync =
+        ref.watch(ledgerStatisticsProvider(widget.ledger.id!));
 
     return Scaffold(
       appBar: AppBar(
@@ -52,8 +54,8 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
             Text(
               widget.ledger.name,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.white70,
-              ),
+                    color: Colors.white70,
+                  ),
             ),
           ],
         ),
@@ -77,7 +79,8 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => FamilySettingsScreen(ledger: widget.ledger),
+                  builder: (context) =>
+                      FamilySettingsScreen(ledger: widget.ledger),
                 ),
               );
             },
@@ -184,7 +187,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
   Widget _buildNetWorthCard(LedgerStatistics stats) {
     final netWorth = stats.netWorth;
     final isPositive = netWorth >= 0;
-    
+
     return Card(
       elevation: 4,
       child: Container(
@@ -213,7 +216,8 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
@@ -338,7 +342,8 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
     );
   }
 
-  List<PieChartSectionData> _createPieChartSections(Map<String, double> breakdown) {
+  List<PieChartSectionData> _createPieChartSections(
+      Map<String, double> breakdown) {
     final colors = [
       Colors.blue,
       Colors.green,
@@ -347,7 +352,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
       Colors.red,
       Colors.teal,
     ];
-    
+
     int index = 0;
     return breakdown.entries.map((entry) {
       final color = colors[index % colors.length];
@@ -375,7 +380,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
       Colors.red,
       Colors.teal,
     ];
-    
+
     return Wrap(
       spacing: 16,
       runSpacing: 8,
@@ -529,7 +534,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
             child: Text('暂无趋势数据'),
           );
         }
-        
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -537,11 +542,11 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
               // 月度趋势图
               _buildMonthlyTrendChart(stats.monthlyTrend),
               const SizedBox(height: 16),
-              
+
               // 收支对比
               _buildIncomeExpenseComparison(),
               const SizedBox(height: 16),
-              
+
               // 类别趋势
               _buildCategoryTrends(),
             ],
@@ -612,7 +617,11 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                   borderData: FlBorderData(show: false),
                   lineBarsData: [
                     LineChartBarData(
-                      spots: monthlyTrend.entries.toList().asMap().entries.map((entry) {
+                      spots: monthlyTrend.entries
+                          .toList()
+                          .asMap()
+                          .entries
+                          .map((entry) {
                         return FlSpot(entry.key.toDouble(), entry.value.value);
                       }).toList(),
                       isCurved: true,
@@ -686,7 +695,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
 
   Widget _buildMembersTab() {
     final membersAsync = ref.watch(ledgerMembersProvider(widget.ledger.id!));
-    
+
     return membersAsync.when(
       data: (members) => ListView.builder(
         padding: const EdgeInsets.all(16),
@@ -703,24 +712,24 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => FamilyMembersScreen(ledger: widget.ledger),
+                      builder: (context) =>
+                          FamilyMembersScreen(ledger: widget.ledger),
                     ),
                   );
                 },
               ),
             );
           }
-          
+
           final member = members[index - 1];
           return Card(
             child: ListTile(
               leading: CircleAvatar(
-                backgroundImage: member.avatar != null
-                    ? NetworkImage(member.avatar!)
-                    : null,
+                backgroundImage:
+                    member.avatar != null ? NetworkImage(member.avatar!) : null,
                 child: member.avatar == null
-                  ? Text(StringUtils.safeInitial(member.name))
-                  : null,
+                    ? Text(StringUtils.safeInitial(member.name))
+                    : null,
               ),
               title: Text(member.name),
               subtitle: Text(member.role.label),
@@ -751,7 +760,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
   String _formatRelativeDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
-    
+
     if (difference.inDays > 30) {
       return '${(difference.inDays / 30).floor()}月前';
     } else if (difference.inDays > 0) {

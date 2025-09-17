@@ -5,10 +5,11 @@ import 'package:flutter/services.dart';
 /// 封装微信登录和绑定相关功能
 class WeChatService {
   static const _platform = MethodChannel('com.jivemoney.flutter/wechat');
-  
+
   /// WeChat应用配置
-  static const String _appId = 'wx1234567890abcdef'; // TODO: 替换为实际的WeChat App ID
-  
+  static const String _appId =
+      'wx1234567890abcdef'; // TODO: 替换为实际的WeChat App ID
+
   /// 初始化WeChat SDK
   static Future<bool> initWeChat() async {
     // Web环境下直接返回成功，不调用平台方法
@@ -16,7 +17,7 @@ class WeChatService {
       debugPrint('Web环境下跳过微信SDK初始化');
       return true;
     }
-    
+
     try {
       final result = await _platform.invokeMethod('initWeChat', {
         'appId': _appId,
@@ -27,14 +28,14 @@ class WeChatService {
       return false;
     }
   }
-  
+
   /// 检查是否安装了微信
   static Future<bool> isWeChatInstalled() async {
     // Web环境下始终返回false，使用模拟登录
     if (kIsWeb) {
       return false;
     }
-    
+
     try {
       final result = await _platform.invokeMethod('isWeChatInstalled');
       return result ?? false;
@@ -43,14 +44,14 @@ class WeChatService {
       return false;
     }
   }
-  
+
   /// 微信登录授权
   static Future<WeChatAuthResult?> login() async {
     // Web环境下直接使用模拟登录
     if (kIsWeb) {
       return simulateLogin();
     }
-    
+
     try {
       final result = await _platform.invokeMethod('login');
       if (result != null) {
@@ -62,14 +63,15 @@ class WeChatService {
       return null;
     }
   }
-  
+
   /// 获取用户信息
-  static Future<WeChatUserInfo?> getUserInfo(String accessToken, String openId) async {
+  static Future<WeChatUserInfo?> getUserInfo(
+      String accessToken, String openId) async {
     // Web环境下直接使用模拟用户信息
     if (kIsWeb) {
       return simulateGetUserInfo();
     }
-    
+
     try {
       final result = await _platform.invokeMethod('getUserInfo', {
         'accessToken': accessToken,
@@ -84,12 +86,12 @@ class WeChatService {
       return null;
     }
   }
-  
+
   /// 模拟微信登录（用于Web和开发环境）
   static Future<WeChatAuthResult?> simulateLogin() async {
     // 模拟延迟
     await Future.delayed(const Duration(seconds: 2));
-    
+
     return WeChatAuthResult(
       code: 'mock_code_${DateTime.now().millisecondsSinceEpoch}',
       state: 'mock_state',
@@ -100,11 +102,11 @@ class WeChatService {
       expiresIn: 7200,
     );
   }
-  
+
   /// 模拟获取用户信息（用于Web和开发环境）
   static Future<WeChatUserInfo?> simulateGetUserInfo() async {
     await Future.delayed(const Duration(seconds: 1));
-    
+
     return WeChatUserInfo(
       openId: 'mock_openid',
       nickname: '微信用户${DateTime.now().millisecond}',
@@ -127,7 +129,7 @@ class WeChatAuthResult {
   final String openId;
   final String? unionId;
   final int expiresIn;
-  
+
   WeChatAuthResult({
     required this.code,
     this.state,
@@ -137,7 +139,7 @@ class WeChatAuthResult {
     this.unionId,
     required this.expiresIn,
   });
-  
+
   factory WeChatAuthResult.fromMap(Map<String, dynamic> map) {
     return WeChatAuthResult(
       code: map['code'] ?? '',
@@ -149,7 +151,7 @@ class WeChatAuthResult {
       expiresIn: map['expires_in'] ?? 0,
     );
   }
-  
+
   Map<String, dynamic> toMap() {
     return {
       'code': code,
@@ -173,7 +175,7 @@ class WeChatUserInfo {
   final String city;
   final String country;
   final String? unionId;
-  
+
   WeChatUserInfo({
     required this.openId,
     required this.nickname,
@@ -184,7 +186,7 @@ class WeChatUserInfo {
     required this.country,
     this.unionId,
   });
-  
+
   factory WeChatUserInfo.fromMap(Map<String, dynamic> map) {
     return WeChatUserInfo(
       openId: map['openid'] ?? '',
@@ -197,7 +199,7 @@ class WeChatUserInfo {
       unionId: map['unionid'],
     );
   }
-  
+
   Map<String, dynamic> toMap() {
     return {
       'openid': openId,
@@ -210,7 +212,7 @@ class WeChatUserInfo {
       'unionid': unionId,
     };
   }
-  
+
   String get sexText {
     switch (sex) {
       case 1:

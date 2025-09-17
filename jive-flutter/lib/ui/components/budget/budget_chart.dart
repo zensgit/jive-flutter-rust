@@ -31,10 +31,10 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final totalBudget = widget.budgets.fold<double>(
-      0, 
+      0,
       (sum, budget) => sum + budget.budgeted,
     );
-    
+
     if (widget.budgets.isEmpty || totalBudget == 0) {
       return _buildEmptyState(theme);
     }
@@ -63,7 +63,7 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
                 ),
               ),
             ),
-          
+
           // 饼图
           Expanded(
             child: Row(
@@ -93,7 +93,7 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
                     ),
                   ),
                 ),
-                
+
                 // 图例
                 if (widget.showLegend)
                   Expanded(
@@ -103,7 +103,7 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
               ],
             ),
           ),
-          
+
           // 总计
           _buildTotal(theme, totalBudget),
         ],
@@ -116,7 +116,7 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
       0,
       (sum, budget) => sum + budget.budgeted,
     );
-    
+
     return widget.budgets.asMap().entries.map((entry) {
       final index = entry.key;
       final budget = entry.value;
@@ -124,13 +124,11 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
       final fontSize = isTouched ? 14.0 : 12.0;
       final radius = isTouched ? 60.0 : 50.0;
       final percentage = (budget.budgeted / totalBudget * 100);
-      
+
       return PieChartSectionData(
         color: budget.color ?? _getDefaultColor(index),
         value: budget.budgeted,
-        title: widget.showValues 
-            ? '${percentage.toStringAsFixed(0)}%'
-            : '',
+        title: widget.showValues ? '${percentage.toStringAsFixed(0)}%' : '',
         radius: radius,
         titleStyle: TextStyle(
           fontSize: fontSize,
@@ -151,7 +149,7 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
           final index = entry.key;
           final budget = entry.value;
           final color = budget.color ?? _getDefaultColor(index);
-          
+
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Row(
@@ -186,7 +184,7 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
       (sum, budget) => sum + budget.spent,
     );
     final percentage = totalBudget > 0 ? (totalSpent / totalBudget * 100) : 0.0;
-    
+
     return Container(
       margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.all(12),
@@ -303,7 +301,7 @@ class BudgetComparisonChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     if (budgets.isEmpty) {
       return _buildEmptyState(theme);
     }
@@ -332,7 +330,7 @@ class BudgetComparisonChart extends StatelessWidget {
                 ),
               ),
             ),
-          
+
           // 柱状图
           Expanded(
             child: BarChart(
@@ -345,7 +343,8 @@ class BudgetComparisonChart extends StatelessWidget {
                     tooltipBgColor: theme.colorScheme.surface,
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       final budget = budgets[groupIndex];
-                      final value = rodIndex == 0 ? budget.budgeted : budget.spent;
+                      final value =
+                          rodIndex == 0 ? budget.budgeted : budget.spent;
                       final label = rodIndex == 0 ? '预算' : '实际';
                       return BarTooltipItem(
                         '$label\n¥${value.toStringAsFixed(2)}',
@@ -412,7 +411,7 @@ class BudgetComparisonChart extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // 图例
           _buildLegend(theme),
         ],
@@ -424,7 +423,7 @@ class BudgetComparisonChart extends StatelessWidget {
     return budgets.asMap().entries.map((entry) {
       final index = entry.key;
       final budget = entry.value;
-      
+
       return BarChartGroupData(
         x: index,
         barRods: [
@@ -436,8 +435,8 @@ class BudgetComparisonChart extends StatelessWidget {
           ),
           BarChartRodData(
             toY: budget.spent,
-            color: budget.spent > budget.budgeted 
-                ? AppConstants.errorColor 
+            color: budget.spent > budget.budgeted
+                ? AppConstants.errorColor
                 : AppConstants.successColor,
             width: 16,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),

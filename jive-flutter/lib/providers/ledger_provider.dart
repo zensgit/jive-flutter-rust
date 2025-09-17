@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/api/ledger_service.dart' as api;
 import '../models/ledger.dart';
@@ -19,7 +20,7 @@ final ledgersProvider = FutureProvider<List<Ledger>>((ref) async {
 // 当前账本状态
 class CurrentLedgerNotifier extends StateNotifier<Ledger?> {
   final Ref ref;
-  
+
   CurrentLedgerNotifier(this.ref) : super(null) {
     _loadCurrentLedger();
   }
@@ -50,7 +51,7 @@ class CurrentLedgerNotifier extends StateNotifier<Ledger?> {
       state = ledger;
     } catch (e) {
       // 处理错误
-      print('创建默认账本失败: $e');
+      debugPrint('创建默认账本失败: $e');
     }
   }
 
@@ -59,13 +60,13 @@ class CurrentLedgerNotifier extends StateNotifier<Ledger?> {
       final service = ref.read(ledgerServiceProvider);
       await service.setCurrentLedger(ledger.id!);
       state = ledger;
-      
+
       // 刷新相关数据
       ref.invalidate(accountsProvider);
       ref.invalidate(transactionsProvider);
       ref.invalidate(budgetsProvider);
     } catch (e) {
-      print('切换账本失败: $e');
+      debugPrint('切换账本失败: $e');
     }
   }
 
@@ -86,10 +87,10 @@ class CurrentLedgerNotifier extends StateNotifier<Ledger?> {
           isDefault: false,
         ),
       );
-      
+
       // 刷新账本列表
       ref.invalidate(ledgersProvider);
-      
+
       // 如果是第一个账本，设为当前
       if (state == null) {
         await switchLedger(ledger);
@@ -103,12 +104,12 @@ class CurrentLedgerNotifier extends StateNotifier<Ledger?> {
     try {
       final service = ref.read(ledgerServiceProvider);
       final updatedLedger = await service.updateLedgerFromObject(ledger);
-      
+
       // 如果更新的是当前账本，更新状态
       if (state?.id == ledger.id) {
         state = updatedLedger;
       }
-      
+
       // 刷新账本列表
       ref.invalidate(ledgersProvider);
     } catch (e) {
@@ -120,7 +121,7 @@ class CurrentLedgerNotifier extends StateNotifier<Ledger?> {
     try {
       final service = ref.read(ledgerServiceProvider);
       await service.deleteLedger(ledgerId);
-      
+
       // 如果删除的是当前账本，切换到其他账本
       if (state?.id == ledgerId) {
         final ledgers = await ref.read(ledgersProvider.future);
@@ -130,7 +131,7 @@ class CurrentLedgerNotifier extends StateNotifier<Ledger?> {
           await _createDefaultLedger();
         }
       }
-      
+
       // 刷新账本列表
       ref.invalidate(ledgersProvider);
     } catch (e) {
@@ -140,18 +141,21 @@ class CurrentLedgerNotifier extends StateNotifier<Ledger?> {
 }
 
 // 当前账本Provider
-final currentLedgerProvider = StateNotifierProvider<CurrentLedgerNotifier, Ledger?>((ref) {
+final currentLedgerProvider =
+    StateNotifierProvider<CurrentLedgerNotifier, Ledger?>((ref) {
   return CurrentLedgerNotifier(ref);
 });
 
 // 账本统计信息
-final ledgerStatisticsProvider = FutureProvider.family<LedgerStatistics, String>((ref, ledgerId) async {
+final ledgerStatisticsProvider =
+    FutureProvider.family<LedgerStatistics, String>((ref, ledgerId) async {
   final service = ref.watch(ledgerServiceProvider);
   return await service.getLedgerStatistics(ledgerId);
 });
 
 // 账本共享成员
-final ledgerMembersProvider = FutureProvider.family<List<LedgerMember>, String>((ref, ledgerId) async {
+final ledgerMembersProvider =
+    FutureProvider.family<List<LedgerMember>, String>((ref, ledgerId) async {
   final service = ref.watch(ledgerServiceProvider);
   return await service.getLedgerMembers(ledgerId);
 });

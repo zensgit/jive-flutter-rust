@@ -51,11 +51,12 @@ class BudgetsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMonthlyBudget(BuildContext context, WidgetRef ref, BudgetState budgetState) {
+  Widget _buildMonthlyBudget(
+      BuildContext context, WidgetRef ref, BudgetState budgetState) {
     if (budgetState.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    
+
     if (budgetState.error != null) {
       return Center(
         child: Column(
@@ -66,14 +67,15 @@ class BudgetsScreen extends ConsumerWidget {
             Text('加载失败: ${budgetState.error}'),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () => ref.read(budgetControllerProvider.notifier).refresh(),
+              onPressed: () =>
+                  ref.read(budgetControllerProvider.notifier).refresh(),
               child: const Text('重试'),
             ),
           ],
         ),
       );
     }
-    
+
     if (budgetState.budgets.isEmpty) {
       return _buildEmptyState(context);
     }
@@ -87,110 +89,117 @@ class BudgetsScreen extends ConsumerWidget {
     return RefreshIndicator(
       onRefresh: () => ref.read(budgetControllerProvider.notifier).refresh(),
       child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              // 总览卡片
-              Card(
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Theme.of(context).primaryColor,
-                        Theme.of(context).primaryColor.withOpacity(0.7),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.all(16),
+        children: [
+          // 总览卡片
+          Card(
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Theme.of(context).primaryColor,
+                    Theme.of(context).primaryColor.withOpacity(0.7),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            '本月预算总览',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                          ),
-                          Text(
-                            '${DateTime.now().month}月',
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                      const Text(
+                        '本月预算总览',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                '剩余预算',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              Text(
-                                ref.read(currencyProvider.notifier).formatCurrency(remaining, ref.read(baseCurrencyProvider).code),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          CircularProgressIndicator(
-                            value: progress,
-                            backgroundColor: Colors.white24,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              progress > 0.8 ? Colors.orange : Colors.white,
-                            ),
-                            strokeWidth: 6,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Consumer(builder: (context, ref, _) => _buildBudgetInfo('预算', totalBudget, Colors.white, ref)),
-                          Consumer(builder: (context, ref, _) => _buildBudgetInfo('已用', totalSpent, Colors.white70, ref)),
-                          _buildBudgetInfo('剩余天数', DateTime.now().day.toDouble(), Colors.white70),
-                        ],
+                      Text(
+                        '${DateTime.now().month}月',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
                       ),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '剩余预算',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
+                          ),
+                          Text(
+                            ref.read(currencyProvider.notifier).formatCurrency(
+                                remaining, ref.read(baseCurrencyProvider).code),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      CircularProgressIndicator(
+                        value: progress,
+                        backgroundColor: Colors.white24,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          progress > 0.8 ? Colors.orange : Colors.white,
+                        ),
+                        strokeWidth: 6,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Consumer(
+                          builder: (context, ref, _) => _buildBudgetInfo(
+                              '预算', totalBudget, Colors.white, ref)),
+                      Consumer(
+                          builder: (context, ref, _) => _buildBudgetInfo(
+                              '已用', totalSpent, Colors.white70, ref)),
+                      _buildBudgetInfo('剩余天数', DateTime.now().day.toDouble(),
+                          Colors.white70),
+                    ],
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
-              
-              // 分类预算列表
-              const Text(
-                '分类预算',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
-              ...budgetList.map((budget) => _buildBudgetItem(context, budget)),
-            ],
+            ),
           ),
-        );
+          const SizedBox(height: 20),
+
+          // 分类预算列表
+          const Text(
+            '分类预算',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...budgetList.map((budget) => _buildBudgetItem(context, budget)),
+        ],
+      ),
+    );
   }
 
-  Widget _buildYearlyBudget(BuildContext context, WidgetRef ref, BudgetState budgetState) {
+  Widget _buildYearlyBudget(
+      BuildContext context, WidgetRef ref, BudgetState budgetState) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -271,7 +280,8 @@ class BudgetsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBudgetInfo(String label, double value, Color color, [WidgetRef? ref]) {
+  Widget _buildBudgetInfo(String label, double value, Color color,
+      [WidgetRef? ref]) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -284,10 +294,11 @@ class BudgetsScreen extends ConsumerWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          label == '剩余天数' 
+          label == '剩余天数'
               ? '${value.toInt()}天'
-              : ref != null 
-                  ? ref.read(currencyProvider.notifier).formatCurrency(value, ref.read(baseCurrencyProvider).code)
+              : ref != null
+                  ? ref.read(currencyProvider.notifier).formatCurrency(
+                      value, ref.read(baseCurrencyProvider).code)
                   : value.toStringAsFixed(2),
           style: TextStyle(
             color: color,
@@ -325,7 +336,8 @@ class BudgetsScreen extends ConsumerWidget {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: _getCategoryColor(budget.category).withOpacity(0.1),
+                          color: _getCategoryColor(budget.category)
+                              .withOpacity(0.1),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(
@@ -367,8 +379,10 @@ class BudgetsScreen extends ConsumerWidget {
                         ),
                       ),
                       Consumer(builder: (context, ref, _) {
-                        final str = ref.read(currencyProvider.notifier)
-                            .formatCurrency(remaining.abs(), ref.read(baseCurrencyProvider).code);
+                        final str = ref
+                            .read(currencyProvider.notifier)
+                            .formatCurrency(remaining.abs(),
+                                ref.read(baseCurrencyProvider).code);
                         return Text(
                           str,
                           style: TextStyle(
@@ -403,8 +417,10 @@ class BudgetsScreen extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Consumer(builder: (context, ref, _) {
-                    final used = ref.read(currencyProvider.notifier)
-                        .formatCurrency(spent, ref.read(baseCurrencyProvider).code);
+                    final used = ref
+                        .read(currencyProvider.notifier)
+                        .formatCurrency(
+                            spent, ref.read(baseCurrencyProvider).code);
                     return Text(
                       '已用 ' + used,
                       style: TextStyle(
@@ -414,8 +430,10 @@ class BudgetsScreen extends ConsumerWidget {
                     );
                   }),
                   Consumer(builder: (context, ref, _) {
-                    final totalStr = ref.read(currencyProvider.notifier)
-                        .formatCurrency(amount, ref.read(baseCurrencyProvider).code);
+                    final totalStr = ref
+                        .read(currencyProvider.notifier)
+                        .formatCurrency(
+                            amount, ref.read(baseCurrencyProvider).code);
                     return Text(
                       '预算 ' + totalStr,
                       style: TextStyle(

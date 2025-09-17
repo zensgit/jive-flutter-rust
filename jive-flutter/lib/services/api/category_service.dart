@@ -5,8 +5,8 @@ import '../../models/category.dart';
 /// 分类API服务
 class CategoryService {
   final HttpClient _client;
-  
-  CategoryService({HttpClient? client}) 
+
+  CategoryService({HttpClient? client})
       : _client = client ?? HttpClient.instance;
 
   /// 获取分类列表
@@ -16,12 +16,13 @@ class CategoryService {
         '${ApiConfig.apiUrl}/categories',
         queryParameters: {'ledger_id': ledgerId},
       );
-      
+
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['data'] ?? response.data;
         return data.map((json) => Category.fromJson(json)).toList();
       } else {
-        throw Exception('Failed to fetch categories: ${response.statusMessage}');
+        throw Exception(
+            'Failed to fetch categories: ${response.statusMessage}');
       }
     } catch (e) {
       throw Exception('Network error: $e');
@@ -51,7 +52,7 @@ class CategoryService {
           if (description != null) 'description': description,
         },
       );
-      
+
       if (response.statusCode == 201 || response.statusCode == 200) {
         return Category.fromJson(response.data['data'] ?? response.data);
       } else {
@@ -64,7 +65,7 @@ class CategoryService {
 
   /// 更新分类
   Future<Category> updateCategory(
-    String categoryId, 
+    String categoryId,
     Map<String, dynamic> updates,
   ) async {
     try {
@@ -72,7 +73,7 @@ class CategoryService {
         '${ApiConfig.apiUrl}/categories/$categoryId',
         data: updates,
       );
-      
+
       if (response.statusCode == 200) {
         return Category.fromJson(response.data['data'] ?? response.data);
       } else {
@@ -90,7 +91,7 @@ class CategoryService {
         '${ApiConfig.apiUrl}/categories/$categoryId',
         queryParameters: force ? {'force': 'true'} : null,
       );
-      
+
       if (response.statusCode != 200 && response.statusCode != 204) {
         throw Exception('Failed to delete category: ${response.statusMessage}');
       }
@@ -109,7 +110,8 @@ class CategoryService {
       final queryParams = <String, String>{};
       if (group != null) queryParams['group'] = group;
       if (classification != null) {
-        queryParams['classification'] = classification.toString().split('.').last;
+        queryParams['classification'] =
+            classification.toString().split('.').last;
       }
       if (featuredOnly == true) queryParams['featured'] = 'true';
 
@@ -117,10 +119,12 @@ class CategoryService {
         '${ApiConfig.apiUrl}/category-templates',
         queryParameters: queryParams,
       );
-      
+
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['data'] ?? response.data;
-        return data.map((json) => SystemCategoryTemplate.fromJson(json)).toList();
+        return data
+            .map((json) => SystemCategoryTemplate.fromJson(json))
+            .toList();
       } else {
         throw Exception('Failed to fetch templates: ${response.statusMessage}');
       }
@@ -148,14 +152,42 @@ class CategoryService {
           },
         },
       );
-      
+
       if (response.statusCode == 200) {
         return ImportResult.fromJson(response.data);
       } else {
-        throw Exception('Failed to import templates: ${response.statusMessage}');
+        throw Exception(
+            'Failed to import templates: ${response.statusMessage}');
       }
     } catch (e) {
       throw Exception('Failed to import templates: $e');
+    }
+  }
+
+  /// 批量从模板导入（高级：支持 per-item overrides 与冲突策略）
+  Future<ImportResult> importTemplatesAdvanced({
+    required String ledgerId,
+    required List<Map<String, dynamic>> items,
+    String onConflict = 'skip', // skip|rename|update
+  }) async {
+    try {
+      final response = await _client.post(
+        '${ApiConfig.apiUrl}/categories/import',
+        data: {
+          'ledger_id': ledgerId,
+          'items': items,
+          'on_conflict': onConflict,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return ImportResult.fromJson(response.data);
+      } else {
+        throw Exception(
+            'Failed to import templates (advanced): ${response.statusMessage}');
+      }
+    } catch (e) {
+      throw Exception('Failed to import templates (advanced): $e');
     }
   }
 
@@ -173,7 +205,7 @@ class CategoryService {
           if (position != null) 'position': position,
         },
       );
-      
+
       if (response.statusCode == 200) {
         return Category.fromJson(response.data['data'] ?? response.data);
       } else {
@@ -200,7 +232,7 @@ class CategoryService {
           'delete_category': deleteCategory,
         },
       );
-      
+
       if (response.statusCode == 200) {
         return ConversionResult.fromJson(response.data);
       } else {
@@ -227,11 +259,12 @@ class CategoryService {
           'create_batch_record': true,
         },
       );
-      
+
       if (response.statusCode == 200) {
         return BatchOperationResult.fromJson(response.data);
       } else {
-        throw Exception('Failed to batch recategorize: ${response.statusMessage}');
+        throw Exception(
+            'Failed to batch recategorize: ${response.statusMessage}');
       }
     } catch (e) {
       throw Exception('Failed to batch recategorize: $e');
@@ -259,8 +292,9 @@ class ImportResult {
       skipped: json['skipped'] ?? 0,
       failed: json['failed'] ?? 0,
       categories: (json['categories'] as List?)
-          ?.map((e) => Category.fromJson(e))
-          .toList() ?? [],
+              ?.map((e) => Category.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 }

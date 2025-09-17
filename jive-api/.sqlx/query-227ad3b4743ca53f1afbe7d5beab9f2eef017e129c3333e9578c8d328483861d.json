@@ -1,0 +1,112 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT id, ledger_id, name, account_type, account_number, institution_name,\n               currency, current_balance, available_balance, credit_limit, status,\n               is_manual, color, notes, created_at, updated_at\n        FROM accounts\n        WHERE id = $1 AND deleted_at IS NULL\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "ledger_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "account_type",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "account_number",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "institution_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 6,
+        "name": "currency",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 7,
+        "name": "current_balance",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 8,
+        "name": "available_balance",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 9,
+        "name": "credit_limit",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 10,
+        "name": "status",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 11,
+        "name": "is_manual",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 12,
+        "name": "color",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 13,
+        "name": "notes",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 14,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 15,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "227ad3b4743ca53f1afbe7d5beab9f2eef017e129c3333e9578c8d328483861d"
+}

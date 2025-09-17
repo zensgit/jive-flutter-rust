@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../admin/super_admin_screen.dart';
 
@@ -36,20 +37,19 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
     try {
       // 模拟登录验证
       await Future.delayed(const Duration(seconds: 1));
-      
+
       // 获取输入的用户名和密码，并去除前后空格
       final username = _usernameController.text.trim();
       final password = _passwordController.text.trim();
-      
+
       // 调试信息
-      print('输入的用户名: "$username" (长度: ${username.length})');
-      print('输入的密码: "$password" (长度: ${password.length})');
-      print('用户名匹配: ${username == 'superadmin'}');
-      print('密码匹配: ${password == 'admin123'}');
-      
+      debugPrint('输入的用户名: "$username" (长度: ${username.length})');
+      debugPrint('输入的密码: "$password" (长度: ${password.length})');
+      debugPrint('用户名匹配: ${username == 'superadmin'}');
+      debugPrint('密码匹配: ${password == 'admin123'}');
+
       // 硬编码的超级管理员账户 (实际应用中应该从后端验证)
       if (username == 'superadmin' && password == 'admin123') {
-        
         if (!_showTotpField) {
           // 第一步验证通过，显示TOTP字段
           setState(() {
@@ -58,7 +58,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
           });
           return;
         }
-        
+
         // 验证TOTP (这里简化处理)
         if (_totpController.text == '123456') {
           if (mounted) {
@@ -137,7 +137,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 48),
-                    
+
                     // 安全提示
                     Container(
                       padding: const EdgeInsets.all(16),
@@ -163,7 +163,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    
+
                     // 用户名输入框
                     TextFormField(
                       controller: _usernameController,
@@ -181,7 +181,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 密码输入框
                     TextFormField(
                       controller: _passwordController,
@@ -210,7 +210,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                         return null;
                       },
                     ),
-                    
+
                     // TOTP验证码输入框 (条件显示)
                     if (_showTotpField) ...[
                       const SizedBox(height: 16),
@@ -235,9 +235,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                         },
                       ),
                     ],
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // 登录按钮
                     SizedBox(
                       height: 50,
@@ -249,7 +249,8 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                         ),
                         child: _isLoading
                             ? const CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
                               )
                             : Text(
                                 _showTotpField ? '验证并登录' : '下一步',
@@ -257,9 +258,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                               ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // 演示账户信息
                     Card(
                       color: Colors.grey[100],
@@ -270,7 +271,8 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                           children: [
                             Row(
                               children: [
-                                Icon(Icons.info, color: Colors.blue[700], size: 20),
+                                Icon(Icons.info,
+                                    color: Colors.blue[700], size: 20),
                                 const SizedBox(width: 8),
                                 const Text(
                                   '演示账户信息',
@@ -292,9 +294,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // 返回按钮
                     TextButton(
                       onPressed: () {

@@ -6,7 +6,7 @@ import 'wechat_register_form_screen.dart';
 /// 微信二维码扫描页面
 class WeChatQRScreen extends StatefulWidget {
   final bool isLogin; // true为登录，false为注册
-  
+
   const WeChatQRScreen({
     super.key,
     this.isLogin = true,
@@ -22,27 +22,27 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
   late AnimationController _scanController;
   late Animation<double> _pulseAnimation;
   late Animation<double> _scanAnimation;
-  
+
   bool _isScanning = true;
   bool _scanSuccess = false;
   String _statusText = '请使用微信扫描二维码';
-  
+
   @override
   void initState() {
     super.initState();
-    
+
     // 脉搏动画控制器
     _pulseController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     );
-    
+
     // 扫描线动画控制器
     _scanController = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
     );
-    
+
     _pulseAnimation = Tween<double>(
       begin: 1.0,
       end: 1.1,
@@ -50,7 +50,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
       parent: _pulseController,
       curve: Curves.easeInOut,
     ));
-    
+
     _scanAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -58,45 +58,45 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
       parent: _scanController,
       curve: Curves.linear,
     ));
-    
+
     // 开始动画
     _pulseController.repeat(reverse: true);
     _scanController.repeat();
-    
+
     // 模拟扫码过程
     _simulateQRScan();
   }
-  
+
   @override
   void dispose() {
     _pulseController.dispose();
     _scanController.dispose();
     super.dispose();
   }
-  
+
   Future<void> _simulateQRScan() async {
     // 等待5秒模拟用户扫码
     await Future.delayed(const Duration(seconds: 5));
-    
+
     if (mounted) {
       setState(() {
         _statusText = '扫描成功！正在获取微信信息...';
         _scanSuccess = true;
         _isScanning = false;
       });
-      
+
       _pulseController.stop();
       _scanController.stop();
-      
+
       // 再等待2秒模拟获取信息
       await Future.delayed(const Duration(seconds: 2));
-      
+
       if (mounted) {
         // 获取微信用户信息
         try {
           final userInfo = await WeChatService.simulateGetUserInfo();
           final authResult = await WeChatService.simulateLogin();
-          
+
           if (userInfo != null && authResult != null) {
             if (widget.isLogin) {
               // 登录流程：直接返回结果
@@ -115,7 +115,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                   ),
                 ),
               );
-              
+
               if (result != null) {
                 Navigator.of(context).pop(result);
               }
@@ -129,7 +129,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,7 +152,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                 height: 60,
               ),
               const SizedBox(height: 20),
-              
+
               const Text(
                 'Jive Money',
                 style: TextStyle(
@@ -161,9 +161,9 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                   color: Colors.blue,
                 ),
               ),
-              
+
               const SizedBox(height: 40),
-              
+
               // 二维码区域
               Container(
                 width: 260,
@@ -190,10 +190,14 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                           Container(
                             margin: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: _scanSuccess ? Colors.green[50] : Colors.grey[100],
+                              color: _scanSuccess
+                                  ? Colors.green[50]
+                                  : Colors.grey[100],
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: _scanSuccess ? Colors.green : Colors.grey[300]!,
+                                color: _scanSuccess
+                                    ? Colors.green
+                                    : Colors.grey[300]!,
                                 width: 2,
                               ),
                             ),
@@ -205,14 +209,16 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                                       color: Colors.green[600],
                                     )
                                   : Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Container(
                                           width: 120,
                                           height: 120,
                                           decoration: BoxDecoration(
                                             color: Colors.black,
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                           ),
                                           child: const Center(
                                             child: Text(
@@ -238,7 +244,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                                     ),
                             ),
                           ),
-                          
+
                           // 扫描线动画
                           if (_isScanning)
                             AnimatedBuilder(
@@ -263,12 +269,12 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                                 );
                               },
                             ),
-                          
+
                           // 四角装饰
                           ...List.generate(4, (index) {
                             final isTop = index < 2;
                             final isLeft = index % 2 == 0;
-                            
+
                             return Positioned(
                               top: isTop ? 15 : null,
                               bottom: isTop ? null : 15,
@@ -279,10 +285,22 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                                 height: 20,
                                 decoration: BoxDecoration(
                                   border: Border(
-                                    top: isTop ? BorderSide(color: Colors.green, width: 3) : BorderSide.none,
-                                    bottom: isTop ? BorderSide.none : BorderSide(color: Colors.green, width: 3),
-                                    left: isLeft ? BorderSide(color: Colors.green, width: 3) : BorderSide.none,
-                                    right: isLeft ? BorderSide.none : BorderSide(color: Colors.green, width: 3),
+                                    top: isTop
+                                        ? BorderSide(
+                                            color: Colors.green, width: 3)
+                                        : BorderSide.none,
+                                    bottom: isTop
+                                        ? BorderSide.none
+                                        : BorderSide(
+                                            color: Colors.green, width: 3),
+                                    left: isLeft
+                                        ? BorderSide(
+                                            color: Colors.green, width: 3)
+                                        : BorderSide.none,
+                                    right: isLeft
+                                        ? BorderSide.none
+                                        : BorderSide(
+                                            color: Colors.green, width: 3),
                                   ),
                                 ),
                               ),
@@ -294,9 +312,9 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                   },
                 ),
               ),
-              
+
               const SizedBox(height: 30),
-              
+
               // 状态文字
               Text(
                 _statusText,
@@ -306,9 +324,9 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                 ),
                 textAlign: TextAlign.center,
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // 提示文字
               if (_isScanning) ...[
                 Text(
@@ -320,15 +338,15 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
-                
+
                 // 加载指示器
                 const CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
                 ),
               ],
-              
+
               const SizedBox(height: 40),
-              
+
               // 取消按钮
               TextButton(
                 onPressed: () {

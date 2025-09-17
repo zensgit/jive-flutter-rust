@@ -20,9 +20,7 @@ class DashboardOverview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: onRefresh != null 
-          ? () async => onRefresh!()
-          : () async {},
+      onRefresh: onRefresh != null ? () async => onRefresh!() : () async {},
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         physics: const AlwaysScrollableScrollPhysics(),
@@ -31,41 +29,38 @@ class DashboardOverview extends StatelessWidget {
           children: [
             // 摘要卡片
             SummaryCardGrid(cards: data.summaryCards),
-            
+
             const SizedBox(height: 20),
-            
+
             // 余额趋势图表
-            if (data.balanceData.isNotEmpty)
-              _buildBalanceChart(),
-            
+            if (data.balanceData.isNotEmpty) _buildBalanceChart(),
+
             const SizedBox(height: 20),
-            
+
             // 快捷操作
             QuickActions(
               actions: data.quickActions,
               itemsPerRow: 4,
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // 最近交易
             RecentTransactions(
               transactions: data.recentTransactions,
               onViewAll: data.onViewAllTransactions,
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // 账户概览
-            if (data.accounts.isNotEmpty)
-              _buildAccountsOverview(),
-            
+            if (data.accounts.isNotEmpty) _buildAccountsOverview(),
+
             const SizedBox(height: 20),
-            
+
             // 预算概览
-            if (data.budgets.isNotEmpty)
-              _buildBudgetOverview(),
-            
+            if (data.budgets.isNotEmpty) _buildBudgetOverview(),
+
             // 底部安全区域
             const SizedBox(height: 20),
           ],
@@ -90,8 +85,8 @@ class DashboardOverview extends StatelessWidget {
                 Text(
                   '余额趋势',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const Spacer(),
                 _buildPeriodSelector(),
@@ -164,8 +159,8 @@ class DashboardOverview extends StatelessWidget {
                 Text(
                   '账户概览',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const Spacer(),
                 TextButton(
@@ -175,9 +170,9 @@ class DashboardOverview extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            ...data.accounts.take(3).map((account) => 
-              _buildAccountItem(account),
-            ),
+            ...data.accounts.take(3).map(
+                  (account) => _buildAccountItem(account),
+                ),
           ],
         ),
       ),
@@ -210,14 +205,14 @@ class DashboardOverview extends StatelessWidget {
                 Text(
                   account.name,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
                 Text(
                   account.type,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                        color: Colors.grey[600],
+                      ),
                 ),
               ],
             ),
@@ -225,9 +220,11 @@ class DashboardOverview extends StatelessWidget {
           Text(
             account.balance,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: account.isPositive ? AppConstants.successColor : AppConstants.errorColor,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: account.isPositive
+                      ? AppConstants.successColor
+                      : AppConstants.errorColor,
+                ),
           ),
         ],
       ),
@@ -250,8 +247,8 @@ class DashboardOverview extends StatelessWidget {
                 Text(
                   '预算概览',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const Spacer(),
                 TextButton(
@@ -261,9 +258,9 @@ class DashboardOverview extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            ...data.budgets.take(3).map((budget) => 
-              _buildBudgetItem(budget),
-            ),
+            ...data.budgets.take(3).map(
+                  (budget) => _buildBudgetItem(budget),
+                ),
           ],
         ),
       ),
@@ -281,8 +278,8 @@ class DashboardOverview extends StatelessWidget {
               Text(
                 budget.category,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
               const Spacer(),
               Text(
@@ -296,9 +293,9 @@ class DashboardOverview extends StatelessWidget {
             value: budget.progress,
             backgroundColor: Colors.grey.withOpacity(0.2),
             valueColor: AlwaysStoppedAnimation<Color>(
-              budget.progress > 0.9 
+              budget.progress > 0.9
                   ? AppConstants.errorColor
-                  : budget.progress > 0.7 
+                  : budget.progress > 0.7
                       ? AppConstants.warningColor
                       : AppConstants.successColor,
             ),

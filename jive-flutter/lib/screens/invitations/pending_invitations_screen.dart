@@ -11,17 +11,17 @@ class PendingInvitationsScreen extends ConsumerStatefulWidget {
   const PendingInvitationsScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<PendingInvitationsScreen> createState() => 
+  ConsumerState<PendingInvitationsScreen> createState() =>
       _PendingInvitationsScreenState();
 }
 
-class _PendingInvitationsScreenState 
+class _PendingInvitationsScreenState
     extends ConsumerState<PendingInvitationsScreen> {
   final _familyService = FamilyService();
   bool _isLoading = true;
   List<InvitationWithDetails> _invitations = [];
   String? _error;
-  
+
   // 筛选和排序
   InvitationStatus? _filterStatus;
   String _sortBy = 'date'; // date, family, role
@@ -43,7 +43,7 @@ class _PendingInvitationsScreenState
       // final invitations = await _familyService.getPendingInvitations();
       // 模拟数据
       final invitations = <InvitationWithDetails>[];
-      
+
       setState(() {
         _invitations = invitations;
         _isLoading = false;
@@ -85,16 +85,16 @@ class _PendingInvitationsScreenState
         ],
       ),
     );
-    
+
     if (confirmed != true) return;
-    
+
     try {
       // TODO: 调用实际的API
       // await _familyService.acceptInvitation(invitation.invitation.id);
-      
+
       // 刷新Family列表
       await ref.refresh(family_provider.userFamiliesProvider);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -102,11 +102,11 @@ class _PendingInvitationsScreenState
             backgroundColor: Colors.green,
           ),
         );
-        
+
         // TODO: 切换到新Family
         // await _familyService.switchFamily(invitation.invitation.familyId);
         // await ref.refresh(family_provider.currentFamilyProvider);
-        
+
         // 刷新邀请列表
         await _loadInvitations();
       }
@@ -143,14 +143,14 @@ class _PendingInvitationsScreenState
         ],
       ),
     );
-    
+
     if (confirmed != true) return;
-    
+
     try {
       // TODO: 调用实际的API
       // await _familyService.declineInvitation(invitation.invitation.id);
       await _loadInvitations();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -172,29 +172,28 @@ class _PendingInvitationsScreenState
 
   List<InvitationWithDetails> get _filteredInvitations {
     var filtered = _invitations;
-    
+
     // 状态筛选
     if (_filterStatus != null) {
-      filtered = filtered
-          .where((i) => i.invitation.status == _filterStatus)
-          .toList();
+      filtered =
+          filtered.where((i) => i.invitation.status == _filterStatus).toList();
     }
-    
+
     // 排序
     switch (_sortBy) {
       case 'family':
         filtered.sort((a, b) => a.family.name.compareTo(b.family.name));
         break;
       case 'role':
-        filtered.sort((a, b) => 
+        filtered.sort((a, b) =>
             b.invitation.role.level.compareTo(a.invitation.role.level));
         break;
       case 'date':
       default:
-        filtered.sort((a, b) => 
-            b.invitation.createdAt.compareTo(a.invitation.createdAt));
+        filtered.sort(
+            (a, b) => b.invitation.createdAt.compareTo(a.invitation.createdAt));
     }
-    
+
     return filtered;
   }
 
@@ -222,9 +221,9 @@ class _PendingInvitationsScreenState
               ),
               const PopupMenuDivider(),
               ...InvitationStatus.values.map((status) => PopupMenuItem(
-                value: status,
-                child: Text(status.label),
-              )),
+                    value: status,
+                    child: Text(status.label),
+                  )),
             ],
           ),
           // 排序按钮
@@ -283,7 +282,7 @@ class _PendingInvitationsScreenState
     }
 
     final invitations = _filteredInvitations;
-    
+
     if (invitations.isEmpty) {
       return Center(
         child: Column(
@@ -296,8 +295,8 @@ class _PendingInvitationsScreenState
             ),
             const SizedBox(height: 16),
             Text(
-              _filterStatus != null 
-                  ? '没有${_filterStatus!.label}的邀请' 
+              _filterStatus != null
+                  ? '没有${_filterStatus!.label}的邀请'
                   : '暂无待处理的邀请',
               style: Theme.of(context).textTheme.titleMedium,
             ),
@@ -334,9 +333,7 @@ class _PendingInvitationsScreenState
     final theme = Theme.of(context);
     final isExpired = invitation.invitation.isExpired;
     final canAccept = invitation.invitation.canAccept;
-    
-    
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -387,12 +384,13 @@ class _PendingInvitationsScreenState
                 ],
               ),
               const SizedBox(height: 12),
-              
+
               // 角色信息
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: _getRoleColor(invitation.invitation.role).withOpacity(0.1),
+                  color: _getRoleColor(invitation.invitation.role)
+                      .withOpacity(0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
@@ -405,7 +403,7 @@ class _PendingInvitationsScreenState
                 ),
               ),
               const SizedBox(height: 8),
-              
+
               // 时间信息
               Row(
                 children: [
@@ -423,7 +421,7 @@ class _PendingInvitationsScreenState
                   ),
                 ],
               ),
-              
+
               // 操作按钮
               if (canAccept) ...[
                 const SizedBox(height: 16),
@@ -452,7 +450,7 @@ class _PendingInvitationsScreenState
   Widget _buildStatusChip(Invitation invitation) {
     Color color;
     IconData icon;
-    
+
     switch (invitation.status) {
       case InvitationStatus.pending:
         color = Colors.orange;
@@ -475,7 +473,7 @@ class _PendingInvitationsScreenState
         icon = Icons.block;
         break;
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -526,14 +524,14 @@ class _PendingInvitationsScreenState
                   ),
                 ),
               ),
-              
+
               // 标题
               Text(
                 '邀请详情',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 24),
-              
+
               // Family信息
               _buildDetailSection(
                 '家庭信息',
@@ -544,7 +542,7 @@ class _PendingInvitationsScreenState
                 ],
               ),
               const SizedBox(height: 16),
-              
+
               // 邀请信息
               _buildDetailSection(
                 '邀请信息',
@@ -566,7 +564,7 @@ class _PendingInvitationsScreenState
                 ],
               ),
               const SizedBox(height: 24),
-              
+
               // 操作按钮
               if (invitation.invitation.canAccept) ...[
                 Row(
@@ -607,8 +605,8 @@ class _PendingInvitationsScreenState
         Text(
           title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 8),
         ...children,

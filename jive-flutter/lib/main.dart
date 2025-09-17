@@ -7,8 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'core/app.dart';
 import 'core/storage/hive_config.dart';
 import 'core/utils/logger.dart';
-import 'providers/currency_provider.dart';
-import 'providers/settings_provider.dart';
 
 void main() async {
   // 确保 Flutter 绑定初始化
@@ -21,13 +19,13 @@ void main() async {
   try {
     // 初始化本地存储
     await _initializeStorage();
-    
+
     // 设置系统UI样式
     await _setupSystemUI();
-    
+
     // 创建ProviderContainer来访问providers
     final container = ProviderContainer();
-    
+
     // 运行应用
     runApp(
       UncontrolledProviderScope(
@@ -35,11 +33,11 @@ void main() async {
         child: JiveApp(container: container),
       ),
     );
-    
+
     AppLogger.info('✅ Jive App initialized successfully');
   } catch (error, stackTrace) {
     AppLogger.error('❌ Failed to initialize app', error, stackTrace);
-    
+
     // 显示错误页面
     runApp(
       MaterialApp(
@@ -53,21 +51,21 @@ void main() async {
 /// 初始化存储系统
 Future<void> _initializeStorage() async {
   AppLogger.info('📦 Initializing storage...');
-  
+
   // 初始化 Hive
   await Hive.initFlutter();
   await HiveConfig.init();
-  
+
   // 初始化 SharedPreferences
   await SharedPreferences.getInstance();
-  
+
   AppLogger.info('✅ Storage initialized');
 }
 
 /// 设置系统UI样式
 Future<void> _setupSystemUI() async {
   AppLogger.info('🎨 Setting up system UI...');
-  
+
   // 设置状态栏和导航栏样式
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -78,20 +76,20 @@ Future<void> _setupSystemUI() async {
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
-  
+
   // 设置首选方向（主要是竖屏）
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  
+
   AppLogger.info('✅ System UI configured');
 }
 
 /// 错误显示页面
 class ErrorScreen extends StatelessWidget {
   final String error;
-  
+
   const ErrorScreen({
     super.key,
     required this.error,

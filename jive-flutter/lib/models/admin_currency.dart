@@ -41,10 +41,16 @@ class AdminCurrency {
       isActive: json['is_active'] ?? true,
       flag: json['flag'],
       coingeckoId: json['providers']?['coingecko_id'] ?? json['coingecko_id'],
-      coincapSymbol: json['providers']?['coincap_symbol'] ?? json['coincap_symbol'],
-      binanceSymbol: json['providers']?['binance_symbol'] ?? json['binance_symbol'],
-      updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at']) : null,
-      lastRefreshedAt: json['last_refreshed_at'] != null ? DateTime.tryParse(json['last_refreshed_at']) : null,
+      coincapSymbol:
+          json['providers']?['coincap_symbol'] ?? json['coincap_symbol'],
+      binanceSymbol:
+          json['providers']?['binance_symbol'] ?? json['binance_symbol'],
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'])
+          : null,
+      lastRefreshedAt: json['last_refreshed_at'] != null
+          ? DateTime.tryParse(json['last_refreshed_at'])
+          : null,
     );
   }
 
@@ -102,11 +108,12 @@ class CurrencyAliasDto {
   final String newCode;
   final DateTime? validUntil;
 
-  CurrencyAliasDto({required this.oldCode, required this.newCode, this.validUntil});
+  CurrencyAliasDto(
+      {required this.oldCode, required this.newCode, this.validUntil});
 
   Map<String, dynamic> toJson() => {
-    'old_code': oldCode,
-    'new_code': newCode,
-    if (validUntil != null) 'valid_until': validUntil!.toIso8601String(),
-  };
+        'old_code': oldCode,
+        'new_code': newCode,
+        if (validUntil != null) 'valid_until': validUntil!.toIso8601String(),
+      };
 }

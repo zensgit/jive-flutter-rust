@@ -45,7 +45,7 @@ class SecondaryButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
           ),
           side: BorderSide(
-            color: isEnabled 
+            color: isEnabled
                 ? (borderColor ?? theme.primaryColor)
                 : theme.disabledColor,
             width: 1.5,
@@ -70,11 +70,11 @@ class SecondaryButton extends StatelessWidget {
         ),
       );
     }
-    
+
     if (icon != null) {
       return Icon(icon, size: 20);
     }
-    
+
     return const SizedBox.shrink();
   }
 

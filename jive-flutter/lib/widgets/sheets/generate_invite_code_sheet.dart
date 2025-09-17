@@ -11,7 +11,7 @@ class GenerateInviteCodeSheet extends ConsumerStatefulWidget {
   final String familyId;
   final String familyName;
   final VoidCallback? onInvitationCreated;
-  
+
   const GenerateInviteCodeSheet({
     super.key,
     required this.familyId,
@@ -20,48 +20,47 @@ class GenerateInviteCodeSheet extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<GenerateInviteCodeSheet> createState() => 
+  ConsumerState<GenerateInviteCodeSheet> createState() =>
       _GenerateInviteCodeSheetState();
 }
 
-class _GenerateInviteCodeSheetState 
+class _GenerateInviteCodeSheetState
     extends ConsumerState<GenerateInviteCodeSheet> {
-  
   final _invitationService = InvitationService();
   final _emailController = TextEditingController();
   final _messageController = TextEditingController();
-  
+
   family_model.FamilyRole _selectedRole = family_model.FamilyRole.member;
   int _expirationDays = 7;
   bool _isLoading = false;
   bool _showAdvancedOptions = false;
-  
+
   // 生成的邀请信息
   Invitation? _generatedInvitation;
   String? _inviteLink;
-  
+
   @override
   void dispose() {
     _emailController.dispose();
     _messageController.dispose();
     super.dispose();
   }
-  
+
   Future<void> _generateInvitation() async {
     final email = _emailController.text.trim();
-    
+
     if (email.isEmpty) {
       SnackbarUtils.showError(context, '请输入邮箱地址');
       return;
     }
-    
+
     if (!_isValidEmail(email)) {
       SnackbarUtils.showError(context, '请输入有效的邮箱地址');
       return;
     }
-    
+
     setState(() => _isLoading = true);
-    
+
     try {
       final invitation = await _invitationService.createInvitation(
         familyId: widget.familyId,
@@ -69,16 +68,16 @@ class _GenerateInviteCodeSheetState
         role: _selectedRole,
         expiresInDays: _expirationDays,
       );
-      
+
       setState(() {
         _generatedInvitation = invitation;
         _inviteLink = _generateInviteLink(invitation);
         _isLoading = false;
       });
-      
+
       // 触发回调
       widget.onInvitationCreated?.call();
-      
+
       if (mounted) {
         SnackbarUtils.showSuccess(context, '邀请已生成');
       }
@@ -89,33 +88,33 @@ class _GenerateInviteCodeSheetState
       }
     }
   }
-  
+
   String _generateInviteLink(Invitation invitation) {
     // TODO: 使用实际的域名
     return 'https://jivemoney.app/invite/${invitation.token}';
   }
-  
+
   bool _isValidEmail(String email) {
     return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
   }
-  
+
   void _copyToClipboard(String text) {
     Clipboard.setData(ClipboardData(text: text));
     SnackbarUtils.showSuccess(context, '已复制到剪贴板');
   }
-  
+
   void _shareInvitation() {
     if (_inviteLink == null) return;
-    
+
     // TODO: 实现分享功能
     SnackbarUtils.showInfo(context, '分享功能开发中');
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
-    
+
     return Container(
       padding: EdgeInsets.only(
         left: 16,
@@ -162,9 +161,9 @@ class _GenerateInviteCodeSheetState
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // 如果已生成邀请，显示结果
             if (_generatedInvitation != null && _inviteLink != null) ...[
               _buildInvitationResult(),
@@ -182,9 +181,9 @@ class _GenerateInviteCodeSheetState
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // 角色选择
               DropdownButtonFormField<family_model.FamilyRole>(
                 value: _selectedRole,
@@ -217,9 +216,9 @@ class _GenerateInviteCodeSheetState
                   }
                 },
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // 高级选项
               InkWell(
                 onTap: () {
@@ -245,10 +244,10 @@ class _GenerateInviteCodeSheetState
                   ],
                 ),
               ),
-              
+
               if (_showAdvancedOptions) ...[
                 const SizedBox(height: 16),
-                
+
                 // 有效期选择
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,9 +270,9 @@ class _GenerateInviteCodeSheetState
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // 附加消息
                 TextField(
                   controller: _messageController,
@@ -288,9 +287,9 @@ class _GenerateInviteCodeSheetState
                   maxLines: 3,
                 ),
               ],
-              
+
               const SizedBox(height: 24),
-              
+
               // 生成按钮
               SizedBox(
                 width: double.infinity,
@@ -315,11 +314,11 @@ class _GenerateInviteCodeSheetState
       ),
     );
   }
-  
+
   Widget _buildExpirationOption(int days, String label) {
     final isSelected = _expirationDays == days;
     final theme = Theme.of(context);
-    
+
     return Expanded(
       child: InkWell(
         onTap: () {
@@ -333,9 +332,8 @@ class _GenerateInviteCodeSheetState
                 : theme.colorScheme.surfaceVariant.withOpacity(0.5),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isSelected
-                  ? theme.colorScheme.primary
-                  : Colors.transparent,
+              color:
+                  isSelected ? theme.colorScheme.primary : Colors.transparent,
             ),
           ),
           child: Center(
@@ -353,10 +351,10 @@ class _GenerateInviteCodeSheetState
       ),
     );
   }
-  
+
   Widget _buildInvitationResult() {
     final theme = Theme.of(context);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -376,9 +374,9 @@ class _GenerateInviteCodeSheetState
             ),
           ),
         ),
-        
+
         const SizedBox(height: 24),
-        
+
         // 邀请信息
         Container(
           padding: const EdgeInsets.all(16),
@@ -426,9 +424,9 @@ class _GenerateInviteCodeSheetState
             ],
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // 邀请链接
         Container(
           padding: const EdgeInsets.all(12),
@@ -453,9 +451,9 @@ class _GenerateInviteCodeSheetState
             ],
           ),
         ),
-        
+
         const SizedBox(height: 24),
-        
+
         // 操作按钮
         Row(
           children: [
@@ -486,7 +484,7 @@ class _GenerateInviteCodeSheetState
       ],
     );
   }
-  
+
   IconData _getRoleIcon(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:
@@ -499,7 +497,7 @@ class _GenerateInviteCodeSheetState
         return Icons.visibility;
     }
   }
-  
+
   Color _getRoleColor(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:
@@ -512,7 +510,7 @@ class _GenerateInviteCodeSheetState
         return Colors.grey;
     }
   }
-  
+
   String _getRoleDisplay(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:

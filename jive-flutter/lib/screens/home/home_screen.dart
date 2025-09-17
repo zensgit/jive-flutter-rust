@@ -4,7 +4,7 @@ import '../../core/router/app_router.dart';
 
 class HomeScreen extends StatefulWidget {
   final Widget child;
-  
+
   const HomeScreen({super.key, required this.child});
 
   @override

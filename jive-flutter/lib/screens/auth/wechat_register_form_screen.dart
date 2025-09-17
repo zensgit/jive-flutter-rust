@@ -7,7 +7,7 @@ import '../../utils/password_strength.dart';
 class WeChatRegisterFormScreen extends StatefulWidget {
   final WeChatUserInfo weChatUserInfo;
   final WeChatAuthResult authResult;
-  
+
   const WeChatRegisterFormScreen({
     super.key,
     required this.weChatUserInfo,
@@ -15,7 +15,8 @@ class WeChatRegisterFormScreen extends StatefulWidget {
   });
 
   @override
-  State<WeChatRegisterFormScreen> createState() => _WeChatRegisterFormScreenState();
+  State<WeChatRegisterFormScreen> createState() =>
+      _WeChatRegisterFormScreenState();
 }
 
 class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
@@ -24,7 +25,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+
   final AuthService _authService = AuthService();
   bool _isLoading = false;
   bool _isPasswordVisible = false;
@@ -35,7 +36,8 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
   void initState() {
     super.initState();
     // 预填充用户名（基于微信昵称）
-    _usernameController.text = _generateUsername(widget.weChatUserInfo.nickname);
+    _usernameController.text =
+        _generateUsername(widget.weChatUserInfo.nickname);
     // 预填充邮箱（使用微信openid生成）
     _emailController.text = '${widget.authResult.openId}@wechat.jivemoney.com';
   }
@@ -51,7 +53,8 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
 
   String _generateUsername(String nickname) {
     // 清理昵称，只保留字母数字和中文
-    String cleaned = nickname.replaceAll(RegExp(r'[^a-zA-Z0-9\u4e00-\u9fa5]'), '');
+    String cleaned =
+        nickname.replaceAll(RegExp(r'[^a-zA-Z0-9\u4e00-\u9fa5]'), '');
     if (cleaned.isEmpty) {
       cleaned = 'WeChatUser';
     }
@@ -84,7 +87,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
       if (result.success && result.userData != null) {
         // 注册成功后绑定微信
         final bindResult = await _authService.bindWechat();
-        
+
         if (bindResult.success) {
           // 绑定成功，返回成功结果
           Navigator.of(context).pop({
@@ -100,7 +103,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
               backgroundColor: Colors.orange,
             ),
           );
-          
+
           Navigator.of(context).pop({
             'success': true,
             'userData': result.userData,
@@ -157,7 +160,8 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                       children: [
                         CircleAvatar(
                           radius: 30,
-                          backgroundImage: widget.weChatUserInfo.headImgUrl.isNotEmpty
+                          backgroundImage: widget
+                                  .weChatUserInfo.headImgUrl.isNotEmpty
                               ? NetworkImage(widget.weChatUserInfo.headImgUrl)
                               : null,
                           child: widget.weChatUserInfo.headImgUrl.isEmpty
@@ -171,7 +175,8 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                             children: [
                               Row(
                                 children: [
-                                  const Icon(Icons.wechat, color: Colors.green, size: 16),
+                                  const Icon(Icons.wechat,
+                                      color: Colors.green, size: 16),
                                   const SizedBox(width: 4),
                                   Text(
                                     widget.weChatUserInfo.nickname,
@@ -215,9 +220,9 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 const Text(
                   '请设置您的账户信息',
                   style: TextStyle(
@@ -226,9 +231,9 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // 用户名输入
                 TextFormField(
                   controller: _usernameController,
@@ -243,7 +248,8 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                     if (value == null || value.isEmpty) {
                       return '请输入用户名';
                     }
-                    if (!RegExp(r'^[a-zA-Z0-9_\u4e00-\u9fa5]+$').hasMatch(value)) {
+                    if (!RegExp(r'^[a-zA-Z0-9_\u4e00-\u9fa5]+$')
+                        .hasMatch(value)) {
                       return '用户名只能包含字母、数字、下划线和中文';
                     }
                     if (value.length < 3 || value.length > 20) {
@@ -252,9 +258,9 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                     return null;
                   },
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // 邮箱输入（预填充，可修改）
                 TextFormField(
                   controller: _emailController,
@@ -270,15 +276,17 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                     if (value == null || value.isEmpty) {
                       return '请输入邮箱地址';
                     }
-                    if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) {
+                    if (!RegExp(
+                            r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                        .hasMatch(value)) {
                       return '请输入有效的邮箱地址';
                     }
                     return null;
                   },
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // 密码输入
                 TextFormField(
                   controller: _passwordController,
@@ -316,7 +324,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                     return null;
                   },
                 ),
-                
+
                 // 密码强度指示器
                 if (_passwordController.text.isNotEmpty) ...[
                   const SizedBox(height: 8),
@@ -343,12 +351,13 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                   LinearProgressIndicator(
                     value: _passwordStrength.value,
                     backgroundColor: Colors.grey[300],
-                    valueColor: AlwaysStoppedAnimation<Color>(_passwordStrength.color),
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(_passwordStrength.color),
                   ),
                 ],
-                
+
                 const SizedBox(height: 16),
-                
+
                 // 确认密码输入
                 TextFormField(
                   controller: _confirmPasswordController,
@@ -364,7 +373,8 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                       ),
                       onPressed: () {
                         setState(() {
-                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                          _isConfirmPasswordVisible =
+                              !_isConfirmPasswordVisible;
                         });
                       },
                     ),
@@ -381,9 +391,9 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                     return null;
                   },
                 ),
-                
+
                 const SizedBox(height: 32),
-                
+
                 // 注册按钮
                 SizedBox(
                   height: 50,
@@ -395,7 +405,8 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                     ),
                     child: _isLoading
                         ? const CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
                           )
                         : const Text(
                             '完成注册',
@@ -403,9 +414,9 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                           ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // 提示信息
                 Card(
                   color: Colors.blue[50],
@@ -420,7 +431,8 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                             const SizedBox(width: 8),
                             const Text(
                               '注册说明',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 14),
                             ),
                           ],
                         ),

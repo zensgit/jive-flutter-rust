@@ -28,8 +28,16 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
   bool _showGroupSuggestions = false;
 
   final List<String> _availableColors = [
-    '#e99537', '#4da568', '#6471eb', '#db5a54', '#df4e92',
-    '#c44fe9', '#eb5429', '#61c9ea', '#805dee', '#6ad28a',
+    '#e99537',
+    '#4da568',
+    '#6471eb',
+    '#db5a54',
+    '#df4e92',
+    '#c44fe9',
+    '#eb5429',
+    '#61c9ea',
+    '#805dee',
+    '#6ad28a',
   ];
 
   final Map<String, IconData> _availableIcons = {
@@ -136,7 +144,8 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                 const SizedBox(height: 16),
 
                 // 选择颜色
-                const Text('选择颜色', style: TextStyle(fontWeight: FontWeight.w500)),
+                const Text('选择颜色',
+                    style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
@@ -148,7 +157,8 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: Color(int.parse(color.replaceFirst('#', '0xff'))),
+                          color:
+                              Color(int.parse(color.replaceFirst('#', '0xff'))),
                           shape: BoxShape.circle,
                           border: isSelected
                               ? Border.all(color: Colors.black, width: 2)
@@ -164,7 +174,8 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                 const SizedBox(height: 16),
 
                 // 选择图标
-                const Text('选择图标 (可选)', style: TextStyle(fontWeight: FontWeight.w500)),
+                const Text('选择图标 (可选)',
+                    style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 Container(
                   height: 80,
@@ -195,7 +206,8 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                         ..._availableIcons.entries.map((entry) {
                           final isSelected = _selectedIcon == entry.key;
                           return GestureDetector(
-                            onTap: () => setState(() => _selectedIcon = entry.key),
+                            onTap: () =>
+                                setState(() => _selectedIcon = entry.key),
                             child: Container(
                               width: 50,
                               height: 50,
@@ -220,26 +232,29 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                 const SizedBox(height: 16),
 
                 // 分组选择
-                const Text('选择分组 (可选)', style: TextStyle(fontWeight: FontWeight.w500)),
+                const Text('选择分组 (可选)',
+                    style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 _buildGroupSelector(tagGroups),
                 const SizedBox(height: 16),
 
                 // 预览
                 if (_nameController.text.isNotEmpty) ...[
-                  const Text('预览', style: TextStyle(fontWeight: FontWeight.w500)),
+                  const Text('预览',
+                      style: TextStyle(fontWeight: FontWeight.w500)),
                   const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Color(int.parse(
-                        (_selectedColor ?? '#6471eb').replaceFirst('#', '0xff')
-                      )).withOpacity(0.15),
+                      color: Color(int.parse((_selectedColor ?? '#6471eb')
+                              .replaceFirst('#', '0xff')))
+                          .withOpacity(0.15),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: Color(int.parse(
-                          (_selectedColor ?? '#6471eb').replaceFirst('#', '0xff')
-                        )).withOpacity(0.3),
+                        color: Color(int.parse((_selectedColor ?? '#6471eb')
+                                .replaceFirst('#', '0xff')))
+                            .withOpacity(0.3),
                       ),
                     ),
                     child: Row(
@@ -249,18 +264,16 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                           Icon(
                             _availableIcons[_selectedIcon!],
                             size: 16,
-                            color: Color(int.parse(
-                              (_selectedColor ?? '#6471eb').replaceFirst('#', '0xff')
-                            )),
+                            color: Color(int.parse((_selectedColor ?? '#6471eb')
+                                .replaceFirst('#', '0xff'))),
                           ),
                           const SizedBox(width: 6),
                         ],
                         Text(
                           _nameController.text,
                           style: TextStyle(
-                            color: Color(int.parse(
-                              (_selectedColor ?? '#6471eb').replaceFirst('#', '0xff')
-                            )),
+                            color: Color(int.parse((_selectedColor ?? '#6471eb')
+                                .replaceFirst('#', '0xff'))),
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),
@@ -331,7 +344,9 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                   ),
                 IconButton(
                   icon: Icon(
-                    _showGroupSuggestions ? Icons.expand_less : Icons.expand_more,
+                    _showGroupSuggestions
+                        ? Icons.expand_less
+                        : Icons.expand_more,
                     size: 18,
                   ),
                   onPressed: () {
@@ -348,7 +363,9 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
               _showGroupSuggestions = true;
               try {
                 final exactMatch = tagGroups.firstWhere(
-                  (group) => group.name.toLowerCase().trim() == value.toLowerCase().trim(),
+                  (group) =>
+                      group.name.toLowerCase().trim() ==
+                      value.toLowerCase().trim(),
                 );
                 _selectedGroupId = exactMatch.id;
                 _selectedGroupName = exactMatch.name;
@@ -389,15 +406,14 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                   dense: true,
                   leading: CircleAvatar(
                     radius: 12,
-                    backgroundColor: Color(int.parse(
-                      (group.color ?? '#6471eb').replaceFirst('#', '0xff')
-                    )).withOpacity(0.2),
+                    backgroundColor: Color(int.parse((group.color ?? '#6471eb')
+                            .replaceFirst('#', '0xff')))
+                        .withOpacity(0.2),
                     child: Icon(
                       _getGroupIcon(group.icon),
                       size: 16,
-                      color: Color(int.parse(
-                        (group.color ?? '#6471eb').replaceFirst('#', '0xff')
-                      )),
+                      color: Color(int.parse((group.color ?? '#6471eb')
+                          .replaceFirst('#', '0xff'))),
                     ),
                   ),
                   title: Text(
@@ -473,24 +489,25 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
       // 检查名称重复（排除自己）
       final tags = ref.read(tagsProvider);
       final existingTag = tags.firstWhereOrNull(
-        (tag) => tag.id != widget.tag.id &&
-                 tag.name.toLowerCase().trim() == name.toLowerCase().trim(),
+        (tag) =>
+            tag.id != widget.tag.id &&
+            tag.name.toLowerCase().trim() == name.toLowerCase().trim(),
       );
 
       if (existingTag != null) {
         final groupInfo = existingTag.groupId != null
-          ? (() {
-              final groups = ref.read(tagGroupsProvider);
-              try {
-                final group = groups.firstWhere(
-                  (g) => g.id == existingTag.groupId,
-                );
-                return group.name;
-              } catch (e) {
-                return '未知分组';
-              }
-            })()
-          : '无分组';
+            ? (() {
+                final groups = ref.read(tagGroupsProvider);
+                try {
+                  final group = groups.firstWhere(
+                    (g) => g.id == existingTag.groupId,
+                  );
+                  return group.name;
+                } catch (e) {
+                  return '未知分组';
+                }
+              })()
+            : '无分组';
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -508,8 +525,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           name: groupName,
           color: _availableColors[
-            DateTime.now().millisecondsSinceEpoch % _availableColors.length
-          ],
+              DateTime.now().millisecondsSinceEpoch % _availableColors.length],
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         );

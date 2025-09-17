@@ -8,7 +8,7 @@ enum PasswordStrength {
   strong('强', Colors.green, 1.0);
 
   const PasswordStrength(this.description, this.color, this.value);
-  
+
   final String description;
   final Color color;
   final double value;
@@ -23,26 +23,26 @@ class PasswordStrengthChecker {
     }
 
     int score = 0;
-    
+
     // 长度检查
     if (password.length >= 8) score++;
     if (password.length >= 12) score++;
-    
+
     // 包含小写字母
     if (password.contains(RegExp(r'[a-z]'))) score++;
-    
+
     // 包含大写字母
     if (password.contains(RegExp(r'[A-Z]'))) score++;
-    
+
     // 包含数字
     if (password.contains(RegExp(r'[0-9]'))) score++;
-    
+
     // 包含特殊字符
     if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) score++;
-    
+
     // 没有连续相同字符
     if (!password.contains(RegExp(r'(.)\1{2,}'))) score++;
-    
+
     // 根据得分返回强度
     switch (score) {
       case 0:
@@ -65,31 +65,31 @@ class PasswordStrengthChecker {
   /// 获取密码强度建议
   static List<String> getStrengthSuggestions(String password) {
     List<String> suggestions = [];
-    
+
     if (password.length < 8) {
       suggestions.add('至少8个字符');
     }
-    
+
     if (!password.contains(RegExp(r'[a-z]'))) {
       suggestions.add('包含小写字母');
     }
-    
+
     if (!password.contains(RegExp(r'[A-Z]'))) {
       suggestions.add('包含大写字母');
     }
-    
+
     if (!password.contains(RegExp(r'[0-9]'))) {
       suggestions.add('包含数字');
     }
-    
+
     if (!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
       suggestions.add('包含特殊字符');
     }
-    
+
     if (password.contains(RegExp(r'(.)\1{2,}'))) {
       suggestions.add('避免连续相同字符');
     }
-    
+
     return suggestions;
   }
 }

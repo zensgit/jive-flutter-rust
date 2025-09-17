@@ -18,12 +18,12 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final ThemeService _themeService = ThemeService();
-  
+
   // 表单控制器
   final _nameController = TextEditingController();
   final _authorController = TextEditingController();
   final _descriptionController = TextEditingController();
-  
+
   // 主题颜色
   late models.CustomThemeData _editingTheme;
   bool _isEditing = false;
@@ -34,7 +34,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
     _isEditing = widget.theme != null;
-    
+
     if (_isEditing) {
       _editingTheme = widget.theme!;
       _nameController.text = _editingTheme.name;
@@ -98,9 +98,9 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
               onTap: null,
             ),
           ),
-          
+
           const Divider(height: 1),
-          
+
           // 编辑面板
           Expanded(
             child: TabBarView(
@@ -138,9 +138,9 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
             });
           },
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // 作者
         TextField(
           controller: _authorController,
@@ -155,9 +155,9 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
             });
           },
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // 描述
         TextField(
           controller: _descriptionController,
@@ -174,9 +174,9 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
             });
           },
         ),
-        
+
         const SizedBox(height: 24),
-        
+
         // 预设主题模板
         const Text(
           '快速开始',
@@ -191,7 +191,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
           style: TextStyle(color: Colors.grey),
         ),
         const SizedBox(height: 16),
-        
+
         Wrap(
           spacing: 12,
           runSpacing: 12,
@@ -264,9 +264,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
             onChanged: (color) => _updateColor(secondaryVariant: color),
           ),
         ]),
-        
         const SizedBox(height: 24),
-        
         _buildColorSection('按钮颜色', [
           _ColorItem(
             title: '主要按钮背景',
@@ -332,7 +330,10 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
         const SizedBox(height: 16),
         Text(
           '提示：密度与圆角设置会随主题一起保存/分享，应用到卡片、输入框、列表等组件。',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall
+              ?.copyWith(color: Colors.grey),
         )
       ],
     );
@@ -369,9 +370,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
             onChanged: (color) => _updateColor(cardColor: color),
           ),
         ]),
-        
         const SizedBox(height: 24),
-        
         _buildColorSection('文字颜色', [
           _ColorItem(
             title: '主色上的文字',
@@ -398,9 +397,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
             onChanged: (color) => _updateColor(onSurface: color),
           ),
         ]),
-        
         const SizedBox(height: 24),
-        
         _buildColorSection('边框和分隔', [
           _ColorItem(
             title: '分隔线颜色',
@@ -444,9 +441,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
             onChanged: (color) => _updateColor(navigationBarSelected: color),
           ),
         ]),
-        
         const SizedBox(height: 24),
-        
         _buildColorSection('状态颜色', [
           _ColorItem(
             title: '错误色',
@@ -496,9 +491,9 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
         ),
         const SizedBox(height: 12),
         ...items.map((item) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: _buildColorTile(item),
-        )),
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _buildColorTile(item),
+            )),
       ],
     );
   }
@@ -617,7 +612,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
         rating: 0.0,
       );
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('已应用"${preset.name}"模板'),
@@ -702,7 +697,8 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
                           onChanged: (v) {
                             if (v != null) {
                               setState(() {
-                                _editingTheme = _editingTheme.copyWith(cornerRadius: v);
+                                _editingTheme =
+                                    _editingTheme.copyWith(cornerRadius: v);
                               });
                             }
                           },

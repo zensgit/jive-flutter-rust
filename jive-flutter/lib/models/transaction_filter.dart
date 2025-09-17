@@ -18,7 +18,7 @@ class TransactionFilterData {
   final bool? isReconciled;
   final String? sortBy;
   final bool ascending;
-  
+
   const TransactionFilterData({
     this.startDate,
     this.endDate,
@@ -37,7 +37,7 @@ class TransactionFilterData {
     this.sortBy = 'date',
     this.ascending = false,
   });
-  
+
   TransactionFilterData copyWith({
     DateTime? startDate,
     DateTime? endDate,
@@ -75,7 +75,7 @@ class TransactionFilterData {
       ascending: ascending ?? this.ascending,
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       if (startDate != null) 'start_date': startDate!.toIso8601String(),
@@ -96,35 +96,34 @@ class TransactionFilterData {
       'ascending': ascending,
     };
   }
-  
+
   factory TransactionFilterData.fromJson(Map<String, dynamic> json) {
     return TransactionFilterData(
-      startDate: json['start_date'] != null 
-          ? DateTime.parse(json['start_date']) 
+      startDate: json['start_date'] != null
+          ? DateTime.parse(json['start_date'])
           : null,
-      endDate: json['end_date'] != null 
-          ? DateTime.parse(json['end_date']) 
-          : null,
-      type: json['type'] != null 
-          ? TransactionType.fromString(json['type']) 
+      endDate:
+          json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
+      type: json['type'] != null
+          ? TransactionType.fromString(json['type'])
           : null,
       types: json['types'] != null
-          ? (json['types'] as List).map((t) => TransactionType.fromString(t)).toList()
+          ? (json['types'] as List)
+              .map((t) => TransactionType.fromString(t))
+              .toList()
           : const [],
       category: json['category'],
-      categories: json['categories'] != null 
-          ? List<String>.from(json['categories']) 
+      categories: json['categories'] != null
+          ? List<String>.from(json['categories'])
           : const [],
       accountId: json['account_id'],
-      accounts: json['accounts'] != null 
-          ? List<String>.from(json['accounts']) 
+      accounts: json['accounts'] != null
+          ? List<String>.from(json['accounts'])
           : const [],
       minAmount: json['min_amount']?.toDouble(),
       maxAmount: json['max_amount']?.toDouble(),
       searchText: json['search'],
-      tags: json['tags'] != null 
-          ? List<String>.from(json['tags']) 
-          : const [],
+      tags: json['tags'] != null ? List<String>.from(json['tags']) : const [],
       isPending: json['is_pending'],
       isReconciled: json['is_reconciled'],
       sortBy: json['sort_by'] ?? 'date',

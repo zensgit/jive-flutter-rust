@@ -6,29 +6,33 @@ import 'api/family_service.dart';
 /// 动态权限服务 - 实时权限管理
 class DynamicPermissionsService extends ChangeNotifier {
   static DynamicPermissionsService? _instance;
-  
+
   final FamilyService _familyService;
-  
+
   // 权限缓存
   final Map<String, UserPermissions> _permissionsCache = {};
   final Map<String, DateTime> _cacheTimestamps = {};
   static const Duration _cacheExpiry = Duration(minutes: 5);
-  
+
   // 实时更新流
   StreamController<PermissionUpdate>? _permissionUpdateStream;
   Stream<PermissionUpdate>? _updateStream;
-  
+
   // 权限继承规则
   final Map<String, List<String>> _permissionInheritance = {
     'admin.*': ['transaction.*', 'budget.*', 'category.*', 'report.*'],
-    'transaction.manage': ['transaction.create', 'transaction.edit', 'transaction.delete'],
+    'transaction.manage': [
+      'transaction.create',
+      'transaction.edit',
+      'transaction.delete'
+    ],
     'budget.manage': ['budget.create', 'budget.edit', 'budget.delete'],
     'category.manage': ['category.create', 'category.edit', 'category.delete'],
   };
-  
+
   // 临时权限
   final Map<String, TemporaryPermission> _temporaryPermissions = {};
-  
+
   // 权限委托
   final Map<String, PermissionDelegation> _delegations = {};
 
@@ -57,7 +61,7 @@ class DynamicPermissionsService extends ChangeNotifier {
     bool forceRefresh = false,
   }) async {
     final cacheKey = '$userId:$familyId';
-    
+
     // 检查缓存
     if (!forceRefresh && _permissionsCache.containsKey(cacheKey)) {
       final timestamp = _cacheTimestamps[cacheKey]!;
@@ -65,29 +69,30 @@ class DynamicPermissionsService extends ChangeNotifier {
         return _permissionsCache[cacheKey]!;
       }
     }
-    
+
     try {
       // 从服务器获取权限
-      final permissions = await _familyService.getUserPermissions(userId, familyId);
-      
+      final permissions =
+          await _familyService.getUserPermissions(userId, familyId);
+
       if (permissions != null) {
         // 应用继承规则
         final expandedPermissions = _expandPermissions(permissions.permissions);
-        
+
         // 应用临时权限
         final withTemporary = _applyTemporaryPermissions(
           expandedPermissions,
           userId,
           familyId,
         );
-        
+
         // 应用委托权限
         final withDelegations = _applyDelegatedPermissions(
           withTemporary,
           userId,
           familyId,
         );
-        
+
         final userPermissions = UserPermissions(
           userId: userId,
           familyId: familyId,
@@ -96,17 +101,17 @@ class DynamicPermissionsService extends ChangeNotifier {
           customPermissions: permissions.customPermissions,
           restrictions: permissions.restrictions,
         );
-        
+
         // 更新缓存
         _permissionsCache[cacheKey] = userPermissions;
         _cacheTimestamps[cacheKey] = DateTime.now();
-        
+
         return userPermissions;
       }
     } catch (e) {
       debugPrint('Failed to get user permissions: $e');
     }
-    
+
     // 返回默认权限
     return UserPermissions(
       userId: userId,
@@ -126,12 +131,12 @@ class DynamicPermissionsService extends ChangeNotifier {
       userId: userId,
       familyId: familyId,
     );
-    
+
     // 检查直接权限
     if (userPermissions.permissions.contains(permission)) {
       return true;
     }
-    
+
     // 检查通配符权限
     for (final perm in userPermissions.permissions) {
       if (perm.endsWith('*')) {
@@ -141,12 +146,12 @@ class DynamicPermissionsService extends ChangeNotifier {
         }
       }
     }
-    
+
     // 检查限制
     if (userPermissions.restrictions?.contains(permission) == true) {
       return false;
     }
-    
+
     return false;
   }
 
@@ -157,7 +162,7 @@ class DynamicPermissionsService extends ChangeNotifier {
     required List<String> permissions,
   }) async {
     final results = <String, bool>{};
-    
+
     for (final permission in permissions) {
       results[permission] = await hasPermission(
         userId: userId,
@@ -165,7 +170,7 @@ class DynamicPermissionsService extends ChangeNotifier {
         permission: permission,
       );
     }
-    
+
     return results;
   }
 
@@ -182,13 +187,13 @@ class DynamicPermissionsService extends ChangeNotifier {
         familyId,
         permissions,
       );
-      
+
       if (success) {
         // 清除缓存
         final cacheKey = '$userId:$familyId';
         _permissionsCache.remove(cacheKey);
         _cacheTimestamps.remove(cacheKey);
-        
+
         // 发送更新通知
         _permissionUpdateStream?.add(PermissionUpdate(
           userId: userId,
@@ -197,7 +202,7 @@ class DynamicPermissionsService extends ChangeNotifier {
           timestamp: DateTime.now(),
           reason: reason,
         ));
-        
+
         notifyListeners();
       }
     } catch (e) {
@@ -216,7 +221,7 @@ class DynamicPermissionsService extends ChangeNotifier {
   }) async {
     final key = '$userId:$familyId:$permission';
     final expiresAt = DateTime.now().add(duration);
-    
+
     _temporaryPermissions[key] = TemporaryPermission(
       userId: userId,
       familyId: familyId,
@@ -225,11 +230,11 @@ class DynamicPermissionsService extends ChangeNotifier {
       expiresAt: expiresAt,
       reason: reason,
     );
-    
+
     // 清除缓存强制刷新
     final cacheKey = '$userId:$familyId';
     _permissionsCache.remove(cacheKey);
-    
+
     // 记录到服务器
     try {
       await _familyService.grantTemporaryPermission(
@@ -242,7 +247,7 @@ class DynamicPermissionsService extends ChangeNotifier {
     } catch (e) {
       debugPrint('Failed to grant temporary permission: $e');
     }
-    
+
     // 设置自动撤销
     Future.delayed(duration, () {
       revokeTemporaryPermission(
@@ -251,7 +256,7 @@ class DynamicPermissionsService extends ChangeNotifier {
         permission: permission,
       );
     });
-    
+
     notifyListeners();
   }
 
@@ -263,11 +268,11 @@ class DynamicPermissionsService extends ChangeNotifier {
   }) async {
     final key = '$userId:$familyId:$permission';
     _temporaryPermissions.remove(key);
-    
+
     // 清除缓存
     final cacheKey = '$userId:$familyId';
     _permissionsCache.remove(cacheKey);
-    
+
     // 通知服务器
     try {
       await _familyService.revokeTemporaryPermission(
@@ -278,7 +283,7 @@ class DynamicPermissionsService extends ChangeNotifier {
     } catch (e) {
       debugPrint('Failed to revoke temporary permission: $e');
     }
-    
+
     notifyListeners();
   }
 
@@ -292,7 +297,7 @@ class DynamicPermissionsService extends ChangeNotifier {
     String? reason,
   }) async {
     final key = '$toUserId:$familyId';
-    
+
     _delegations[key] = PermissionDelegation(
       fromUserId: fromUserId,
       toUserId: toUserId,
@@ -302,10 +307,10 @@ class DynamicPermissionsService extends ChangeNotifier {
       expiresAt: expiresAt,
       reason: reason,
     );
-    
+
     // 清除缓存
     _permissionsCache.remove(key);
-    
+
     // 记录到服务器
     try {
       await _familyService.delegatePermissions(
@@ -319,12 +324,12 @@ class DynamicPermissionsService extends ChangeNotifier {
     } catch (e) {
       debugPrint('Failed to delegate permissions: $e');
     }
-    
+
     // 如果有过期时间，设置自动撤销
     if (expiresAt != null) {
       final duration = expiresAt.difference(DateTime.now());
       if (duration.isNegative) return;
-      
+
       Future.delayed(duration, () {
         revokeDelegation(
           toUserId: toUserId,
@@ -332,7 +337,7 @@ class DynamicPermissionsService extends ChangeNotifier {
         );
       });
     }
-    
+
     notifyListeners();
   }
 
@@ -343,29 +348,29 @@ class DynamicPermissionsService extends ChangeNotifier {
   }) async {
     final key = '$toUserId:$familyId';
     _delegations.remove(key);
-    
+
     // 清除缓存
     _permissionsCache.remove(key);
-    
+
     // 通知服务器
     try {
       await _familyService.revokeDelegation(toUserId, familyId);
     } catch (e) {
       debugPrint('Failed to revoke delegation: $e');
     }
-    
+
     notifyListeners();
   }
 
   /// 展开权限（应用继承规则）
   List<String> _expandPermissions(List<String> permissions) {
     final expanded = Set<String>.from(permissions);
-    
+
     for (final permission in permissions) {
       if (_permissionInheritance.containsKey(permission)) {
         expanded.addAll(_permissionInheritance[permission]!);
       }
-      
+
       // 处理通配符
       if (permission.endsWith('.*')) {
         final prefix = permission.substring(0, permission.length - 2);
@@ -376,7 +381,7 @@ class DynamicPermissionsService extends ChangeNotifier {
         });
       }
     }
-    
+
     return expanded.toList();
   }
 
@@ -388,7 +393,7 @@ class DynamicPermissionsService extends ChangeNotifier {
   ) {
     final result = Set<String>.from(permissions);
     final now = DateTime.now();
-    
+
     _temporaryPermissions.forEach((key, temp) {
       if (temp.userId == userId &&
           temp.familyId == familyId &&
@@ -396,7 +401,7 @@ class DynamicPermissionsService extends ChangeNotifier {
         result.add(temp.permission);
       }
     });
-    
+
     return result.toList();
   }
 
@@ -408,7 +413,7 @@ class DynamicPermissionsService extends ChangeNotifier {
   ) {
     final result = Set<String>.from(permissions);
     final key = '$userId:$familyId';
-    
+
     if (_delegations.containsKey(key)) {
       final delegation = _delegations[key]!;
       if (delegation.expiresAt == null ||
@@ -416,7 +421,7 @@ class DynamicPermissionsService extends ChangeNotifier {
         result.addAll(delegation.permissions);
       }
     }
-    
+
     return result.toList();
   }
 
@@ -434,13 +439,13 @@ class DynamicPermissionsService extends ChangeNotifier {
     _temporaryPermissions.removeWhere((key, temp) {
       return temp.expiresAt.isBefore(now);
     });
-    
+
     // 清理过期的委托
     _delegations.removeWhere((key, delegation) {
       return delegation.expiresAt != null &&
           delegation.expiresAt!.isBefore(now);
     });
-    
+
     // 清理过期的缓存
     _cacheTimestamps.removeWhere((key, timestamp) {
       return now.difference(timestamp) > _cacheExpiry;
@@ -448,7 +453,7 @@ class DynamicPermissionsService extends ChangeNotifier {
     _permissionsCache.removeWhere((key, _) {
       return !_cacheTimestamps.containsKey(key);
     });
-    
+
     notifyListeners();
   }
 
@@ -466,7 +471,7 @@ class DynamicPermissionsService extends ChangeNotifier {
   ) {
     final result = <TemporaryPermission>[];
     final now = DateTime.now();
-    
+
     _temporaryPermissions.forEach((key, temp) {
       if (temp.userId == userId &&
           temp.familyId == familyId &&
@@ -474,7 +479,7 @@ class DynamicPermissionsService extends ChangeNotifier {
         result.add(temp);
       }
     });
-    
+
     return result;
   }
 

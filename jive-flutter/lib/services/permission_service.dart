@@ -11,40 +11,40 @@ enum PermissionAction {
   editFamily,
   deleteFamily,
   archiveFamily,
-  
+
   // 成员管理
   viewMembers,
   inviteMembers,
   removeMembers,
   editMemberRoles,
-  
+
   // 交易管理
   viewTransactions,
   createTransactions,
   editTransactions,
   deleteTransactions,
   exportTransactions,
-  
+
   // 分类管理
   viewCategories,
   createCategories,
   editCategories,
   deleteCategories,
-  
+
   // 标签管理
   viewTags,
   createTags,
   editTags,
   deleteTags,
-  
+
   // 报表查看
   viewReports,
   exportReports,
-  
+
   // 设置管理
   viewSettings,
   editSettings,
-  
+
   // 审计日志
   viewAuditLogs,
 }
@@ -52,12 +52,12 @@ enum PermissionAction {
 /// 权限服务
 class PermissionService {
   final Ref _ref;
-  
+
   PermissionService(this._ref);
-  
+
   /// 获取当前用户
   User? get currentUser => _ref.read(authStateProvider).value;
-  
+
   /// 检查用户是否有权限执行特定操作
   bool hasPermission({
     required String familyId,
@@ -65,46 +65,46 @@ class PermissionService {
     String? targetUserId,
   }) {
     if (currentUser == null) return false;
-    
+
     // 获取用户在家庭中的角色
     final userRole = getUserRole(familyId);
     if (userRole == null) return false;
-    
+
     // 根据角色和操作类型判断权限
     return _checkPermission(userRole, action, targetUserId);
   }
-  
+
   /// 批量检查权限
   Map<PermissionAction, bool> checkPermissions({
     required String familyId,
     required List<PermissionAction> actions,
   }) {
     final results = <PermissionAction, bool>{};
-    
+
     for (final action in actions) {
       results[action] = hasPermission(
         familyId: familyId,
         action: action,
       );
     }
-    
+
     return results;
   }
-  
+
   /// 获取用户在家庭中的角色
   family_model.FamilyRole? getUserRole(String familyId) {
     final families = _ref.read(familyProvider);
-    
+
     if (families == null) return null;
-    
+
     try {
       final family = families.firstWhere((f) => f.id == familyId);
-      
+
       // 检查是否是拥有者
       if (family.ownerId == currentUser?.id) {
         return family_model.FamilyRole.owner;
       }
-      
+
       // 从成员列表中获取角色
       // TODO: 需要从成员列表中获取实际角色
       // 这里暂时返回默认角色
@@ -113,30 +113,30 @@ class PermissionService {
       return null;
     }
   }
-  
+
   /// 检查是否是家庭拥有者
   bool isOwner(String familyId) {
     return getUserRole(familyId) == family_model.FamilyRole.owner;
   }
-  
+
   /// 检查是否是管理员或更高权限
   bool isAdmin(String familyId) {
     final role = getUserRole(familyId);
-    return role == family_model.FamilyRole.owner || 
-           role == family_model.FamilyRole.admin;
+    return role == family_model.FamilyRole.owner ||
+        role == family_model.FamilyRole.admin;
   }
-  
+
   /// 检查是否可以编辑（成员或更高权限）
   bool canEdit(String familyId) {
     final role = getUserRole(familyId);
     return role != null && role != family_model.FamilyRole.viewer;
   }
-  
+
   /// 检查是否可以查看（任何角色）
   bool canView(String familyId) {
     return getUserRole(familyId) != null;
   }
-  
+
   /// 根据角色检查具体权限
   bool _checkPermission(
     family_model.FamilyRole role,
@@ -147,7 +147,7 @@ class PermissionService {
     if (role == family_model.FamilyRole.owner) {
       return true;
     }
-    
+
     // 根据不同角色和操作类型判断
     switch (action) {
       // 查看权限 - 所有角色都有
@@ -159,7 +159,7 @@ class PermissionService {
       case PermissionAction.viewReports:
       case PermissionAction.viewSettings:
         return true;
-      
+
       // 管理员权限
       case PermissionAction.editFamily:
       case PermissionAction.inviteMembers:
@@ -170,7 +170,7 @@ class PermissionService {
       case PermissionAction.editSettings:
       case PermissionAction.viewAuditLogs:
         return role == family_model.FamilyRole.admin;
-      
+
       // 成员权限
       case PermissionAction.createTransactions:
       case PermissionAction.editTransactions:
@@ -178,31 +178,31 @@ class PermissionService {
       case PermissionAction.editCategories:
       case PermissionAction.createTags:
       case PermissionAction.editTags:
-        return role == family_model.FamilyRole.admin || 
-               role == family_model.FamilyRole.member;
-      
+        return role == family_model.FamilyRole.admin ||
+            role == family_model.FamilyRole.member;
+
       // 删除权限 - 仅管理员
       case PermissionAction.deleteTransactions:
       case PermissionAction.deleteCategories:
       case PermissionAction.deleteTags:
         return role == family_model.FamilyRole.admin;
-      
+
       // 危险操作 - 仅拥有者
       case PermissionAction.deleteFamily:
       case PermissionAction.archiveFamily:
         return false; // 已在开始检查过owner权限
-      
+
       default:
         return false;
     }
   }
-  
+
   /// 获取角色的权限列表
   List<PermissionAction> getRolePermissions(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:
         return PermissionAction.values;
-      
+
       case family_model.FamilyRole.admin:
         return [
           PermissionAction.viewFamily,
@@ -230,7 +230,7 @@ class PermissionService {
           PermissionAction.editSettings,
           PermissionAction.viewAuditLogs,
         ];
-      
+
       case family_model.FamilyRole.member:
         return [
           PermissionAction.viewFamily,
@@ -247,7 +247,7 @@ class PermissionService {
           PermissionAction.viewReports,
           PermissionAction.viewSettings,
         ];
-      
+
       case family_model.FamilyRole.viewer:
         return [
           PermissionAction.viewFamily,
@@ -260,7 +260,7 @@ class PermissionService {
         ];
     }
   }
-  
+
   /// 获取权限操作的显示名称
   String getActionDisplayName(PermissionAction action) {
     switch (action) {
@@ -318,7 +318,7 @@ class PermissionService {
         return '查看审计日志';
     }
   }
-  
+
   /// 获取权限操作的描述
   String getActionDescription(PermissionAction action) {
     switch (action) {

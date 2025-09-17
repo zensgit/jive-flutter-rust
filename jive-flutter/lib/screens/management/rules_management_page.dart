@@ -10,7 +10,7 @@ class RulesManagementPage extends StatefulWidget {
 
 class _RulesManagementPageState extends State<RulesManagementPage> {
   String _searchQuery = '';
-  
+
   // 模拟数据
   final List<Map<String, dynamic>> _sampleRules = [
     {
@@ -23,7 +23,7 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
       'actions': ['设置分类: 餐饮', '添加标签: 用餐'],
     },
     {
-      'id': '2', 
+      'id': '2',
       'name': '工资自动识别',
       'description': '工资到账时自动标记收入类型',
       'isActive': true,
@@ -50,18 +50,26 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
       'actions': ['设置分类: 交通出行'],
     },
   ];
-  
+
   @override
   Widget build(BuildContext context) {
     final filteredRules = _sampleRules.where((rule) {
       return _searchQuery.isEmpty ||
-          rule['name'].toString().toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          rule['description'].toString().toLowerCase().contains(_searchQuery.toLowerCase());
+          rule['name']
+              .toString()
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase()) ||
+          rule['description']
+              .toString()
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase());
     }).toList();
-    
-    final activeRules = _sampleRules.where((rule) => rule['isActive'] == true).length;
-    final totalMatches = _sampleRules.fold<int>(0, (sum, rule) => sum + (rule['matchCount'] as int));
-    
+
+    final activeRules =
+        _sampleRules.where((rule) => rule['isActive'] == true).length;
+    final totalMatches = _sampleRules.fold<int>(
+        0, (sum, rule) => sum + (rule['matchCount'] as int));
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -90,11 +98,16 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
                 const SizedBox(width: 12),
                 _buildStatCard('总匹配', totalMatches, Colors.orange),
                 const SizedBox(width: 12),
-                _buildStatCard('成功率', totalMatches > 0 ? (totalMatches / _sampleRules.length).round() : 0, Colors.purple),
+                _buildStatCard(
+                    '成功率',
+                    totalMatches > 0
+                        ? (totalMatches / _sampleRules.length).round()
+                        : 0,
+                    Colors.purple),
               ],
             ),
           ),
-          
+
           // 搜索栏
           Container(
             color: Colors.white,
@@ -112,11 +125,12 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: Colors.grey[300]!),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
             ),
           ),
-          
+
           // 规则列表
           Expanded(
             child: _buildRulesList(filteredRules),
@@ -130,7 +144,7 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
       ),
     );
   }
-  
+
   Widget _buildStatCard(String label, int value, Color color) {
     return Expanded(
       child: Container(
@@ -163,7 +177,7 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
       ),
     );
   }
-  
+
   Widget _buildRulesList(List<Map<String, dynamic>> rules) {
     if (rules.isEmpty) {
       return Center(
@@ -195,7 +209,7 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
         ),
       );
     }
-    
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: rules.length,
@@ -205,7 +219,7 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
       },
     );
   }
-  
+
   Widget _buildRuleCard(Map<String, dynamic> rule) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -244,7 +258,8 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
                 rule['isActive'] ? '活跃' : '暂停',
                 style: TextStyle(
                   fontSize: 12,
-                  color: rule['isActive'] ? Colors.green[700] : Colors.grey[600],
+                  color:
+                      rule['isActive'] ? Colors.green[700] : Colors.grey[600],
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -299,16 +314,18 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                 ),
                 const SizedBox(height: 8),
-                ...((rule['conditions'] as List).map((condition) => 
-                  Padding(
+                ...((rule['conditions'] as List).map(
+                  (condition) => Padding(
                     padding: const EdgeInsets.only(bottom: 4),
                     child: Row(
                       children: [
-                        Icon(Icons.arrow_right, size: 16, color: Colors.grey[600]),
+                        Icon(Icons.arrow_right,
+                            size: 16, color: Colors.grey[600]),
                         const SizedBox(width: 4),
                         Text(
                           condition as String,
-                          style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                          style:
+                              TextStyle(color: Colors.grey[700], fontSize: 13),
                         ),
                       ],
                     ),
@@ -320,16 +337,18 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                 ),
                 const SizedBox(height: 8),
-                ...((rule['actions'] as List).map((action) => 
-                  Padding(
+                ...((rule['actions'] as List).map(
+                  (action) => Padding(
                     padding: const EdgeInsets.only(bottom: 4),
                     child: Row(
                       children: [
-                        Icon(Icons.play_arrow, size: 16, color: Colors.blue[600]),
+                        Icon(Icons.play_arrow,
+                            size: 16, color: Colors.blue[600]),
                         const SizedBox(width: 4),
                         Text(
                           action as String,
-                          style: TextStyle(color: Colors.blue[700], fontSize: 13),
+                          style:
+                              TextStyle(color: Colors.blue[700], fontSize: 13),
                         ),
                       ],
                     ),
@@ -342,7 +361,7 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
       ),
     );
   }
-  
+
   void _showAddRuleDialog() {
     showDialog(
       context: context,
@@ -367,7 +386,7 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
       ),
     );
   }
-  
+
   void _showEditRuleDialog(Map<String, dynamic> rule) {
     showDialog(
       context: context,
@@ -392,7 +411,7 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
       ),
     );
   }
-  
+
   void _toggleRuleStatus(Map<String, dynamic> rule) {
     setState(() {
       rule['isActive'] = !(rule['isActive'] as bool);
@@ -403,7 +422,7 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
       ),
     );
   }
-  
+
   void _showDeleteRuleDialog(Map<String, dynamic> rule) {
     showDialog(
       context: context,

@@ -15,11 +15,11 @@ class Rule with _$Rule {
     int? priority,
     DateTime? createdAt,
     DateTime? updatedAt,
-    
+
     // 条件和动作
     @Default([]) List<RuleCondition> conditions,
     @Default([]) List<RuleAction> actions,
-    
+
     // 执行统计
     @Default(0) int executionCount,
     DateTime? lastExecutedAt,
@@ -30,9 +30,9 @@ class Rule with _$Rule {
 
 /// 资源类型
 enum ResourceType {
-  transaction,  // 交易
-  account,      // 账户
-  budget,       // 预算
+  transaction, // 交易
+  account, // 账户
+  budget, // 预算
 }
 
 /// 规则条件
@@ -43,58 +43,59 @@ class RuleCondition with _$RuleCondition {
     required ConditionType type,
     required ConditionOperator operator,
     dynamic value,
-    
+
     // 复合条件
     @Default(false) bool isCompound,
     LogicalOperator? logicalOperator,
     @Default([]) List<RuleCondition> subConditions,
   }) = _RuleCondition;
 
-  factory RuleCondition.fromJson(Map<String, dynamic> json) => _$RuleConditionFromJson(json);
+  factory RuleCondition.fromJson(Map<String, dynamic> json) =>
+      _$RuleConditionFromJson(json);
 }
 
 /// 条件类型
 enum ConditionType {
-  amount,           // 金额
-  description,      // 描述
-  category,         // 分类
-  payee,           // 交易对方
-  tag,             // 标签
-  date,            // 日期
-  accountType,     // 账户类型
+  amount, // 金额
+  description, // 描述
+  category, // 分类
+  payee, // 交易对方
+  tag, // 标签
+  date, // 日期
+  accountType, // 账户类型
   transactionType, // 交易类型
 }
 
 /// 条件操作符
 enum ConditionOperator {
   @JsonValue('equals')
-  equals,          // 等于
+  equals, // 等于
   @JsonValue('not_equals')
-  notEquals,       // 不等于
+  notEquals, // 不等于
   @JsonValue('contains')
-  contains,        // 包含
+  contains, // 包含
   @JsonValue('not_contains')
-  notContains,     // 不包含
+  notContains, // 不包含
   @JsonValue('starts_with')
-  startsWith,      // 开始于
+  startsWith, // 开始于
   @JsonValue('ends_with')
-  endsWith,        // 结束于
+  endsWith, // 结束于
   @JsonValue('greater_than')
-  greaterThan,     // 大于
+  greaterThan, // 大于
   @JsonValue('less_than')
-  lessThan,        // 小于
+  lessThan, // 小于
   @JsonValue('between')
-  between,         // 在...之间
+  between, // 在...之间
   @JsonValue('in')
-  inList,          // 在列表中
+  inList, // 在列表中
   @JsonValue('not_in')
-  notInList,       // 不在列表中
+  notInList, // 不在列表中
 }
 
 /// 逻辑操作符
 enum LogicalOperator {
-  and,  // 与
-  or,   // 或
+  and, // 与
+  or, // 或
 }
 
 /// 规则动作
@@ -107,21 +108,22 @@ class RuleAction with _$RuleAction {
     Map<String, dynamic>? params,
   }) = _RuleAction;
 
-  factory RuleAction.fromJson(Map<String, dynamic> json) => _$RuleActionFromJson(json);
+  factory RuleAction.fromJson(Map<String, dynamic> json) =>
+      _$RuleActionFromJson(json);
 }
 
 /// 动作类型
 enum ActionType {
-  setCategory,       // 设置分类
-  addTag,           // 添加标签
-  removeTag,        // 移除标签
-  setPayee,         // 设置交易对方
-  setDescription,   // 设置描述
-  markAsTransfer,   // 标记为转账
-  hide,             // 隐藏交易
-  notify,           // 发送通知
-  autoApprove,      // 自动批准
-  autoCategorize,   // 自动分类
+  setCategory, // 设置分类
+  addTag, // 添加标签
+  removeTag, // 移除标签
+  setPayee, // 设置交易对方
+  setDescription, // 设置描述
+  markAsTransfer, // 标记为转账
+  hide, // 隐藏交易
+  notify, // 发送通知
+  autoApprove, // 自动批准
+  autoCategorize, // 自动分类
 }
 
 /// 规则执行日志
@@ -138,5 +140,6 @@ class RuleLog with _$RuleLog {
     DateTime? executedAt,
   }) = _RuleLog;
 
-  factory RuleLog.fromJson(Map<String, dynamic> json) => _$RuleLogFromJson(json);
+  factory RuleLog.fromJson(Map<String, dynamic> json) =>
+      _$RuleLogFromJson(json);
 }

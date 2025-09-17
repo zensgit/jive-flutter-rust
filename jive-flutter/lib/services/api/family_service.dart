@@ -12,7 +12,7 @@ class FamilyService {
   Future<List<UserFamilyInfo>> getUserFamilies() async {
     try {
       final response = await _client.get('/families/my-families');
-      
+
       final List<dynamic> data = response.data['data'] ?? response.data;
       return data.map((json) => UserFamilyInfo.fromJson(json)).toList();
     } catch (e) {
@@ -24,11 +24,11 @@ class FamilyService {
   Future<Family?> getCurrentFamily() async {
     try {
       final response = await _client.get('/families/current');
-      
+
       if (response.data == null) {
         return null;
       }
-      
+
       return Family.fromJson(response.data['data'] ?? response.data);
     } catch (e) {
       // 如果没有当前Family，返回null
@@ -60,7 +60,7 @@ class FamilyService {
         '/families',
         data: request.toJson(),
       );
-      
+
       return UserFamilyInfo.fromJson(response.data['data'] ?? response.data);
     } catch (e) {
       throw _handleError(e);
@@ -68,13 +68,14 @@ class FamilyService {
   }
 
   /// 更新Family信息
-  Future<Family> updateFamily(String familyId, Map<String, dynamic> updates) async {
+  Future<Family> updateFamily(
+      String familyId, Map<String, dynamic> updates) async {
     try {
       final response = await _client.put(
         '/families/$familyId',
         data: updates,
       );
-      
+
       return Family.fromJson(response.data['data'] ?? response.data);
     } catch (e) {
       throw _handleError(e);
@@ -85,7 +86,7 @@ class FamilyService {
   Future<List<FamilyMemberWithUser>> getFamilyMembers(String familyId) async {
     try {
       final response = await _client.get('/families/$familyId/members');
-      
+
       final List<dynamic> data = response.data['data'] ?? response.data;
       return data.map((json) => FamilyMemberWithUser.fromJson(json)).toList();
     } catch (e) {
@@ -107,7 +108,7 @@ class FamilyService {
           'role': role.value,
         },
       );
-      
+
       return FamilyInvitation.fromJson(response.data['data'] ?? response.data);
     } catch (e) {
       throw _handleError(e);
@@ -123,7 +124,7 @@ class FamilyService {
           'token': token,
         },
       );
-      
+
       return UserFamilyInfo.fromJson(response.data['data'] ?? response.data);
     } catch (e) {
       throw _handleError(e);
@@ -182,7 +183,7 @@ class FamilyService {
   Future<FamilyStatistics> getFamilyStatistics(String familyId) async {
     try {
       final response = await _client.get('/families/$familyId/statistics');
-      
+
       return FamilyStatistics.fromJson(response.data['data'] ?? response.data);
     } catch (e) {
       throw _handleError(e);
@@ -195,7 +196,8 @@ class FamilyService {
       return error;
     }
     if (error is DioException) {
-      if (error.response?.data != null && error.response?.data['message'] != null) {
+      if (error.response?.data != null &&
+          error.response?.data['message'] != null) {
         return ApiException(error.response!.data['message']);
       }
       return ApiException('网络错误：${error.message}');

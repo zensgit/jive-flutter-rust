@@ -13,19 +13,21 @@ class CategoryTemplateLibraryPage extends StatefulWidget {
   const CategoryTemplateLibraryPage({Key? key}) : super(key: key);
 
   @override
-  State<CategoryTemplateLibraryPage> createState() => _CategoryTemplateLibraryPageState();
+  State<CategoryTemplateLibraryPage> createState() =>
+      _CategoryTemplateLibraryPageState();
 }
 
-class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPage> 
+class _CategoryTemplateLibraryPageState
+    extends State<CategoryTemplateLibraryPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late CategoryService _categoryService;
-  
+
   // 模板数据
   List<SystemCategoryTemplate> _allTemplates = [];
   List<SystemCategoryTemplate> _filteredTemplates = [];
   Map<String, List<SystemCategoryTemplate>> _templatesByGroup = {};
-  
+
   // UI状态
   bool _isLoading = true;
   String _error = '';
@@ -34,7 +36,7 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
   Set<String> _selectedTemplateIds = {};
   bool _isSelectionMode = false;
   bool _showOnlyFeatured = false;
-  
+
   // 分类组
   final List<CategoryGroup> _groups = [
     CategoryGroup.income,
@@ -71,14 +73,14 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
     try {
       // 加载所有模板
       final templates = await _categoryService.getAllTemplates();
-      
+
       // 按组分类
       _templatesByGroup.clear();
       for (final template in templates) {
         final group = template.categoryGroup;
         _templatesByGroup.putIfAbsent(group, () => []).add(template);
       }
-      
+
       setState(() {
         _allTemplates = templates;
         _filteredTemplates = templates;
@@ -103,23 +105,24 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
               template.tags.any((tag) => tag.toLowerCase().contains(query));
           if (!matchesSearch) return false;
         }
-        
+
         // 分组过滤
         if (_selectedGroup != null) {
           if (template.categoryGroup != _selectedGroup) return false;
         }
-        
+
         // 精选过滤
         if (_showOnlyFeatured && !template.isFeatured) {
           return false;
         }
-        
+
         // 分类类型过滤（根据当前标签页）
         final classification = _getCurrentClassification();
-        if (classification != null && template.classification != classification) {
+        if (classification != null &&
+            template.classification != classification) {
           return false;
         }
-        
+
         return true;
       }).toList();
     });
@@ -171,7 +174,7 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
 
   Future<void> _importSelectedTemplates() async {
     if (_selectedTemplateIds.isEmpty) return;
-    
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -189,7 +192,7 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
         ],
       ),
     );
-    
+
     if (confirmed == true) {
       try {
         // 批量导入模板
@@ -197,14 +200,14 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
           final template = _allTemplates.firstWhere((t) => t.id == templateId);
           await _categoryService.importTemplateAsCategory(template);
         }
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('成功导入 ${_selectedTemplateIds.length} 个分类'),
             backgroundColor: Colors.green,
           ),
         );
-        
+
         // 清除选择并退出选择模式
         _clearSelection();
         _toggleSelectionMode();
@@ -236,7 +239,8 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
                   width: 24,
                   height: 24,
                   decoration: BoxDecoration(
-                    color: Color(int.parse(template.color.replaceFirst('#', '0xFF'))),
+                    color: Color(
+                        int.parse(template.color.replaceFirst('#', '0xFF'))),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -265,11 +269,11 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
         ],
       ),
     );
-    
+
     if (confirmed == true) {
       try {
         await _categoryService.importTemplateAsCategory(template);
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('分类导入成功'),
@@ -315,7 +319,9 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
             ),
             IconButton(
               icon: const Icon(Icons.download),
-              onPressed: _selectedTemplateIds.isNotEmpty ? _importSelectedTemplates : null,
+              onPressed: _selectedTemplateIds.isNotEmpty
+                  ? _importSelectedTemplates
+                  : null,
               tooltip: '导入选中',
             ),
           ],
@@ -342,7 +348,7 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
                   children: [
                     // 搜索和过滤栏
                     _buildSearchAndFilterBar(),
-                    
+
                     // 模板列表
                     Expanded(
                       child: TabBarView(
@@ -403,7 +409,7 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
             },
           ),
           const SizedBox(height: 12),
-          
+
           // 分组过滤和精选开关
           Row(
             children: [
@@ -416,7 +422,8 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                   items: [
                     const DropdownMenuItem<CategoryGroup?>(
@@ -424,15 +431,15 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
                       child: Text('全部分组'),
                     ),
                     ..._groups.map((group) => DropdownMenuItem(
-                      value: group,
-                      child: Row(
-                        children: [
-                          Text(group.icon),
-                          const SizedBox(width: 8),
-                          Text(group.displayName),
-                        ],
-                      ),
-                    )),
+                          value: group,
+                          child: Row(
+                            children: [
+                              Text(group.icon),
+                              const SizedBox(width: 8),
+                              Text(group.displayName),
+                            ],
+                          ),
+                        )),
                   ],
                   onChanged: (value) {
                     setState(() {
@@ -443,7 +450,7 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
                 ),
               ),
               const SizedBox(width: 16),
-              
+
               // 精选开关
               Row(
                 children: [
@@ -461,7 +468,7 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
               ),
             ],
           ),
-          
+
           // 统计信息
           if (_isSelectionMode) ...[
             const SizedBox(height: 8),
@@ -489,7 +496,7 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
     final templates = _filteredTemplates
         .where((t) => t.classification == classification)
         .toList();
-    
+
     if (templates.isEmpty) {
       return Center(
         child: Column(
@@ -512,20 +519,22 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
         ),
       );
     }
-    
+
     // 按分组组织模板
     final groupedTemplates = <CategoryGroup, List<SystemCategoryTemplate>>{};
     for (final template in templates) {
-      groupedTemplates.putIfAbsent(template.categoryGroup, () => []).add(template);
+      groupedTemplates
+          .putIfAbsent(template.categoryGroup, () => [])
+          .add(template);
     }
-    
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: groupedTemplates.length,
       itemBuilder: (context, index) {
         final group = groupedTemplates.keys.elementAt(index);
         final groupTemplates = groupedTemplates[group]!;
-        
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -548,7 +557,8 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(12),
@@ -561,7 +571,7 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
                 ],
               ),
             ),
-            
+
             // 模板网格
             GridView.builder(
               shrinkWrap: true,
@@ -578,7 +588,7 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
                 return _buildTemplateCard(template);
               },
             ),
-            
+
             const SizedBox(height: 24),
           ],
         );
@@ -589,7 +599,7 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
   Widget _buildTemplateCard(SystemCategoryTemplate template) {
     final isSelected = _selectedTemplateIds.contains(template.id);
     final color = Color(int.parse(template.color.replaceFirst('#', '0xFF')));
-    
+
     return GestureDetector(
       onTap: () {
         if (_isSelectionMode) {
@@ -606,7 +616,8 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
       },
       child: Container(
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : Theme.of(context).cardColor,
+          color:
+              isSelected ? color.withOpacity(0.1) : Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? color : Colors.grey[300]!,
@@ -640,7 +651,7 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
                 ),
               ),
               const SizedBox(width: 12),
-              
+
               // 名称和标签
               Expanded(
                 child: Column(
@@ -663,7 +674,8 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
                         if (template.isFeatured)
                           Container(
                             margin: const EdgeInsets.only(left: 4),
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: Colors.orange[100],
                               borderRadius: BorderRadius.circular(4),
@@ -682,22 +694,26 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
                     const SizedBox(height: 4),
                     Wrap(
                       spacing: 4,
-                      children: template.tags.take(2).map((tag) => Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          tag,
-                          style: const TextStyle(fontSize: 10),
-                        ),
-                      )).toList(),
+                      children: template.tags
+                          .take(2)
+                          .map((tag) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 1),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  tag,
+                                  style: const TextStyle(fontSize: 10),
+                                ),
+                              ))
+                          .toList(),
                     ),
                   ],
                 ),
               ),
-              
+
               // 选择指示器或操作按钮
               if (_isSelectionMode)
                 Checkbox(
@@ -743,7 +759,9 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: Color(int.parse(template.color.replaceFirst('#', '0xFF'))).withOpacity(0.2),
+                      color: Color(int.parse(
+                              template.color.replaceFirst('#', '0xFF')))
+                          .withOpacity(0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(
@@ -779,12 +797,14 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
                 ],
               ),
               const SizedBox(height: 20),
-              
+
               // 详细信息
               _buildDetailRow('分类组', template.categoryGroup.displayName),
-              _buildDetailRow('类型', _getClassificationName(template.classification)),
-              _buildDetailRow('颜色', template.color, showColor: true, color: template.color),
-              
+              _buildDetailRow(
+                  '类型', _getClassificationName(template.classification)),
+              _buildDetailRow('颜色', template.color,
+                  showColor: true, color: template.color),
+
               if (template.description != null) ...[
                 const SizedBox(height: 16),
                 Text(
@@ -800,20 +820,22 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
                   style: const TextStyle(fontSize: 16),
                 ),
               ],
-              
+
               // 标签
               if (template.tags.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
-                  children: template.tags.map((tag) => Chip(
-                    label: Text(tag),
-                    backgroundColor: Colors.grey[200],
-                  )).toList(),
+                  children: template.tags
+                      .map((tag) => Chip(
+                            label: Text(tag),
+                            backgroundColor: Colors.grey[200],
+                          ))
+                      .toList(),
                 ),
               ],
-              
+
               // 统计信息
               if (template.globalUsageCount > 0) ...[
                 const SizedBox(height: 16),
@@ -835,9 +857,9 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
                   ),
                 ),
               ],
-              
+
               const Spacer(),
-              
+
               // 操作按钮
               Row(
                 children: [
@@ -867,7 +889,8 @@ class _CategoryTemplateLibraryPageState extends State<CategoryTemplateLibraryPag
     );
   }
 
-  Widget _buildDetailRow(String label, String value, {bool showColor = false, String? color}) {
+  Widget _buildDetailRow(String label, String value,
+      {bool showColor = false, String? color}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(

@@ -46,7 +46,7 @@ class ThemePreviewCard extends StatelessWidget {
                 child: _buildPreview(),
               ),
             ),
-            
+
             // 主题信息
             if (showDetails)
               Padding(
@@ -139,7 +139,7 @@ class ThemePreviewCard extends StatelessWidget {
                   ],
                 ),
               ),
-            
+
             // 操作按钮
             if (actions != null && actions!.isNotEmpty)
               Container(
@@ -215,7 +215,7 @@ class ThemePreviewCard extends StatelessWidget {
             ),
           ),
         ),
-        
+
         // 内容区域预览
         Positioned(
           top: 24,
@@ -235,7 +235,7 @@ class ThemePreviewCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              
+
               // 卡片预览
               Expanded(
                 child: Container(
@@ -272,7 +272,7 @@ class ThemePreviewCard extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
-                        
+
                         // 底部操作区
                         Row(
                           children: [
@@ -312,7 +312,7 @@ class ThemePreviewCard extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // 底部导航栏预览
         Positioned(
           bottom: 0,
@@ -408,9 +408,9 @@ class CompactThemePreviewCard extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               const SizedBox(width: 12),
-              
+
               // 主题信息
               Expanded(
                 child: Column(
@@ -440,7 +440,7 @@ class CompactThemePreviewCard extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               // 激活状态指示
               if (isActive)
                 Container(

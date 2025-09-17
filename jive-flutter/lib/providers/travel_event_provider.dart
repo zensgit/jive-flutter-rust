@@ -20,7 +20,12 @@ class TravelEventNotifier extends StateNotifier<List<TravelEvent>> {
         location: '北京',
         isActive: true,
         autoTag: true,
-        travelCategoryIds: ['transportation', 'dining', 'shopping', 'entertainment'],
+        travelCategoryIds: [
+          'transportation',
+          'dining',
+          'shopping',
+          'entertainment'
+        ],
         transactionCount: 15,
         totalAmount: 3500.0,
         createdAt: now.subtract(const Duration(days: 30)),
@@ -48,7 +53,13 @@ class TravelEventNotifier extends StateNotifier<List<TravelEvent>> {
         location: '三亚',
         isActive: false,
         autoTag: false,
-        travelCategoryIds: ['transportation', 'accommodation', 'dining', 'attractions', 'shopping'],
+        travelCategoryIds: [
+          'transportation',
+          'accommodation',
+          'dining',
+          'attractions',
+          'shopping'
+        ],
         transactionCount: 0,
         totalAmount: 0.0,
         createdAt: now.subtract(const Duration(days: 5)),
@@ -63,7 +74,7 @@ class TravelEventNotifier extends StateNotifier<List<TravelEvent>> {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
-    
+
     state = [...state, newEvent];
     // TODO: 保存到存储，创建旅行标签，触发自动标记
   }
@@ -124,7 +135,8 @@ class TravelEventNotifier extends StateNotifier<List<TravelEvent>> {
   }
 
   /// 更新事件统计
-  void updateEventStats(String eventId, int transactionCount, double totalAmount) {
+  void updateEventStats(
+      String eventId, int transactionCount, double totalAmount) {
     state = state.map((event) {
       if (event.id == eventId) {
         return event.copyWith(
@@ -140,7 +152,8 @@ class TravelEventNotifier extends StateNotifier<List<TravelEvent>> {
 }
 
 /// 旅行事件模板管理
-class TravelEventTemplateNotifier extends StateNotifier<List<TravelEventTemplate>> {
+class TravelEventTemplateNotifier
+    extends StateNotifier<List<TravelEventTemplate>> {
   TravelEventTemplateNotifier() : super([]) {
     _loadTemplates();
   }
@@ -161,32 +174,36 @@ class TravelEventTemplateNotifier extends StateNotifier<List<TravelEventTemplate
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
-    
+
     state = [...state, newTemplate];
     // TODO: 保存到存储
   }
 
   /// 删除自定义模板
   void deleteCustomTemplate(String templateId) {
-    state = state.where((template) => 
-      template.id != templateId || template.isSystemTemplate
-    ).toList();
+    state = state
+        .where((template) =>
+            template.id != templateId || template.isSystemTemplate)
+        .toList();
     // TODO: 保存到存储
   }
 }
 
 /// 旅行事件Provider
-final travelEventsProvider = StateNotifierProvider<TravelEventNotifier, List<TravelEvent>>((ref) {
+final travelEventsProvider =
+    StateNotifierProvider<TravelEventNotifier, List<TravelEvent>>((ref) {
   return TravelEventNotifier();
 });
 
 /// 旅行事件模板Provider
-final travelEventTemplatesProvider = StateNotifierProvider<TravelEventTemplateNotifier, List<TravelEventTemplate>>((ref) {
+final travelEventTemplatesProvider = StateNotifierProvider<
+    TravelEventTemplateNotifier, List<TravelEventTemplate>>((ref) {
   return TravelEventTemplateNotifier();
 });
 
 /// 按状态过滤的旅行事件Provider
-final travelEventsByStatusProvider = Provider.family<List<TravelEvent>, TravelEventStatus>((ref, status) {
+final travelEventsByStatusProvider =
+    Provider.family<List<TravelEvent>, TravelEventStatus>((ref, status) {
   final events = ref.watch(travelEventsProvider);
   return events.where((event) => event.status == status).toList();
 });
@@ -228,15 +245,20 @@ final customTemplatesProvider = Provider<List<TravelEventTemplate>>((ref) {
 final travelEventStatsProvider = Provider<Map<String, dynamic>>((ref) {
   final events = ref.watch(travelEventsProvider);
   final now = DateTime.now();
-  
+
   return {
     'totalEvents': events.length,
-    'upcomingEvents': events.where((e) => e.status == TravelEventStatus.upcoming).length,
-    'activeEvents': events.where((e) => e.status == TravelEventStatus.active).length,
-    'completedEvents': events.where((e) => e.status == TravelEventStatus.completed).length,
+    'upcomingEvents':
+        events.where((e) => e.status == TravelEventStatus.upcoming).length,
+    'activeEvents':
+        events.where((e) => e.status == TravelEventStatus.active).length,
+    'completedEvents':
+        events.where((e) => e.status == TravelEventStatus.completed).length,
     'enabledEvents': events.where((e) => e.isActive).length,
-    'totalTransactions': events.fold(0, (sum, event) => sum + event.transactionCount),
-    'totalAmount': events.fold(0.0, (sum, event) => sum + (event.totalAmount ?? 0.0)),
+    'totalTransactions':
+        events.fold(0, (sum, event) => sum + event.transactionCount),
+    'totalAmount':
+        events.fold(0.0, (sum, event) => sum + (event.totalAmount ?? 0.0)),
     'thisYearEvents': events.where((e) => e.startDate.year == now.year).length,
   };
 });

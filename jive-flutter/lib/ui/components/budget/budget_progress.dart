@@ -24,7 +24,8 @@ class BudgetProgress extends StatelessWidget {
     this.showAmount = true,
   });
 
-  double get progress => budgeted > 0 ? (spent / budgeted).clamp(0.0, 1.5) : 0.0;
+  double get progress =>
+      budgeted > 0 ? (spent / budgeted).clamp(0.0, 1.5) : 0.0;
   double get percentage => progress * 100;
   double get remaining => budgeted - spent;
   bool get isOverBudget => spent > budgeted;
@@ -33,7 +34,7 @@ class BudgetProgress extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final progressColor = _getProgressColor();
-    
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppConstants.borderRadius),
@@ -80,7 +81,7 @@ class BudgetProgress extends StatelessWidget {
                       if (showAmount) ...[
                         const SizedBox(height: 2),
                         Text(
-                      '${ref.read(currencyProvider.notifier).formatCurrency(spent, ref.read(baseCurrencyProvider).code)} / ${ref.read(currencyProvider.notifier).formatCurrency(budgeted, ref.read(baseCurrencyProvider).code)}',
+                          '${ref.read(currencyProvider.notifier).formatCurrency(spent, ref.read(baseCurrencyProvider).code)} / ${ref.read(currencyProvider.notifier).formatCurrency(budgeted, ref.read(baseCurrencyProvider).code)}',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurface.withOpacity(0.6),
                           ),
@@ -101,20 +102,22 @@ class BudgetProgress extends StatelessWidget {
                         ),
                       ),
                     Text(
-                      isOverBudget 
-                          ? '超支 ${ref.read(currencyProvider.notifier).formatCurrency(-remaining, ref.read(baseCurrencyProvider).code)}' 
+                      isOverBudget
+                          ? '超支 ${ref.read(currencyProvider.notifier).formatCurrency(-remaining, ref.read(baseCurrencyProvider).code)}'
                           : '剩余 ${ref.read(currencyProvider.notifier).formatCurrency(remaining, ref.read(baseCurrencyProvider).code)}',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: isOverBudget ? AppConstants.errorColor : theme.colorScheme.onSurface.withOpacity(0.6),
+                        color: isOverBudget
+                            ? AppConstants.errorColor
+                            : theme.colorScheme.onSurface.withOpacity(0.6),
                       ),
                     ),
                   ],
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             // 进度条
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
@@ -125,7 +128,7 @@ class BudgetProgress extends StatelessWidget {
                 valueColor: AlwaysStoppedAnimation<Color>(progressColor),
               ),
             ),
-            
+
             // 超支指示
             if (isOverBudget) ...[
               const SizedBox(height: 8),
@@ -189,14 +192,15 @@ class CompactBudgetProgress extends StatelessWidget {
     this.onTap,
   });
 
-  double get progress => budgeted > 0 ? (spent / budgeted).clamp(0.0, 1.5) : 0.0;
+  double get progress =>
+      budgeted > 0 ? (spent / budgeted).clamp(0.0, 1.5) : 0.0;
   double get percentage => progress * 100;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final progressColor = _getProgressColor();
-    
+
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -280,7 +284,7 @@ class BudgetProgressList extends StatelessWidget {
       separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final budget = budgets[index];
-        
+
         if (compact) {
           return CompactBudgetProgress(
             category: budget.category,
@@ -289,7 +293,7 @@ class BudgetProgressList extends StatelessWidget {
             onTap: onBudgetTap != null ? () => onBudgetTap!(budget) : null,
           );
         }
-        
+
         return BudgetProgress(
           category: budget.category,
           budgeted: budget.budgeted,
@@ -304,7 +308,7 @@ class BudgetProgressList extends StatelessWidget {
 
   Widget _buildEmptyState(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

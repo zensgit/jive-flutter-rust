@@ -21,7 +21,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isConfirmPasswordVisible = false;
   bool _isLoading = false;
   bool _agreeToTerms = false;
-  
+
   // 密码强度检查
   bool _hasMinLength = false;
   bool _hasUpperLower = false;
@@ -38,11 +38,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _inviteCodeController.dispose();
     super.dispose();
   }
-  
+
   void _checkPasswordStrength(String password) {
     setState(() {
       _hasMinLength = password.length >= 8;
-      _hasUpperLower = password.contains(RegExp(r'[A-Z]')) && password.contains(RegExp(r'[a-z]'));
+      _hasUpperLower = password.contains(RegExp(r'[A-Z]')) &&
+          password.contains(RegExp(r'[a-z]'));
       _hasNumber = password.contains(RegExp(r'\d'));
       _hasSpecialChar = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
     });
@@ -50,7 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     if (!_agreeToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -70,11 +71,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _usernameController.text.trim(),
         _emailController.text.trim(),
         _passwordController.text,
-        inviteCode: _inviteCodeController.text.trim().isEmpty 
-          ? null 
-          : _inviteCodeController.text.trim(),
+        inviteCode: _inviteCodeController.text.trim().isEmpty
+            ? null
+            : _inviteCodeController.text.trim(),
       );
-      
+
       if (mounted) {
         if (result.success) {
           // 注册成功
@@ -150,7 +151,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 32),
-                    
+
                     // 用户名输入框
                     TextFormField(
                       controller: _usernameController,
@@ -171,14 +172,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         if (value.length > 20) {
                           return '用户名不能超过20个字符';
                         }
-                        if (!RegExp(r'^[a-zA-Z0-9_\u4e00-\u9fa5]+$').hasMatch(value)) {
+                        if (!RegExp(r'^[a-zA-Z0-9_\u4e00-\u9fa5]+$')
+                            .hasMatch(value)) {
                           return '用户名只能包含字母、数字、下划线和中文';
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 邮箱输入框
                     TextFormField(
                       controller: _emailController,
@@ -196,14 +198,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           return '请输入邮箱地址';
                         }
                         // 更严格的邮箱验证
-                        if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) {
+                        if (!RegExp(
+                                r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                            .hasMatch(value)) {
                           return '请输入有效的邮箱地址，如：user@example.com';
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 邀请码输入框（可选）
                     TextFormField(
                       controller: _inviteCodeController,
@@ -215,7 +219,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // 密码输入框
                     TextFormField(
                       controller: _passwordController,
@@ -243,19 +247,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         if (value == null || value.isEmpty) {
                           return '请输入密码';
                         }
-                        if (!_hasMinLength || !_hasUpperLower || !_hasNumber || !_hasSpecialChar) {
+                        if (!_hasMinLength ||
+                            !_hasUpperLower ||
+                            !_hasNumber ||
+                            !_hasSpecialChar) {
                           return '密码不符合安全要求';
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 12),
-                    
+
                     // 密码强度指示器
                     _buildPasswordStrengthIndicator(),
                     const SizedBox(height: 4),
                     const SizedBox(height: 16),
-                    
+
                     // 确认密码输入框
                     TextFormField(
                       controller: _confirmPasswordController,
@@ -270,7 +277,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           onPressed: () {
                             setState(() {
-                              _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                              _isConfirmPasswordVisible =
+                                  !_isConfirmPasswordVisible;
                             });
                           },
                         ),
@@ -288,7 +296,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                     ),
                     const SizedBox(height: 24),
-                    
+
                     // 用户协议复选框
                     Row(
                       children: [
@@ -316,7 +324,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ],
                     ),
                     const SizedBox(height: 24),
-                    
+
                     // 注册按钮
                     SizedBox(
                       height: 50,
@@ -328,7 +336,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         child: _isLoading
                             ? const CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
                               )
                             : const Text(
                                 '注册',
@@ -337,7 +346,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    
+
                     // 分割线
                     Row(
                       children: [
@@ -355,9 +364,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const Expanded(child: Divider()),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // 微信注册按钮
                     WeChatLoginButton(
                       buttonText: '使用微信注册',
@@ -380,9 +389,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         );
                       },
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // 登录链接
                     TextButton(
                       onPressed: () {
@@ -390,9 +399,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                       child: const Text('已有账户？点击登录'),
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // 家庭邀请说明
                     Card(
                       child: Padding(
@@ -419,7 +428,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               '• 可邀请家庭成员加入财务管理\n'
                               '• 支持多角色权限管理\n'
                               '• 可创建或加入多个家庭',
-                              style: TextStyle(fontSize: 14, color: Colors.grey),
+                              style:
+                                  TextStyle(fontSize: 14, color: Colors.grey),
                             ),
                           ],
                         ),
@@ -434,7 +444,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-  
+
   Widget _buildPasswordStrengthIndicator() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -484,7 +494,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ],
         ),
         const SizedBox(height: 8),
-        
+
         // 密码要求说明
         Column(
           children: [
@@ -509,7 +519,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ],
     );
   }
-  
+
   Widget _buildPasswordRequirement(String text, bool isMet) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),

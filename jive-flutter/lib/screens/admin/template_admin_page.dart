@@ -8,7 +8,7 @@ import '../../widgets/common/loading_widget.dart';
 import '../../widgets/common/error_widget.dart';
 
 /// 超级管理员模板管理页面
-/// 
+///
 /// 仅超级管理员可访问，用于管理系统分类模板
 class TemplateAdminPage extends StatefulWidget {
   const TemplateAdminPage({Key? key}) : super(key: key);
@@ -17,16 +17,16 @@ class TemplateAdminPage extends StatefulWidget {
   State<TemplateAdminPage> createState() => _TemplateAdminPageState();
 }
 
-class _TemplateAdminPageState extends State<TemplateAdminPage> 
+class _TemplateAdminPageState extends State<TemplateAdminPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late CategoryService _categoryService;
   late AuthService _authService;
-  
+
   // 模板数据
   List<SystemCategoryTemplate> _templates = [];
   List<SystemCategoryTemplate> _filteredTemplates = [];
-  
+
   // UI状态
   bool _isLoading = true;
   String _error = '';
@@ -34,11 +34,11 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
   CategoryGroup? _selectedGroup;
   AccountClassification? _selectedClassification;
   bool _showOnlyFeatured = false;
-  
+
   // 编辑状态
   SystemCategoryTemplate? _editingTemplate;
   bool _isCreating = false;
-  
+
   @override
   void initState() {
     super.initState();
@@ -95,29 +95,28 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         // 搜索过滤
         if (_searchQuery.isNotEmpty) {
           final query = _searchQuery.toLowerCase();
-          final matchesSearch = 
-              template.name.toLowerCase().contains(query) ||
+          final matchesSearch = template.name.toLowerCase().contains(query) ||
               (template.nameEn?.toLowerCase().contains(query) ?? false) ||
               (template.nameZh?.toLowerCase().contains(query) ?? false) ||
               template.tags.any((tag) => tag.toLowerCase().contains(query));
           if (!matchesSearch) return false;
         }
-        
+
         // 分组过滤
         if (_selectedGroup != null) {
           if (template.categoryGroup != _selectedGroup) return false;
         }
-        
+
         // 分类类型过滤
         if (_selectedClassification != null) {
           if (template.classification != _selectedClassification) return false;
         }
-        
+
         // 精选过滤
         if (_showOnlyFeatured && !template.isFeatured) {
           return false;
         }
-        
+
         return true;
       }).toList();
     });
@@ -128,7 +127,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
       _editingTemplate = template;
       _isCreating = template == null;
     });
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -161,7 +160,8 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
                 content: Text('保存失败: $e'),
                 backgroundColor: Colors.red,
               ),
-            );          }
+            );
+          }
         },
         onCancel: () {
           Navigator.pop(context);
@@ -278,11 +278,11 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
           ],
           onTap: (index) {
             setState(() {
-              _selectedClassification = index == 0 
-                  ? null 
-                  : index == 1 
+              _selectedClassification = index == 0
+                  ? null
+                  : index == 1
                       ? AccountClassification.income
-                      : index == 2 
+                      : index == 2
                           ? AccountClassification.expense
                           : AccountClassification.transfer;
             });
@@ -364,7 +364,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
             },
           ),
           const SizedBox(height: 12),
-          
+
           // 过滤选项
           Row(
             children: [
@@ -388,9 +388,9 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
                       child: Text('全部分组'),
                     ),
                     ...CategoryGroup.values.map((group) => DropdownMenuItem(
-                      value: group,
-                      child: Text(group.displayName),
-                    )),
+                          value: group,
+                          child: Text(group.displayName),
+                        )),
                   ],
                   onChanged: (value) {
                     setState(() {
@@ -401,7 +401,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
                 ),
               ),
               const SizedBox(width: 16),
-              
+
               // 精选过滤
               Row(
                 children: [
@@ -428,9 +428,9 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
     final totalTemplates = _filteredTemplates.length;
     final featuredCount = _filteredTemplates.where((t) => t.isFeatured).length;
     final groupCounts = <CategoryGroup, int>{};
-    
+
     for (final template in _filteredTemplates) {
-      groupCounts[template.categoryGroup] = 
+      groupCounts[template.categoryGroup] =
           (groupCounts[template.categoryGroup] ?? 0) + 1;
     }
 
@@ -498,7 +498,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
 
   Widget _buildTemplateCard(SystemCategoryTemplate template) {
     final color = Color(int.parse(template.color.replaceFirst('#', '0xFF')));
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
@@ -559,15 +559,19 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
             if (template.tags.isNotEmpty)
               Wrap(
                 spacing: 4,
-                children: template.tags.take(3).map((tag) => Chip(
-                  label: Text(
-                    tag,
-                    style: const TextStyle(fontSize: 10),
-                  ),
-                  backgroundColor: Colors.grey[200],
-                  padding: EdgeInsets.zero,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                )).toList(),
+                children: template.tags
+                    .take(3)
+                    .map((tag) => Chip(
+                          label: Text(
+                            tag,
+                            style: const TextStyle(fontSize: 10),
+                          ),
+                          backgroundColor: Colors.grey[200],
+                          padding: EdgeInsets.zero,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ))
+                    .toList(),
               ),
           ],
         ),
@@ -684,7 +688,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
   late TextEditingController _iconController;
   late TextEditingController _colorController;
   late TextEditingController _tagsController;
-  
+
   AccountClassification _classification = AccountClassification.expense;
   CategoryGroup _categoryGroup = CategoryGroup.dailyExpense;
   bool _isFeatured = false;
@@ -701,7 +705,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
     _iconController = TextEditingController(text: t?.icon ?? '');
     _colorController = TextEditingController(text: t?.color ?? '#6B7280');
     _tagsController = TextEditingController(text: t?.tags.join(', ') ?? '');
-    
+
     if (t != null) {
       _classification = t.classification;
       _categoryGroup = t.categoryGroup;
@@ -743,7 +747,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                
+
                 // 基本信息
                 TextFormField(
                   controller: _nameController,
@@ -759,7 +763,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                   },
                 ),
                 const SizedBox(height: 12),
-                
+
                 TextFormField(
                   controller: _nameEnController,
                   decoration: const InputDecoration(
@@ -768,7 +772,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                
+
                 TextFormField(
                   controller: _nameZhController,
                   decoration: const InputDecoration(
@@ -777,7 +781,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                
+
                 TextFormField(
                   controller: _descriptionController,
                   decoration: const InputDecoration(
@@ -787,7 +791,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                   maxLines: 2,
                 ),
                 const SizedBox(height: 12),
-                
+
                 // 分类和分组
                 Row(
                   children: [
@@ -798,12 +802,14 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                           labelText: '分类类型',
                           border: OutlineInputBorder(),
                         ),
-                        items: AccountClassification.values.map((c) => 
-                          DropdownMenuItem(
-                            value: c,
-                            child: Text(_getClassificationName(c)),
-                          ),
-                        ).toList(),
+                        items: AccountClassification.values
+                            .map(
+                              (c) => DropdownMenuItem(
+                                value: c,
+                                child: Text(_getClassificationName(c)),
+                              ),
+                            )
+                            .toList(),
                         onChanged: (value) {
                           setState(() {
                             _classification = value!;
@@ -819,12 +825,14 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                           labelText: '分类组',
                           border: OutlineInputBorder(),
                         ),
-                        items: CategoryGroup.values.map((g) => 
-                          DropdownMenuItem(
-                            value: g,
-                            child: Text(g.displayName),
-                          ),
-                        ).toList(),
+                        items: CategoryGroup.values
+                            .map(
+                              (g) => DropdownMenuItem(
+                                value: g,
+                                child: Text(g.displayName),
+                              ),
+                            )
+                            .toList(),
                         onChanged: (value) {
                           setState(() {
                             _categoryGroup = value!;
@@ -835,7 +843,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                
+
                 // 图标和颜色
                 Row(
                   children: [
@@ -866,7 +874,8 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                           ),
                         ),
                         validator: (value) {
-                          if (value == null || !RegExp(r'^#[0-9A-Fa-f]{6}$').hasMatch(value)) {
+                          if (value == null ||
+                              !RegExp(r'^#[0-9A-Fa-f]{6}$').hasMatch(value)) {
                             return '请输入有效的颜色值（如：#FF0000）';
                           }
                           return null;
@@ -876,7 +885,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                
+
                 // 标签
                 TextFormField(
                   controller: _tagsController,
@@ -887,7 +896,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                
+
                 // 开关选项
                 Row(
                   children: [
@@ -916,7 +925,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                
+
                 // 操作按钮
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -948,7 +957,9 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
         name: _nameController.text,
         nameEn: _nameEnController.text.isEmpty ? null : _nameEnController.text,
         nameZh: _nameZhController.text.isEmpty ? null : _nameZhController.text,
-        description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
+        description: _descriptionController.text.isEmpty
+            ? null
+            : _descriptionController.text,
         classification: _classification,
         color: _colorController.text,
         icon: _iconController.text.isEmpty ? null : _iconController.text,
@@ -962,7 +973,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
             .toList(),
         globalUsageCount: widget.template?.globalUsageCount ?? 0,
       );
-      
+
       widget.onSave(template);
     }
   }

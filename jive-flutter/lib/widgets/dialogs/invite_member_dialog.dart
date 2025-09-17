@@ -8,7 +8,7 @@ import '../../utils/string_utils.dart';
 /// 邀请成员对话框
 class InviteMemberDialog extends ConsumerStatefulWidget {
   final Ledger ledger;
-  
+
   const InviteMemberDialog({
     super.key,
     required this.ledger,
@@ -22,7 +22,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final List<String> _emailList = [];
-  
+
   LedgerRole _selectedRole = LedgerRole.viewer;
   bool _isLoading = false;
 
@@ -77,10 +77,10 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
 
     try {
       final service = ref.read(ledgerServiceProvider);
-      
+
       // 邀请成员
       await service.shareLedger(widget.ledger.id!, _emailList);
-      
+
       // TODO: 设置成员角色（需要后端API支持）
       // for (final email in _emailList) {
       //   await service.updateMemberRole(widget.ledger.id!, email, _selectedRole);
@@ -114,7 +114,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -165,7 +165,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                 ],
               ),
             ),
-            
+
             // 表单内容
             Flexible(
               child: SingleChildScrollView(
@@ -213,7 +213,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // 已添加的邮箱列表
                       if (_emailList.isNotEmpty) ...[
                         Text(
@@ -240,7 +240,8 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                                 dense: true,
                                 leading: CircleAvatar(
                                   radius: 16,
-                                  backgroundColor: theme.primaryColor.withOpacity(0.1),
+                                  backgroundColor:
+                                      theme.primaryColor.withOpacity(0.1),
                                   child: Text(
                                     StringUtils.safeInitial(email),
                                     style: TextStyle(
@@ -260,7 +261,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                         ),
                         const SizedBox(height: 16),
                       ],
-                      
+
                       // 角色选择
                       DropdownButtonFormField<LedgerRole>(
                         value: _selectedRole,
@@ -281,7 +282,8 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                                 Text('观察者 (Viewer)'),
                                 Text(
                                   '只能查看，不能修改',
-                                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.grey),
                                 ),
                               ],
                             ),
@@ -295,7 +297,8 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                                 Text('编辑者 (Editor)'),
                                 Text(
                                   '可以记账和编辑',
-                                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.grey),
                                 ),
                               ],
                             ),
@@ -309,7 +312,8 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                                 Text('管理员 (Admin)'),
                                 Text(
                                   '可以管理成员和设置',
-                                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.grey),
                                 ),
                               ],
                             ),
@@ -322,7 +326,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // 权限说明
                       Container(
                         padding: const EdgeInsets.all(12),
@@ -355,11 +359,16 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                               ],
                             ),
                             const SizedBox(height: 8),
-                            _buildPermissionRow('查看账本', [true, true, true, true]),
-                            _buildPermissionRow('记录交易', [false, false, true, true]),
-                            _buildPermissionRow('编辑账户', [false, false, true, true]),
-                            _buildPermissionRow('邀请成员', [false, true, true, false]),
-                            _buildPermissionRow('删除账本', [true, false, false, false]),
+                            _buildPermissionRow(
+                                '查看账本', [true, true, true, true]),
+                            _buildPermissionRow(
+                                '记录交易', [false, false, true, true]),
+                            _buildPermissionRow(
+                                '编辑账户', [false, false, true, true]),
+                            _buildPermissionRow(
+                                '邀请成员', [false, true, true, false]),
+                            _buildPermissionRow(
+                                '删除账本', [true, false, false, false]),
                           ],
                         ),
                       ),
@@ -368,7 +377,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                 ),
               ),
             ),
-            
+
             // 按钮栏
             Container(
               padding: const EdgeInsets.all(16),
@@ -382,7 +391,8 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                    onPressed:
+                        _isLoading ? null : () => Navigator.of(context).pop(),
                     child: const Text('取消'),
                   ),
                   const SizedBox(width: 8),
@@ -431,7 +441,10 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
             ),
           ),
           const SizedBox(width: 8),
-          ...['Owner', 'Admin', 'Editor', 'Viewer'].asMap().entries.map((entry) {
+          ...['Owner', 'Admin', 'Editor', 'Viewer']
+              .asMap()
+              .entries
+              .map((entry) {
             final hasPermission = roles[entry.key];
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),

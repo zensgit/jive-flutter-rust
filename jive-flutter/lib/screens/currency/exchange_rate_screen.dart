@@ -16,8 +16,9 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
   String _toCurrency = 'CNY';
   double _amount = 100.0;
   double? _convertedAmount;
-  final TextEditingController _amountController = TextEditingController(text: '100');
-  
+  final TextEditingController _amountController =
+      TextEditingController(text: '100');
+
   @override
   void initState() {
     super.initState();
@@ -27,27 +28,27 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
       _refreshRates();
     });
   }
-  
+
   @override
   void dispose() {
     _amountController.dispose();
     super.dispose();
   }
-  
+
   Future<void> _refreshRates() async {
     if (_isRefreshing) return;
-    
+
     setState(() {
       _isRefreshing = true;
     });
-    
+
     try {
       // Refresh exchange rates from API
       await ref.read(currencyProvider.notifier).refreshExchangeRates();
-      
+
       // Update conversion
       await _performConversion();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -73,26 +74,26 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
       }
     }
   }
-  
+
   Future<void> _performConversion() async {
     final result = await ref.read(currencyProvider.notifier).convertAmount(
-      _amount,
-      _fromCurrency,
-      _toCurrency,
-    );
-    
+          _amount,
+          _fromCurrency,
+          _toCurrency,
+        );
+
     if (mounted) {
       setState(() {
         _convertedAmount = result;
       });
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final currencyNotifier = ref.watch(currencyProvider.notifier);
     final availableCurrencies = currencyNotifier.getAvailableCurrencies();
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('汇率转换'),
@@ -125,7 +126,8 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
               final isFallback = lastRates.isFallback ?? false;
               if (!isFallback) return const SizedBox.shrink();
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 margin: const EdgeInsets.only(bottom: 8),
                 decoration: BoxDecoration(
                   color: Colors.orange.shade100,
@@ -134,12 +136,16 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 18),
+                    const Icon(Icons.warning_amber_rounded,
+                        color: Colors.orange, size: 18),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         '当前显示离线/备用汇率，可能与实时数值有差异',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.orange[900]),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(color: Colors.orange[900]),
                       ),
                     ),
                     TextButton(
@@ -151,11 +157,10 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
               );
             }),
             // Update status
-            if (_isRefreshing)
-              const LinearProgressIndicator(),
-            
+            if (_isRefreshing) const LinearProgressIndicator(),
+
             const SizedBox(height: 16),
-            
+
             // Amount input
             TextField(
               controller: _amountController,
@@ -164,7 +169,8 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.attach_money),
               ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               onChanged: (value) {
                 setState(() {
                   _amount = double.tryParse(value) ?? 0.0;
@@ -172,9 +178,9 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                 _performConversion();
               },
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // From currency
             DropdownButtonFormField<String>(
               value: _fromCurrency,
@@ -212,9 +218,9 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                 }
               },
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Swap button
             Center(
               child: IconButton(
@@ -230,9 +236,9 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                 tooltip: '交换货币',
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // To currency
             DropdownButtonFormField<String>(
               value: _toCurrency,
@@ -270,9 +276,9 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                 }
               },
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Result
             if (_convertedAmount != null)
               Card(
@@ -293,10 +299,13 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                       const Icon(Icons.arrow_downward),
                       Text(
                         '${_convertedAmount!.toStringAsFixed(2)} $_toCurrency',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -307,9 +316,9 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                   ),
                 ),
               ),
-            
+
             const Spacer(),
-            
+
             // Info card
             Card(
               child: Padding(

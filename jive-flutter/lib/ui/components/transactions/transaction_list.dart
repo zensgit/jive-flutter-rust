@@ -41,7 +41,7 @@ class TransactionList extends ConsumerWidget {
       return _buildEmptyState(context);
     }
 
-    final content = groupByDate 
+    final content = groupByDate
         ? _buildGroupedList(context, ref)
         : _buildSimpleList(context, ref);
 
@@ -57,7 +57,7 @@ class TransactionList extends ConsumerWidget {
 
   Widget _buildEmptyState(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -106,7 +106,7 @@ class TransactionList extends ConsumerWidget {
   Widget _buildGroupedList(BuildContext context, WidgetRef ref) {
     final groupedTransactions = _groupTransactionsByDate();
     final theme = Theme.of(context);
-    
+
     return ListView.builder(
       controller: scrollController,
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -115,16 +115,16 @@ class TransactionList extends ConsumerWidget {
         final group = groupedTransactions.entries.elementAt(index);
         final date = group.key;
         final dayTransactions = group.value;
-        
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 日期头部
             _buildDateHeader(context, ref, theme, date, dayTransactions),
-            
+
             // 该日期的交易
-            ...dayTransactions.map((transaction) => 
-              TransactionCard(
+            ...dayTransactions.map(
+              (transaction) => TransactionCard(
                 transaction: transaction,
                 onTap: () => onTransactionTap?.call(transaction),
                 onLongPress: () => onTransactionLongPress?.call(transaction),
@@ -137,12 +137,14 @@ class TransactionList extends ConsumerWidget {
     );
   }
 
-  Widget _buildDateHeader(BuildContext context, WidgetRef ref, ThemeData theme, DateTime date, List<TransactionData> transactions) {
+  Widget _buildDateHeader(BuildContext context, WidgetRef ref, ThemeData theme,
+      DateTime date, List<TransactionData> transactions) {
     final total = _calculateDayTotal(transactions);
     final isPositive = total >= 0;
     final base = ref.watch(baseCurrencyProvider).code;
-    final formatted = ref.read(currencyProvider.notifier).formatCurrency(total.abs(), base);
-    
+    final formatted =
+        ref.read(currencyProvider.notifier).formatCurrency(total.abs(), base);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -165,9 +167,9 @@ class TransactionList extends ConsumerWidget {
               ),
             ],
           ),
-          
+
           const Spacer(),
-          
+
           // 当日总计
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -182,7 +184,9 @@ class TransactionList extends ConsumerWidget {
                 '${total >= 0 ? '+' : '-'}$formatted',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: isPositive ? AppConstants.successColor : AppConstants.errorColor,
+                  color: isPositive
+                      ? AppConstants.successColor
+                      : AppConstants.errorColor,
                 ),
               ),
             ],
@@ -194,20 +198,20 @@ class TransactionList extends ConsumerWidget {
 
   Map<DateTime, List<TransactionData>> _groupTransactionsByDate() {
     final Map<DateTime, List<TransactionData>> grouped = {};
-    
+
     for (final transaction in transactions) {
       final date = DateTime(
         transaction.date.year,
         transaction.date.month,
         transaction.date.day,
       );
-      
+
       if (!grouped.containsKey(date)) {
         grouped[date] = [];
       }
       grouped[date]!.add(transaction);
     }
-    
+
     return Map.fromEntries(
       grouped.entries.toList()..sort((a, b) => b.key.compareTo(a.key)),
     );
@@ -221,7 +225,7 @@ class TransactionList extends ConsumerWidget {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
-    
+
     if (date == today) {
       return '今天';
     } else if (date == yesterday) {
@@ -267,9 +271,7 @@ class SwipeableTransactionList extends StatelessWidget {
       return _buildEmptyState(context);
     }
 
-    return groupByDate 
-        ? _buildGroupedList(context)
-        : _buildSimpleList(context);
+    return groupByDate ? _buildGroupedList(context) : _buildSimpleList(context);
   }
 
   Widget _buildEmptyState(BuildContext context) {
@@ -292,7 +294,7 @@ class SwipeableTransactionList extends StatelessWidget {
   Widget _buildGroupedList(BuildContext context) {
     final groupedTransactions = _groupTransactionsByDate();
     final theme = Theme.of(context);
-    
+
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: groupedTransactions.length,
@@ -300,7 +302,7 @@ class SwipeableTransactionList extends StatelessWidget {
         final group = groupedTransactions.entries.elementAt(index);
         final date = group.key;
         final dayTransactions = group.value;
-        
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -314,10 +316,10 @@ class SwipeableTransactionList extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             // 该日期的交易
-            ...dayTransactions.map((transaction) => 
-              _buildSwipeableItem(context, transaction),
+            ...dayTransactions.map(
+              (transaction) => _buildSwipeableItem(context, transaction),
             ),
           ],
         );
@@ -325,7 +327,8 @@ class SwipeableTransactionList extends StatelessWidget {
     );
   }
 
-  Widget _buildSwipeableItem(BuildContext context, TransactionData transaction) {
+  Widget _buildSwipeableItem(
+      BuildContext context, TransactionData transaction) {
     return Dismissible(
       key: Key(transaction.id),
       direction: DismissDirection.horizontal,
@@ -373,43 +376,44 @@ class SwipeableTransactionList extends StatelessWidget {
 
   Future<bool> _showDeleteConfirmation(BuildContext context) async {
     return await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('确认删除'),
-        content: const Text('确定要删除这笔交易吗？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('取消'),
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('确认删除'),
+            content: const Text('确定要删除这笔交易吗？'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('取消'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppConstants.errorColor,
+                ),
+                child: const Text('删除'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(
-              foregroundColor: AppConstants.errorColor,
-            ),
-            child: const Text('删除'),
-          ),
-        ],
-      ),
-    ) ?? false;
+        ) ??
+        false;
   }
 
   Map<DateTime, List<TransactionData>> _groupTransactionsByDate() {
     final Map<DateTime, List<TransactionData>> grouped = {};
-    
+
     for (final transaction in transactions) {
       final date = DateTime(
         transaction.date.year,
         transaction.date.month,
         transaction.date.day,
       );
-      
+
       if (!grouped.containsKey(date)) {
         grouped[date] = [];
       }
       grouped[date]!.add(transaction);
     }
-    
+
     return Map.fromEntries(
       grouped.entries.toList()..sort((a, b) => b.key.compareTo(a.key)),
     );
@@ -419,7 +423,7 @@ class SwipeableTransactionList extends StatelessWidget {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
-    
+
     if (date == today) {
       return '今天';
     } else if (date == yesterday) {

@@ -14,7 +14,8 @@ class InvitationService {
     return [];
   }
 
-  Future<InvitationStatistics> getFamilyInvitationStatistics(String familyId) async {
+  Future<InvitationStatistics> getFamilyInvitationStatistics(
+      String familyId) async {
     // TODO: 实现 API 调用
     return InvitationStatistics(
       totalSent: 0,

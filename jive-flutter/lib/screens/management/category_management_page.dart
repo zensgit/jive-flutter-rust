@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'category_management_enhanced.dart';
 
 /// 分类管理页面 - 路由到增强版本
-/// 
+///
 /// 这是一个包装器，将路由重定向到增强版的分类管理页面
 /// 保留这个文件是为了向后兼容性
 class CategoryManagementPage extends StatelessWidget {

@@ -29,7 +29,7 @@ class SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       elevation: 2,
       shadowColor: theme.shadowColor.withOpacity(0.1),
@@ -43,7 +43,7 @@ class SummaryCard extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-            gradient: backgroundColor != null 
+            gradient: backgroundColor != null
                 ? LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -74,44 +74,43 @@ class SummaryCard extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  if (trend != null)
-                    _buildTrendIndicator(theme),
+                  if (trend != null) _buildTrendIndicator(theme),
                 ],
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // 标题
               Text(
                 title,
                 style: theme.textTheme.titleMedium?.copyWith(
-                  color: backgroundColor != null 
+                  color: backgroundColor != null
                       ? Colors.white.withOpacity(0.9)
                       : theme.colorScheme.onSurface.withOpacity(0.7),
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // 金额
               Text(
                 amount,
                 style: theme.textTheme.headlineSmall?.copyWith(
-                  color: backgroundColor != null 
+                  color: backgroundColor != null
                       ? Colors.white
                       : theme.colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              
+
               // 副标题
-              if (subtitle != null) ...[ 
+              if (subtitle != null) ...[
                 const SizedBox(height: 4),
                 Text(
                   subtitle!,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: backgroundColor != null 
+                    color: backgroundColor != null
                         ? Colors.white.withOpacity(0.8)
                         : theme.colorScheme.onSurface.withOpacity(0.6),
                   ),
@@ -125,9 +124,10 @@ class SummaryCard extends StatelessWidget {
   }
 
   Widget _buildTrendIndicator(ThemeData theme) {
-    final color = isPositive ? AppConstants.successColor : AppConstants.errorColor;
+    final color =
+        isPositive ? AppConstants.successColor : AppConstants.errorColor;
     final icon = isPositive ? Icons.trending_up : Icons.trending_down;
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(

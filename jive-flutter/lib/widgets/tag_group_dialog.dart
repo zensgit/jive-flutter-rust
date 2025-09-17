@@ -23,8 +23,16 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
   bool _isLoading = false;
 
   final List<String> _availableColors = [
-    '#e99537', '#4da568', '#6471eb', '#db5a54', '#df4e92',
-    '#c44fe9', '#eb5429', '#61c9ea', '#805dee', '#6ad28a',
+    '#e99537',
+    '#4da568',
+    '#6471eb',
+    '#db5a54',
+    '#df4e92',
+    '#c44fe9',
+    '#eb5429',
+    '#61c9ea',
+    '#805dee',
+    '#6ad28a',
   ];
 
   @override
@@ -59,7 +67,6 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(
@@ -69,7 +76,6 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
               ),
             ),
             const SizedBox(height: 16),
-
             const Text('选择颜色', style: TextStyle(fontWeight: FontWeight.w500)),
             const SizedBox(height: 8),
             Wrap(
@@ -96,7 +102,6 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
               }).toList(),
             ),
             const SizedBox(height: 24),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -136,7 +141,7 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
 
     try {
       final groupNotifier = ref.read(tagGroupsProvider.notifier);
-      
+
       if (widget.group != null) {
         // 编辑现有分组
         final updatedGroup = widget.group!.copyWith(
@@ -162,11 +167,8 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
         widget.onSaved?.call();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              widget.group != null 
-                ? '分组"$name"更新成功'
-                : '分组"$name"创建成功'
-            ),
+            content:
+                Text(widget.group != null ? '分组"$name"更新成功' : '分组"$name"创建成功'),
           ),
         );
       }

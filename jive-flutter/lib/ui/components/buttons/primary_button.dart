@@ -65,11 +65,11 @@ class PrimaryButton extends StatelessWidget {
         ),
       );
     }
-    
+
     if (icon != null) {
       return Icon(icon, size: 20);
     }
-    
+
     return const SizedBox.shrink();
   }
 

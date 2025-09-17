@@ -40,7 +40,7 @@ class TagDeletionDialog extends ConsumerWidget {
           onPressed: () async {
             final tagNotifier = ref.read(tagsProvider.notifier);
             await tagNotifier.deleteTag(tag.id!);
-            
+
             if (context.mounted) {
               Navigator.pop(context);
               onDeleted?.call();

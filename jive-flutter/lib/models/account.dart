@@ -9,13 +9,13 @@ enum AccountType {
   investment('investment', '投资账户', Icons.trending_up),
   loan('loan', '贷款', Icons.money_off),
   other('other', '其他', Icons.account_circle);
-  
+
   final String value;
   final String label;
   final IconData icon;
-  
+
   const AccountType(this.value, this.label, this.icon);
-  
+
   static AccountType fromString(String? value) {
     return AccountType.values.firstWhere(
       (type) => type.value == value,
@@ -43,7 +43,7 @@ class Account {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? lastTransactionDate;
-  
+
   Account({
     this.id,
     required this.name,
@@ -63,7 +63,7 @@ class Account {
     this.updatedAt,
     this.lastTransactionDate,
   });
-  
+
   factory Account.fromJson(Map<String, dynamic> json) {
     return Account(
       id: json['id']?.toString(),
@@ -80,18 +80,18 @@ class Account {
       ledgerId: json['ledger_id']?.toString(),
       groupId: json['group_id']?.toString(),
       sortOrder: json['sort_order'],
-      createdAt: json['created_at'] != null 
-          ? DateTime.parse(json['created_at']) 
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
           : null,
-      updatedAt: json['updated_at'] != null 
-          ? DateTime.parse(json['updated_at']) 
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
           : null,
       lastTransactionDate: json['last_transaction_date'] != null
           ? DateTime.parse(json['last_transaction_date'])
           : null,
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
@@ -113,7 +113,7 @@ class Account {
       'last_transaction_date': lastTransactionDate?.toIso8601String(),
     };
   }
-  
+
   Account copyWith({
     String? id,
     String? name,
@@ -153,7 +153,7 @@ class Account {
       lastTransactionDate: lastTransactionDate ?? this.lastTransactionDate,
     );
   }
-  
+
   /// 获取显示的账户号码（后4位）
   String? get displayAccountNumber {
     if (accountNumber == null || accountNumber!.length < 4) {
@@ -161,13 +161,13 @@ class Account {
     }
     return '****${accountNumber!.substring(accountNumber!.length - 4)}';
   }
-  
+
   /// 获取账户图标
   IconData get icon => type.icon;
-  
+
   /// 获取账户颜色
   Color get displayColor => color ?? _getDefaultColor();
-  
+
   /// 获取默认颜色
   Color _getDefaultColor() {
     switch (type) {
@@ -188,21 +188,21 @@ class Account {
         return Colors.grey;
     }
   }
-  
+
   /// 是否是负债账户
   bool get isLiability {
     return type == AccountType.creditCard || type == AccountType.loan;
   }
-  
+
   /// 是否是资产账户
   bool get isAsset => !isLiability;
-  
+
   /// 获取格式化的余额
   String get formattedBalance {
     final sign = isLiability && balance > 0 ? '-' : '';
     return '$sign$currencySymbol${balance.abs().toStringAsFixed(2)}';
   }
-  
+
   /// 获取货币符号
   String get currencySymbol {
     switch (currency) {
@@ -233,7 +233,7 @@ class AccountGroup {
   final List<String> accountIds;
   final DateTime? createdAt;
   final DateTime? updatedAt;
-  
+
   AccountGroup({
     this.id,
     required this.name,
@@ -245,7 +245,7 @@ class AccountGroup {
     this.createdAt,
     this.updatedAt,
   });
-  
+
   factory AccountGroup.fromJson(Map<String, dynamic> json) {
     return AccountGroup(
       id: json['id']?.toString(),
@@ -259,15 +259,15 @@ class AccountGroup {
       accountIds: json['account_ids'] != null
           ? List<String>.from(json['account_ids'])
           : [],
-      createdAt: json['created_at'] != null 
-          ? DateTime.parse(json['created_at']) 
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
           : null,
-      updatedAt: json['updated_at'] != null 
-          ? DateTime.parse(json['updated_at']) 
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
           : null,
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,

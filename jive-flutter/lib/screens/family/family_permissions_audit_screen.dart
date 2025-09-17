@@ -28,13 +28,13 @@ class _FamilyPermissionsAuditScreenState
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final FamilyService _familyService = FamilyService();
-  
+
   bool _isLoading = false;
   List<PermissionAuditLog> _auditLogs = [];
   Map<String, PermissionUsageStats> _usageStats = {};
   List<AnomalyDetection> _anomalies = [];
   ComplianceReport? _complianceReport;
-  
+
   // 筛选条件
   DateTime _startDate = DateTime.now().subtract(const Duration(days: 30));
   DateTime _endDate = DateTime.now();
@@ -57,7 +57,7 @@ class _FamilyPermissionsAuditScreenState
 
   Future<void> _loadAuditData() async {
     setState(() => _isLoading = true);
-    
+
     try {
       // 并行加载所有数据
       final results = await Future.wait([
@@ -70,7 +70,7 @@ class _FamilyPermissionsAuditScreenState
         _familyService.detectPermissionAnomalies(widget.familyId),
         _familyService.generateComplianceReport(widget.familyId),
       ]);
-      
+
       setState(() {
         _auditLogs = results[0] as List<PermissionAuditLog>? ?? [];
         _usageStats = results[1] as Map<String, PermissionUsageStats>? ?? {};
@@ -87,7 +87,7 @@ class _FamilyPermissionsAuditScreenState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return LoadingOverlay(
       isLoading: _isLoading,
       child: Scaffold(
@@ -182,13 +182,13 @@ class _FamilyPermissionsAuditScreenState
   /// 构建变更历史标签页
   Widget _buildChangeHistory() {
     final filteredLogs = _filterAuditLogs();
-    
+
     if (filteredLogs.isEmpty) {
       return const Center(
         child: Text('暂无权限变更记录'),
       );
     }
-    
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: filteredLogs.length,
@@ -202,7 +202,7 @@ class _FamilyPermissionsAuditScreenState
   /// 构建审计日志卡片
   Widget _buildAuditLogCard(PermissionAuditLog log) {
     final theme = Theme.of(context);
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ExpansionTile(
@@ -221,18 +221,22 @@ class _FamilyPermissionsAuditScreenState
             const SizedBox(height: 4),
             Row(
               children: [
-                Icon(Icons.person_outline, size: 14, color: theme.colorScheme.outline),
+                Icon(Icons.person_outline,
+                    size: 14, color: theme.colorScheme.outline),
                 const SizedBox(width: 4),
                 Text(
                   log.performedBy,
-                  style: TextStyle(fontSize: 12, color: theme.colorScheme.outline),
+                  style:
+                      TextStyle(fontSize: 12, color: theme.colorScheme.outline),
                 ),
                 const SizedBox(width: 16),
-                Icon(Icons.access_time, size: 14, color: theme.colorScheme.outline),
+                Icon(Icons.access_time,
+                    size: 14, color: theme.colorScheme.outline),
                 const SizedBox(width: 4),
                 Text(
                   DateFormat('MM-dd HH:mm').format(log.timestamp),
-                  style: TextStyle(fontSize: 12, color: theme.colorScheme.outline),
+                  style:
+                      TextStyle(fontSize: 12, color: theme.colorScheme.outline),
                 ),
               ],
             ),
@@ -275,12 +279,12 @@ class _FamilyPermissionsAuditScreenState
                   ),
                   const SizedBox(height: 4),
                   ...log.metadata!.entries.map((e) => Padding(
-                    padding: const EdgeInsets.only(left: 16, top: 4),
-                    child: Text(
-                      '${e.key}: ${e.value}',
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  )),
+                        padding: const EdgeInsets.only(left: 16, top: 4),
+                        child: Text(
+                          '${e.key}: ${e.value}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      )),
                 ],
               ],
             ),
@@ -297,7 +301,7 @@ class _FamilyPermissionsAuditScreenState
         child: Text('暂无使用统计数据'),
       );
     }
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -324,7 +328,7 @@ class _FamilyPermissionsAuditScreenState
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // 用户活跃度
           Card(
             child: Padding(
@@ -343,7 +347,7 @@ class _FamilyPermissionsAuditScreenState
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // 权限使用趋势
           Card(
             child: Padding(
@@ -395,7 +399,7 @@ class _FamilyPermissionsAuditScreenState
         ),
       );
     }
-    
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: _anomalies.length,
@@ -410,7 +414,7 @@ class _FamilyPermissionsAuditScreenState
   Widget _buildAnomalyCard(AnomalyDetection anomaly) {
     final theme = Theme.of(context);
     final severityColor = _getSeverityColor(anomaly.severity);
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
@@ -441,7 +445,8 @@ class _FamilyPermissionsAuditScreenState
                 const SizedBox(width: 8),
                 Text(
                   DateFormat('MM-dd HH:mm').format(anomaly.detectedAt),
-                  style: TextStyle(fontSize: 12, color: theme.colorScheme.outline),
+                  style:
+                      TextStyle(fontSize: 12, color: theme.colorScheme.outline),
                 ),
               ],
             ),
@@ -452,9 +457,9 @@ class _FamilyPermissionsAuditScreenState
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
               ),
               ...anomaly.recommendations.map((r) => Padding(
-                padding: const EdgeInsets.only(left: 16, top: 4),
-                child: Text('• $r', style: const TextStyle(fontSize: 12)),
-              )),
+                    padding: const EdgeInsets.only(left: 16, top: 4),
+                    child: Text('• $r', style: const TextStyle(fontSize: 12)),
+                  )),
             ],
           ],
         ),
@@ -473,10 +478,10 @@ class _FamilyPermissionsAuditScreenState
         child: CircularProgressIndicator(),
       );
     }
-    
+
     final report = _complianceReport!;
     final theme = Theme.of(context);
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -531,14 +536,15 @@ class _FamilyPermissionsAuditScreenState
                   const SizedBox(height: 16),
                   Text(
                     '生成时间：${DateFormat('yyyy-MM-dd HH:mm').format(report.generatedAt)}',
-                    style: TextStyle(fontSize: 12, color: theme.colorScheme.outline),
+                    style: TextStyle(
+                        fontSize: 12, color: theme.colorScheme.outline),
                   ),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // 合规项检查
           Card(
             child: Padding(
@@ -551,13 +557,14 @@ class _FamilyPermissionsAuditScreenState
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  ...report.checkItems.map((item) => _buildComplianceCheckItem(item)),
+                  ...report.checkItems
+                      .map((item) => _buildComplianceCheckItem(item)),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // 问题与建议
           if (report.issues.isNotEmpty)
             Card(
@@ -568,7 +575,8 @@ class _FamilyPermissionsAuditScreenState
                   children: [
                     const Text(
                       '发现的问题',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
                     ...report.issues.map((issue) => _buildIssueItem(issue)),
@@ -585,9 +593,9 @@ class _FamilyPermissionsAuditScreenState
   Widget _buildUsageFrequencyChart() {
     final sortedStats = _usageStats.entries.toList()
       ..sort((a, b) => b.value.usageCount.compareTo(a.value.usageCount));
-    
+
     final topStats = sortedStats.take(10).toList();
-    
+
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
@@ -595,7 +603,7 @@ class _FamilyPermissionsAuditScreenState
         barGroups: topStats.asMap().entries.map((entry) {
           final index = entry.key;
           final stat = entry.value;
-          
+
           return BarChartGroupData(
             x: index,
             barRods: [
@@ -603,7 +611,8 @@ class _FamilyPermissionsAuditScreenState
                 toY: stat.value.usageCount.toDouble(),
                 color: Theme.of(context).colorScheme.primary,
                 width: 20,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(4)),
               ),
             ],
           );
@@ -638,8 +647,10 @@ class _FamilyPermissionsAuditScreenState
               },
             ),
           ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
         gridData: const FlGridData(show: true, drawVerticalLine: false),
         borderData: FlBorderData(show: false),
@@ -654,7 +665,7 @@ class _FamilyPermissionsAuditScreenState
       final date = DateTime.now().subtract(Duration(days: 6 - index));
       return FlSpot(index.toDouble(), (50 + index * 10).toDouble());
     });
-    
+
     return LineChart(
       LineChartData(
         gridData: const FlGridData(show: true),
@@ -675,7 +686,8 @@ class _FamilyPermissionsAuditScreenState
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
-                final date = DateTime.now().subtract(Duration(days: 6 - value.toInt()));
+                final date =
+                    DateTime.now().subtract(Duration(days: 6 - value.toInt()));
                 return Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
@@ -686,8 +698,10 @@ class _FamilyPermissionsAuditScreenState
               },
             ),
           ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
         borderData: FlBorderData(show: false),
         lineBarsData: [
@@ -716,7 +730,7 @@ class _FamilyPermissionsAuditScreenState
       ('王五', 45, false),
       ('赵六', 23, false),
     ];
-    
+
     return users.map((user) {
       return ListTile(
         leading: CircleAvatar(
@@ -733,7 +747,9 @@ class _FamilyPermissionsAuditScreenState
             user.$3 ? '活跃' : '不活跃',
             style: const TextStyle(fontSize: 10),
           ),
-          backgroundColor: user.$3 ? Colors.green.withOpacity(0.2) : Colors.orange.withOpacity(0.2),
+          backgroundColor: user.$3
+              ? Colors.green.withOpacity(0.2)
+              : Colors.orange.withOpacity(0.2),
           padding: EdgeInsets.zero,
           visualDensity: VisualDensity.compact,
         ),
@@ -745,7 +761,7 @@ class _FamilyPermissionsAuditScreenState
   Widget _buildComplianceCheckItem(ComplianceCheckItem item) {
     final passed = item.status == ComplianceStatus.passed;
     final color = passed ? Colors.green : Colors.red;
-    
+
     return ListTile(
       leading: Icon(
         passed ? Icons.check_circle : Icons.cancel,
@@ -782,7 +798,8 @@ class _FamilyPermissionsAuditScreenState
               const SizedBox(height: 8),
               Text(
                 '建议：${issue.recommendation}',
-                style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+                style:
+                    const TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
               ),
             ],
           ],
@@ -869,9 +886,11 @@ class _FamilyPermissionsAuditScreenState
               const SizedBox(height: 16),
               _buildDetailRow('类型', anomaly.type.toString().split('.').last),
               const SizedBox(height: 8),
-              _buildDetailRow('严重程度', anomaly.severity.toString().split('.').last),
+              _buildDetailRow(
+                  '严重程度', anomaly.severity.toString().split('.').last),
               const SizedBox(height: 8),
-              _buildDetailRow('检测时间', DateFormat('yyyy-MM-dd HH:mm').format(anomaly.detectedAt)),
+              _buildDetailRow('检测时间',
+                  DateFormat('yyyy-MM-dd HH:mm').format(anomaly.detectedAt)),
               if (anomaly.affectedUsers.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 const Text(
@@ -879,9 +898,9 @@ class _FamilyPermissionsAuditScreenState
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 ...anomaly.affectedUsers.map((user) => Padding(
-                  padding: const EdgeInsets.only(left: 16, top: 4),
-                  child: Text('• $user'),
-                )),
+                      padding: const EdgeInsets.only(left: 16, top: 4),
+                      child: Text('• $user'),
+                    )),
               ],
               if (anomaly.recommendations.isNotEmpty) ...[
                 const SizedBox(height: 16),
@@ -890,9 +909,9 @@ class _FamilyPermissionsAuditScreenState
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 ...anomaly.recommendations.map((r) => Padding(
-                  padding: const EdgeInsets.only(left: 16, top: 4),
-                  child: Text('• $r'),
-                )),
+                      padding: const EdgeInsets.only(left: 16, top: 4),
+                      child: Text('• $r'),
+                    )),
               ],
             ],
           ),
@@ -1072,13 +1091,13 @@ class PermissionAuditLog {
 
 /// 审计事件类型
 enum AuditEventType {
-  grant,    // 授予权限
-  revoke,   // 撤销权限
-  modify,   // 修改权限
-  access,   // 访问权限
-  deny,     // 拒绝访问
+  grant, // 授予权限
+  revoke, // 撤销权限
+  modify, // 修改权限
+  access, // 访问权限
+  deny, // 拒绝访问
   delegate, // 委托权限
-  expire,   // 权限过期
+  expire, // 权限过期
 }
 
 /// 权限使用统计
@@ -1123,11 +1142,11 @@ class AnomalyDetection {
 
 /// 异常类型
 enum AnomalyType {
-  unusualAccess,      // 异常访问
+  unusualAccess, // 异常访问
   privilegeEscalation, // 权限提升
-  excessiveUsage,     // 过度使用
+  excessiveUsage, // 过度使用
   unauthorizedAttempt, // 未授权尝试
-  suspiciousPattern,  // 可疑模式
+  suspiciousPattern, // 可疑模式
 }
 
 /// 严重程度
@@ -1268,7 +1287,7 @@ class _FilterDialogState extends State<_FilterDialog> {
                 }
               },
             ),
-            
+
             // 其他筛选条件
             // TODO: 实现用户、权限、事件类型的选择
           ],

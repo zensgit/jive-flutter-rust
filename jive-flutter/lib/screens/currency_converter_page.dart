@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/currency_converter.dart';
 import '../providers/currency_provider.dart';
@@ -10,7 +11,8 @@ class CurrencyConverterPage extends ConsumerStatefulWidget {
   const CurrencyConverterPage({super.key});
 
   @override
-  ConsumerState<CurrencyConverterPage> createState() => _CurrencyConverterPageState();
+  ConsumerState<CurrencyConverterPage> createState() =>
+      _CurrencyConverterPageState();
 }
 
 class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
@@ -27,20 +29,20 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
 
   Future<void> _initializeRates() async {
     if (_isInitializing) return;
-    
+
     setState(() {
       _isInitializing = true;
     });
-    
+
     try {
       final currencyNotifier = ref.read(currencyProvider.notifier);
-      
+
       // Only fetch if rates are stale
       if (currencyNotifier.ratesNeedUpdate) {
         await currencyNotifier.refreshExchangeRates();
       }
     } catch (e) {
-      print('Failed to initialize exchange rates: $e');
+      debugPrint('Failed to initialize exchange rates: $e');
     } finally {
       if (mounted) {
         setState(() {
@@ -95,7 +97,8 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                           height: 16,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[600]!),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.blue[600]!),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -121,11 +124,13 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                     // Main converter
                     CurrencyConverter(
                       initialFromCurrency: baseCurrency.code,
-                      initialToCurrency: selectedCurrencies.length > 1 
-                          ? selectedCurrencies.firstWhere(
-                              (c) => c.code != baseCurrency.code,
-                              orElse: () => selectedCurrencies.first,
-                            ).code
+                      initialToCurrency: selectedCurrencies.length > 1
+                          ? selectedCurrencies
+                              .firstWhere(
+                                (c) => c.code != baseCurrency.code,
+                                orElse: () => selectedCurrencies.first,
+                              )
+                              .code
                           : 'USD',
                       initialAmount: 100,
                     ),
@@ -146,7 +151,8 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.trending_up, color: Colors.green[700], size: 20),
+                                  Icon(Icons.trending_up,
+                                      color: Colors.green[700], size: 20),
                                   const SizedBox(width: 8),
                                   Text(
                                     '今日汇率',
@@ -162,7 +168,8 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                               ...selectedCurrencies
                                   .where((c) => c.code != baseCurrency.code)
                                   .take(5)
-                                  .map((currency) => _buildRateItem(currency, baseCurrency)),
+                                  .map((currency) =>
+                                      _buildRateItem(currency, baseCurrency)),
                             ],
                           ),
                         ),
@@ -213,7 +220,9 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
     final rates = ref.watch(exchangeRateObjectsProvider);
     final rateObj = rates[currency.code];
     return FutureBuilder<double?>(
-      future: ref.read(currencyProvider.notifier).convertAmount(1.0, baseCurrency.code, currency.code),
+      future: ref
+          .read(currencyProvider.notifier)
+          .convertAmount(1.0, baseCurrency.code, currency.code),
       builder: (context, snapshot) {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),
@@ -223,7 +232,8 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: currency.isCrypto ? Colors.purple[50] : Colors.blue[50],
+                  color:
+                      currency.isCrypto ? Colors.purple[50] : Colors.blue[50],
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Center(
@@ -278,7 +288,8 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                           ),
                         ),
                         const SizedBox(width: 6),
-                        if (rateObj != null) SourceBadge(source: rateObj.source),
+                        if (rateObj != null)
+                          SourceBadge(source: rateObj.source),
                       ],
                     ),
                   ],
@@ -289,7 +300,8 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                   height: 16,
                   child: CircularProgressIndicator(
                     strokeWidth: 1.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.grey[400]!),
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Colors.grey[400]!),
                   ),
                 )
               else

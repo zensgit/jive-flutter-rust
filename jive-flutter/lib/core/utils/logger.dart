@@ -3,7 +3,7 @@ import 'package:logger/logger.dart';
 
 class AppLogger {
   static late Logger _logger;
-  
+
   /// 初始化日志器
   static void init({Level logLevel = Level.debug}) {
     _logger = Logger(

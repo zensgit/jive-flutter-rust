@@ -1,0 +1,63 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO exchange_rates \n            (id, from_currency, to_currency, rate, source, date, effective_date)\n            VALUES ($1, $2, $3, $4, $5, $6, $6)\n            ON CONFLICT (from_currency, to_currency, date)\n            DO UPDATE SET \n                rate = $4,\n                source = $5,\n                effective_date = $6,\n                updated_at = CURRENT_TIMESTAMP\n            RETURNING id, from_currency, to_currency, rate, source, \n                      effective_date, created_at\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "from_currency",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "to_currency",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "rate",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "source",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "effective_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 6,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar",
+        "Varchar",
+        "Numeric",
+        "Varchar",
+        "Date"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "2cd9c94530ea5c054b9490509e2869656fedfa68d0f78640224142b5bd72035b"
+}

@@ -8,25 +8,27 @@ import 'batch_operation_bar.dart';
 class MultiSelectCategoryList extends ConsumerStatefulWidget {
   final String? ledgerId;
   final CategoryClassification? filterClassification;
-  
+
   const MultiSelectCategoryList({
     Key? key,
     this.ledgerId,
     this.filterClassification,
   }) : super(key: key);
-  
+
   @override
-  ConsumerState<MultiSelectCategoryList> createState() => _MultiSelectCategoryListState();
+  ConsumerState<MultiSelectCategoryList> createState() =>
+      _MultiSelectCategoryListState();
 }
 
-class _MultiSelectCategoryListState extends ConsumerState<MultiSelectCategoryList> {
+class _MultiSelectCategoryListState
+    extends ConsumerState<MultiSelectCategoryList> {
   bool _isMultiSelectMode = false;
   final Set<String> _selectedIds = {};
-  
+
   @override
   Widget build(BuildContext context) {
     final categories = ref.watch(userCategoriesProvider);
-    
+
     // 过滤分类
     var filteredCategories = categories;
     if (widget.ledgerId != null) {
@@ -39,7 +41,7 @@ class _MultiSelectCategoryListState extends ConsumerState<MultiSelectCategoryLis
           .where((c) => c.classification == widget.filterClassification)
           .toList();
     }
-    
+
     return Scaffold(
       body: Stack(
         children: [
@@ -51,7 +53,7 @@ class _MultiSelectCategoryListState extends ConsumerState<MultiSelectCategoryLis
                 const SliverToBoxAdapter(
                   child: SizedBox(height: 60),
                 ),
-              
+
               // 操作提示
               if (!_isMultiSelectMode)
                 SliverToBoxAdapter(
@@ -73,14 +75,14 @@ class _MultiSelectCategoryListState extends ConsumerState<MultiSelectCategoryLis
                     ),
                   ),
                 ),
-              
+
               // 分类列表
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     final category = filteredCategories[index];
                     final isSelected = _selectedIds.contains(category.id);
-                    
+
                     return CategoryListTile(
                       category: category,
                       isMultiSelectMode: _isMultiSelectMode,
@@ -92,22 +94,23 @@ class _MultiSelectCategoryListState extends ConsumerState<MultiSelectCategoryLis
                           _showCategoryDetails(category);
                         }
                       },
-                      onLongPress: !_isMultiSelectMode 
-                          ? () => _enterMultiSelectModeWithSelection(category.id)
+                      onLongPress: !_isMultiSelectMode
+                          ? () =>
+                              _enterMultiSelectModeWithSelection(category.id)
                           : null,
                     );
                   },
                   childCount: filteredCategories.length,
                 ),
               ),
-              
+
               // 底部留白
               const SliverToBoxAdapter(
                 child: SizedBox(height: 80),
               ),
             ],
           ),
-          
+
           // 批量操作栏
           if (_isMultiSelectMode)
             Positioned(
@@ -133,14 +136,14 @@ class _MultiSelectCategoryListState extends ConsumerState<MultiSelectCategoryLis
           : null,
     );
   }
-  
+
   void _enterMultiSelectMode() {
     setState(() {
       _isMultiSelectMode = true;
       _selectedIds.clear();
     });
   }
-  
+
   void _enterMultiSelectModeWithSelection(String categoryId) {
     setState(() {
       _isMultiSelectMode = true;
@@ -148,14 +151,14 @@ class _MultiSelectCategoryListState extends ConsumerState<MultiSelectCategoryLis
       _selectedIds.add(categoryId);
     });
   }
-  
+
   void _exitMultiSelectMode() {
     setState(() {
       _isMultiSelectMode = false;
       _selectedIds.clear();
     });
   }
-  
+
   void _toggleSelection(String categoryId) {
     setState(() {
       if (_selectedIds.contains(categoryId)) {
@@ -168,7 +171,7 @@ class _MultiSelectCategoryListState extends ConsumerState<MultiSelectCategoryLis
       }
     });
   }
-  
+
   void _selectAll(List<Category> categories) {
     setState(() {
       if (_selectedIds.length == categories.length) {
@@ -180,7 +183,7 @@ class _MultiSelectCategoryListState extends ConsumerState<MultiSelectCategoryLis
       }
     });
   }
-  
+
   void _showCategoryDetails(Category category) {
     showModalBottomSheet(
       context: context,
@@ -188,7 +191,7 @@ class _MultiSelectCategoryListState extends ConsumerState<MultiSelectCategoryLis
       builder: (context) => CategoryDetailSheet(category: category),
     );
   }
-  
+
   void _createNewCategory() {
     // TODO: 实现创建新分类
     Navigator.pushNamed(context, '/category/create');
@@ -202,7 +205,7 @@ class CategoryListTile extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
-  
+
   const CategoryListTile({
     Key? key,
     required this.category,
@@ -211,23 +214,20 @@ class CategoryListTile extends StatelessWidget {
     required this.onTap,
     this.onLongPress,
   }) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
-        color: isSelected 
-            ? colorScheme.primaryContainer.withOpacity(0.3)
-            : null,
+        color:
+            isSelected ? colorScheme.primaryContainer.withOpacity(0.3) : null,
         border: Border(
           left: BorderSide(
-            color: isSelected 
-                ? colorScheme.primary 
-                : Colors.transparent,
+            color: isSelected ? colorScheme.primary : Colors.transparent,
             width: 4,
           ),
         ),
@@ -241,8 +241,8 @@ class CategoryListTile extends StatelessWidget {
           height: 40,
           decoration: BoxDecoration(
             color: isMultiSelectMode
-                ? (isSelected 
-                    ? colorScheme.primary 
+                ? (isSelected
+                    ? colorScheme.primary
                     : colorScheme.surfaceVariant)
                 : Color(int.parse(category.color.replaceFirst('#', '0xFF'))),
             shape: BoxShape.circle,
@@ -337,7 +337,8 @@ class CategoryListTile extends StatelessWidget {
                     value: 'delete',
                     child: ListTile(
                       leading: Icon(Icons.delete, color: colorScheme.error),
-                      title: Text('删除', style: TextStyle(color: colorScheme.error)),
+                      title: Text('删除',
+                          style: TextStyle(color: colorScheme.error)),
                       contentPadding: EdgeInsets.zero,
                     ),
                   ),
@@ -347,7 +348,7 @@ class CategoryListTile extends StatelessWidget {
       ),
     );
   }
-  
+
   String _getClassificationText(CategoryClassification classification) {
     switch (classification) {
       case CategoryClassification.income:
@@ -358,7 +359,7 @@ class CategoryListTile extends StatelessWidget {
         return '转账';
     }
   }
-  
+
   void _handleMenuAction(BuildContext context, String action) {
     // TODO: 处理菜单操作
     switch (action) {
@@ -381,16 +382,16 @@ class CategoryListTile extends StatelessWidget {
 /// 分类详情底部弹窗
 class CategoryDetailSheet extends StatelessWidget {
   final Category category;
-  
+
   const CategoryDetailSheet({
     Key? key,
     required this.category,
   }) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return DraggableScrollableSheet(
       initialChildSize: 0.5,
       minChildSize: 0.3,
@@ -413,7 +414,7 @@ class CategoryDetailSheet extends StatelessWidget {
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              
+
               // 分类信息
               Expanded(
                 child: ListView(
@@ -427,7 +428,8 @@ class CategoryDetailSheet extends StatelessWidget {
                           width: 60,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: Color(int.parse(category.color.replaceFirst('#', '0xFF'))),
+                            color: Color(int.parse(
+                                category.color.replaceFirst('#', '0xFF'))),
                             shape: BoxShape.circle,
                           ),
                           child: Center(
@@ -458,9 +460,9 @@ class CategoryDetailSheet extends StatelessWidget {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // 统计信息
                     Card(
                       child: Padding(
@@ -473,18 +475,22 @@ class CategoryDetailSheet extends StatelessWidget {
                               style: theme.textTheme.titleMedium,
                             ),
                             const SizedBox(height: 12),
-                            _buildStatRow('交易次数', '${category.transactionCount}'),
-                            _buildStatRow('本月使用', '${category.monthlyCount ?? 0}'),
-                            _buildStatRow('创建时间', _formatDate(category.createdAt)),
+                            _buildStatRow(
+                                '交易次数', '${category.transactionCount}'),
+                            _buildStatRow(
+                                '本月使用', '${category.monthlyCount ?? 0}'),
+                            _buildStatRow(
+                                '创建时间', _formatDate(category.createdAt)),
                             if (category.updatedAt != null)
-                              _buildStatRow('最后更新', _formatDate(category.updatedAt!)),
+                              _buildStatRow(
+                                  '最后更新', _formatDate(category.updatedAt!)),
                           ],
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // 操作按钮
                     Wrap(
                       spacing: 8,
@@ -495,7 +501,8 @@ class CategoryDetailSheet extends StatelessWidget {
                           label: '编辑',
                           onPressed: () {
                             Navigator.pop(context);
-                            Navigator.pushNamed(context, '/category/edit', arguments: category);
+                            Navigator.pushNamed(context, '/category/edit',
+                                arguments: category);
                           },
                         ),
                         _buildActionChip(
@@ -534,7 +541,7 @@ class CategoryDetailSheet extends StatelessWidget {
       },
     );
   }
-  
+
   Widget _buildStatRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -547,7 +554,7 @@ class CategoryDetailSheet extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildActionChip({
     required IconData icon,
     required String label,
@@ -562,7 +569,7 @@ class CategoryDetailSheet extends StatelessWidget {
       side: isDestructive ? const BorderSide(color: Colors.red) : null,
     );
   }
-  
+
   String _formatDate(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }

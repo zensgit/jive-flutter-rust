@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import '../../services/api_service.dart';
@@ -16,85 +17,201 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   final ApiService _apiService = ApiService();
   final AuthService _authService = AuthService();
   final ImagePicker _picker = ImagePicker();
-  
+
   bool _isLoading = true;
   bool _isSaving = false;
-  
+
   // User data
   Map<String, dynamic>? _userData;
   Map<String, dynamic>? _localeData;
   File? _newProfileImage;
   Map<String, dynamic>? _selectedSystemAvatar;
-  
+
   // Network avatar URLs - 可从网络加载的头像
   final List<Map<String, dynamic>> _networkAvatars = [
-    {'url': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix', 'name': 'Felix'},
-    {'url': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka', 'name': 'Aneka'},
-    {'url': 'https://api.dicebear.com/7.x/bottts/svg?seed=Robot1', 'name': 'Robot 1'},
-    {'url': 'https://api.dicebear.com/7.x/bottts/svg?seed=Robot2', 'name': 'Robot 2'},
-    {'url': 'https://api.dicebear.com/7.x/micah/svg?seed=Person1', 'name': 'Person 1'},
-    {'url': 'https://api.dicebear.com/7.x/micah/svg?seed=Person2', 'name': 'Person 2'},
+    {
+      'url': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
+      'name': 'Felix'
+    },
+    {
+      'url': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka',
+      'name': 'Aneka'
+    },
+    {
+      'url': 'https://api.dicebear.com/7.x/bottts/svg?seed=Robot1',
+      'name': 'Robot 1'
+    },
+    {
+      'url': 'https://api.dicebear.com/7.x/bottts/svg?seed=Robot2',
+      'name': 'Robot 2'
+    },
+    {
+      'url': 'https://api.dicebear.com/7.x/micah/svg?seed=Person1',
+      'name': 'Person 1'
+    },
+    {
+      'url': 'https://api.dicebear.com/7.x/micah/svg?seed=Person2',
+      'name': 'Person 2'
+    },
     {'url': 'https://robohash.org/user1?set=set1', 'name': 'Robo 1'},
     {'url': 'https://robohash.org/user2?set=set2', 'name': 'Robo 2'},
     {'url': 'https://robohash.org/user3?set=set3', 'name': 'Robo 3'},
     {'url': 'https://robohash.org/user4?set=set4', 'name': 'Cat'},
-    {'url': 'https://avatars.dicebear.com/api/adventurer/user1.svg', 'name': 'Adventurer 1'},
-    {'url': 'https://avatars.dicebear.com/api/adventurer/user2.svg', 'name': 'Adventurer 2'},
+    {
+      'url': 'https://avatars.dicebear.com/api/adventurer/user1.svg',
+      'name': 'Adventurer 1'
+    },
+    {
+      'url': 'https://avatars.dicebear.com/api/adventurer/user2.svg',
+      'name': 'Adventurer 2'
+    },
   ];
-  
+
   // System avatars - 扩展到24个选项
   final List<Map<String, dynamic>> _systemAvatars = [
     // 动物系列
-    {'icon': '🦁', 'background': Colors.orange.shade100, 'color': Colors.orange.shade900},
+    {
+      'icon': '🦁',
+      'background': Colors.orange.shade100,
+      'color': Colors.orange.shade900
+    },
     {'icon': '🐼', 'background': Colors.grey.shade200, 'color': Colors.black87},
-    {'icon': '🦊', 'background': Colors.deepOrange.shade100, 'color': Colors.deepOrange.shade900},
-    {'icon': '🐰', 'background': Colors.pink.shade100, 'color': Colors.pink.shade900},
-    {'icon': '🐸', 'background': Colors.green.shade100, 'color': Colors.green.shade900},
-    {'icon': '🦋', 'background': Colors.indigo.shade100, 'color': Colors.indigo.shade900},
-    {'icon': '🐯', 'background': Colors.amber.shade100, 'color': Colors.amber.shade900},
-    {'icon': '🐨', 'background': Colors.blueGrey.shade100, 'color': Colors.blueGrey.shade900},
-    {'icon': '🦄', 'background': Colors.purple.shade100, 'color': Colors.purple.shade900},
-    {'icon': '🐧', 'background': Colors.cyan.shade100, 'color': Colors.cyan.shade900},
-    {'icon': '🦉', 'background': Colors.brown.shade100, 'color': Colors.brown.shade900},
-    {'icon': '🐙', 'background': Colors.deepPurple.shade100, 'color': Colors.deepPurple.shade900},
-    
+    {
+      'icon': '🦊',
+      'background': Colors.deepOrange.shade100,
+      'color': Colors.deepOrange.shade900
+    },
+    {
+      'icon': '🐰',
+      'background': Colors.pink.shade100,
+      'color': Colors.pink.shade900
+    },
+    {
+      'icon': '🐸',
+      'background': Colors.green.shade100,
+      'color': Colors.green.shade900
+    },
+    {
+      'icon': '🦋',
+      'background': Colors.indigo.shade100,
+      'color': Colors.indigo.shade900
+    },
+    {
+      'icon': '🐯',
+      'background': Colors.amber.shade100,
+      'color': Colors.amber.shade900
+    },
+    {
+      'icon': '🐨',
+      'background': Colors.blueGrey.shade100,
+      'color': Colors.blueGrey.shade900
+    },
+    {
+      'icon': '🦄',
+      'background': Colors.purple.shade100,
+      'color': Colors.purple.shade900
+    },
+    {
+      'icon': '🐧',
+      'background': Colors.cyan.shade100,
+      'color': Colors.cyan.shade900
+    },
+    {
+      'icon': '🦉',
+      'background': Colors.brown.shade100,
+      'color': Colors.brown.shade900
+    },
+    {
+      'icon': '🐙',
+      'background': Colors.deepPurple.shade100,
+      'color': Colors.deepPurple.shade900
+    },
+
     // 表情系列
-    {'icon': '😀', 'background': Colors.blue.shade100, 'color': Colors.blue.shade900},
-    {'icon': '😎', 'background': Colors.teal.shade100, 'color': Colors.teal.shade900},
-    {'icon': '🤓', 'background': Colors.lime.shade100, 'color': Colors.lime.shade900},
-    {'icon': '😇', 'background': Colors.lightBlue.shade100, 'color': Colors.lightBlue.shade900},
-    {'icon': '🥳', 'background': Colors.red.shade100, 'color': Colors.red.shade900},
-    {'icon': '🤠', 'background': Colors.brown.shade200, 'color': Colors.brown.shade800},
-    
+    {
+      'icon': '😀',
+      'background': Colors.blue.shade100,
+      'color': Colors.blue.shade900
+    },
+    {
+      'icon': '😎',
+      'background': Colors.teal.shade100,
+      'color': Colors.teal.shade900
+    },
+    {
+      'icon': '🤓',
+      'background': Colors.lime.shade100,
+      'color': Colors.lime.shade900
+    },
+    {
+      'icon': '😇',
+      'background': Colors.lightBlue.shade100,
+      'color': Colors.lightBlue.shade900
+    },
+    {
+      'icon': '🥳',
+      'background': Colors.red.shade100,
+      'color': Colors.red.shade900
+    },
+    {
+      'icon': '🤠',
+      'background': Colors.brown.shade200,
+      'color': Colors.brown.shade800
+    },
+
     // 符号系列
-    {'icon': '🌟', 'background': Colors.amber.shade100, 'color': Colors.amber.shade900},
-    {'icon': '🌈', 'background': Colors.cyan.shade100, 'color': Colors.cyan.shade900},
-    {'icon': '🎨', 'background': Colors.teal.shade100, 'color': Colors.teal.shade900},
-    {'icon': '🚀', 'background': Colors.red.shade100, 'color': Colors.red.shade900},
-    {'icon': '💎', 'background': Colors.blue.shade200, 'color': Colors.blue.shade800},
-    {'icon': '🎯', 'background': Colors.green.shade200, 'color': Colors.green.shade800},
+    {
+      'icon': '🌟',
+      'background': Colors.amber.shade100,
+      'color': Colors.amber.shade900
+    },
+    {
+      'icon': '🌈',
+      'background': Colors.cyan.shade100,
+      'color': Colors.cyan.shade900
+    },
+    {
+      'icon': '🎨',
+      'background': Colors.teal.shade100,
+      'color': Colors.teal.shade900
+    },
+    {
+      'icon': '🚀',
+      'background': Colors.red.shade100,
+      'color': Colors.red.shade900
+    },
+    {
+      'icon': '💎',
+      'background': Colors.blue.shade200,
+      'color': Colors.blue.shade800
+    },
+    {
+      'icon': '🎯',
+      'background': Colors.green.shade200,
+      'color': Colors.green.shade800
+    },
   ];
-  
+
   // Controllers
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  
+
   // Preferences
   String _selectedCountry = 'CN';
   String _selectedCurrency = 'CNY';
-  String _selectedLanguage = 'zh-CN'; 
+  String _selectedLanguage = 'zh-CN';
   String _selectedTimezone = 'Asia/Shanghai';
   String _selectedDateFormat = 'YYYY-MM-DD';
-  
+
   // Delete account
   final _verificationCodeController = TextEditingController();
-  
+
   @override
   void initState() {
     super.initState();
     _loadData();
   }
-  
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -102,15 +219,15 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     _verificationCodeController.dispose();
     super.dispose();
   }
-  
+
   Future<void> _loadData() async {
     try {
       // Load user profile
       final profileResponse = await _apiService.get('/auth/profile-enhanced');
-      
+
       // Load locale data
       final localeResponse = await _apiService.get('/locales');
-      
+
       if (mounted) {
         setState(() {
           if (profileResponse['success'] == true) {
@@ -120,14 +237,16 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             _selectedCountry = _userData!['country'] ?? 'CN';
             _selectedCurrency = _userData!['preferred_currency'] ?? 'CNY';
             _selectedLanguage = _userData!['preferred_language'] ?? 'zh-CN';
-            _selectedTimezone = _userData!['preferred_timezone'] ?? 'Asia/Shanghai';
-            _selectedDateFormat = _userData!['preferred_date_format'] ?? 'YYYY-MM-DD';
+            _selectedTimezone =
+                _userData!['preferred_timezone'] ?? 'Asia/Shanghai';
+            _selectedDateFormat =
+                _userData!['preferred_date_format'] ?? 'YYYY-MM-DD';
           }
-          
+
           if (localeResponse['success'] == true) {
             _localeData = localeResponse['data'];
           }
-          
+
           _isLoading = false;
         });
       }
@@ -145,7 +264,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       }
     }
   }
-  
+
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(
       source: ImageSource.gallery,
@@ -153,15 +272,16 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       maxHeight: 512,
       imageQuality: 85,
     );
-    
+
     if (image != null) {
       setState(() {
         _newProfileImage = File(image.path);
-        _selectedSystemAvatar = null; // Clear system avatar when uploading custom
+        _selectedSystemAvatar =
+            null; // Clear system avatar when uploading custom
       });
     }
   }
-  
+
   void _showSystemAvatarPicker() {
     showModalBottomSheet(
       context: context,
@@ -206,7 +326,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     children: [
                       // System avatars tab
                       GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 4,
                           crossAxisSpacing: 10,
                           mainAxisSpacing: 10,
@@ -248,7 +369,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       ),
                       // Network avatars tab
                       GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           crossAxisSpacing: 10,
                           mainAxisSpacing: 10,
@@ -272,7 +394,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: _selectedSystemAvatar?['url'] == avatar['url']
+                                  color: _selectedSystemAvatar?['url'] ==
+                                          avatar['url']
                                       ? Theme.of(context).primaryColor
                                       : Colors.grey.shade300,
                                   width: 3,
@@ -299,19 +422,19 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       },
     );
   }
-  
+
   Future<void> _saveProfile() async {
     setState(() {
       _isSaving = true;
     });
-    
+
     try {
       // Update user info
       await _apiService.put('/auth/user', {
         'name': _nameController.text.trim(),
         'email': _emailController.text.trim(),
       });
-      
+
       // Update preferences (移除货币设置，货币在专门的货币管理页面设置)
       await _apiService.put('/auth/preferences', {
         'country': _selectedCountry,
@@ -319,24 +442,26 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         'timezone': _selectedTimezone,
         'date_format': _selectedDateFormat,
       });
-      
+
       // Upload profile image if changed
       if (_newProfileImage != null) {
         // TODO: Implement custom image upload to server
         // For now, just show success message
-        print('Custom image selected: ${_newProfileImage!.path}');
+        debugPrint('Custom image selected: ${_newProfileImage!.path}');
       }
-      
+
       // Update system avatar if selected
       if (_selectedSystemAvatar != null) {
         await _apiService.put('/auth/avatar', {
           'avatar_type': 'emoji',
           'avatar_data': _selectedSystemAvatar!['icon'],
-          'avatar_color': '#${(_selectedSystemAvatar!['color'] as Color).value.toRadixString(16).padLeft(8, '0')}',
-          'avatar_background': '#${(_selectedSystemAvatar!['background'] as Color).value.toRadixString(16).padLeft(8, '0')}',
+          'avatar_color':
+              '#${(_selectedSystemAvatar!['color'] as Color).value.toRadixString(16).padLeft(8, '0')}',
+          'avatar_background':
+              '#${(_selectedSystemAvatar!['background'] as Color).value.toRadixString(16).padLeft(8, '0')}',
         });
       }
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -362,7 +487,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       }
     }
   }
-  
+
   Future<void> _requestDeleteCode() async {
     try {
       await _apiService.post('/auth/request-delete-code', {});
@@ -385,7 +510,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       }
     }
   }
-  
+
   Future<void> _resetAccount() async {
     // 显示确认对话框
     final confirmed = await showDialog<bool>(
@@ -412,9 +537,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         ],
       ),
     );
-    
+
     if (confirmed != true) return;
-    
+
     // 再次确认
     final finalConfirmed = await showDialog<bool>(
       context: context,
@@ -446,13 +571,13 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         ],
       ),
     );
-    
+
     if (finalConfirmed != true) return;
-    
+
     try {
       // Call reset API
       await _apiService.post('/auth/reset-account', {});
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -460,9 +585,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        
+
         // 返回主页
-        Navigator.of(context).pushNamedAndRemoveUntil('/dashboard', (route) => false);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/dashboard', (route) => false);
       }
     } catch (e) {
       if (mounted) {
@@ -475,7 +601,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       }
     }
   }
-  
+
   Future<void> _deleteAccount() async {
     final code = _verificationCodeController.text.trim();
     if (code.isEmpty || code.length != 4) {
@@ -487,15 +613,16 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       );
       return;
     }
-    
+
     try {
       await _apiService.delete('/auth/delete?code=$code');
-      
+
       // Clear auth data
       await _authService.logout();
-      
+
       if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/login', (route) => false);
       }
     } catch (e) {
       if (mounted) {
@@ -508,7 +635,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -522,7 +649,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         ),
       );
     }
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('个人资料设置'),
@@ -556,7 +683,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                           height: 100,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: _selectedSystemAvatar != null && _selectedSystemAvatar!['type'] != 'network'
+                            color: _selectedSystemAvatar != null &&
+                                    _selectedSystemAvatar!['type'] != 'network'
                                 ? _selectedSystemAvatar!['background'] as Color
                                 : Colors.grey[200],
                             image: _newProfileImage != null
@@ -566,17 +694,23 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                                   )
                                 : (_selectedSystemAvatar?['type'] == 'network')
                                     ? DecorationImage(
-                                        image: NetworkImage(_selectedSystemAvatar!['url']),
+                                        image: NetworkImage(
+                                            _selectedSystemAvatar!['url']),
                                         fit: BoxFit.cover,
                                       )
-                                    : (_userData?['avatar_url'] != null && _selectedSystemAvatar == null && _newProfileImage == null)
+                                    : (_userData?['avatar_url'] != null &&
+                                            _selectedSystemAvatar == null &&
+                                            _newProfileImage == null)
                                         ? DecorationImage(
-                                            image: NetworkImage(_userData!['avatar_url']),
+                                            image: NetworkImage(
+                                                _userData!['avatar_url']),
                                             fit: BoxFit.cover,
                                           )
                                         : null,
                           ),
-                          child: (_newProfileImage == null && _selectedSystemAvatar == null && _userData?['avatar_url'] == null)
+                          child: (_newProfileImage == null &&
+                                  _selectedSystemAvatar == null &&
+                                  _userData?['avatar_url'] == null)
                               ? Icon(
                                   Icons.person,
                                   size: 50,
@@ -587,7 +721,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                                       ? null // Network image is handled by DecorationImage
                                       : Center(
                                           child: Text(
-                                            _selectedSystemAvatar!['icon'] as String,
+                                            _selectedSystemAvatar!['icon']
+                                                as String,
                                             style: const TextStyle(
                                               fontSize: 40,
                                             ),
@@ -623,7 +758,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                               decoration: BoxDecoration(
                                 color: Colors.blue,
                                 shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white, width: 2),
+                                border:
+                                    Border.all(color: Colors.white, width: 2),
                               ),
                               child: const Icon(
                                 Icons.face,
@@ -647,9 +783,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 ],
               ),
             ),
-            
+
             const Divider(),
-            
+
             // Basic Info Section
             Padding(
               padding: const EdgeInsets.all(16),
@@ -664,7 +800,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
                   TextField(
                     controller: _nameController,
                     decoration: const InputDecoration(
@@ -674,7 +809,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
                   TextField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -688,9 +822,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 ],
               ),
             ),
-            
+
             const Divider(),
-            
+
             // Preferences Section
             Padding(
               padding: const EdgeInsets.all(16),
@@ -705,7 +839,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Preview Card
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -752,7 +886,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Country
                   DropdownButtonFormField<String>(
                     value: _selectedCountry,
@@ -770,7 +904,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Language
                   DropdownButtonFormField<String>(
                     value: _selectedLanguage,
@@ -787,7 +921,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Timezone
                   DropdownButtonFormField<String>(
                     value: _selectedTimezone,
@@ -804,7 +938,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Date Format
                   DropdownButtonFormField<String>(
                     value: _selectedDateFormat,
@@ -823,9 +957,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 ],
               ),
             ),
-            
+
             const Divider(),
-            
+
             // Danger Zone
             Padding(
               padding: const EdgeInsets.all(16),
@@ -841,7 +975,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Reset Account Card
                   Card(
                     color: Colors.orange[50],
@@ -864,7 +998,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                             style: TextStyle(fontSize: 14),
                           ),
                           const SizedBox(height: 16),
-                          
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
@@ -880,7 +1013,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Delete Account Card
                   Card(
                     color: Colors.red[50],
@@ -903,7 +1036,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                             style: TextStyle(fontSize: 14),
                           ),
                           const SizedBox(height: 16),
-                          
                           Row(
                             children: [
                               Expanded(
@@ -932,7 +1064,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
@@ -976,14 +1107,14 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 32),
           ],
         ),
       ),
     );
   }
-  
+
   List<DropdownMenuItem<String>> _getCountryItems() {
     // 默认的国家列表
     final defaultCountries = [
@@ -991,35 +1122,38 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       const DropdownMenuItem(value: 'US', child: Text('美国')),
       const DropdownMenuItem(value: 'JP', child: Text('日本')),
     ];
-    
+
     if (_localeData == null) {
       return defaultCountries;
     }
-    
+
     final countries = _localeData!['countries'] as List<dynamic>? ?? [];
     if (countries.isEmpty) {
       return defaultCountries;
     }
-    
+
     final apiCountries = countries.map((country) {
       return DropdownMenuItem<String>(
         value: country['code']?.toString() ?? '',
         child: Text(country['name']?.toString() ?? ''),
       );
     }).toList();
-    
+
     // 确保当前选中的值在列表中
-    final hasSelectedValue = apiCountries.any((item) => item.value == _selectedCountry);
+    final hasSelectedValue =
+        apiCountries.any((item) => item.value == _selectedCountry);
     if (!hasSelectedValue && _selectedCountry.isNotEmpty) {
-      apiCountries.insert(0, DropdownMenuItem<String>(
-        value: _selectedCountry,
-        child: Text(_selectedCountry),
-      ));
+      apiCountries.insert(
+          0,
+          DropdownMenuItem<String>(
+            value: _selectedCountry,
+            child: Text(_selectedCountry),
+          ));
     }
-    
+
     return apiCountries;
   }
-  
+
   List<DropdownMenuItem<String>> _getCurrencyItems() {
     if (_localeData == null) {
       return [
@@ -1027,7 +1161,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         const DropdownMenuItem(value: 'USD', child: Text('美元 (\$)')),
       ];
     }
-    
+
     final currencies = _localeData!['currencies'] as List<dynamic>? ?? [];
     return currencies.map((currency) {
       return DropdownMenuItem<String>(
@@ -1036,42 +1170,45 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       );
     }).toList();
   }
-  
+
   List<DropdownMenuItem<String>> _getLanguageItems() {
     // 默认的语言列表
     final defaultLanguages = [
       const DropdownMenuItem(value: 'zh-CN', child: Text('简体中文')),
       const DropdownMenuItem(value: 'en-US', child: Text('English')),
     ];
-    
+
     if (_localeData == null) {
       return defaultLanguages;
     }
-    
+
     final languages = _localeData!['languages'] as List<dynamic>? ?? [];
     if (languages.isEmpty) {
       return defaultLanguages;
     }
-    
+
     final apiLanguages = languages.map((language) {
       return DropdownMenuItem<String>(
         value: language['code']?.toString() ?? '',
         child: Text(language['name']?.toString() ?? ''),
       );
     }).toList();
-    
+
     // 确保当前选中的值在列表中
-    final hasSelectedValue = apiLanguages.any((item) => item.value == _selectedLanguage);
+    final hasSelectedValue =
+        apiLanguages.any((item) => item.value == _selectedLanguage);
     if (!hasSelectedValue && _selectedLanguage.isNotEmpty) {
-      apiLanguages.insert(0, DropdownMenuItem<String>(
-        value: _selectedLanguage,
-        child: Text(_selectedLanguage),
-      ));
+      apiLanguages.insert(
+          0,
+          DropdownMenuItem<String>(
+            value: _selectedLanguage,
+            child: Text(_selectedLanguage),
+          ));
     }
-    
+
     return apiLanguages;
   }
-  
+
   List<DropdownMenuItem<String>> _getTimezoneItems() {
     // 默认的时区列表
     final defaultTimezones = [
@@ -1080,16 +1217,16 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       const DropdownMenuItem(value: 'Europe/London', child: Text('伦敦时间')),
       const DropdownMenuItem(value: 'Asia/Tokyo', child: Text('东京时间')),
     ];
-    
+
     if (_localeData == null) {
       return defaultTimezones;
     }
-    
+
     final timezones = _localeData!['timezones'] as List<dynamic>? ?? [];
     if (timezones.isEmpty) {
       return defaultTimezones;
     }
-    
+
     // 从API数据构建时区列表
     final apiTimezones = timezones.map((timezone) {
       return DropdownMenuItem<String>(
@@ -1097,20 +1234,23 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         child: Text(timezone['name']?.toString() ?? ''),
       );
     }).toList();
-    
+
     // 确保当前选中的值在列表中
-    final hasSelectedValue = apiTimezones.any((item) => item.value == _selectedTimezone);
+    final hasSelectedValue =
+        apiTimezones.any((item) => item.value == _selectedTimezone);
     if (!hasSelectedValue && _selectedTimezone.isNotEmpty) {
       // 如果当前选中的值不在列表中，添加它
-      apiTimezones.insert(0, DropdownMenuItem<String>(
-        value: _selectedTimezone,
-        child: Text(_selectedTimezone),
-      ));
+      apiTimezones.insert(
+          0,
+          DropdownMenuItem<String>(
+            value: _selectedTimezone,
+            child: Text(_selectedTimezone),
+          ));
     }
-    
+
     return apiTimezones;
   }
-  
+
   List<DropdownMenuItem<String>> _getDateFormatItems() {
     // 默认的日期格式列表
     final defaultFormats = [
@@ -1118,35 +1258,38 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       const DropdownMenuItem(value: 'MM/DD/YYYY', child: Text('12/31/2024')),
       const DropdownMenuItem(value: 'DD/MM/YYYY', child: Text('31/12/2024')),
     ];
-    
+
     if (_localeData == null) {
       return defaultFormats;
     }
-    
+
     final formats = _localeData!['date_formats'] as List<dynamic>? ?? [];
     if (formats.isEmpty) {
       return defaultFormats;
     }
-    
+
     final apiFormats = formats.map((format) {
       return DropdownMenuItem<String>(
         value: format['format']?.toString() ?? '',
         child: Text(format['example']?.toString() ?? ''),
       );
     }).toList();
-    
+
     // 确保当前选中的值在列表中
-    final hasSelectedValue = apiFormats.any((item) => item.value == _selectedDateFormat);
+    final hasSelectedValue =
+        apiFormats.any((item) => item.value == _selectedDateFormat);
     if (!hasSelectedValue && _selectedDateFormat.isNotEmpty) {
-      apiFormats.insert(0, DropdownMenuItem<String>(
-        value: _selectedDateFormat,
-        child: Text(_selectedDateFormat),
-      ));
+      apiFormats.insert(
+          0,
+          DropdownMenuItem<String>(
+            value: _selectedDateFormat,
+            child: Text(_selectedDateFormat),
+          ));
     }
-    
+
     return apiFormats;
   }
-  
+
   String _getCurrencySymbol(String currency) {
     switch (currency) {
       case 'CNY':
@@ -1163,7 +1306,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         return '\$';
     }
   }
-  
+
   String _formatDate(String format) {
     final now = DateTime.now();
     switch (format) {
@@ -1179,7 +1322,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         return '${now.month}-${now.day}-${now.year}';
     }
   }
-  
+
   void _autoAdjustSettings(String country) {
     // 根据国家自动调整语言、时区和日期格式（货币在货币管理页面设置）
     switch (country) {

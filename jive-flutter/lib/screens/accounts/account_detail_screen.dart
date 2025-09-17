@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AccountDetailScreen extends StatelessWidget {
   final String accountId;
-  
+
   const AccountDetailScreen({
     super.key,
     required this.accountId,

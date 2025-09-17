@@ -20,13 +20,13 @@ class AuthState {
   final AuthStatus status;
   final User? user;
   final String? errorMessage;
-  
+
   const AuthState({
     this.status = AuthStatus.initial,
     this.user,
     this.errorMessage,
   });
-  
+
   AuthState copyWith({
     AuthStatus? status,
     User? user,
@@ -38,7 +38,7 @@ class AuthState {
       errorMessage: errorMessage,
     );
   }
-  
+
   bool get isAuthenticated => status == AuthStatus.authenticated;
   bool get isLoading => status == AuthStatus.loading;
   String? get error => errorMessage;
@@ -55,7 +55,7 @@ class AuthController extends StateNotifier<AuthState> {
   /// 检查认证状态
   Future<void> _checkAuthStatus() async {
     state = state.copyWith(status: AuthStatus.loading);
-    
+
     try {
       // 检查本地存储的用户信息
       final cachedUser = HiveConfig.getCurrentUser();
@@ -64,7 +64,7 @@ class AuthController extends StateNotifier<AuthState> {
           status: AuthStatus.authenticated,
           user: cachedUser,
         );
-        
+
         // 后台刷新用户信息
         _refreshUserInfo();
       } else {
@@ -83,7 +83,7 @@ class AuthController extends StateNotifier<AuthState> {
       );
     }
   }
-  
+
   /// 刷新用户信息
   Future<void> _refreshUserInfo() async {
     try {
@@ -104,35 +104,38 @@ class AuthController extends StateNotifier<AuthState> {
     required String password,
     bool rememberMe = false,
   }) async {
-    print('DEBUG Provider: Login method called with email=$email');
+    debugPrint('DEBUG Provider: Login method called with email=$email');
     state = state.copyWith(status: AuthStatus.loading);
-    
+
     try {
-      print('DEBUG Provider: Starting login for $email');
+      debugPrint('DEBUG Provider: Starting login for $email');
       final authResponse = await _authService.login(
         email: email,
         password: password,
         rememberMe: rememberMe,
       );
-      
-      print('DEBUG Provider: Got auth response');
-      print('DEBUG Provider: User = ${authResponse.user}');
-      print('DEBUG Provider: Token = ${authResponse.accessToken?.substring(0, 20) ?? 'null'}...');
-      
+
+      debugPrint('DEBUG Provider: Got auth response');
+      debugPrint('DEBUG Provider: User = ${authResponse.user}');
+      debugPrint(
+          'DEBUG Provider: Token = ${authResponse.accessToken?.substring(0, 20) ?? 'null'}...');
+
       // 保存用户信息
       if (authResponse.user != null) {
         await HiveConfig.saveUser(authResponse.user!);
-        
+
         state = state.copyWith(
           status: AuthStatus.authenticated,
           user: authResponse.user,
         );
-        
-        print('DEBUG: Login successful in provider, user: ${authResponse.user?.email}');
+
+        debugPrint(
+            'DEBUG: Login successful in provider, user: ${authResponse.user?.email}');
         return true;
       } else {
-        print('DEBUG: Login failed - no user in response');
-        print('DEBUG: Auth response: token=${authResponse.accessToken?.substring(0, 20)}...');
+        debugPrint('DEBUG: Login failed - no user in response');
+        debugPrint(
+            'DEBUG: Auth response: token=${authResponse.accessToken?.substring(0, 20)}...');
         state = state.copyWith(
           status: AuthStatus.error,
           errorMessage: '登录响应中缺少用户信息',
@@ -140,8 +143,8 @@ class AuthController extends StateNotifier<AuthState> {
         return false;
       }
     } catch (e, stack) {
-      print('DEBUG Provider: Login exception: $e');
-      print('DEBUG Provider: Stack: $stack');
+      debugPrint('DEBUG Provider: Login exception: $e');
+      debugPrint('DEBUG Provider: Stack: $stack');
       state = state.copyWith(
         status: AuthStatus.error,
         errorMessage: _parseError(e),
@@ -157,23 +160,23 @@ class AuthController extends StateNotifier<AuthState> {
     required String password,
   }) async {
     state = state.copyWith(status: AuthStatus.loading);
-    
+
     try {
       final authResponse = await _authService.register(
         name: name,
         email: email,
         password: password,
       );
-      
+
       // 保存用户信息
       if (authResponse.user != null) {
         await HiveConfig.saveUser(authResponse.user!);
-        
+
         state = state.copyWith(
           status: AuthStatus.authenticated,
           user: authResponse.user,
         );
-        
+
         return true;
       } else {
         state = state.copyWith(
@@ -194,11 +197,11 @@ class AuthController extends StateNotifier<AuthState> {
   /// 登出
   Future<void> logout() async {
     state = state.copyWith(status: AuthStatus.loading);
-    
+
     try {
       await _authService.logout();
       await HiveConfig.clearAll();
-      
+
       state = const AuthState(status: AuthStatus.unauthenticated);
     } catch (e) {
       debugPrint('登出失败: $e');
@@ -215,16 +218,16 @@ class AuthController extends StateNotifier<AuthState> {
     String? avatar,
   }) async {
     if (state.user == null) return false;
-    
+
     try {
       final updatedUser = await _authService.updateProfile(
         name: name,
         phone: phone,
         avatar: avatar,
       );
-      
+
       await HiveConfig.saveUser(updatedUser);
-      
+
       state = state.copyWith(user: updatedUser);
       return true;
     } catch (e) {
@@ -249,12 +252,12 @@ class AuthController extends StateNotifier<AuthState> {
       return false;
     }
   }
-  
+
   /// 清除错误信息
   void clearError() {
     state = state.copyWith(errorMessage: null);
   }
-  
+
   /// 解析错误信息
   String _parseError(dynamic error) {
     if (error is ApiException) {
@@ -269,7 +272,8 @@ final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService();
 });
 
-final authControllerProvider = StateNotifierProvider<AuthController, AuthState>((ref) {
+final authControllerProvider =
+    StateNotifierProvider<AuthController, AuthState>((ref) {
   final authService = ref.watch(authServiceProvider);
   return AuthController(authService);
 });

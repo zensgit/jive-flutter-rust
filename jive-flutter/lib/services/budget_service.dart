@@ -6,8 +6,8 @@ import '../core/config/api_config.dart';
 /// 预算服务
 class BudgetService {
   final http.Client _httpClient;
-  
-  BudgetService({http.Client? httpClient}) 
+
+  BudgetService({http.Client? httpClient})
       : _httpClient = httpClient ?? http.Client();
 
   /// 获取所有预算
@@ -88,7 +88,8 @@ class BudgetService {
   }
 
   /// 获取预算支出
-  Future<double> getBudgetSpending(String budgetId, DateTime startDate, DateTime endDate) async {
+  Future<double> getBudgetSpending(
+      String budgetId, DateTime startDate, DateTime endDate) async {
     try {
       final queryParams = {
         'budgetId': budgetId,
@@ -108,7 +109,8 @@ class BudgetService {
         final data = json.decode(response.body);
         return (data['spending'] as num).toDouble();
       } else {
-        throw Exception('Failed to get budget spending: ${response.statusCode}');
+        throw Exception(
+            'Failed to get budget spending: ${response.statusCode}');
       }
     } catch (e) {
       // 返回模拟的支出数据
@@ -175,12 +177,10 @@ class BudgetService {
       amount: (data['amount'] as num?)?.toDouble() ?? 0.0,
       spent: 0.0,
       category: data['category'] ?? '其他',
-      startDate: data['startDate'] != null 
+      startDate: data['startDate'] != null
           ? DateTime.parse(data['startDate'])
           : DateTime(now.year, now.month, 1),
-      endDate: data['endDate'] != null
-          ? DateTime.parse(data['endDate'])
-          : null,
+      endDate: data['endDate'] != null ? DateTime.parse(data['endDate']) : null,
       period: data['period'] != null
           ? BudgetPeriod.fromJson(data['period'])
           : BudgetPeriod.monthly,

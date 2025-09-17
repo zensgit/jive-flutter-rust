@@ -19,7 +19,7 @@ class RefreshableList<T> extends StatefulWidget {
   final Widget? header;
   final Widget? footer;
   final double loadMoreThreshold;
-  
+
   const RefreshableList({
     super.key,
     required this.items,
@@ -37,7 +37,7 @@ class RefreshableList<T> extends StatefulWidget {
     this.footer,
     this.loadMoreThreshold = 200.0,
   });
-  
+
   @override
   State<RefreshableList<T>> createState() => _RefreshableListState<T>();
 }
@@ -45,14 +45,14 @@ class RefreshableList<T> extends StatefulWidget {
 class _RefreshableListState<T> extends State<RefreshableList<T>> {
   late ScrollController _scrollController;
   bool _isLoadingMore = false;
-  
+
   @override
   void initState() {
     super.initState();
     _scrollController = widget.scrollController ?? ScrollController();
     _scrollController.addListener(_onScroll);
   }
-  
+
   @override
   void dispose() {
     if (widget.scrollController == null) {
@@ -62,25 +62,25 @@ class _RefreshableListState<T> extends State<RefreshableList<T>> {
     }
     super.dispose();
   }
-  
+
   void _onScroll() {
     if (_isLoadingMore || !widget.hasMore || widget.onLoadMore == null) {
       return;
     }
-    
+
     final position = _scrollController.position;
     if (position.pixels > position.maxScrollExtent - widget.loadMoreThreshold) {
       _loadMore();
     }
   }
-  
+
   Future<void> _loadMore() async {
     if (_isLoadingMore) return;
-    
+
     setState(() {
       _isLoadingMore = true;
     });
-    
+
     try {
       await widget.onLoadMore!();
     } finally {
@@ -91,7 +91,7 @@ class _RefreshableListState<T> extends State<RefreshableList<T>> {
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     // 错误状态
@@ -101,14 +101,14 @@ class _RefreshableListState<T> extends State<RefreshableList<T>> {
         onRetry: widget.onRefresh,
       );
     }
-    
+
     // 初始加载状态
     if (widget.isLoading && widget.items.isEmpty) {
       return const LoadingIndicator(
         message: '加载中...',
       );
     }
-    
+
     // 空状态
     if (widget.items.isEmpty) {
       return RefreshIndicator(
@@ -122,7 +122,7 @@ class _RefreshableListState<T> extends State<RefreshableList<T>> {
         ),
       );
     }
-    
+
     return RefreshIndicator(
       onRefresh: widget.onRefresh,
       child: CustomScrollView(
@@ -130,36 +130,35 @@ class _RefreshableListState<T> extends State<RefreshableList<T>> {
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           // 头部
-          if (widget.header != null)
-            SliverToBoxAdapter(child: widget.header!),
-          
+          if (widget.header != null) SliverToBoxAdapter(child: widget.header!),
+
           // 列表项
           SliverPadding(
             padding: widget.padding ?? EdgeInsets.zero,
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  return widget.itemBuilder(context, widget.items[index], index);
+                  return widget.itemBuilder(
+                      context, widget.items[index], index);
                 },
                 childCount: widget.items.length,
               ),
             ),
           ),
-          
+
           // 加载更多指示器
           if (widget.onLoadMore != null)
             SliverToBoxAdapter(
               child: _buildLoadMoreIndicator(),
             ),
-          
+
           // 底部
-          if (widget.footer != null)
-            SliverToBoxAdapter(child: widget.footer!),
+          if (widget.footer != null) SliverToBoxAdapter(child: widget.footer!),
         ],
       ),
     );
   }
-  
+
   Widget _buildLoadMoreIndicator() {
     if (!widget.hasMore) {
       return const Padding(
@@ -174,7 +173,7 @@ class _RefreshableListState<T> extends State<RefreshableList<T>> {
         ),
       );
     }
-    
+
     if (widget.isLoadingMore || _isLoadingMore) {
       return const Padding(
         padding: EdgeInsets.all(16.0),
@@ -184,7 +183,7 @@ class _RefreshableListState<T> extends State<RefreshableList<T>> {
         ),
       );
     }
-    
+
     return const SizedBox(height: 16);
   }
 }
@@ -198,7 +197,7 @@ class SimpleRefreshableList<T> extends StatelessWidget {
   final String? errorMessage;
   final Widget? emptyWidget;
   final EdgeInsetsGeometry? padding;
-  
+
   const SimpleRefreshableList({
     super.key,
     required this.items,
@@ -209,7 +208,7 @@ class SimpleRefreshableList<T> extends StatelessWidget {
     this.emptyWidget,
     this.padding,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     if (errorMessage != null && items.isEmpty) {
@@ -218,11 +217,11 @@ class SimpleRefreshableList<T> extends StatelessWidget {
         onRetry: onRefresh,
       );
     }
-    
+
     if (isLoading && items.isEmpty) {
       return const LoadingIndicator(message: '加载中...');
     }
-    
+
     if (items.isEmpty) {
       return RefreshIndicator(
         onRefresh: onRefresh,
@@ -235,7 +234,7 @@ class SimpleRefreshableList<T> extends StatelessWidget {
         ),
       );
     }
-    
+
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: ListView.builder(
@@ -261,7 +260,7 @@ class SearchableRefreshableList<T> extends StatefulWidget {
   final bool isLoading;
   final String? errorMessage;
   final Widget? emptyWidget;
-  
+
   const SearchableRefreshableList({
     super.key,
     required this.items,
@@ -274,23 +273,25 @@ class SearchableRefreshableList<T> extends StatefulWidget {
     this.errorMessage,
     this.emptyWidget,
   });
-  
+
   @override
-  State<SearchableRefreshableList<T>> createState() => _SearchableRefreshableListState<T>();
+  State<SearchableRefreshableList<T>> createState() =>
+      _SearchableRefreshableListState<T>();
 }
 
-class _SearchableRefreshableListState<T> extends State<SearchableRefreshableList<T>> {
+class _SearchableRefreshableListState<T>
+    extends State<SearchableRefreshableList<T>> {
   final _searchController = TextEditingController();
   List<T> _filteredItems = [];
   bool _isSearching = false;
-  
+
   @override
   void initState() {
     super.initState();
     _filteredItems = widget.items;
     _searchController.addListener(_onSearchChanged);
   }
-  
+
   @override
   void didUpdateWidget(SearchableRefreshableList<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -298,16 +299,16 @@ class _SearchableRefreshableListState<T> extends State<SearchableRefreshableList
       _updateFilteredItems();
     }
   }
-  
+
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
-  
+
   void _onSearchChanged() {
     final query = _searchController.text.trim();
-    
+
     if (query.isEmpty) {
       setState(() {
         _filteredItems = widget.items;
@@ -315,11 +316,11 @@ class _SearchableRefreshableListState<T> extends State<SearchableRefreshableList
       });
       return;
     }
-    
+
     setState(() {
       _isSearching = true;
     });
-    
+
     if (widget.onSearch != null) {
       // 使用远程搜索
       widget.onSearch!(query);
@@ -329,12 +330,12 @@ class _SearchableRefreshableListState<T> extends State<SearchableRefreshableList
         return widget.localFilter!(item, query);
       }).toList();
     }
-    
+
     setState(() {
       _isSearching = false;
     });
   }
-  
+
   void _updateFilteredItems() {
     final query = _searchController.text.trim();
     if (query.isEmpty) {
@@ -347,7 +348,7 @@ class _SearchableRefreshableListState<T> extends State<SearchableRefreshableList
       _filteredItems = widget.items;
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -372,7 +373,7 @@ class _SearchableRefreshableListState<T> extends State<SearchableRefreshableList
             ),
           ),
         ),
-        
+
         // 列表
         Expanded(
           child: SimpleRefreshableList<T>(

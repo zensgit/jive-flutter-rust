@@ -88,7 +88,7 @@ class Budget {
       spent: (json['spent'] as num?)?.toDouble() ?? 0.0,
       category: json['category'] as String,
       startDate: DateTime.parse(json['startDate'] as String),
-      endDate: json['endDate'] != null 
+      endDate: json['endDate'] != null
           ? DateTime.parse(json['endDate'] as String)
           : null,
       period: BudgetPeriod.fromJson(json['period'] as String),

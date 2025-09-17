@@ -28,7 +28,7 @@ class _BudgetFormState extends State<BudgetForm> {
   late final TextEditingController _amountController;
   late final TextEditingController _nameController;
   late final TextEditingController _descriptionController;
-  
+
   late String? _selectedCategory;
   late BudgetPeriod _period;
   late DateTime _startDate;
@@ -36,19 +36,20 @@ class _BudgetFormState extends State<BudgetForm> {
   late bool _rollover;
   late bool _notifyOnThreshold;
   late double _notificationThreshold;
-  
+
   @override
   void initState() {
     super.initState();
     _formKey = GlobalKey<FormState>();
-    
+
     final initial = widget.initialData;
     _amountController = TextEditingController(
       text: initial?.amount.toStringAsFixed(2) ?? '',
     );
     _nameController = TextEditingController(text: initial?.name ?? '');
-    _descriptionController = TextEditingController(text: initial?.description ?? '');
-    
+    _descriptionController =
+        TextEditingController(text: initial?.description ?? '');
+
     _selectedCategory = initial?.category;
     _period = initial?.period ?? BudgetPeriod.monthly;
     _startDate = initial?.startDate ?? DateTime.now();
@@ -69,7 +70,7 @@ class _BudgetFormState extends State<BudgetForm> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -79,39 +80,39 @@ class _BudgetFormState extends State<BudgetForm> {
           children: [
             // 预算名称
             _buildNameField(theme),
-            
+
             const SizedBox(height: 16),
-            
+
             // 分类选择
             _buildCategorySelector(theme),
-            
+
             const SizedBox(height: 16),
-            
+
             // 预算金额
             _buildAmountField(theme),
-            
+
             const SizedBox(height: 16),
-            
+
             // 周期选择
             _buildPeriodSelector(theme),
-            
+
             const SizedBox(height: 16),
-            
+
             // 日期选择
             _buildDateSelectors(theme),
-            
+
             const SizedBox(height: 20),
-            
+
             // 高级选项
             _buildAdvancedOptions(theme),
-            
+
             const SizedBox(height: 16),
-            
+
             // 描述
             _buildDescriptionField(theme),
-            
+
             const SizedBox(height: 24),
-            
+
             // 操作按钮
             _buildActionButtons(),
           ],
@@ -140,10 +141,10 @@ class _BudgetFormState extends State<BudgetForm> {
   }
 
   Widget _buildCategorySelector(ThemeData theme) {
-    final categories = widget.availableCategories.isNotEmpty 
-        ? widget.availableCategories 
+    final categories = widget.availableCategories.isNotEmpty
+        ? widget.availableCategories
         : ['餐饮', '交通', '购物', '娱乐', '住房', '医疗', '教育', '其他'];
-    
+
     return DropdownButtonFormField<String>(
       initialValue: _selectedCategory,
       decoration: InputDecoration(
@@ -157,8 +158,8 @@ class _BudgetFormState extends State<BudgetForm> {
           value: null,
           child: Text('全部分类'),
         ),
-        ...categories.map((category) => 
-          DropdownMenuItem(
+        ...categories.map(
+          (category) => DropdownMenuItem(
             value: category,
             child: Row(
               children: [
@@ -241,12 +242,15 @@ class _BudgetFormState extends State<BudgetForm> {
     );
   }
 
-  Widget _buildPeriodButton(ThemeData theme, BudgetPeriod period, String label) {
+  Widget _buildPeriodButton(
+      ThemeData theme, BudgetPeriod period, String label) {
     final isSelected = _period == period;
-    
+
     return Expanded(
       child: Material(
-        color: isSelected ? theme.primaryColor.withOpacity(0.1) : Colors.transparent,
+        color: isSelected
+            ? theme.primaryColor.withOpacity(0.1)
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(AppConstants.smallBorderRadius),
         child: InkWell(
           onTap: () => setState(() => _period = period),
@@ -256,7 +260,9 @@ class _BudgetFormState extends State<BudgetForm> {
             child: Text(
               label,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: isSelected ? theme.primaryColor : theme.colorScheme.onSurface.withOpacity(0.6),
+                color: isSelected
+                    ? theme.primaryColor
+                    : theme.colorScheme.onSurface.withOpacity(0.6),
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
               textAlign: TextAlign.center,
@@ -278,7 +284,8 @@ class _BudgetFormState extends State<BudgetForm> {
               decoration: InputDecoration(
                 labelText: '开始日期',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppConstants.borderRadius),
+                  borderRadius:
+                      BorderRadius.circular(AppConstants.borderRadius),
                 ),
                 suffixIcon: const Icon(Icons.calendar_today),
               ),
@@ -289,7 +296,6 @@ class _BudgetFormState extends State<BudgetForm> {
             ),
           ),
         ),
-        
         if (_period == BudgetPeriod.custom) ...[
           const SizedBox(width: 16),
           Expanded(
@@ -300,7 +306,8 @@ class _BudgetFormState extends State<BudgetForm> {
                 decoration: InputDecoration(
                   labelText: '结束日期',
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppConstants.borderRadius),
+                    borderRadius:
+                        BorderRadius.circular(AppConstants.borderRadius),
                   ),
                   suffixIcon: const Icon(Icons.calendar_today),
                 ),
@@ -325,7 +332,7 @@ class _BudgetFormState extends State<BudgetForm> {
           style: theme.textTheme.titleSmall,
         ),
         const SizedBox(height: 8),
-        
+
         // 余额滚动
         SwitchListTile(
           title: const Text('余额滚动'),
@@ -333,7 +340,7 @@ class _BudgetFormState extends State<BudgetForm> {
           value: _rollover,
           onChanged: (value) => setState(() => _rollover = value),
         ),
-        
+
         // 通知设置
         SwitchListTile(
           title: const Text('预算提醒'),
@@ -341,7 +348,7 @@ class _BudgetFormState extends State<BudgetForm> {
           value: _notifyOnThreshold,
           onChanged: (value) => setState(() => _notifyOnThreshold = value),
         ),
-        
+
         // 通知阈值
         if (_notifyOnThreshold)
           Padding(
@@ -357,7 +364,8 @@ class _BudgetFormState extends State<BudgetForm> {
                     max: 1.0,
                     divisions: 10,
                     label: '${(_notificationThreshold * 100).toInt()}%',
-                    onChanged: (value) => setState(() => _notificationThreshold = value),
+                    onChanged: (value) =>
+                        setState(() => _notificationThreshold = value),
                   ),
                 ),
                 Text(
@@ -398,8 +406,7 @@ class _BudgetFormState extends State<BudgetForm> {
               text: '取消',
             ),
           ),
-        if (widget.onCancel != null)
-          const SizedBox(width: 16),
+        if (widget.onCancel != null) const SizedBox(width: 16),
         Expanded(
           child: PrimaryButton(
             onPressed: _handleSubmit,
@@ -451,7 +458,7 @@ class _BudgetFormState extends State<BudgetForm> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
-    
+
     if (picked != null) {
       setState(() {
         if (isStart) {
@@ -466,7 +473,7 @@ class _BudgetFormState extends State<BudgetForm> {
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
       final amount = double.parse(_amountController.text);
-      
+
       // 根据周期自动计算结束日期
       if (_period != BudgetPeriod.custom && _endDate == null) {
         switch (_period) {
@@ -474,19 +481,22 @@ class _BudgetFormState extends State<BudgetForm> {
             _endDate = _startDate.add(const Duration(days: 7));
             break;
           case BudgetPeriod.monthly:
-            _endDate = DateTime(_startDate.year, _startDate.month + 1, _startDate.day);
+            _endDate =
+                DateTime(_startDate.year, _startDate.month + 1, _startDate.day);
             break;
           case BudgetPeriod.quarterly:
-            _endDate = DateTime(_startDate.year, _startDate.month + 3, _startDate.day);
+            _endDate =
+                DateTime(_startDate.year, _startDate.month + 3, _startDate.day);
             break;
           case BudgetPeriod.yearly:
-            _endDate = DateTime(_startDate.year + 1, _startDate.month, _startDate.day);
+            _endDate =
+                DateTime(_startDate.year + 1, _startDate.month, _startDate.day);
             break;
           default:
             break;
         }
       }
-      
+
       widget.onSubmit(BudgetFormData(
         name: _nameController.text,
         category: _selectedCategory,
@@ -497,7 +507,9 @@ class _BudgetFormState extends State<BudgetForm> {
         rollover: _rollover,
         notifyOnThreshold: _notifyOnThreshold,
         notificationThreshold: _notificationThreshold,
-        description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
+        description: _descriptionController.text.isEmpty
+            ? null
+            : _descriptionController.text,
       ));
     }
   }

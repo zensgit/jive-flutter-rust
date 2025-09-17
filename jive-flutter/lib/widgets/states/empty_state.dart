@@ -10,7 +10,7 @@ class EmptyState extends StatelessWidget {
   final VoidCallback? onAction;
   final EdgeInsetsGeometry padding;
   final MainAxisSize mainAxisSize;
-  
+
   const EmptyState({
     super.key,
     this.title,
@@ -22,11 +22,11 @@ class EmptyState extends StatelessWidget {
     this.padding = const EdgeInsets.all(32.0),
     this.mainAxisSize = MainAxisSize.min,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Center(
       child: Padding(
         padding: padding,
@@ -91,7 +91,7 @@ class EmptyStates {
       onAction: onAction,
     );
   }
-  
+
   /// 无交易
   static Widget noTransactions({
     VoidCallback? onAddTransaction,
@@ -104,7 +104,7 @@ class EmptyStates {
       onAction: onAddTransaction,
     );
   }
-  
+
   /// 无账户
   static Widget noAccounts({
     VoidCallback? onAddAccount,
@@ -117,7 +117,7 @@ class EmptyStates {
       onAction: onAddAccount,
     );
   }
-  
+
   /// 搜索无结果
   static Widget noSearchResults({
     String? query,
@@ -131,7 +131,7 @@ class EmptyStates {
       onAction: onClearSearch,
     );
   }
-  
+
   /// 网络错误
   static Widget networkError({
     VoidCallback? onRetry,
@@ -144,7 +144,7 @@ class EmptyStates {
       onAction: onRetry,
     );
   }
-  
+
   /// 加载错误
   static Widget error({
     String? message,
@@ -158,7 +158,7 @@ class EmptyStates {
       onAction: onRetry,
     );
   }
-  
+
   /// 权限不足
   static Widget noPermission({
     VoidCallback? onRequestPermission,
@@ -181,7 +181,7 @@ class IllustratedEmptyState extends StatelessWidget {
   final String? actionLabel;
   final VoidCallback? onAction;
   final double imageHeight;
-  
+
   const IllustratedEmptyState({
     super.key,
     required this.imagePath,
@@ -191,7 +191,7 @@ class IllustratedEmptyState extends StatelessWidget {
     this.onAction,
     this.imageHeight = 200,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return EmptyState(

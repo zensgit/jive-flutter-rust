@@ -59,7 +59,6 @@ enum CategoryGroup {
 
 /// 分类模板库
 class CategoryTemplateLibrary {
-  
   /// 获取所有默认模板
   static List<SystemCategoryTemplate> getDefaultTemplates() {
     return [
@@ -78,7 +77,7 @@ class CategoryTemplateLibrary {
         tags: ['必备', '常用'],
         globalUsageCount: 15420,
       ),
-      
+
       const SystemCategoryTemplate(
         id: 'income_bonus',
         name: '奖金收入',
@@ -93,7 +92,7 @@ class CategoryTemplateLibrary {
         tags: ['收入'],
         globalUsageCount: 8250,
       ),
-      
+
       const SystemCategoryTemplate(
         id: 'income_investment',
         name: '投资收益',
@@ -124,7 +123,7 @@ class CategoryTemplateLibrary {
         tags: ['热门', '必备'],
         globalUsageCount: 25680,
       ),
-      
+
       const SystemCategoryTemplate(
         id: 'expense_shopping',
         name: '购物消费',
@@ -139,7 +138,7 @@ class CategoryTemplateLibrary {
         tags: ['常用'],
         globalUsageCount: 12450,
       ),
-      
+
       const SystemCategoryTemplate(
         id: 'expense_groceries',
         name: '生鲜采购',
@@ -170,7 +169,7 @@ class CategoryTemplateLibrary {
         tags: ['必备'],
         globalUsageCount: 18350,
       ),
-      
+
       const SystemCategoryTemplate(
         id: 'expense_fuel',
         name: '汽车加油',
@@ -201,7 +200,7 @@ class CategoryTemplateLibrary {
         tags: ['必备', '住房'],
         globalUsageCount: 16780,
       ),
-      
+
       const SystemCategoryTemplate(
         id: 'expense_utilities',
         name: '水电气费',
@@ -232,7 +231,7 @@ class CategoryTemplateLibrary {
         tags: ['热门'],
         globalUsageCount: 9870,
       ),
-      
+
       const SystemCategoryTemplate(
         id: 'expense_travel',
         name: '旅游度假',
@@ -328,8 +327,8 @@ class CategoryTemplateLibrary {
     final queryLower = query.toLowerCase();
     return getDefaultTemplates().where((template) {
       return template.name.toLowerCase().contains(queryLower) ||
-             (template.nameEn?.toLowerCase().contains(queryLower) ?? false) ||
-             template.tags.any((tag) => tag.toLowerCase().contains(queryLower));
+          (template.nameEn?.toLowerCase().contains(queryLower) ?? false) ||
+          template.tags.any((tag) => tag.toLowerCase().contains(queryLower));
     }).toList();
   }
 }

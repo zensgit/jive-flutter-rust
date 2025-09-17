@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                DELETE FROM exchange_conversion_history \n                WHERE conversion_date < CURRENT_TIMESTAMP - INTERVAL '90 days'\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "1c1d373638d2c4fedf3ed5f27af6b3deea0cd365bf6e21b22da72ad7f4cc2ddd"
+}

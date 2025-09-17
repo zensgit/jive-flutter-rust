@@ -26,8 +26,8 @@ class TransactionAdapter extends TypeAdapter<Transaction> {
       ledgerId: fields[9] as String?,
       payee: fields[10] as String?,
       tags: fields[11] != null ? (fields[11] as List).cast<String>() : null,
-      attachments: fields[12] != null 
-          ? (fields[12] as List).cast<TransactionAttachment>() 
+      attachments: fields[12] != null
+          ? (fields[12] as List).cast<TransactionAttachment>()
           : null,
       isRecurring: fields[13] as bool,
       recurringId: fields[14] as String?,

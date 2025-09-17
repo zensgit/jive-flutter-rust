@@ -52,10 +52,11 @@ class TagDemoPage extends ConsumerWidget {
                   children: [
                     Text(
                       '✅ 标签管理系统已成功恢复！',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
                     const SizedBox(height: 8),
                     const Text('以下功能已完全实现：'),
@@ -68,9 +69,9 @@ class TagDemoPage extends ConsumerWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // 标签组展示
             Text(
               '标签分组 (${tagGroups.length})',
@@ -88,17 +89,17 @@ class TagDemoPage extends ConsumerWidget {
                     margin: const EdgeInsets.only(right: 8),
                     child: Chip(
                       label: Text(group.name),
-                      backgroundColor: Color(int.parse(
-                        group.color!.replaceFirst('#', '0xff')
-                      )).withOpacity(0.2),
+                      backgroundColor: Color(
+                              int.parse(group.color!.replaceFirst('#', '0xff')))
+                          .withOpacity(0.2),
                     ),
                   );
                 },
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // 标签展示
             Text(
               '标签列表 (${tags.length})',
@@ -113,18 +114,17 @@ class TagDemoPage extends ConsumerWidget {
                   final group = tagGroups.firstWhere(
                     (g) => g.id == tag.groupId,
                     orElse: () => TagGroup(
-                      id: 'none', 
+                      id: 'none',
                       name: '无分组',
                       createdAt: DateTime.now(),
                     ),
                   );
-                  
+
                   return Card(
                     child: ListTile(
                       leading: CircleAvatar(
                         backgroundColor: Color(int.parse(
-                          tag.displayColor.replaceFirst('#', '0xff')
-                        )),
+                            tag.displayColor.replaceFirst('#', '0xff'))),
                         child: Text(
                           tag.name[0],
                           style: const TextStyle(
@@ -137,8 +137,7 @@ class TagDemoPage extends ConsumerWidget {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (tag.groupId != null)
-                            Text('分组: ${group.name}'),
+                          if (tag.groupId != null) Text('分组: ${group.name}'),
                           Text('使用次数: ${tag.usageCount}'),
                           if (tag.archived)
                             const Text(
@@ -152,7 +151,9 @@ class TagDemoPage extends ConsumerWidget {
                         children: [
                           IconButton(
                             onPressed: () {
-                              ref.read(tagsProvider.notifier).incrementUsageCount(tag.id!);
+                              ref
+                                  .read(tagsProvider.notifier)
+                                  .incrementUsageCount(tag.id!);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('${tag.name} 使用次数+1')),
                               );
@@ -162,13 +163,13 @@ class TagDemoPage extends ConsumerWidget {
                           ),
                           IconButton(
                             onPressed: () {
-                              ref.read(tagsProvider.notifier).archiveTag(tag.id!, !tag.archived);
+                              ref
+                                  .read(tagsProvider.notifier)
+                                  .archiveTag(tag.id!, !tag.archived);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text(
-                                    '${tag.name} 已${tag.archived ? '取消归档' : '归档'}'
-                                  )
-                                ),
+                                    content: Text(
+                                        '${tag.name} 已${tag.archived ? '取消归档' : '归档'}')),
                               );
                             },
                             icon: Icon(

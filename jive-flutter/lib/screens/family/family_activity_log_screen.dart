@@ -17,34 +17,36 @@ class FamilyActivityLogScreen extends ConsumerStatefulWidget {
   }) : super(key: key);
 
   @override
-  ConsumerState<FamilyActivityLogScreen> createState() => _FamilyActivityLogScreenState();
+  ConsumerState<FamilyActivityLogScreen> createState() =>
+      _FamilyActivityLogScreenState();
 }
 
-class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScreen> {
+class _FamilyActivityLogScreenState
+    extends ConsumerState<FamilyActivityLogScreen> {
   final _auditService = AuditService();
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
-  
+
   List<AuditLog> _logs = [];
   Map<String, List<AuditLog>> _groupedLogs = {};
   bool _isLoading = true;
   bool _hasMore = true;
   int _currentPage = 1;
-  
+
   // 过滤选项
   AuditActionType? _selectedActionType;
   String? _selectedMemberId;
   DateTimeRange? _selectedDateRange;
-  
+
   // 活动统计
   ActivityStatistics? _statistics;
-  
+
   @override
   void initState() {
     super.initState();
     _loadLogs();
     _loadStatistics();
-    
+
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent - 200) {
@@ -52,14 +54,14 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
       }
     });
   }
-  
+
   @override
   void dispose() {
     _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
-  
+
   Future<void> _loadLogs({bool reset = true}) async {
     if (reset) {
       setState(() {
@@ -68,7 +70,7 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
         _hasMore = true;
       });
     }
-    
+
     try {
       final filter = AuditLogFilter(
         familyId: widget.familyId,
@@ -76,15 +78,16 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
         userId: _selectedMemberId,
         startDate: _selectedDateRange?.start,
         endDate: _selectedDateRange?.end,
-        searchQuery: _searchController.text.isNotEmpty ? _searchController.text : null,
+        searchQuery:
+            _searchController.text.isNotEmpty ? _searchController.text : null,
       );
-      
+
       final logs = await _auditService.getAuditLogs(
         filter: filter,
         page: _currentPage,
         pageSize: 20,
       );
-      
+
       setState(() {
         if (reset) {
           _logs = logs;
@@ -104,14 +107,14 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
       }
     }
   }
-  
+
   Future<void> _loadMoreLogs() async {
     if (!_hasMore || _isLoading) return;
-    
+
     setState(() => _currentPage++);
     await _loadLogs(reset: false);
   }
-  
+
   Future<void> _loadStatistics() async {
     try {
       final stats = await _auditService.getActivityStatistics(widget.familyId);
@@ -120,10 +123,10 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
       // 忽略统计加载失败
     }
   }
-  
+
   void _groupLogs() {
     _groupedLogs.clear();
-    
+
     for (final log in _logs) {
       final dateKey = DateFormat('yyyy-MM-dd').format(log.createdAt);
       if (!_groupedLogs.containsKey(dateKey)) {
@@ -132,11 +135,11 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
       _groupedLogs[dateKey]!.add(log);
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -190,7 +193,7 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
               onSubmitted: (_) => _loadLogs(),
             ),
           ),
-          
+
           // 快速筛选
           if (_statistics != null)
             Container(
@@ -207,19 +210,20 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
                       _loadLogs();
                     },
                   ),
-                  ...AuditActionType.values.take(5).map((type) =>
-                      _buildQuickFilter(
-                        _getActionTypeLabel(type),
-                        _selectedActionType == type,
-                        () {
-                          setState(() => _selectedActionType = type);
-                          _loadLogs();
-                        },
-                      )),
+                  ...AuditActionType.values
+                      .take(5)
+                      .map((type) => _buildQuickFilter(
+                            _getActionTypeLabel(type),
+                            _selectedActionType == type,
+                            () {
+                              setState(() => _selectedActionType = type);
+                              _loadLogs();
+                            },
+                          )),
                 ],
               ),
             ),
-          
+
           // 活动列表
           Expanded(
             child: _isLoading && _logs.isEmpty
@@ -232,10 +236,10 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
       ),
     );
   }
-  
+
   Widget _buildQuickFilter(String label, bool isSelected, VoidCallback onTap) {
     final theme = Theme.of(context);
-    
+
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: FilterChip(
@@ -247,7 +251,7 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
       ),
     );
   }
-  
+
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -267,14 +271,14 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
           Text(
             '家庭成员的操作都会记录在这里',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
           ),
         ],
       ),
     );
   }
-  
+
   Widget _buildActivityList() {
     return RefreshIndicator(
       onRefresh: () => _loadLogs(),
@@ -291,22 +295,22 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
               ),
             );
           }
-          
+
           final dateKey = _groupedLogs.keys.elementAt(index);
           final logs = _groupedLogs[dateKey]!;
-          
+
           return _buildDaySection(dateKey, logs);
         },
       ),
     );
   }
-  
+
   Widget _buildDaySection(String dateKey, List<AuditLog> logs) {
     final theme = Theme.of(context);
     final date = DateTime.parse(dateKey);
     final isToday = date_utils.DateUtils.isToday(date);
     final isYesterday = date_utils.DateUtils.isYesterday(date);
-    
+
     String dateLabel;
     if (isToday) {
       dateLabel = '今天';
@@ -315,7 +319,7 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
     } else {
       dateLabel = DateFormat('MM月dd日 EEEE', 'zh_CN').format(date);
     }
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -325,7 +329,8 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(12),
@@ -348,17 +353,17 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
             ],
           ),
         ),
-        
+
         // 活动列表
         ...logs.map((log) => _buildActivityItem(log)),
       ],
     );
   }
-  
+
   Widget _buildActivityItem(AuditLog log) {
     final theme = Theme.of(context);
     final timeStr = DateFormat('HH:mm').format(log.createdAt);
-    
+
     return InkWell(
       onTap: () => _showActivityDetail(log),
       child: Container(
@@ -400,9 +405,9 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
                 ),
               ],
             ),
-            
+
             const SizedBox(width: 12),
-            
+
             // 活动内容
             Expanded(
               child: Column(
@@ -438,7 +443,8 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
                   if (log.entityName != null) ...[
                     const SizedBox(height: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
                         color: theme.colorScheme.surfaceVariant,
                         borderRadius: BorderRadius.circular(4),
@@ -457,7 +463,7 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
       ),
     );
   }
-  
+
   void _showActivityDetail(AuditLog log) {
     showModalBottomSheet(
       context: context,
@@ -465,7 +471,7 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
       builder: (context) => _ActivityDetailSheet(log: log),
     );
   }
-  
+
   void _showFilterDialog() {
     showDialog(
       context: context,
@@ -484,20 +490,20 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
       ),
     );
   }
-  
+
   void _showStatisticsDialog() {
     if (_statistics == null) return;
-    
+
     showDialog(
       context: context,
       builder: (context) => _StatisticsDialog(statistics: _statistics!),
     );
   }
-  
+
   Widget _buildSeverityBadge(AuditSeverity severity) {
     Color color;
     String label;
-    
+
     switch (severity) {
       case AuditSeverity.info:
         color = Colors.blue;
@@ -516,7 +522,7 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
         label = '严重';
         break;
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
@@ -534,7 +540,7 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
       ),
     );
   }
-  
+
   IconData _getActionIcon(AuditActionType type) {
     switch (type) {
       case AuditActionType.create:
@@ -561,7 +567,7 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
         return Icons.history;
     }
   }
-  
+
   Color _getActionColor(AuditActionType type) {
     switch (type) {
       case AuditActionType.create:
@@ -584,7 +590,7 @@ class _FamilyActivityLogScreenState extends ConsumerState<FamilyActivityLogScree
         return Colors.grey;
     }
   }
-  
+
   String _getActionTypeLabel(AuditActionType type) {
     switch (type) {
       case AuditActionType.create:
@@ -623,7 +629,7 @@ class _ActivityDetailSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dateFormatter = DateFormat('yyyy-MM-dd HH:mm:ss');
-    
+
     return DraggableScrollableSheet(
       initialChildSize: 0.6,
       minChildSize: 0.4,
@@ -646,7 +652,7 @@ class _ActivityDetailSheet extends StatelessWidget {
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              
+
               // 内容
               Expanded(
                 child: ListView(
@@ -655,19 +661,17 @@ class _ActivityDetailSheet extends StatelessWidget {
                   children: [
                     Text('活动详情', style: theme.textTheme.titleLarge),
                     const SizedBox(height: 16),
-                    
                     _buildDetailRow('操作者', log.userName ?? '未知用户'),
-                    _buildDetailRow('操作类型', log.actionType.toString().split('.').last),
+                    _buildDetailRow(
+                        '操作类型', log.actionType.toString().split('.').last),
                     _buildDetailRow('时间', dateFormatter.format(log.createdAt)),
                     _buildDetailRow('描述', log.description),
-                    
                     if (log.entityType != null)
                       _buildDetailRow('实体类型', log.entityType!),
                     if (log.entityId != null)
                       _buildDetailRow('实体ID', log.entityId!),
                     if (log.entityName != null)
                       _buildDetailRow('实体名称', log.entityName!),
-                    
                     if (log.details != null) ...[
                       const SizedBox(height: 16),
                       Text('详细信息', style: theme.textTheme.titleMedium),
@@ -681,7 +685,6 @@ class _ActivityDetailSheet extends StatelessWidget {
                         child: Text(log.details!),
                       ),
                     ],
-                    
                     if (log.ipAddress != null) ...[
                       const SizedBox(height: 16),
                       Text('技术信息', style: theme.textTheme.titleMedium),
@@ -699,7 +702,7 @@ class _ActivityDetailSheet extends StatelessWidget {
       },
     );
   }
-  
+
   Widget _buildDetailRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -759,7 +762,7 @@ class _FilterDialogState extends State<_FilterDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return AlertDialog(
       title: const Text('筛选活动'),
       content: Column(
@@ -781,15 +784,15 @@ class _FilterDialogState extends State<_FilterDialog> {
                 child: Text('全部'),
               ),
               ...AuditActionType.values.map((type) => DropdownMenuItem(
-                value: type,
-                child: Text(type.toString().split('.').last),
-              )),
+                    value: type,
+                    child: Text(type.toString().split('.').last),
+                  )),
             ],
             onChanged: (value) => setState(() => _actionType = value),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // 日期范围
           Text('日期范围', style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),
@@ -862,7 +865,7 @@ class _StatisticsDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return AlertDialog(
       title: const Text('活动统计'),
       content: Column(
@@ -875,7 +878,8 @@ class _StatisticsDialog extends StatelessWidget {
           _buildStatItem('最活跃用户', statistics.mostActiveUser),
           _buildStatItem('最常操作', statistics.mostFrequentAction),
           const Divider(),
-          _buildStatItem('平均每日', '${statistics.dailyAverage.toStringAsFixed(1)}'),
+          _buildStatItem(
+              '平均每日', '${statistics.dailyAverage.toStringAsFixed(1)}'),
         ],
       ),
       actions: [
@@ -886,7 +890,7 @@ class _StatisticsDialog extends StatelessWidget {
       ],
     );
   }
-  
+
   Widget _buildStatItem(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),

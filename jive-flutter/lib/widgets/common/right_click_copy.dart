@@ -113,25 +113,24 @@ class _HoverCopyIconWrapperState extends State<_HoverCopyIconWrapper> {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-            widget.child,
-            if (_hovering && kIsWeb)
-              Positioned(
-                top: -4,
-                right: -4,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.55),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(2.0),
-                    child: Icon(Icons.copy, size: 14, color: Colors.white),
-                  ),
+          widget.child,
+          if (_hovering && kIsWeb)
+            Positioned(
+              top: -4,
+              right: -4,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.55),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(2.0),
+                  child: Icon(Icons.copy, size: 14, color: Colors.white),
                 ),
               ),
+            ),
         ],
       ),
     );
   }
 }
-

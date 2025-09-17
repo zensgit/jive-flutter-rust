@@ -10,53 +10,53 @@ class FamilySettingsService extends ChangeNotifier {
   static const String _keySyncStatus = 'sync_status';
   static const String _keyLastSync = 'last_sync';
   static const String _keyPendingChanges = 'pending_changes';
-  
+
   final FamilyService _familyService;
   late SharedPreferences _prefs;
   bool _isInitialized = false;
-  
+
   // 同步状态
   bool _isSyncing = false;
   DateTime? _lastSyncTime;
   final List<PendingChange> _pendingChanges = [];
-  
+
   FamilySettingsService({FamilyService? familyService})
       : _familyService = familyService ?? FamilyService();
-  
+
   bool get isInitialized => _isInitialized;
   bool get isSyncing => _isSyncing;
   DateTime? get lastSyncTime => _lastSyncTime;
   bool get hasPendingChanges => _pendingChanges.isNotEmpty;
   int get pendingChangesCount => _pendingChanges.length;
-  
+
   /// 初始化服务
   Future<void> initialize() async {
     if (_isInitialized) return;
-    
+
     _prefs = await SharedPreferences.getInstance();
     await _loadSyncStatus();
     await _loadPendingChanges();
     _isInitialized = true;
-    
+
     // 自动同步
     _startAutoSync();
-    
+
     notifyListeners();
   }
-  
+
   /// 保存家庭设置
   Future<void> saveFamilySettings(
     String familyId,
     FamilySettings settings,
   ) async {
     await _ensureInitialized();
-    
+
     final key = '$_keyPrefix$familyId';
     final json = settings.toJson();
-    
+
     // 保存到本地
     await _prefs.setString(key, jsonEncode(json));
-    
+
     // 添加到待同步队列
     _addPendingChange(PendingChange(
       type: ChangeType.update,
@@ -65,20 +65,20 @@ class FamilySettingsService extends ChangeNotifier {
       data: json,
       timestamp: DateTime.now(),
     ));
-    
+
     // 尝试同步
     _syncToServer();
-    
+
     notifyListeners();
   }
-  
+
   /// 获取家庭设置
   Future<FamilySettings?> getFamilySettings(String familyId) async {
     await _ensureInitialized();
-    
+
     final key = '$_keyPrefix$familyId';
     final jsonStr = _prefs.getString(key);
-    
+
     if (jsonStr != null) {
       try {
         final json = jsonDecode(jsonStr);
@@ -87,7 +87,7 @@ class FamilySettingsService extends ChangeNotifier {
         debugPrint('Failed to parse family settings: $e');
       }
     }
-    
+
     // 尝试从服务器获取
     try {
       final settings = await _familyService.getFamilySettings(familyId);
@@ -98,38 +98,38 @@ class FamilySettingsService extends ChangeNotifier {
     } catch (e) {
       debugPrint('Failed to fetch settings from server: $e');
     }
-    
+
     return null;
   }
-  
+
   /// 删除家庭设置
   Future<void> deleteFamilySettings(String familyId) async {
     await _ensureInitialized();
-    
+
     final key = '$_keyPrefix$familyId';
     await _prefs.remove(key);
-    
+
     _addPendingChange(PendingChange(
       type: ChangeType.delete,
       entityType: 'family_settings',
       entityId: familyId,
       timestamp: DateTime.now(),
     ));
-    
+
     _syncToServer();
     notifyListeners();
   }
-  
+
   /// 保存用户偏好设置
   Future<void> saveUserPreferences(
     String familyId,
     UserPreferences preferences,
   ) async {
     await _ensureInitialized();
-    
+
     final key = '${_keyPrefix}user_pref_$familyId';
     await _prefs.setString(key, jsonEncode(preferences.toJson()));
-    
+
     _addPendingChange(PendingChange(
       type: ChangeType.update,
       entityType: 'user_preferences',
@@ -137,18 +137,18 @@ class FamilySettingsService extends ChangeNotifier {
       data: preferences.toJson(),
       timestamp: DateTime.now(),
     ));
-    
+
     _syncToServer();
     notifyListeners();
   }
-  
+
   /// 获取用户偏好设置
   Future<UserPreferences> getUserPreferences(String familyId) async {
     await _ensureInitialized();
-    
+
     final key = '${_keyPrefix}user_pref_$familyId';
     final jsonStr = _prefs.getString(key);
-    
+
     if (jsonStr != null) {
       try {
         final json = jsonDecode(jsonStr);
@@ -157,24 +157,24 @@ class FamilySettingsService extends ChangeNotifier {
         debugPrint('Failed to parse user preferences: $e');
       }
     }
-    
+
     return UserPreferences.defaultPreferences();
   }
-  
+
   /// 同步到服务器
   Future<void> _syncToServer() async {
     if (_isSyncing || _pendingChanges.isEmpty) return;
-    
+
     _isSyncing = true;
     notifyListeners();
-    
+
     final changesToSync = List<PendingChange>.from(_pendingChanges);
     final successfulChanges = <PendingChange>[];
-    
+
     for (final change in changesToSync) {
       try {
         bool success = false;
-        
+
         switch (change.entityType) {
           case 'family_settings':
             if (change.type == ChangeType.update) {
@@ -183,10 +183,11 @@ class FamilySettingsService extends ChangeNotifier {
                 FamilySettings.fromJson(change.data!),
               );
             } else if (change.type == ChangeType.delete) {
-              success = await _familyService.deleteFamilySettings(change.entityId);
+              success =
+                  await _familyService.deleteFamilySettings(change.entityId);
             }
             break;
-            
+
           case 'user_preferences':
             if (change.type == ChangeType.update) {
               success = await _familyService.updateUserPreferences(
@@ -196,7 +197,7 @@ class FamilySettingsService extends ChangeNotifier {
             }
             break;
         }
-        
+
         if (success) {
           successfulChanges.add(change);
         }
@@ -204,29 +205,29 @@ class FamilySettingsService extends ChangeNotifier {
         debugPrint('Failed to sync change: $e');
       }
     }
-    
+
     // 移除已成功同步的更改
     for (final change in successfulChanges) {
       _pendingChanges.remove(change);
     }
-    
+
     // 更新同步状态
     if (successfulChanges.isNotEmpty) {
       _lastSyncTime = DateTime.now();
       await _saveSyncStatus();
     }
-    
+
     await _savePendingChanges();
-    
+
     _isSyncing = false;
     notifyListeners();
   }
-  
+
   /// 强制同步
   Future<void> forceSync() async {
     await _syncToServer();
   }
-  
+
   /// 从服务器拉取最新设置
   Future<void> pullFromServer(String familyId) async {
     try {
@@ -240,22 +241,22 @@ class FamilySettingsService extends ChangeNotifier {
       debugPrint('Failed to pull settings from server: $e');
     }
   }
-  
+
   /// 清除所有本地设置
   Future<void> clearAllSettings() async {
     await _ensureInitialized();
-    
+
     final keys = _prefs.getKeys().where((key) => key.startsWith(_keyPrefix));
     for (final key in keys) {
       await _prefs.remove(key);
     }
-    
+
     _pendingChanges.clear();
     await _savePendingChanges();
-    
+
     notifyListeners();
   }
-  
+
   /// 自动同步
   void _startAutoSync() {
     // 每5分钟自动同步一次
@@ -269,14 +270,14 @@ class FamilySettingsService extends ChangeNotifier {
       }
     });
   }
-  
+
   /// 确保已初始化
   Future<void> _ensureInitialized() async {
     if (!_isInitialized) {
       await initialize();
     }
   }
-  
+
   /// 加载同步状态
   Future<void> _loadSyncStatus() async {
     final lastSyncStr = _prefs.getString(_keyLastSync);
@@ -284,14 +285,14 @@ class FamilySettingsService extends ChangeNotifier {
       _lastSyncTime = DateTime.tryParse(lastSyncStr);
     }
   }
-  
+
   /// 保存同步状态
   Future<void> _saveSyncStatus() async {
     if (_lastSyncTime != null) {
       await _prefs.setString(_keyLastSync, _lastSyncTime!.toIso8601String());
     }
   }
-  
+
   /// 加载待同步更改
   Future<void> _loadPendingChanges() async {
     final changesStr = _prefs.getString(_keyPendingChanges);
@@ -307,19 +308,19 @@ class FamilySettingsService extends ChangeNotifier {
       }
     }
   }
-  
+
   /// 保存待同步更改
   Future<void> _savePendingChanges() async {
     final changesJson = _pendingChanges.map((c) => c.toJson()).toList();
     await _prefs.setString(_keyPendingChanges, jsonEncode(changesJson));
   }
-  
+
   /// 添加待同步更改
   void _addPendingChange(PendingChange change) {
     // 移除相同实体的旧更改
     _pendingChanges.removeWhere((c) =>
         c.entityType == change.entityType && c.entityId == change.entityId);
-    
+
     _pendingChanges.add(change);
     _savePendingChanges();
   }

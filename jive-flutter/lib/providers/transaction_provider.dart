@@ -53,14 +53,15 @@ class TransactionState {
 class TransactionController extends StateNotifier<TransactionState> {
   final TransactionService _transactionService;
 
-  TransactionController(this._transactionService) : super(const TransactionState()) {
+  TransactionController(this._transactionService)
+      : super(const TransactionState()) {
     loadTransactions();
   }
 
   /// 加载交易列表
   Future<void> loadTransactions() async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
       final response = await _transactionService.getTransactions();
       _updateState(response.data);
@@ -80,11 +81,12 @@ class TransactionController extends StateNotifier<TransactionState> {
   /// 添加交易
   Future<bool> addTransaction(Map<String, dynamic> data) async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
       // Convert the data to Transaction object
       final transaction = Transaction.fromJson(data);
-      final createdTransaction = await _transactionService.createTransaction(transaction);
+      final createdTransaction =
+          await _transactionService.createTransaction(transaction);
       final updatedTransactions = [createdTransaction, ...state.transactions];
       _updateState(updatedTransactions);
       return true;
@@ -100,9 +102,10 @@ class TransactionController extends StateNotifier<TransactionState> {
   /// 更新交易
   Future<bool> updateTransaction(String id, Map<String, dynamic> data) async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
-      final updatedTransaction = await _transactionService.updateTransaction(id, data);
+      final updatedTransaction =
+          await _transactionService.updateTransaction(id, data);
       final updatedTransactions = state.transactions.map((t) {
         return t.id == id ? updatedTransaction : t;
       }).toList();
@@ -120,10 +123,11 @@ class TransactionController extends StateNotifier<TransactionState> {
   /// 删除交易
   Future<bool> deleteTransaction(String id) async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
       await _transactionService.deleteTransaction(id);
-      final updatedTransactions = state.transactions.where((t) => t.id != id).toList();
+      final updatedTransactions =
+          state.transactions.where((t) => t.id != id).toList();
       _updateState(updatedTransactions);
       return true;
     } catch (e) {
@@ -138,12 +142,11 @@ class TransactionController extends StateNotifier<TransactionState> {
   /// 批量删除交易
   Future<bool> deleteTransactions(List<String> ids) async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
       await _transactionService.deleteBulkTransactions(ids);
-      final updatedTransactions = state.transactions
-          .where((t) => !ids.contains(t.id))
-          .toList();
+      final updatedTransactions =
+          state.transactions.where((t) => !ids.contains(t.id)).toList();
       _updateState(updatedTransactions);
       return true;
     } catch (e) {
@@ -157,7 +160,8 @@ class TransactionController extends StateNotifier<TransactionState> {
 
   /// 应用筛选
   void applyFilter(TransactionFilterData filter) {
-    final filteredTransactions = _filterTransactions(state.transactions, filter);
+    final filteredTransactions =
+        _filterTransactions(state.transactions, filter);
     state = state.copyWith(
       filter: filter,
       filteredTransactions: filteredTransactions,
@@ -176,7 +180,7 @@ class TransactionController extends StateNotifier<TransactionState> {
   void search(String query) {
     if (query.isEmpty) {
       state = state.copyWith(
-        filteredTransactions: state.filter != null 
+        filteredTransactions: state.filter != null
             ? _filterTransactions(state.transactions, state.filter!)
             : state.transactions,
       );
@@ -186,8 +190,8 @@ class TransactionController extends StateNotifier<TransactionState> {
     final filtered = state.transactions.where((t) {
       final searchLower = query.toLowerCase();
       return t.description.toLowerCase().contains(searchLower) ||
-             (t.note?.toLowerCase().contains(searchLower) ?? false) ||
-             (t.payee?.toLowerCase().contains(searchLower) ?? false);
+          (t.note?.toLowerCase().contains(searchLower) ?? false) ||
+          (t.payee?.toLowerCase().contains(searchLower) ?? false);
     }).toList();
 
     state = state.copyWith(filteredTransactions: filtered);
@@ -197,7 +201,7 @@ class TransactionController extends StateNotifier<TransactionState> {
   void filterByDateRange(DateTime start, DateTime end) {
     final filtered = state.transactions.where((t) {
       return t.date.isAfter(start.subtract(const Duration(days: 1))) &&
-             t.date.isBefore(end.add(const Duration(days: 1)));
+          t.date.isBefore(end.add(const Duration(days: 1)));
     }).toList();
 
     state = state.copyWith(filteredTransactions: filtered);
@@ -219,7 +223,7 @@ class TransactionController extends StateNotifier<TransactionState> {
 
   /// 更新状态并计算统计数据
   void _updateState(List<Transaction> transactions) {
-    final filteredTransactions = state.filter != null 
+    final filteredTransactions = state.filter != null
         ? _filterTransactions(transactions, state.filter!)
         : transactions;
 
@@ -246,7 +250,8 @@ class TransactionController extends StateNotifier<TransactionState> {
   }
 
   /// 筛选交易
-  List<Transaction> _filterTransactions(List<Transaction> transactions, TransactionFilterData filter) {
+  List<Transaction> _filterTransactions(
+      List<Transaction> transactions, TransactionFilterData filter) {
     return transactions.where((t) {
       // 类型筛选
       if (filter.types.isNotEmpty && !filter.types.contains(t.type)) {
@@ -270,12 +275,14 @@ class TransactionController extends StateNotifier<TransactionState> {
       }
 
       // 账户筛选
-      if (filter.accounts.isNotEmpty && !filter.accounts.contains(t.accountId)) {
+      if (filter.accounts.isNotEmpty &&
+          !filter.accounts.contains(t.accountId)) {
         return false;
       }
 
       // 分类筛选
-      if (filter.categories.isNotEmpty && !filter.categories.contains(t.category)) {
+      if (filter.categories.isNotEmpty &&
+          !filter.categories.contains(t.category)) {
         return false;
       }
 
@@ -288,9 +295,10 @@ class TransactionController extends StateNotifier<TransactionState> {
       // 搜索文本
       if (filter.searchText != null && filter.searchText!.isNotEmpty) {
         final searchLower = filter.searchText!.toLowerCase();
-        final matchesSearch = t.description.toLowerCase().contains(searchLower) ||
-                            (t.note?.toLowerCase().contains(searchLower) ?? false) ||
-                            (t.payee?.toLowerCase().contains(searchLower) ?? false);
+        final matchesSearch =
+            t.description.toLowerCase().contains(searchLower) ||
+                (t.note?.toLowerCase().contains(searchLower) ?? false) ||
+                (t.payee?.toLowerCase().contains(searchLower) ?? false);
         if (!matchesSearch) return false;
       }
 
@@ -304,7 +312,7 @@ final transactionServiceProvider = Provider<TransactionService>((ref) {
   return TransactionService();
 });
 
-final transactionControllerProvider = 
+final transactionControllerProvider =
     StateNotifierProvider<TransactionController, TransactionState>((ref) {
   final service = ref.watch(transactionServiceProvider);
   return TransactionController(service);
@@ -332,15 +340,17 @@ final recentTransactionsProvider = Provider<List<Transaction>>((ref) {
 });
 
 /// 按月份分组的交易Provider
-final transactionsByMonthProvider = Provider<Map<String, List<Transaction>>>((ref) {
+final transactionsByMonthProvider =
+    Provider<Map<String, List<Transaction>>>((ref) {
   final transactions = ref.watch(transactionsProvider);
   final Map<String, List<Transaction>> grouped = {};
-  
+
   for (final transaction in transactions) {
-    final key = '${transaction.date.year}-${transaction.date.month.toString().padLeft(2, '0')}';
+    final key =
+        '${transaction.date.year}-${transaction.date.month.toString().padLeft(2, '0')}';
     grouped.putIfAbsent(key, () => []).add(transaction);
   }
-  
+
   return grouped;
 });
 

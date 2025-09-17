@@ -10,7 +10,7 @@ import '../../services/permission_service.dart';
 class AuditLogsScreen extends ConsumerStatefulWidget {
   final String familyId;
   final String familyName;
-  
+
   const AuditLogsScreen({
     super.key,
     required this.familyId,
@@ -25,26 +25,26 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
   final _auditService = AuditService();
   final _searchController = TextEditingController();
   final _scrollController = ScrollController();
-  
+
   List<AuditLog> _logs = [];
   AuditLogStatistics? _statistics;
   AuditLogFilter _filter = AuditLogFilter();
   bool _isLoading = true;
   bool _hasMore = true;
   int _currentPage = 1;
-  
+
   // 过滤选项
   AuditActionType? _selectedActionType;
   AuditSeverity? _selectedSeverity;
   DateTimeRange? _selectedDateRange;
-  
+
   @override
   void initState() {
     super.initState();
     _filter = AuditLogFilter(familyId: widget.familyId);
     _loadLogs();
     _loadStatistics();
-    
+
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent - 200) {
@@ -52,14 +52,14 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       }
     });
   }
-  
+
   @override
   void dispose() {
     _searchController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
-  
+
   Future<void> _loadLogs({bool reset = true}) async {
     if (reset) {
       setState(() {
@@ -68,14 +68,14 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
         _hasMore = true;
       });
     }
-    
+
     try {
       final logs = await _auditService.getAuditLogs(
         filter: _filter,
         page: _currentPage,
         pageSize: 20,
       );
-      
+
       setState(() {
         if (reset) {
           _logs = logs;
@@ -94,17 +94,17 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       }
     }
   }
-  
+
   Future<void> _loadMoreLogs() async {
     if (!_hasMore || _isLoading) return;
-    
+
     setState(() {
       _currentPage++;
     });
-    
+
     await _loadLogs(reset: false);
   }
-  
+
   Future<void> _loadStatistics() async {
     try {
       final stats = await _auditService.getAuditStatistics(widget.familyId);
@@ -115,20 +115,19 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       // 统计信息加载失败不影响主功能
     }
   }
-  
+
   void _applyFilters() {
     _filter = _filter.copyWith(
       actionTypes: _selectedActionType != null ? [_selectedActionType!] : null,
       severities: _selectedSeverity != null ? [_selectedSeverity!] : null,
       startDate: _selectedDateRange?.start,
       endDate: _selectedDateRange?.end,
-      searchQuery: _searchController.text.isNotEmpty 
-          ? _searchController.text 
-          : null,
+      searchQuery:
+          _searchController.text.isNotEmpty ? _searchController.text : null,
     );
     _loadLogs();
   }
-  
+
   void _clearFilters() {
     setState(() {
       _selectedActionType = null;
@@ -139,7 +138,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
     });
     _loadLogs();
   }
-  
+
   Future<void> _selectDateRange() async {
     final picked = await showDateRangePicker(
       context: context,
@@ -147,7 +146,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       lastDate: DateTime.now(),
       initialDateRange: _selectedDateRange,
     );
-    
+
     if (picked != null) {
       setState(() {
         _selectedDateRange = picked;
@@ -155,11 +154,11 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       _applyFilters();
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -240,12 +239,11 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
         child: Column(
           children: [
             // 统计卡片
-            if (_statistics != null)
-              _buildStatisticsCard(),
-            
+            if (_statistics != null) _buildStatisticsCard(),
+
             // 过滤栏
             _buildFilterBar(),
-            
+
             // 日志列表
             Expanded(
               child: _isLoading && _logs.isEmpty
@@ -274,11 +272,11 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       ),
     );
   }
-  
+
   Widget _buildStatisticsCard() {
     final theme = Theme.of(context);
     final stats = _statistics!;
-    
+
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
@@ -353,10 +351,10 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       ),
     );
   }
-  
+
   Widget _buildStatItem(String label, String value, IconData icon) {
     final theme = Theme.of(context);
-    
+
     return Column(
       children: [
         Icon(
@@ -383,10 +381,10 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       ],
     );
   }
-  
+
   Widget _buildFilterBar() {
     final theme = Theme.of(context);
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -424,9 +422,9 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
             ),
             onSubmitted: (_) => _applyFilters(),
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // 过滤选项
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -440,7 +438,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                   avatar: const Icon(Icons.category, size: 18),
                 ),
                 const SizedBox(width: 8),
-                
+
                 // 严重级别
                 FilterChip(
                   label: Text(_selectedSeverity?.label ?? '所有级别'),
@@ -449,7 +447,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                   avatar: const Icon(Icons.warning, size: 18),
                 ),
                 const SizedBox(width: 8),
-                
+
                 // 日期范围
                 FilterChip(
                   label: Text(_selectedDateRange != null
@@ -460,7 +458,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                   avatar: const Icon(Icons.date_range, size: 18),
                 ),
                 const SizedBox(width: 8),
-                
+
                 // 清除过滤
                 if (_selectedActionType != null ||
                     _selectedSeverity != null ||
@@ -478,11 +476,11 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       ),
     );
   }
-  
+
   Widget _buildLogItem(AuditLog log) {
     final theme = Theme.of(context);
     final severityColor = _getSeverityColor(log.severity);
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
@@ -503,7 +501,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                 ),
               ),
               const SizedBox(width: 12),
-              
+
               // 日志内容
               Expanded(
                 child: Column(
@@ -530,7 +528,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    
+
                     // 用户和时间
                     Row(
                       children: [
@@ -557,7 +555,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                         ),
                       ],
                     ),
-                    
+
                     // 变更摘要
                     if (log.oldValue != null || log.newValue != null) ...[
                       const SizedBox(height: 4),
@@ -567,8 +565,8 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceVariant
-                              .withOpacity(0.5),
+                          color:
+                              theme.colorScheme.surfaceVariant.withOpacity(0.5),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
@@ -582,7 +580,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                   ],
                 ),
               ),
-              
+
               // 查看详情按钮
               IconButton(
                 icon: const Icon(Icons.chevron_right),
@@ -594,7 +592,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       ),
     );
   }
-  
+
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -625,7 +623,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       ),
     );
   }
-  
+
   void _showActionTypeSelector() {
     showModalBottomSheet(
       context: context,
@@ -662,7 +660,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       ),
     );
   }
-  
+
   void _showSeveritySelector() {
     showModalBottomSheet(
       context: context,
@@ -687,7 +685,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                 selected: _selectedSeverity == severity,
                 onTap: () {
                   setState(() {
-                    _selectedSeverity = 
+                    _selectedSeverity =
                         _selectedSeverity == severity ? null : severity;
                   });
                   Navigator.pop(context);
@@ -700,7 +698,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       ),
     );
   }
-  
+
   void _showLogDetails(AuditLog log) {
     showDialog(
       context: context,
@@ -714,7 +712,8 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
               _buildDetailRow('操作', log.actionType.label),
               _buildDetailRow('描述', log.actionDescription),
               _buildDetailRow('用户', log.userName ?? 'Unknown'),
-              _buildDetailRow('时间', date_utils.DateUtils.formatDateTime(log.createdAt)),
+              _buildDetailRow(
+                  '时间', date_utils.DateUtils.formatDateTime(log.createdAt)),
               _buildDetailRow('IP地址', log.ipAddress),
               if (log.targetName != null)
                 _buildDetailRow('目标', log.targetName!),
@@ -736,7 +735,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       ),
     );
   }
-  
+
   Widget _buildDetailRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -757,7 +756,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       ),
     );
   }
-  
+
   Color _getSeverityColor(AuditSeverity severity) {
     switch (severity) {
       case AuditSeverity.info:
@@ -770,7 +769,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
         return Colors.purple;
     }
   }
-  
+
   IconData _getActionIcon(AuditActionType type) {
     switch (type) {
       case AuditActionType.userLogin:
@@ -805,14 +804,14 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
         return Icons.info;
     }
   }
-  
+
   void _exportLogs() {
     // TODO: 实现导出功能
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('导出功能开发中')),
     );
   }
-  
+
   void _clearOldLogs() {
     showDialog(
       context: context,

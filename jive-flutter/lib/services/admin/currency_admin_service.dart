@@ -17,23 +17,29 @@ class CurrencyAdminService {
     final resp = await _dio.get('/admin/currencies');
     final data = resp.data;
     final list = (data['data'] ?? data) as List<dynamic>;
-    return list.map((e) => AdminCurrency.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => AdminCurrency.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<AdminCurrency> createCurrency(AdminCurrency payload) async {
     // client-side soft guard could be added via role check in UI; server enforces ACL
     await ApiReadiness.ensureReady(_dio);
     final resp = await _dio.post('/admin/currencies', data: payload.toJson());
-    return AdminCurrency.fromJson((resp.data['data'] ?? resp.data) as Map<String, dynamic>);
+    return AdminCurrency.fromJson(
+        (resp.data['data'] ?? resp.data) as Map<String, dynamic>);
   }
 
-  Future<AdminCurrency> updateCurrency(String code, Map<String, dynamic> updates) async {
+  Future<AdminCurrency> updateCurrency(
+      String code, Map<String, dynamic> updates) async {
     await ApiReadiness.ensureReady(_dio);
     final resp = await _dio.put('/admin/currencies/$code', data: updates);
-    return AdminCurrency.fromJson((resp.data['data'] ?? resp.data) as Map<String, dynamic>);
+    return AdminCurrency.fromJson(
+        (resp.data['data'] ?? resp.data) as Map<String, dynamic>);
   }
 
-  Future<void> createAlias(String oldCode, String newCode, {DateTime? validUntil}) async {
+  Future<void> createAlias(String oldCode, String newCode,
+      {DateTime? validUntil}) async {
     await ApiReadiness.ensureReady(_dio);
     await _dio.post('/admin/currency-aliases', data: {
       'old_code': oldCode,
