@@ -23,6 +23,7 @@ import '../../screens/currency/exchange_rate_screen.dart';
 import '../../screens/management/currency_management_page_v2.dart';
 import '../../screens/management/user_currency_browser.dart';
 import '../../screens/management/tag_management_page.dart';
+import '../../screens/management/category_management_enhanced.dart';
 import '../../screens/family/family_members_screen.dart';
 import '../../screens/family/family_settings_screen.dart';
 import '../../screens/family/family_dashboard_screen.dart';
@@ -53,6 +54,7 @@ class AppRoutes {
   static const currencyManagement = '/settings/currency';
   static const userCurrencyBrowser = '/settings/currency/user-browser';
   static const cryptoManagement = '/settings/crypto';
+  static const categoryManagement = '/settings/categories';
 
   // 家庭管理路由
   static const familyMembers = '/family/members';
@@ -233,6 +235,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'tags',
                 builder: (context, state) => const TagManagementPage(),
+              ),
+              // 分类管理
+              GoRoute(
+                path: 'categories',
+                builder: (context, state) => const CategoryManagementEnhancedPage(),
               ),
             ],
           ),
