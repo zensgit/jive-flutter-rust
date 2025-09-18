@@ -12,7 +12,8 @@ import 'package:jive_money/models/currency_api.dart' as api;
 import 'package:jive_money/models/exchange_rate.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class MockRemote implements ICurrencyRemote {
+class MockRemote extends CurrencyService {
+  MockRemote(): super(null);
   bool failSet = false;
   int setCalls = 0;
   List<String> lastCurrencies = const [];
@@ -28,38 +29,49 @@ class MockRemote implements ICurrencyRemote {
 
   // --- Unused for these tests ---
   @override
+  @override
   Future<CurrencyCatalogResult> getSupportedCurrenciesWithEtag({String? etag}) async =>
       CurrencyCatalogResult(const [], etag, false, error: 'skip');
 
   @override
+  @override
   Future<List<Currency>> getSupportedCurrencies() async => const [];
 
   @override
+  @override
   Future<List<api.CurrencyPreference>> getUserCurrencyPreferences() async => const [];
 
+  @override
   @override
   Future<api.FamilyCurrencySettings> getFamilyCurrencySettings() async =>
       api.FamilyCurrencySettings(familyId: '', baseCurrency: 'USD', allowMultiCurrency: true, autoConvert: false, supportedCurrencies: const ['USD']);
 
   @override
+  @override
   Future<void> updateFamilyCurrencySettings(Map<String, dynamic> updates) async {}
 
+  @override
   @override
   Future<double> getExchangeRate(String from, String to, {DateTime? date}) async => 1.0;
 
   @override
+  @override
   Future<Map<String, double>> getBatchExchangeRates(String baseCurrency, List<String> targetCurrencies) async => {};
 
+  @override
   @override
   Future<api.ConvertAmountResponse> convertAmount(double amount, String from, String to, {DateTime? date}) async =>
       api.ConvertAmountResponse(originalAmount: amount, convertedAmount: amount, fromCurrency: from, toCurrency: to, exchangeRate: 1.0);
 
   @override
+  @override
   Future<List<api.ExchangeRate>> getExchangeRateHistory(String from, String to, int days) async => const [];
 
   @override
+  @override
   Future<List<api.ExchangePair>> getPopularExchangePairs() async => const [];
 
+  @override
   @override
   Future<void> refreshExchangeRates() async {}
 }
