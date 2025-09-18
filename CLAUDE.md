@@ -70,11 +70,11 @@ cd ~/jive-project && ./start-dev.sh
 
 ### Docker 服务详情
 ```bash
-# 服务端口映射
-- API服务: localhost:8012 (Docker内部)
-- PostgreSQL: localhost:5433 → 5432 (容器内)
-- Redis: localhost:6380 → 6379 (容器内)
-- Adminer: localhost:8080
+# 服务端口映射（已调整避免冲突）
+- API服务: localhost:18012 → 8012 (容器内)
+- PostgreSQL: localhost:15432 → 5432 (容器内)
+- Redis: localhost:16379 → 6379 (容器内)
+- Adminer: localhost:19080 → 8080 (容器内)
 
 # 管理命令
 cd ~/jive-project/jive-api
@@ -84,12 +84,11 @@ docker-compose -f docker-compose.dev.yml logs -f  # 日志
 docker-compose -f docker-compose.dev.yml restart  # 重启
 ```
 
-### Docker 服务端口
-- **API服务**: http://localhost:8012
-- **PostgreSQL**: localhost:5432
-- **Redis**: localhost:6379
-- **Adminer** (数据库管理): http://localhost:8080 (仅开发环境)
-- **RedisInsight**: http://localhost:8001 (仅开发环境)
+### Docker 服务端口（已优化避免冲突）
+- **API服务**: http://localhost:18012
+- **PostgreSQL**: localhost:15432
+- **Redis**: localhost:16379
+- **Adminer** (数据库管理): http://localhost:19080 (仅开发环境)
 
 ### Docker 命令说明
 ```bash
@@ -163,21 +162,21 @@ cargo test
 
 ## 项目特定配置
 
-### 服务端口配置
-- **Rust API**: 端口 8012 (http://localhost:8012)
-- **Flutter Web**: 端口 3021 (http://localhost:3021)  
-- **PostgreSQL**: 端口 5432 (数据库: jive_money)
-- **Redis**: 端口 6379
+### 服务端口配置（Docker容器化）
+- **Rust API**: 端口 18012 (http://localhost:18012)
+- **Flutter Web**: 端口 3021 (http://localhost:3021)
+- **PostgreSQL**: 端口 15432 (数据库: jive_money)
+- **Redis**: 端口 16379
 
 ### API配置
-- 后端服务端口: 8012
-- API基础URL: http://localhost:8012/api/v1
-- 健康检查: http://localhost:8012/ (返回API信息)
+- 后端服务端口: 18012 (Docker映射)
+- API基础URL: http://localhost:18012/api/v1
+- 健康检查: http://localhost:18012/ (返回API信息)
 
 ### 数据库配置
 - PostgreSQL 数据库: jive_money
-- 连接字符串: postgresql://postgres:postgres@localhost:5432/jive_money
-- Redis缓存: localhost:6379 (测试通过)
+- 连接字符串: postgresql://postgres:postgres@localhost:15432/jive_money
+- Redis缓存: localhost:16379
 
 ## 当前工作进度
 
