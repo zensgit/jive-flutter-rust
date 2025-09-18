@@ -68,8 +68,10 @@ jobs:
     - name: Run tests
       working-directory: jive-flutter
       run: |
-        flutter test --coverage --machine > test-results.json || true
-        flutter test --coverage || true
+        # Generate machine-readable test results (non-fatal for reporting)
+        flutter test --coverage --machine > test-results.json || echo "Machine format failed"
+        # Run tests normally (this should pass)
+        flutter test --coverage
 
     - name: Generate test report
       if: always()
