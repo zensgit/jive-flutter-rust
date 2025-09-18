@@ -1,6 +1,10 @@
 import 'package:flutter/foundation.dart';
 import '../models/theme_models.dart';
 
+/// 测试开关：在 widget / 单元测试中可将其设为 true 以禁用模拟延迟，
+/// 避免产生悬挂定时器导致 `A Timer is still pending` 断言失败。
+bool storageServiceDisableDelay = false;
+
 /// 本地存储服务
 /// 管理用户数据、微信绑定信息等持久化数据
 class StorageService {
@@ -172,6 +176,7 @@ class StorageService {
 
   /// 模拟网络延迟
   Future<void> _simulateDelay() async {
+    if (storageServiceDisableDelay) return; // 测试模式下跳过
     await Future.delayed(const Duration(milliseconds: 100));
   }
 

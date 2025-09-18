@@ -374,25 +374,34 @@ pub async fn batch_import_templates(
         let rec = if dry_run {
             // Skip actual DB write
             Err(sqlx::Error::Protocol("dry_run".into()))
-        } else { sqlx::query(
-            r#"INSERT INTO categories (id, ledger_id, name, color, icon, classification, parent_id, position, usage_count, source_type, template_id, template_version)
-               VALUES ($1,$2,$3,$4,$5,$6,$7,
-                       COALESCE((SELECT COALESCE(MAX(position),-1)+1 FROM categories WHERE ledger_id=$2 AND parent_id IS NOT DISTINCT FROM $7),0),
-                       0,'system',$8,$9)
-               RETURNING id, ledger_id, name, color, icon, classification, parent_id, position, usage_count, last_used_at"#
-        ) }
-        .bind(Uuid::new_v4())
-        .bind(&req.ledger_id)
-        .bind(&name)
-        .bind(&color)
-        .bind(&icon)
-        .bind(&classification)
-        .bind(&parent_id)
-        .bind(template_id)
-        .bind(template_version)
-        .fetch_one(&pool).await;
+        } else {
+            Ok(sqlx::query(
+                r#"INSERT INTO categories (id, ledger_id, name, color, icon, classification, parent_id, position, usage_count, source_type, template_id, template_version)
+                   VALUES ($1,$2,$3,$4,$5,$6,$7,
+                           COALESCE((SELECT COALESCE(MAX(position),-1)+1 FROM categories WHERE ledger_id=$2 AND parent_id IS NOT DISTINCT FROM $7),0),
+                           0,'system',$8,$9)
+                   RETURNING id, ledger_id, name, color, icon, classification, parent_id, position, usage_count, last_used_at"#
+            ))
+        };
 
-        match rec {
+        let query_result = match rec {
+            Ok(query) => {
+                query
+                    .bind(Uuid::new_v4())
+                    .bind(&req.ledger_id)
+                    .bind(&name)
+                    .bind(&color)
+                    .bind(&icon)
+                    .bind(&classification)
+                    .bind(&parent_id)
+                    .bind(template_id)
+                    .bind(template_version)
+                    .fetch_one(&pool).await
+            },
+            Err(e) => Err(e)
+        };
+
+        match query_result {
             Ok(row) => {
                 result_items.push(CategoryDto{
                     id: row.get("id"), ledger_id: row.get("ledger_id"), name: row.get("name"),

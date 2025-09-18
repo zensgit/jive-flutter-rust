@@ -150,17 +150,28 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
 
   Future<void> initialize() async {
     if (_initialized) return;
-    _initialized = true;
-    _runInitialLoad();
+    await _runInitialLoad();
   }
 
-  void _runInitialLoad() {
-    if (_initialized) return; // idempotent guard
+  Future<void>? _initialLoadFuture;
+
+  Future<void> _runInitialLoad() {
+    if (_initialLoadFuture != null) return _initialLoadFuture!; // already running
+    final completer = Completer<void>();
+    _initialLoadFuture = completer.future;
+    // Mark initialized immediately so public methods can proceed after await initialize
     _initialized = true;
-    _initializeCurrencyCache();
-    _loadSupportedCurrencies();
-    _loadManualRates();
-    _loadExchangeRates();
+    () async {
+      try {
+        _initializeCurrencyCache();
+        await _loadSupportedCurrencies();
+        _loadManualRates();
+        await _loadExchangeRates();
+      } finally {
+        completer.complete();
+      }
+    }();
+    return _initialLoadFuture!;
   }
 
   CurrencyCatalogMeta get catalogMeta => _catalogMeta;
@@ -572,11 +583,15 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   /// 2. User opens currency/exchange rate page
   /// 3. User performs currency conversion in transaction
   Future<void> refreshExchangeRates() async {
+    assert(_initialized || _suppressAutoInit,
+        'CurrencyNotifier used before initialize(); call initialize() first or disable auto-init in tests.');
     await _loadExchangeRates();
   }
 
   /// Public: refresh only crypto prices (used by crypto selection page)
   Future<void> refreshCryptoPrices() async {
+    assert(_initialized || _suppressAutoInit,
+        'CurrencyNotifier used before initialize(); call initialize() first or disable auto-init in tests.');
     await _loadCryptoPrices();
   }
 
@@ -783,6 +798,8 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
 
   /// Toggle currency selection
   Future<void> toggleCurrency(String currencyCode) async {
+    assert(_initialized || _suppressAutoInit,
+        'CurrencyNotifier used before initialize(); call initialize() first or disable auto-init in tests.');
     final selectedCurrencies = state.selectedCurrencies.toList();
 
     if (selectedCurrencies.contains(currencyCode)) {
@@ -813,6 +830,8 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   /// Auto-refreshes rates when called (for transaction conversions)
   Future<ExchangeRate?> getExchangeRate(String from, String to,
       {bool autoRefresh = true}) async {
+    assert(_initialized || _suppressAutoInit,
+        'CurrencyNotifier used before initialize(); call initialize() first or disable auto-init in tests.');
     if (from == to) {
       return ExchangeRate(
         fromCurrency: from,
@@ -902,6 +921,8 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   /// Convert amount between currencies
   /// Auto-refreshes exchange rates before conversion
   Future<double?> convertAmount(double amount, String from, String to) async {
+    assert(_initialized || _suppressAutoInit,
+        'CurrencyNotifier used before initialize(); call initialize() first or disable auto-init in tests.');
     // Always refresh rates when converting (for transactions)
     final rate = await getExchangeRate(from, to, autoRefresh: true);
     return rate?.convert(amount);

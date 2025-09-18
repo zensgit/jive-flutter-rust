@@ -24,6 +24,7 @@ import '../../screens/management/currency_management_page_v2.dart';
 import '../../screens/management/user_currency_browser.dart';
 import '../../screens/management/tag_management_page.dart';
 import '../../screens/management/category_management_enhanced.dart';
+import '../../screens/management/category_list_page.dart';
 import '../../screens/family/family_members_screen.dart';
 import '../../screens/family/family_settings_screen.dart';
 import '../../screens/family/family_dashboard_screen.dart';
@@ -239,7 +240,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               // 分类管理
               GoRoute(
                 path: 'categories',
-                builder: (context, state) => const CategoryManagementEnhancedPage(),
+                builder: (context, state) => const CategoryListPage(),
               ),
             ],
           ),
