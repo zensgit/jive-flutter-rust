@@ -1,4 +1,3 @@
-@Skip('Pending lightweight currency provider refactor for test isolation')
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -61,7 +60,15 @@ class _FakeRemote implements ICurrencyRemote {
 class _NoopExchangeRateService extends ExchangeRateService {}
 class _NoopCryptoService extends CryptoPriceService {}
 class _FakeNotifier extends CurrencyNotifier {
-  _FakeNotifier(): super(Hive.box('preferences'), null, _NoopExchangeRateService(), _NoopCryptoService(), const _FakeRemote()) {
+  _FakeNotifier()
+      : super(
+          Hive.box('preferences'),
+          null,
+          _NoopExchangeRateService(),
+          _NoopCryptoService(),
+          const _FakeRemote(),
+          suppressAutoInit: true,
+        ) {
     state = const CurrencyPreferences(multiCurrencyEnabled:false, cryptoEnabled:false, baseCurrency:'USD', selectedCurrencies:['USD','CNY'], showCurrencyCode:true, showCurrencySymbol:false);
   }
   @override
@@ -77,15 +84,36 @@ void main(){
   });
   testWidgets('Selecting base currency returns via Navigator.pop', (tester) async {
     final overrides=[currencyProvider.overrideWithProvider(StateNotifierProvider<CurrencyNotifier,CurrencyPreferences>((ref)=>_FakeNotifier()))];
-    await tester.pumpWidget(ProviderScope(overrides:overrides, child: const MaterialApp(home: CurrencySelectionPage(isSelectingBaseCurrency:true))));
-    await tester.pump(const Duration(milliseconds:50));
-    expect(find.text('USD'), findsWidgets);
     late Object? result;
-    await tester.pumpWidget(ProviderScope(overrides:overrides, child: MaterialApp(home: Builder(builder:(context)=> Scaffold(body: Center(child: ElevatedButton(onPressed: () async {result = await Navigator.of(context).push(MaterialPageRoute(builder: (_)=> const CurrencySelectionPage(isSelectingBaseCurrency:true)));}, child: const Text('Open'),),),),),)));
+    await tester.pumpWidget(ProviderScope(
+      overrides: overrides,
+      child: MaterialApp(
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: Center(
+              child: ElevatedButton(
+                onPressed: () async {
+                  result = await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const CurrencySelectionPage(isSelectingBaseCurrency: true),
+                    ),
+                  );
+                },
+                child: const Text('Open'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ));
     await tester.tap(find.text('Open'));
-    await tester.pump(const Duration(milliseconds:80));
+    // Allow several short pumps until USD appears or timeout
+    for (int i = 0; i < 6 && find.text('USD').evaluate().isEmpty; i++) {
+      await tester.pump(const Duration(milliseconds: 40));
+    }
+    expect(find.text('USD'), findsWidgets, reason: 'USD should be listed');
     await tester.tap(find.text('USD').first);
-    await tester.pump(const Duration(milliseconds:80));
+    await tester.pump(const Duration(milliseconds: 60));
     expect(result, isA<model.Currency>());
     expect((result as model.Currency).code,'USD');
   });
