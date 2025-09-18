@@ -13,8 +13,8 @@ import 'package:jive_money/services/currency_service.dart';
 import 'package:jive_money/services/exchange_rate_service.dart';
 import 'package:jive_money/services/crypto_price_service.dart';
 
-class _FakeRemote implements ICurrencyRemote {
-  const _FakeRemote();
+class _FakeRemote extends CurrencyService {
+  _FakeRemote(): super(null);
   static const _usd = model.Currency(
       code: 'USD',
       name: 'US Dollar',
@@ -31,6 +31,7 @@ class _FakeRemote implements ICurrencyRemote {
       decimalPlaces: 2,
       flag: '🇨🇳',
       isCrypto: false);
+  @override
   @override
   Future<List<model.Currency>> getSupportedCurrencies() async => const [_usd,_cny];
   @override
@@ -66,7 +67,7 @@ class _FakeNotifier extends CurrencyNotifier {
           null,
           _NoopExchangeRateService(),
           _NoopCryptoService(),
-          const _FakeRemote(),
+          _FakeRemote(),
           suppressAutoInit: true,
         ) {
     state = const CurrencyPreferences(multiCurrencyEnabled:false, cryptoEnabled:false, baseCurrency:'USD', selectedCurrencies:['USD','CNY'], showCurrencyCode:true, showCurrencySymbol:false);

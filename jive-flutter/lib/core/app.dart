@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import '../devtools/dev_quick_actions.dart';
+import '../devtools/dev_quick_actions_stub.dart'
+    if (dart.library.html) '../devtools/dev_quick_actions_web.dart';
 
 import 'constants/app_constants.dart';
 import 'theme/app_theme.dart';
