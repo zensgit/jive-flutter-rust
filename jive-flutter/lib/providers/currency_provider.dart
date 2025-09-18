@@ -112,7 +112,7 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   final String? _userCountry;
   final ExchangeRateService _exchangeRateService;
   final CryptoPriceService _cryptoPriceService;
-  final ICurrencyRemote _currencyService;
+  final CurrencyService _currencyService;
   Map<String, Currency> _currencyCache = {};
   // Server-provided currency catalog
   List<Currency> _serverCurrencies = [];
