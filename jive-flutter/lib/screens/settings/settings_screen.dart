@@ -184,6 +184,13 @@ class SettingsScreen extends ConsumerWidget {
                 onTap: () => context.go('/settings/tags'),
               ),
               ListTile(
+                leading: const Icon(Icons.category),
+                title: const Text('分类管理'),
+                subtitle: const Text('管理收支分类和子分类'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () => context.go('/settings/categories'),
+              ),
+              ListTile(
                 leading: const Icon(Icons.security),
                 title: const Text('安全设置'),
                 subtitle: const Text('密码和生物识别'),

@@ -619,13 +619,14 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
             const SizedBox(width: 6),
           ],
           InkWell(
-            onTap: () => _showEditTagDialog(tag),
+            onTap: isArchived ? null : () => _showEditTagDialog(tag),
             child: Text(
               tag.name,
               style: TextStyle(
-                color: color,
+                color: isArchived ? color.withOpacity(0.6) : color,
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
+                decoration: isArchived ? TextDecoration.lineThrough : null,
               ),
             ),
           ),
@@ -650,14 +651,14 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               InkWell(
-                onTap: () => _showEditTagDialog(tag),
+                onTap: isArchived ? null : () => _showEditTagDialog(tag),
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   child: Icon(
                     Icons.edit,
                     size: 16,
-                    color: Colors.grey[600],
+                    color: isArchived ? Colors.grey[300] : Colors.grey[600],
                   ),
                 ),
               ),
@@ -674,14 +675,14 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                 ),
               ),
               InkWell(
-                onTap: () => _showDeleteTagDialog(tag),
+                onTap: isArchived ? null : () => _showDeleteTagDialog(tag),
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   child: Icon(
                     Icons.delete,
                     size: 16,
-                    color: Colors.red[400],
+                    color: isArchived ? Colors.grey[300] : Colors.red[400],
                   ),
                 ),
               ),

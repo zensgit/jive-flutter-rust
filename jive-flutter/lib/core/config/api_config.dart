@@ -3,7 +3,7 @@ class ApiConfig {
   // API基础配置
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://localhost:8012', // 开发环境默认值 - Jive API服务器端口
+    defaultValue: 'http://localhost:18012', // 开发环境默认值 - Docker映射端口
   );
 
   static const String apiVersion = 'v1';
@@ -111,7 +111,7 @@ class ApiEnvironmentConfig {
 
   static const development = ApiEnvironmentConfig(
     environment: ApiEnvironment.development,
-    baseUrl: 'http://localhost:8012',
+    baseUrl: 'http://localhost:18012',
     enableLogging: true,
     enableCaching: false,
   );

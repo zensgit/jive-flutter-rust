@@ -89,3 +89,6 @@ __pycache__/
 env/
 venv/
 .venv
+# Environment files
+.env.development
+.env.local

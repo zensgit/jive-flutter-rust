@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -6,6 +7,40 @@ import '../models/exchange_rate.dart';
 import '../services/exchange_rate_service.dart';
 import '../services/crypto_price_service.dart';
 import '../services/currency_service.dart' as api;
+import '../services/currency_service.dart';
+
+// --- PR1: Currency catalog meta state (fallback / errors / sync times) ---
+class CurrencyCatalogMeta {
+  final bool usingFallback; // true = currently showing built-in list (server unavailable / empty)
+  final String? lastError; // last error message from catalog fetch
+  final DateTime? lastSyncAt; // last time a 200 response successfully refreshed catalog
+  final DateTime? lastCheckedAt; // last time we attempted any catalog request (incl. 304)
+  final String? etag; // last known ETag
+
+  const CurrencyCatalogMeta({
+    required this.usingFallback,
+    this.lastError,
+    this.lastSyncAt,
+    this.lastCheckedAt,
+    this.etag,
+  });
+
+  CurrencyCatalogMeta copyWith({
+    bool? usingFallback,
+    String? lastError,
+    DateTime? lastSyncAt,
+    DateTime? lastCheckedAt,
+    String? etag,
+  }) {
+    return CurrencyCatalogMeta(
+      usingFallback: usingFallback ?? this.usingFallback,
+      lastError: lastError ?? this.lastError,
+      lastSyncAt: lastSyncAt ?? this.lastSyncAt,
+      lastCheckedAt: lastCheckedAt ?? this.lastCheckedAt,
+      etag: etag ?? this.etag,
+    );
+  }
+}
 
 /// Currency preferences stored in Hive
 class CurrencyPreferences {
@@ -82,6 +117,7 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   // Server-provided currency catalog
   List<Currency> _serverCurrencies = [];
   String? _catalogEtag;
+  CurrencyCatalogMeta _catalogMeta = const CurrencyCatalogMeta(usingFallback: false);
   Map<String, ExchangeRate> _exchangeRates = {};
   bool _isLoadingRates = false;
   DateTime? _lastRateUpdate;
@@ -95,17 +131,59 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   static const String _kManualRatesExpiryKey = 'manual_rates_expiry_utc';
   static const String _kManualRatesExpiryMapKey = 'manual_rates_expiry_map';
 
+  bool _initialized = false;
+  final bool _suppressAutoInit;
+
   CurrencyNotifier(
     this._prefsBox,
     this._userCountry,
     this._exchangeRateService,
     this._cryptoPriceService,
-    this._currencyService,
-  ) : super(_loadPreferences(_prefsBox, _userCountry)) {
-    _initializeCurrencyCache();
-    _loadSupportedCurrencies();
-    _loadManualRates();
-    _loadExchangeRates();
+    this._currencyService, {
+    bool suppressAutoInit = false,
+  })  : _suppressAutoInit = suppressAutoInit,
+        super(_loadPreferences(_prefsBox, _userCountry)) {
+    if (!_suppressAutoInit) {
+      _runInitialLoad();
+    }
+  }
+
+  Future<void> initialize() async {
+    if (_initialized) return;
+    await _runInitialLoad();
+  }
+
+  Future<void>? _initialLoadFuture;
+
+  Future<void> _runInitialLoad() {
+    if (_initialLoadFuture != null) return _initialLoadFuture!; // already running
+    final completer = Completer<void>();
+    _initialLoadFuture = completer.future;
+    // Mark initialized immediately so public methods can proceed after await initialize
+    _initialized = true;
+    () async {
+      try {
+        _initializeCurrencyCache();
+        await _loadSupportedCurrencies();
+        _loadManualRates();
+        await _loadExchangeRates();
+      } finally {
+        completer.complete();
+      }
+    }();
+    return _initialLoadFuture!;
+  }
+
+  CurrencyCatalogMeta get catalogMeta => _catalogMeta;
+
+  void _emitMetaChanged() {
+    // Trigger dependents (meta not part of state object)
+    state = state.copyWith();
+  }
+
+  /// Public method to trigger catalog refresh (UI can call)
+  Future<void> refreshCatalog({bool force = true}) async {
+    await _loadSupportedCurrencies();
   }
 
   // Expose last successful rate update time (for UI footer)
@@ -174,18 +252,30 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     for (final currency in CurrencyDefaults.getAllCurrencies()) {
       _currencyCache[currency.code] = currency;
     }
+    // Attempt to flush any previously pending preferences early
+    // (does not await to avoid slowing startup; fire-and-forget)
+    tryFlushPendingPreferences();
   }
 
   /// Load supported currencies from server and merge into cache.
   Future<void> _loadSupportedCurrencies() async {
+    final now = DateTime.now();
+    _catalogMeta = _catalogMeta.copyWith(lastCheckedAt: now);
     try {
       final res = await _currencyService.getSupportedCurrenciesWithEtag(
           etag: _catalogEtag);
       if (res.notModified) {
-        return; // keep current
+        // 304 - catalog unchanged
+        _catalogMeta = _catalogMeta.copyWith(
+          lastCheckedAt: now,
+          etag: res.etag ?? _catalogMeta.etag,
+          usingFallback: _serverCurrencies.isEmpty, // only fallback if never loaded
+        );
+        _emitMetaChanged();
+        return;
       }
       if (res.items.isNotEmpty) {
-        // Respect crypto enable flag when exposing to UI, but we keep cache complete
+        // Successful refresh (200)
         _serverCurrencies = res.items.map((c) {
           final isCrypto =
               CurrencyDefaults.cryptoCurrencies.any((x) => x.code == c.code) ||
@@ -195,10 +285,36 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
           return updated;
         }).toList();
         _catalogEtag = res.etag ?? _catalogEtag;
+        _catalogMeta = _catalogMeta.copyWith(
+          lastSyncAt: now,
+          lastCheckedAt: now,
+          etag: _catalogEtag,
+          lastError: null,
+          usingFallback: false,
+        );
         await _applyServerPreferencesIfAvailable();
+        // On successful catalog refresh, attempt to flush any pending preferences
+        await tryFlushPendingPreferences();
+        _emitMetaChanged();
+      } else {
+        // Empty list (possible error path) -> fallback
+        _catalogMeta = _catalogMeta.copyWith(
+          lastCheckedAt: now,
+          lastError: res.error ?? 'Empty currency list',
+          usingFallback: true,
+        );
+        _emitMetaChanged();
       }
     } catch (e) {
       debugPrint('Failed to load supported currencies from server: $e');
+      _catalogMeta = _catalogMeta.copyWith(
+        lastCheckedAt: now,
+        lastError: e.toString(),
+        usingFallback: true,
+      );
+      _emitMetaChanged();
+      // Even if catalog fails, we can still try flushing pending (maybe network partially available)
+      await tryFlushPendingPreferences();
     }
   }
 
@@ -467,11 +583,15 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   /// 2. User opens currency/exchange rate page
   /// 3. User performs currency conversion in transaction
   Future<void> refreshExchangeRates() async {
+    assert(_initialized || _suppressAutoInit,
+        'CurrencyNotifier used before initialize(); call initialize() first or disable auto-init in tests.');
     await _loadExchangeRates();
   }
 
   /// Public: refresh only crypto prices (used by crypto selection page)
   Future<void> refreshCryptoPrices() async {
+    assert(_initialized || _suppressAutoInit,
+        'CurrencyNotifier used before initialize(); call initialize() first or disable auto-init in tests.');
     await _loadCryptoPrices();
   }
 
@@ -522,7 +642,7 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
         ..add(currencyCode);
       state = state.copyWith(selectedCurrencies: updated);
       await _savePreferences();
-      _pushPreferencesToServer();
+      _schedulePreferencePush();
       // Immediately fetch rates for the newly added currency
       await _loadExchangeRates();
     }
@@ -539,7 +659,7 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       }
       state = state.copyWith(selectedCurrencies: updated);
       await _savePreferences();
-      _pushPreferencesToServer();
+      _schedulePreferencePush();
       // Refresh rates after removal to keep targets in sync
       await _loadExchangeRates();
     }
@@ -617,27 +737,69 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
 
     // Save preferences first
     await _savePreferences();
-    _pushPreferencesToServer();
+    _schedulePreferencePush();
 
     // Then reload exchange rates with new base currency
     await _loadExchangeRates();
   }
 
   /// Push user currency preferences to server (best-effort)
-  Future<void> _pushPreferencesToServer() async {
+  // --- Preference sync debounce & pending retry ---
+  static const _kPendingPrefsKey = 'currency_pending_prefs';
+  Timer? _prefsDebounce;
+
+  bool get hasPendingPreferences => _prefsBox.containsKey(_kPendingPrefsKey);
+
+  void _schedulePreferencePush() {
+    _prefsDebounce?.cancel();
+    _prefsDebounce = Timer(const Duration(milliseconds: 500), () {
+      _attemptPushPreferences();
+    });
+  }
+
+  Future<void> _attemptPushPreferences() async {
+    final currencies = state.selectedCurrencies;
+    final primary = state.baseCurrency;
     try {
-      await _currencyService.setUserCurrencyPreferences(
-        state.selectedCurrencies,
-        state.baseCurrency,
-      );
+      await _currencyService.setUserCurrencyPreferences(currencies, primary);
+      // Success: clear pending if present
+      if (hasPendingPreferences) {
+        await _prefsBox.delete(_kPendingPrefsKey);
+      }
     } catch (e) {
-      // Non-fatal; will retry on next change
-      debugPrint('Failed to push currency preferences to server: $e');
+      debugPrint('Failed to push currency preferences (will persist pending): $e');
+      final pending = {
+        'currencies': currencies,
+        'primary': primary,
+        'queued_at': DateTime.now().toUtc().toIso8601String(),
+      };
+      await _prefsBox.put(_kPendingPrefsKey, pending);
+    }
+  }
+
+  // Test-only helper to bypass debounce in unit tests
+  @visibleForTesting
+  Future<void> pushPreferencesNowForTest() => _attemptPushPreferences();
+
+  Future<void> tryFlushPendingPreferences() async {
+    if (!hasPendingPreferences) return;
+    final data = _prefsBox.get(_kPendingPrefsKey);
+    if (data is Map) {
+      final currencies = List<String>.from(data['currencies'] ?? const []);
+      final primary = data['primary']?.toString() ?? state.baseCurrency;
+      try {
+        await _currencyService.setUserCurrencyPreferences(currencies, primary);
+        await _prefsBox.delete(_kPendingPrefsKey);
+      } catch (_) {
+        // keep pending
+      }
     }
   }
 
   /// Toggle currency selection
   Future<void> toggleCurrency(String currencyCode) async {
+    assert(_initialized || _suppressAutoInit,
+        'CurrencyNotifier used before initialize(); call initialize() first or disable auto-init in tests.');
     final selectedCurrencies = state.selectedCurrencies.toList();
 
     if (selectedCurrencies.contains(currencyCode)) {
@@ -668,6 +830,8 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   /// Auto-refreshes rates when called (for transaction conversions)
   Future<ExchangeRate?> getExchangeRate(String from, String to,
       {bool autoRefresh = true}) async {
+    assert(_initialized || _suppressAutoInit,
+        'CurrencyNotifier used before initialize(); call initialize() first or disable auto-init in tests.');
     if (from == to) {
       return ExchangeRate(
         fromCurrency: from,
@@ -757,6 +921,8 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   /// Convert amount between currencies
   /// Auto-refreshes exchange rates before conversion
   Future<double?> convertAmount(double amount, String from, String to) async {
+    assert(_initialized || _suppressAutoInit,
+        'CurrencyNotifier used before initialize(); call initialize() first or disable auto-init in tests.');
     // Always refresh rates when converting (for transactions)
     final rate = await getExchangeRate(from, to, autoRefresh: true);
     return rate?.convert(amount);
@@ -806,7 +972,7 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
 
 /// Provider for currency management
 final currencyProvider =
-    StateNotifierProvider<CurrencyNotifier, CurrencyPreferences>((ref) {
+  StateNotifierProvider<CurrencyNotifier, CurrencyPreferences>((ref) {
   // Get user's country from settings or detect from locale
   // For now, we'll assume null (no restrictions)
   const String? userCountry =
@@ -822,6 +988,12 @@ final currencyProvider =
 
   return CurrencyNotifier(box, userCountry, exchangeRateService,
       cryptoPriceService, currencyService);
+});
+
+/// Expose catalog meta separately so UI can listen without rebuilding all currency prefs consumers
+final currencyCatalogMetaProvider = Provider<CurrencyCatalogMeta>((ref) {
+  ref.watch(currencyProvider); // depend on main provider updates
+  return ref.read(currencyProvider.notifier).catalogMeta;
 });
 
 /// Convenient providers for common currency operations

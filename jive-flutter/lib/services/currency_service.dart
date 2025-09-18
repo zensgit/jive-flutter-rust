@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import '../core/network/http_client.dart';
 import '../core/network/api_readiness.dart';
