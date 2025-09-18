@@ -32,7 +32,7 @@ jobs:
         channel: 'stable'
 
     - name: Cache Flutter dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           ~/.pub-cache
@@ -137,14 +137,13 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Setup Rust
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@stable
       with:
-        profile: minimal
         toolchain: ${{ env.RUST_VERSION }}
-        override: true
+        components: rustfmt, clippy
 
     - name: Cache Rust dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           ~/.cargo/bin/
@@ -251,11 +250,11 @@ jobs:
         name: flutter-analyze-output
         path: .
 
-    - name: Upload analyzer output
+    - name: Upload analyzer output for comparison
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: flutter-analyze-output
+        name: flutter-analyze-output-comparison
         path: flutter-analyze-output.txt
 
     - name: Setup tools
@@ -307,6 +306,7 @@ jobs:
       with:
         name: field-compare-report
         path: field-compare-report.md
+        if-no-files-found: ignore
 
   summary:
     name: CI Summary
