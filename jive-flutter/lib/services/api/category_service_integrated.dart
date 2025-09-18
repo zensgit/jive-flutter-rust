@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/category.dart' as models;
 import '../../models/category_template.dart';
 import '../network/network_category_service.dart';
 import '../cache/cache_manager.dart';
 import '../../utils/logger.dart';
+import 'category_service.dart';
 
 /// 集成的分类服务 - 整合本地、数据库和网络功能
 ///
@@ -214,13 +217,13 @@ class CategoryServiceIntegrated extends ChangeNotifier {
   }
 
   /// 从模板导入为用户分类
-  Future<Category> importTemplateAsCategory(
+  Future<models.Category> importTemplateAsCategory(
     SystemCategoryTemplate template,
     String ledgerId,
   ) async {
     try {
       // 创建分类
-      final category = Category(
+      final category = models.Category(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: template.name,
         nameEn: template.nameEn,
@@ -249,7 +252,7 @@ class CategoryServiceIntegrated extends ChangeNotifier {
   }
 
   /// 创建用户分类（优先调用后端，失败时本地回退）
-  Future<Category> createCategory(Category category) async {
+  Future<models.Category> createCategory(models.Category category) async {
     try {
       // 若具备 ledgerId 则尝试 API 创建
       if (category.ledgerId != null && category.name.isNotEmpty) {
@@ -284,7 +287,7 @@ class CategoryServiceIntegrated extends ChangeNotifier {
   }
 
   /// 更新用户分类
-  Future<void> updateCategory(Category category) async {
+  Future<void> updateCategory(models.Category category) async {
     final index = _userCategories.indexWhere((c) => c.id == category.id);
     if (index >= 0) {
       _userCategories[index] = category;
@@ -301,14 +304,15 @@ class CategoryServiceIntegrated extends ChangeNotifier {
   }
 
   /// 获取用户分类
-  List<Category> getUserCategories({
+  List<models.Category> getUserCategories({
     String? ledgerId,
-    AccountClassification? classification,
+    CategoryClassification? classification,
   }) {
     return _userCategories.where((c) {
       if (ledgerId != null && c.ledgerId != ledgerId) return false;
-      if (classification != null && c.classification != classification)
+      if (classification != null && c.classification != classification) {
         return false;
+      }
       return true;
     }).toList();
   }
@@ -342,14 +346,14 @@ class CategoryServiceIntegrated extends ChangeNotifier {
   }
 
   /// 加载用户分类缓存
-  Future<List<Category>> _loadUserCategoriesFromCache() async {
+  Future<List<models.Category>> _loadUserCategoriesFromCache() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final raw = prefs.getString('user_categories');
       if (raw == null || raw.isEmpty) return [];
       final List<dynamic> list = jsonDecode(raw);
       return list
-          .map((e) => Category.fromJson(e as Map<String, dynamic>))
+          .map((e) => models.Category.fromJson(e as Map<String, dynamic>))
           .toList();
     } catch (e) {
       _logger.error('loadUserCategoriesFromCache failed: $e');
@@ -387,7 +391,7 @@ class CategoryServiceIntegrated extends ChangeNotifier {
         id: 'builtin_salary',
         name: '工资收入',
         nameEn: 'Salary',
-        classification: AccountClassification.income,
+        classification: CategoryClassification.income,
         color: '#10B981',
         icon: '💰',
         categoryGroup: CategoryGroup.income,
@@ -398,7 +402,7 @@ class CategoryServiceIntegrated extends ChangeNotifier {
         id: 'builtin_food',
         name: '餐饮美食',
         nameEn: 'Food & Dining',
-        classification: AccountClassification.expense,
+        classification: CategoryClassification.expense,
         color: '#EF4444',
         icon: '🍽️',
         categoryGroup: CategoryGroup.dailyExpense,
@@ -409,7 +413,7 @@ class CategoryServiceIntegrated extends ChangeNotifier {
         id: 'builtin_transport',
         name: '交通出行',
         nameEn: 'Transportation',
-        classification: AccountClassification.expense,
+        classification: CategoryClassification.expense,
         color: '#F97316',
         icon: '🚗',
         categoryGroup: CategoryGroup.transportation,
@@ -420,7 +424,7 @@ class CategoryServiceIntegrated extends ChangeNotifier {
         id: 'builtin_shopping',
         name: '购物消费',
         nameEn: 'Shopping',
-        classification: AccountClassification.expense,
+        classification: CategoryClassification.expense,
         color: '#F59E0B',
         icon: '🛒',
         categoryGroup: CategoryGroup.dailyExpense,
@@ -431,7 +435,7 @@ class CategoryServiceIntegrated extends ChangeNotifier {
         id: 'builtin_entertainment',
         name: '娱乐休闲',
         nameEn: 'Entertainment',
-        classification: AccountClassification.expense,
+        classification: CategoryClassification.expense,
         color: '#8B5CF6',
         icon: '🎬',
         categoryGroup: CategoryGroup.entertainmentSocial,
