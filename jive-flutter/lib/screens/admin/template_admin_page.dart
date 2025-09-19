@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../services/api/category_service.dart';
 import '../../models/category_template.dart';
 import '../../models/user.dart';
+import '../../providers/current_user_provider.dart'; // For UserDataExt extension
 import '../../services/auth_service.dart';
 import '../../widgets/common/loading_widget.dart';
 import '../../widgets/common/error_widget.dart';
@@ -145,7 +146,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
                 ),
               );
             } else {
-              await _categoryService.updateTemplate(updatedTemplate);
+              await _categoryService.updateTemplate(updatedTemplate.id, updatedTemplate.toJson());
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('模板更新成功'),
@@ -217,7 +218,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
   Future<void> _toggleFeatured(SystemCategoryTemplate template) async {
     try {
       template.setFeatured(!template.isFeatured);
-      await _categoryService.updateTemplate(template);
+      await _categoryService.updateTemplate(template.id, {'isFeatured': !template.isFeatured});
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
