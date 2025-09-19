@@ -569,50 +569,47 @@ warning • The value of the field '_selectedGroupId' isn't used • lib/screens
    info • Use 'const' with the constructor to improve performance • lib/screens/admin/super_admin_screen.dart:603:20 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/admin/super_admin_screen.dart:607:20 • prefer_const_constructors
 warning • Unused import: '../../models/user.dart' • lib/screens/admin/template_admin_page.dart:5:8 • unused_import
-warning • Unused import: '../../widgets/common/error_widget.dart' • lib/screens/admin/template_admin_page.dart:8:8 • unused_import
-   info • Parameter 'key' could be a super parameter • lib/screens/admin/template_admin_page.dart:15:9 • use_super_parameters
-warning • The value of the field '_editingTemplate' isn't used • lib/screens/admin/template_admin_page.dart:40:27 • unused_field
-  error • The getter 'isSuperAdmin' isn't defined for the type 'UserData' • lib/screens/admin/template_admin_page.dart:61:31 • undefined_getter
-   info • The type of the right operand ('AccountClassification?') isn't a subtype or a supertype of the left operand ('CategoryClassification') • lib/screens/admin/template_admin_page.dart:113:39 • unrelated_type_equality_checks
-   info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:141:36 • use_build_context_synchronously
-  error • The argument type 'SystemCategoryTemplate' can't be assigned to the parameter type 'String'.  • lib/screens/admin/template_admin_page.dart:148:53 • argument_type_not_assignable
-  error • 2 positional arguments expected by 'updateTemplate', but 1 found • lib/screens/admin/template_admin_page.dart:148:68 • not_enough_positional_arguments
-   info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:149:36 • use_build_context_synchronously
-   info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:156:27 • use_build_context_synchronously
-   info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:159:34 • use_build_context_synchronously
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:178:16 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:183:20 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:190:20 • prefer_const_constructors
-   info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:199:30 • use_build_context_synchronously
-   info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:207:30 • use_build_context_synchronously
-  error • The argument type 'SystemCategoryTemplate' can't be assigned to the parameter type 'String'.  • lib/screens/admin/template_admin_page.dart:220:45 • argument_type_not_assignable
-  error • 2 positional arguments expected by 'updateTemplate', but 1 found • lib/screens/admin/template_admin_page.dart:220:53 • not_enough_positional_arguments
-   info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:221:28 • use_build_context_synchronously
-   info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:230:28 • use_build_context_synchronously
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:244:18 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:250:15 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:271:16 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:295:19 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:300:19 • prefer_const_constructors
-  error • 1 positional argument expected by 'ErrorWidget.new', but 0 found • lib/screens/admin/template_admin_page.dart:310:19 • not_enough_positional_arguments
-  error • The named parameter 'message' isn't defined • lib/screens/admin/template_admin_page.dart:310:19 • undefined_named_parameter
-  error • The named parameter 'onRetry' isn't defined • lib/screens/admin/template_admin_page.dart:311:19 • undefined_named_parameter
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:344:27 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:347:29 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:409:19 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:534:24 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:536:26 • prefer_const_constructors
-  error • The argument type 'CategoryClassification' can't be assigned to the parameter type 'AccountClassification'.  • lib/screens/admin/template_admin_page.dart:549:81 • argument_type_not_assignable
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:591:21 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:596:21 • prefer_const_constructors
-warning • This default clause is covered by the previous cases • lib/screens/admin/template_admin_page.dart:614:7 • unreachable_switch_default
-  error • A value of type 'CategoryClassification' can't be assigned to a variable of type 'AccountClassification' • lib/screens/admin/template_admin_page.dart:711:25 • invalid_assignment
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:906:32 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:917:32 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:936:30 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:941:30 • prefer_const_constructors
-  error • The argument type 'AccountClassification' can't be assigned to the parameter type 'CategoryClassification'.  • lib/screens/admin/template_admin_page.dart:964:25 • argument_type_not_assignable
-warning • This default clause is covered by the previous cases • lib/screens/admin/template_admin_page.dart:998:7 • unreachable_switch_default
+warning • Unused import: '../../providers/current_user_provider.dart' • lib/screens/admin/template_admin_page.dart:6:8 • unused_import
+warning • Unused import: '../../widgets/common/error_widget.dart' • lib/screens/admin/template_admin_page.dart:9:8 • unused_import
+   info • Parameter 'key' could be a super parameter • lib/screens/admin/template_admin_page.dart:16:9 • use_super_parameters
+warning • The value of the field '_editingTemplate' isn't used • lib/screens/admin/template_admin_page.dart:41:27 • unused_field
+  error • The getter 'isSuperAdmin' isn't defined for the type 'UserData' • lib/screens/admin/template_admin_page.dart:62:31 • undefined_getter
+   info • The type of the right operand ('AccountClassification?') isn't a subtype or a supertype of the left operand ('CategoryClassification') • lib/screens/admin/template_admin_page.dart:114:39 • unrelated_type_equality_checks
+   info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:142:36 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:150:36 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:157:27 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:160:34 • use_build_context_synchronously
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:179:16 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:184:20 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:191:20 • prefer_const_constructors
+   info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:200:30 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:208:30 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:222:28 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:231:28 • use_build_context_synchronously
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:245:18 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:251:15 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:272:16 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:296:19 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:301:19 • prefer_const_constructors
+  error • 1 positional argument expected by 'ErrorWidget.new', but 0 found • lib/screens/admin/template_admin_page.dart:311:19 • not_enough_positional_arguments
+  error • The named parameter 'message' isn't defined • lib/screens/admin/template_admin_page.dart:311:19 • undefined_named_parameter
+  error • The named parameter 'onRetry' isn't defined • lib/screens/admin/template_admin_page.dart:312:19 • undefined_named_parameter
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:345:27 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:348:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:410:19 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:535:24 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:537:26 • prefer_const_constructors
+  error • The argument type 'CategoryClassification' can't be assigned to the parameter type 'AccountClassification'.  • lib/screens/admin/template_admin_page.dart:550:81 • argument_type_not_assignable
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:592:21 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:597:21 • prefer_const_constructors
+warning • This default clause is covered by the previous cases • lib/screens/admin/template_admin_page.dart:615:7 • unreachable_switch_default
+  error • A value of type 'CategoryClassification' can't be assigned to a variable of type 'AccountClassification' • lib/screens/admin/template_admin_page.dart:712:25 • invalid_assignment
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:907:32 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:918:32 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:937:30 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/template_admin_page.dart:942:30 • prefer_const_constructors
+  error • The argument type 'AccountClassification' can't be assigned to the parameter type 'CategoryClassification'.  • lib/screens/admin/template_admin_page.dart:965:25 • argument_type_not_assignable
+warning • This default clause is covered by the previous cases • lib/screens/admin/template_admin_page.dart:999:7 • unreachable_switch_default
    info • Use 'const' with the constructor to improve performance • lib/screens/ai_assistant_page.dart:140:13 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/ai_assistant_page.dart:143:22 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/ai_assistant_page.dart:174:27 • prefer_const_constructors
@@ -623,9 +620,7 @@ warning • This default clause is covered by the previous cases • lib/screens
    info • Use 'const' with the constructor to improve performance • lib/screens/ai_assistant_page.dart:240:33 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/ai_assistant_page.dart:296:29 • prefer_const_constructors
    info • The import of '../../models/audit_log.dart' is unnecessary because all of the used elements are also provided by the import of '../../services/audit_service.dart' • lib/screens/audit/audit_logs_screen.dart:3:8 • unnecessary_import
-  error • The named parameter 'filter' isn't defined • lib/screens/audit/audit_logs_screen.dart:74:9 • undefined_named_parameter
-  error • The named parameter 'page' isn't defined • lib/screens/audit/audit_logs_screen.dart:75:9 • undefined_named_parameter
-  error • The named parameter 'pageSize' isn't defined • lib/screens/audit/audit_logs_screen.dart:76:9 • undefined_named_parameter
+  error • The argument type 'AuditLogFilter' can't be assigned to the parameter type 'String?'.  • lib/screens/audit/audit_logs_screen.dart:74:17 • argument_type_not_assignable
   error • Too many positional arguments: 0 expected, but 1 found • lib/screens/audit/audit_logs_screen.dart:110:60 • extra_positional_arguments_could_be_named
   error • A value of type 'Map<String, dynamic>' can't be assigned to a variable of type 'AuditLogStatistics?' • lib/screens/audit/audit_logs_screen.dart:112:23 • invalid_assignment
    info • Use 'const' with the constructor to improve performance • lib/screens/audit/audit_logs_screen.dart:167:13 • prefer_const_constructors
@@ -825,9 +820,7 @@ warning • The declaration '_showLedgerSwitcher' isn't referenced • lib/scree
    info • Parameter 'key' could be a super parameter • lib/screens/family/family_activity_log_screen.dart:13:9 • use_super_parameters
    info • The private field _groupedLogs could be 'final' • lib/screens/family/family_activity_log_screen.dart:31:31 • prefer_final_fields
   error • The named parameter 'actionType' isn't defined • lib/screens/family/family_activity_log_screen.dart:77:9 • undefined_named_parameter
-  error • The named parameter 'filter' isn't defined • lib/screens/family/family_activity_log_screen.dart:86:9 • undefined_named_parameter
-  error • The named parameter 'page' isn't defined • lib/screens/family/family_activity_log_screen.dart:87:9 • undefined_named_parameter
-  error • The named parameter 'pageSize' isn't defined • lib/screens/family/family_activity_log_screen.dart:88:9 • undefined_named_parameter
+  error • The argument type 'AuditLogFilter' can't be assigned to the parameter type 'String?'.  • lib/screens/family/family_activity_log_screen.dart:86:17 • argument_type_not_assignable
   error • Too many positional arguments: 0 expected, but 1 found • lib/screens/family/family_activity_log_screen.dart:120:63 • extra_positional_arguments_could_be_named
   error • A value of type 'Map<String, dynamic>' can't be assigned to a variable of type 'ActivityStatistics?' • lib/screens/family/family_activity_log_screen.dart:121:36 • invalid_assignment
    info • Use 'const' with the constructor to improve performance • lib/screens/family/family_activity_log_screen.dart:148:13 • prefer_const_constructors
@@ -842,33 +835,12 @@ warning • The declaration '_showLedgerSwitcher' isn't referenced • lib/scree
    info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/screens/family/family_activity_log_screen.dart:376:38 • deprecated_member_use
   error • The argument type 'Map<String, dynamic>' can't be assigned to the parameter type 'String'.  • lib/screens/family/family_activity_log_screen.dart:435:23 • argument_type_not_assignable
    info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/screens/family/family_activity_log_screen.dart:449:50 • deprecated_member_use
-  error • There's no constant named 'create' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:546:28 • undefined_enum_constant
-  error • There's no constant named 'update' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:548:28 • undefined_enum_constant
-  error • There's no constant named 'delete' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:550:28 • undefined_enum_constant
-  error • There's no constant named 'login' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:552:28 • undefined_enum_constant
-  error • There's no constant named 'logout' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:554:28 • undefined_enum_constant
-  error • There's no constant named 'invite' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:556:28 • undefined_enum_constant
-  error • There's no constant named 'join' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:558:28 • undefined_enum_constant
   error • There's no constant named 'leave' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:560:28 • undefined_enum_constant
   error • There's no constant named 'permission_grant' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:562:28 • undefined_enum_constant
   error • There's no constant named 'permission_revoke' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:564:28 • undefined_enum_constant
-  error • There's no constant named 'create' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:573:28 • undefined_enum_constant
-  error • There's no constant named 'update' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:575:28 • undefined_enum_constant
-  error • There's no constant named 'delete' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:577:28 • undefined_enum_constant
-  error • There's no constant named 'login' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:579:28 • undefined_enum_constant
-  error • There's no constant named 'logout' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:580:28 • undefined_enum_constant
-  error • There's no constant named 'invite' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:582:28 • undefined_enum_constant
-  error • There's no constant named 'join' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:583:28 • undefined_enum_constant
   error • There's no constant named 'leave' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:584:28 • undefined_enum_constant
   error • There's no constant named 'permission_grant' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:586:28 • undefined_enum_constant
   error • There's no constant named 'permission_revoke' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:587:28 • undefined_enum_constant
-  error • There's no constant named 'create' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:596:28 • undefined_enum_constant
-  error • There's no constant named 'update' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:598:28 • undefined_enum_constant
-  error • There's no constant named 'delete' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:600:28 • undefined_enum_constant
-  error • There's no constant named 'login' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:602:28 • undefined_enum_constant
-  error • There's no constant named 'logout' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:604:28 • undefined_enum_constant
-  error • There's no constant named 'invite' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:606:28 • undefined_enum_constant
-  error • There's no constant named 'join' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:608:28 • undefined_enum_constant
   error • There's no constant named 'leave' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:610:28 • undefined_enum_constant
   error • There's no constant named 'permission_grant' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:612:28 • undefined_enum_constant
   error • There's no constant named 'permission_revoke' in 'AuditActionType' • lib/screens/family/family_activity_log_screen.dart:614:28 • undefined_enum_constant
@@ -2536,4 +2508,4 @@ warning • A value for optional parameter 'error' isn't ever given • test/cur
    info • 'overrideWithProvider' is deprecated and shouldn't be used. Will be removed in 3.0.0. Use overrideWith instead • test/currency_selection_page_test.dart:121:39 • deprecated_member_use
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • test_tag_functionality.dart:70:36 • deprecated_member_use
 
-2535 issues found. (ran in 3.0s)
+2507 issues found. (ran in 5.7s)

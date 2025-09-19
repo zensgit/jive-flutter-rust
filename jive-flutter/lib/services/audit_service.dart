@@ -17,6 +17,9 @@ class AuditService {
     AuditActionType? actionType,
     DateTime? startDate,
     DateTime? endDate,
+    String? filter,
+    int? page,
+    int? pageSize,
     int limit = 100,
     int offset = 0,
   }) async {

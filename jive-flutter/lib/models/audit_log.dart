@@ -70,6 +70,15 @@ enum AuditActionType {
       orElse: () => AuditActionType.userLogin,
     );
   }
+
+  // Aliases for common simple names used in the codebase
+  static const create = transactionCreate;
+  static const update = transactionUpdate;
+  static const delete = transactionDelete;
+  static const login = userLogin;
+  static const logout = userLogout;
+  static const invite = memberInvite;
+  static const join = memberAccept;
 }
 
 /// 审计日志严重级别
