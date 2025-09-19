@@ -225,7 +225,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text('改码 / 合并'),
-        content: const SizedBox(
+        content: SizedBox(
           width: 420,
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -366,7 +366,7 @@ class _EditCurrencyDialogState extends State<_EditCurrencyDialog> {
     final isEdit = widget.target != null;
     return AlertDialog(
       title: Text(isEdit ? '编辑币种' : '新增币种'),
-      content: const SizedBox(
+      content: SizedBox(
         width: 520,
         child: Form(
           key: _formKey,

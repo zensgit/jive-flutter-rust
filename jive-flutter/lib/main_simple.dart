@@ -1823,7 +1823,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         ),
                       ),
                       child: _isLoading
-                          ? const SizedBox(
+                          ? SizedBox(
                               width: 16,
                               height: 16,
                               child: CircularProgressIndicator(
@@ -1911,7 +1911,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             Container(
               color: Colors.white,
               padding: const EdgeInsets.all(24.0),
-              child: const SizedBox(
+              child: SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: _isLoading ? null : _logout,

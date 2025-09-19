@@ -32,7 +32,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
           Text('分享主题'),
         ],
       ),
-      content: const SizedBox(
+      content: SizedBox(
         width: 320,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -91,7 +91,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
               const SizedBox(height: 12),
 
               // 生成分享链接
-              const SizedBox(
+              SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: _isSharing ? null : _generateShareLink,
@@ -114,7 +114,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
               const SizedBox(height: 8),
 
               // 复制到剪贴板
-              const SizedBox(
+              SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: _copyToClipboard,
