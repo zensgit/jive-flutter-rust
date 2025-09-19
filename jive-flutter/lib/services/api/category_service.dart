@@ -1,6 +1,8 @@
+import 'dart:convert';
 import '../../core/network/http_client.dart';
 import '../../core/config/api_config.dart';
 import '../../models/category.dart';
+import '../../models/category_template.dart';
 
 /// 分类API服务
 class CategoryService {
@@ -98,6 +100,13 @@ class CategoryService {
     } catch (e) {
       throw Exception('Failed to delete category: $e');
     }
+  }
+
+  /// 获取所有系统分类模板
+  Future<List<SystemCategoryTemplate>> getAllTemplates({
+    bool forceRefresh = false,
+  }) async {
+    return getSystemTemplates();
   }
 
   /// 获取系统分类模板
@@ -272,6 +281,81 @@ class CategoryService {
       throw Exception('Failed to batch recategorize: $e');
     }
   }
+
+  /// 带 ETag 与分页的模板获取（与后端 /api/v1/templates/list 对齐）
+  Future<TemplateCatalogResult> getTemplatesWithEtag({
+    String? etag,
+    int page = 1,
+    int perPage = 50,
+    String? group,
+    CategoryClassification? classification,
+    bool? featuredOnly,
+  }) async {
+    try {
+      final qp = <String, dynamic>{
+        'page': page,
+        'per_page': perPage,
+        if (group != null) 'group': group,
+        if (classification != null)
+          'type': classification.toString().split('.').last,
+        if (featuredOnly != null) 'featured': featuredOnly,
+        if (etag != null && etag.isNotEmpty) 'etag': etag,
+      };
+      final resp = await _client.get(
+        '${ApiConfig.apiUrl}/templates/list',
+        queryParameters: qp,
+      );
+
+      if (resp.statusCode == 304) {
+        return TemplateCatalogResult(const [], etag, true, 0, page, perPage);
+      }
+      if (resp.statusCode == 200) {
+        final data = resp.data is Map ? resp.data as Map<String, dynamic> : jsonDecode(resp.data as String) as Map<String, dynamic>;
+        final List<dynamic> itemsJson = data['templates'] ?? [];
+        final items = itemsJson.map((e) => SystemCategoryTemplate.fromJson(Map<String, dynamic>.from(e))).toList();
+        final total = (data['total'] as num?)?.toInt() ?? items.length;
+        final lastUpdated = data['last_updated']?.toString();
+        final newEtag = _computeWeakEtag(lastUpdated, total);
+        return TemplateCatalogResult(items, newEtag, false, total, page, perPage);
+      }
+      throw Exception('Failed to load templates: ${resp.statusCode}');
+    } catch (e) {
+      // 网络失败时返回 notModified=false 且 items 为空，交由调用方决定回退策略
+      return TemplateCatalogResult(const [], etag, false, 0, page, perPage, error: e.toString());
+    }
+  }
+
+  String? _computeWeakEtag(String? lastUpdatedIso, int total) {
+    if (lastUpdatedIso == null) return null;
+    try {
+      final dt = DateTime.parse(lastUpdatedIso).toUtc();
+      final ts = (dt.millisecondsSinceEpoch / 1000).floor();
+      return 'W/"$ts:$total"';
+    } catch (_) {
+      return null;
+    }
+  }
+}
+
+/// 模板目录结果（含 ETag）
+class TemplateCatalogResult {
+  final List<SystemCategoryTemplate> items;
+  final String? etag;
+  final bool notModified;
+  final int total;
+  final int page;
+  final int perPage;
+  final String? error;
+
+  const TemplateCatalogResult(
+    this.items,
+    this.etag,
+    this.notModified,
+    this.total,
+    this.page,
+    this.perPage, {
+    this.error,
+  });
 }
 
 /// 导入结果
@@ -380,51 +464,6 @@ class BatchOperationResult {
       affectedTransactions: json['affected_transactions'] ?? 0,
       canRevert: json['can_revert'] ?? false,
       expiresAt: DateTime.parse(json['expires_at']),
-    );
-  }
-}
-
-/// 系统分类模板
-class SystemCategoryTemplate {
-  final String id;
-  final String name;
-  final String? nameEn;
-  final String? description;
-  final CategoryClassification classification;
-  final String color;
-  final String? icon;
-  final String? group;
-  final bool isFeatured;
-  final List<String> tags;
-
-  SystemCategoryTemplate({
-    required this.id,
-    required this.name,
-    this.nameEn,
-    this.description,
-    required this.classification,
-    required this.color,
-    this.icon,
-    this.group,
-    this.isFeatured = false,
-    this.tags = const [],
-  });
-
-  factory SystemCategoryTemplate.fromJson(Map<String, dynamic> json) {
-    return SystemCategoryTemplate(
-      id: json['id'],
-      name: json['name'],
-      nameEn: json['name_en'],
-      description: json['description'],
-      classification: CategoryClassification.values.firstWhere(
-        (e) => e.toString().split('.').last == json['classification'],
-        orElse: () => CategoryClassification.expense,
-      ),
-      color: json['color'],
-      icon: json['icon'],
-      group: json['group'],
-      isFeatured: json['is_featured'] ?? false,
-      tags: (json['tags'] as List?)?.cast<String>() ?? [],
     );
   }
 }
