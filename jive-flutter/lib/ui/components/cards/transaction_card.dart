@@ -276,7 +276,7 @@ class TransactionCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildCategoryconst Icon(ThemeData theme) {
+  Widget _buildCategoryIcon(ThemeData theme) {
     final iconColor =
         transaction?.type.color ?? categoryColor ?? theme.primaryColor;
     final iconData = transaction?.type.icon ?? categoryIcon ?? Icons.category;

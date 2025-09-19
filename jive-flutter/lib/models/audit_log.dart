@@ -266,6 +266,13 @@ class AuditLog {
       isSystemGenerated: isSystemGenerated ?? this.isSystemGenerated,
     );
   }
+
+  // Additional getters for compatibility with screens
+  String get description => actionDescription;
+  Map<String, dynamic>? get details => metadata;
+  String? get entityName => targetName;
+  String? get entityType => targetType;
+  String? get entityId => targetId;
 }
 
 /// 审计日志统计
