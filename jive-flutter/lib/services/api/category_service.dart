@@ -398,6 +398,12 @@ class ImportActionDetail {
   final String? finalName;
   final String? categoryId;
   final String? reason;
+  // Enriched preview fields (server-provided)
+  final String? predictedName; // from predicted_name
+  final String? existingCategoryId; // from existing_category_id
+  final String? existingCategoryName; // from existing_category_name
+  final String? finalClassification; // from final_classification
+  final String? finalParentId; // from final_parent_id
 
   ImportActionDetail({
     required this.templateId,
@@ -406,6 +412,11 @@ class ImportActionDetail {
     this.finalName,
     this.categoryId,
     this.reason,
+    this.predictedName,
+    this.existingCategoryId,
+    this.existingCategoryName,
+    this.finalClassification,
+    this.finalParentId,
   });
 
   factory ImportActionDetail.fromJson(Map<String, dynamic> json) {
@@ -416,6 +427,11 @@ class ImportActionDetail {
       finalName: json['final_name']?.toString(),
       categoryId: json['category_id']?.toString(),
       reason: json['reason']?.toString(),
+      predictedName: json['predicted_name']?.toString(),
+      existingCategoryId: json['existing_category_id']?.toString(),
+      existingCategoryName: json['existing_category_name']?.toString(),
+      finalClassification: json['final_classification']?.toString(),
+      finalParentId: json['final_parent_id']?.toString(),
     );
   }
 }

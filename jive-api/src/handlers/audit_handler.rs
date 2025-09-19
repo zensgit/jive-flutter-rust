@@ -38,7 +38,7 @@ pub async fn get_audit_logs(
     }
     
     // Check permission
-    if let Err(_) = ctx.require_permission(crate::models::permission::Permission::ViewAuditLog) {
+    if ctx.require_permission(crate::models::permission::Permission::ViewAuditLog).is_err() {
         return Err(StatusCode::FORBIDDEN);
     }
     
@@ -86,7 +86,7 @@ pub async fn export_audit_logs(
     }
     
     // Check permission
-    if let Err(_) = ctx.require_permission(crate::models::permission::Permission::ViewAuditLog) {
+    if ctx.require_permission(crate::models::permission::Permission::ViewAuditLog).is_err() {
         return Err(StatusCode::FORBIDDEN);
     }
     

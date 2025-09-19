@@ -91,14 +91,14 @@ impl BudgetService {
             RETURNING *
             "#
         )
-        .bind(&budget_id)
-        .bind(&data.ledger_id)
-        .bind(&data.name)
-        .bind(&data.period_type)
-        .bind(&data.amount)
-        .bind(&data.category_id)
-        .bind(&data.start_date)
-        .bind(&end_date)
+        .bind(budget_id)
+        .bind(data.ledger_id)
+        .bind(data.name)
+        .bind(data.period_type)
+        .bind(data.amount)
+        .bind(data.category_id)
+        .bind(data.start_date)
+        .bind(end_date)
         .bind(true)
         .fetch_one(&self.pool)
         .await
@@ -113,7 +113,7 @@ impl BudgetService {
         let budget: Budget = sqlx::query_as(
             "SELECT * FROM budgets WHERE id = $1 AND is_active = true"
         )
-        .bind(&budget_id)
+        .bind(budget_id)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -133,10 +133,10 @@ impl BudgetService {
             AND status = 'cleared'
             "#
         )
-        .bind(&budget.ledger_id)
-        .bind(&period_start)
-        .bind(&period_end)
-        .bind(&budget.category_id)
+        .bind(budget.ledger_id)
+        .bind(period_start)
+        .bind(period_end)
+        .bind(budget.category_id)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -216,7 +216,7 @@ impl BudgetService {
         .bind(ledger_id)
         .bind(start_date)
         .bind(end_date)
-        .bind(&category_filter)
+        .bind(category_filter)
         .fetch_all(&self.pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -282,7 +282,7 @@ impl BudgetService {
         let budgets: Vec<Budget> = sqlx::query_as(
             "SELECT * FROM budgets WHERE ledger_id = $1 AND is_active = true"
         )
-        .bind(&ledger_id)
+        .bind(ledger_id)
         .fetch_all(&self.pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -343,7 +343,7 @@ impl BudgetService {
         let budgets: Vec<Budget> = sqlx::query_as(
             "SELECT * FROM budgets WHERE ledger_id = $1 AND is_active = true"
         )
-        .bind(&ledger_id)
+        .bind(ledger_id)
         .fetch_all(&self.pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -381,9 +381,9 @@ impl BudgetService {
             AND status = 'cleared'
             "#
         )
-        .bind(&ledger_id)
-        .bind(&start_date)
-        .bind(&end_date)
+        .bind(ledger_id)
+        .bind(start_date)
+        .bind(end_date)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;

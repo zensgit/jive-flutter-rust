@@ -24,7 +24,7 @@ use redis::aio::ConnectionManager;
 use redis::Client as RedisClient;
 
 // 使用库中的模块
-use jive_money_api::{handlers, error, services, ws};
+use jive_money_api::{handlers, services, ws};
 
 // 导入处理器
 use handlers::template_handler::*;

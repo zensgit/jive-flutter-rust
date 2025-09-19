@@ -86,7 +86,7 @@ impl CurrencyService {
         let currencies = rows.into_iter().map(|row| Currency {
             code: row.code,
             name: row.name,
-            symbol: row.symbol.unwrap_or_else(|| "".to_string()),
+            symbol: row.symbol.unwrap_or_default(),
             decimal_places: row.decimal_places.unwrap_or(2),
             is_active: row.is_active.unwrap_or(true),
         }).collect();
@@ -374,7 +374,7 @@ impl CurrencyService {
             rate: row.rate,
             source: row.source.unwrap_or_else(|| "manual".to_string()),
             effective_date: effective.unwrap_or_else(|| chrono::Utc::now().date_naive()),
-            created_at: created_at,
+            created_at,
         })
     }
     
@@ -453,7 +453,7 @@ impl CurrencyService {
         
         let currencies: Vec<String> = currencies
             .into_iter()
-            .filter_map(|c| c)
+            .flatten()
             .collect();
         
         if currencies.is_empty() {

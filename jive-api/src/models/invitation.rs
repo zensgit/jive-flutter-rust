@@ -5,6 +5,7 @@ use uuid::Uuid;
 
 use super::permission::MemberRole;
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Invitation {
     pub id: Uuid,
@@ -46,14 +47,15 @@ impl TryFrom<String> for InvitationStatus {
     }
 }
 
-impl ToString for InvitationStatus {
-    fn to_string(&self) -> String {
-        match self {
+impl std::fmt::Display for InvitationStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
             InvitationStatus::Pending => "pending",
             InvitationStatus::Accepted => "accepted",
             InvitationStatus::Expired => "expired",
             InvitationStatus::Cancelled => "cancelled",
-        }.to_string()
+        };
+        write!(f, "{}", s)
     }
 }
 

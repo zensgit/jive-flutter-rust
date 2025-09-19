@@ -92,7 +92,7 @@ impl MemberService {
         }
         
         // Check if actor can manage this role
-        let target_role = MemberRole::from_str(&member_role)
+        let target_role = MemberRole::from_str_name(&member_role)
             .ok_or_else(|| ServiceError::ValidationError("Invalid role".to_string()))?;
         
         if !ctx.can_manage_role(target_role) {
@@ -292,7 +292,7 @@ impl MemberService {
         .await?
         .ok_or(ServiceError::PermissionDenied)?;
         
-        let role = MemberRole::from_str(&row.role)
+        let role = MemberRole::from_str_name(&row.role)
             .ok_or_else(|| ServiceError::ValidationError("Invalid role".to_string()))?;
         
         let permissions: Vec<Permission> = serde_json::from_value(row.permissions)?;

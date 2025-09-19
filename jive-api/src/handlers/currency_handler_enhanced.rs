@@ -411,7 +411,7 @@ pub async fn get_detailed_batch_rates(
             let codes = vec![base.as_str()];
             if let Ok(prices) = api.fetch_crypto_prices(codes.clone(), tgt).await {
                 let provider = api.cached_crypto_source(&[base.as_str()], tgt.as_str()).unwrap_or_else(|| "crypto".to_string());
-                if let Some(price) = prices.get(&base) { Some((*price, provider)) } else { None }
+                prices.get(&base).map(|price| (*price, provider))
             } else {
                 // fallback via USD: price(base, USD) and fiat USD->tgt
                 if crypto_prices_cache.is_none() {
@@ -430,9 +430,7 @@ pub async fn get_detailed_batch_rates(
             let codes = vec![tgt.as_str()];
             if let Ok(prices) = api.fetch_crypto_prices(codes.clone(), &base).await {
                 let provider = api.cached_crypto_source(&[tgt.as_str()], base.as_str()).unwrap_or_else(|| "crypto".to_string());
-                if let Some(price) = prices.get(tgt) {
-                    Some((Decimal::ONE / *price, provider))
-                } else { None }
+                prices.get(tgt).map(|price| (Decimal::ONE / *price, provider))
             } else {
                 // fallback via USD
                 if crypto_prices_cache.is_none() {
