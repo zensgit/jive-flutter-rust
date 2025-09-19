@@ -14,11 +14,7 @@ use jive_money_api::middleware::cors::create_cors_layer;
 use tracing::{info, warn, error};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-mod handlers;
-mod error;
-mod auth;
-mod services;
-mod models;
+use jive_money_api::handlers;
 // WebSocket模块暂时不包含，避免编译错误
 
 use handlers::template_handler::*;
