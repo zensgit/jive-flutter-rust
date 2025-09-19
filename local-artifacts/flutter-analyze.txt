@@ -802,7 +802,6 @@ warning • The value of the field '_keySyncStatus' isn't used • lib/services/
   error • The method 'deleteFamilySettings' isn't defined for the type 'FamilyService' • lib/services/family_settings_service.dart:187:40 • undefined_method
   error • The method 'updateUserPreferences' isn't defined for the type 'FamilyService' • lib/services/family_settings_service.dart:193:46 • undefined_method
   error • The method 'getFamilySettings' isn't defined for the type 'FamilyService' • lib/services/family_settings_service.dart:234:45 • undefined_method
-warning • Unused import: 'package:flutter/foundation.dart' • lib/services/invitation_service.dart:1:8 • unused_import
   error • Undefined name 'authStateProvider' • lib/services/permission_service.dart:59:38 • undefined_identifier
   error • Undefined name 'familyProvider' • lib/services/permission_service.dart:96:32 • undefined_identifier
 warning • This default clause is covered by the previous cases • lib/services/permission_service.dart:195:7 • unreachable_switch_default
@@ -843,48 +842,6 @@ warning • The value of the local variable 'weiboUrl' isn't used • lib/servic
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/services/share_service.dart:394:57 • deprecated_member_use
   error • Undefined name 'Share' • lib/services/share_service.dart:506:31 • undefined_identifier
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/services/share_service.dart:557:30 • deprecated_member_use
-  error • The method 'debugPrint' isn't defined for the type 'SocialAuthService' • lib/services/social_auth_service.dart:80:7 • undefined_method
-  error • The method 'debugPrint' isn't defined for the type 'SocialAuthService' • lib/services/social_auth_service.dart:112:7 • undefined_method
-  error • The method 'debugPrint' isn't defined for the type 'SocialAuthService' • lib/services/social_auth_service.dart:147:7 • undefined_method
-  error • The method 'debugPrint' isn't defined for the type 'SocialAuthService' • lib/services/social_auth_service.dart:162:7 • undefined_method
-  error • The method 'debugPrint' isn't defined for the type 'SocialAuthService' • lib/services/social_auth_service.dart:193:7 • undefined_method
-  error • The method 'debugPrint' isn't defined for the type 'SocialAuthService' • lib/services/social_auth_service.dart:223:7 • undefined_method
-  error • The method 'debugPrint' isn't defined for the type 'SocialAuthService' • lib/services/social_auth_service.dart:253:7 • undefined_method
-  error • The method 'debugPrint' isn't defined for the type 'SocialAuthService' • lib/services/social_auth_service.dart:268:7 • undefined_method
-  error • The method 'debugPrint' isn't defined for the type 'SocialAuthService' • lib/services/social_auth_service.dart:299:7 • undefined_method
-  error • The method 'debugPrint' isn't defined for the type 'SocialAuthService' • lib/services/social_auth_service.dart:329:7 • undefined_method
-  error • The method 'debugPrint' isn't defined for the type 'SocialAuthService' • lib/services/social_auth_service.dart:359:7 • undefined_method
-  error • The method 'debugPrint' isn't defined for the type 'SocialAuthService' • lib/services/social_auth_service.dart:374:7 • undefined_method
-  error • The method 'debugPrint' isn't defined for the type 'SocialAuthService' • lib/services/social_auth_service.dart:386:5 • undefined_method
-  error • The method 'debugPrint' isn't defined for the type 'SocialAuthService' • lib/services/social_auth_service.dart:401:5 • undefined_method
-  error • The method 'debugPrint' isn't defined for the type 'SocialAuthService' • lib/services/social_auth_service.dart:419:5 • undefined_method
-  error • Classes can only extend other classes • lib/services/social_auth_service.dart:434:33 • extends_non_class
-  error • Undefined class 'VoidCallback' • lib/services/social_auth_service.dart:436:9 • undefined_class
-  error • No associated named super constructor parameter • lib/services/social_auth_service.dart:440:11 • super_formal_parameter_without_associated_named
-  error • Undefined class 'Widget' • lib/services/social_auth_service.dart:447:3 • undefined_class
-warning • The method doesn't override an inherited method • lib/services/social_auth_service.dart:447:10 • override_on_non_overriding_member
-  error • Undefined class 'BuildContext' • lib/services/social_auth_service.dart:447:16 • undefined_class
-  error • Undefined name 'ElevatedButton' • lib/services/social_auth_service.dart:450:12 • undefined_identifier
-  error • The name 'SizedBox' isn't a class • lib/services/social_auth_service.dart:453:19 • creation_with_non_type
-  error • The method 'CircularProgressIndicator' isn't defined for the type 'SocialLoginButton' • lib/services/social_auth_service.dart:456:22 • undefined_method
-  error • The method 'Icon' isn't defined for the type 'SocialLoginButton' • lib/services/social_auth_service.dart:458:13 • undefined_method
-  error • The method 'Text' isn't defined for the type 'SocialLoginButton' • lib/services/social_auth_service.dart:459:14 • undefined_method
-  error • Undefined name 'ElevatedButton' • lib/services/social_auth_service.dart:460:14 • undefined_identifier
-  error • The name 'Size' isn't a class • lib/services/social_auth_service.dart:463:28 • creation_with_non_type
-  error • The method 'RoundedRectangleBorder' isn't defined for the type 'SocialLoginButton' • lib/services/social_auth_service.dart:464:16 • undefined_method
-  error • Undefined name 'BorderRadius' • lib/services/social_auth_service.dart:465:25 • undefined_identifier
-  error • Undefined name 'Icons' • lib/services/social_auth_service.dart:475:19 • undefined_identifier
-  error • Undefined name 'Colors' • lib/services/social_auth_service.dart:476:24 • undefined_identifier
-  error • The name 'Color' isn't a class • lib/services/social_auth_service.dart:478:36 • creation_with_non_type
-  error • Undefined name 'Colors' • lib/services/social_auth_service.dart:479:24 • undefined_identifier
-  error • Undefined name 'Icons' • lib/services/social_auth_service.dart:483:19 • undefined_identifier
-  error • Undefined name 'Colors' • lib/services/social_auth_service.dart:484:24 • undefined_identifier
-  error • The name 'Color' isn't a class • lib/services/social_auth_service.dart:486:36 • creation_with_non_type
-  error • Undefined name 'Colors' • lib/services/social_auth_service.dart:487:24 • undefined_identifier
-  error • Undefined name 'Icons' • lib/services/social_auth_service.dart:491:19 • undefined_identifier
-  error • Undefined name 'Colors' • lib/services/social_auth_service.dart:492:24 • undefined_identifier
-  error • Undefined name 'Colors' • lib/services/social_auth_service.dart:494:30 • undefined_identifier
-  error • Undefined name 'Colors' • lib/services/social_auth_service.dart:495:24 • undefined_identifier
 warning • The value of the field '_keyAppSettings' isn't used • lib/services/storage_service.dart:20:23 • unused_field
    info • 'window' is deprecated and shouldn't be used. Look up the current FlutterView from the context via View.of(context) or consult the PlatformDispatcher directly instead. Deprecated to prepare for the upcoming multi-window support. This feature was deprecated after v3.7.0-32.0.pre • lib/services/theme_service.dart:412:46 • deprecated_member_use
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/services/theme_service.dart:624:36 • deprecated_member_use
@@ -1320,4 +1277,4 @@ warning • Unused import: 'package:flutter_riverpod/flutter_riverpod.dart' • 
    info • 'overrideWithProvider' is deprecated and shouldn't be used. Will be removed in 3.0.0. Use overrideWith instead • test/currency_selection_page_test.dart:121:39 • deprecated_member_use
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • test_tag_functionality.dart:70:36 • deprecated_member_use
 
-1319 issues found. (ran in 3.0s)
+1276 issues found. (ran in 3.9s)
