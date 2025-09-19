@@ -257,7 +257,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('加载失败: $e'),
+            content: const Text('加载失败: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -316,8 +316,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 ),
                 const TabBar(
                   tabs: [
-                    Tab(text: '系统头像', icon: Icon(Icons.emoji_emotions)),
-                    Tab(text: '网络头像', icon: Icon(Icons.cloud_download)),
+                    Tab(text: '系统头像', icon: const Icon(Icons.emoji_emotions)),
+                    Tab(text: '网络头像', icon: const Icon(Icons.cloud_download)),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -356,7 +356,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                               child: CircleAvatar(
                                 backgroundColor: avatar['background'] as Color,
                                 child: Center(
-                                  child: Text(
+                                  child: const Text(
                                     avatar['icon'] as String,
                                     style: const TextStyle(fontSize: 28),
                                     textAlign: TextAlign.center,
@@ -465,7 +465,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('个人资料已更新'),
+            content: const Text('个人资料已更新'),
             backgroundColor: Colors.green,
           ),
         );
@@ -474,7 +474,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('保存失败: $e'),
+            content: const Text('保存失败: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -494,7 +494,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('验证码已发送到您的邮箱'),
+            content: const Text('验证码已发送到您的邮箱'),
             backgroundColor: Colors.blue,
           ),
         );
@@ -503,7 +503,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('发送验证码失败: $e'),
+            content: const Text('发送验证码失败: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -546,9 +546,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       builder: (context) => AlertDialog(
         title: const Row(
           children: [
-            Icon(Icons.warning, color: Colors.orange),
-            SizedBox(width: 8),
-            Text('最后确认'),
+            const Icon(Icons.warning, color: Colors.orange),
+            const SizedBox(width: 8),
+            const Text('最后确认'),
           ],
         ),
         content: const Text(
@@ -581,7 +581,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('账户已成功重置'),
+            content: const Text('账户已成功重置'),
             backgroundColor: Colors.green,
           ),
         );
@@ -594,7 +594,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('重置账户失败: $e'),
+            content: const Text('重置账户失败: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -607,7 +607,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     if (code.isEmpty || code.length != 4) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('请输入4位验证码'),
+          content: const Text('请输入4位验证码'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -628,7 +628,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('删除账户失败: $e'),
+            content: const Text('删除账户失败: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -657,7 +657,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         actions: [
           TextButton(
             onPressed: _isSaving ? null : _saveProfile,
-            child: Text(
+            child: const Text(
               '保存',
               style: TextStyle(
                 color: _isSaving ? Colors.grey : Colors.white,
@@ -711,7 +711,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                           child: (_newProfileImage == null &&
                                   _selectedSystemAvatar == null &&
                                   _userData?['avatar_url'] == null)
-                              ? Icon(
+                              ? const Icon(
                                   Icons.person,
                                   size: 50,
                                   color: Colors.grey[400],
@@ -720,7 +720,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                                   ? (_selectedSystemAvatar!['type'] == 'network'
                                       ? null // Network image is handled by DecorationImage
                                       : Center(
-                                          child: Text(
+                                          child: const Text(
                                             _selectedSystemAvatar!['icon']
                                                 as String,
                                             style: const TextStyle(
@@ -773,7 +773,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  const Text(
                     '左下角: 系统头像 | 右下角: 上传图片',
                     style: TextStyle(
                       color: Colors.grey[600],
@@ -805,7 +805,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     decoration: const InputDecoration(
                       labelText: '用户名',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person),
+                      prefixIcon: const Icon(Icons.person),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -815,7 +815,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     decoration: const InputDecoration(
                       labelText: '邮箱',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.email),
+                      prefixIcon: const Icon(Icons.email),
                       helperText: '修改邮箱可能需要重新验证',
                     ),
                   ),
@@ -859,14 +859,14 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(
+                        const Text(
                           '${_getCurrencySymbol(_selectedCurrency)}2,325.25',
                           style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text(
+                        const Text(
                           '日期: ${_formatDate(_selectedDateFormat)}',
                           style: TextStyle(
                             color: Colors.grey[600],
@@ -874,7 +874,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(
+                        const Text(
                           '货币设置请前往: 设置 → 货币管理',
                           style: TextStyle(
                             color: Colors.blue[600],
@@ -893,7 +893,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     decoration: const InputDecoration(
                       labelText: '国家/地区',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.public),
+                      prefixIcon: const Icon(Icons.public),
                     ),
                     items: _getCountryItems(),
                     onChanged: (value) {
@@ -911,7 +911,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     decoration: const InputDecoration(
                       labelText: '语言',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.language),
+                      prefixIcon: const Icon(Icons.language),
                     ),
                     items: _getLanguageItems(),
                     onChanged: (value) {
@@ -928,7 +928,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     decoration: const InputDecoration(
                       labelText: '时区',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.access_time),
+                      prefixIcon: const Icon(Icons.access_time),
                     ),
                     items: _getTimezoneItems(),
                     onChanged: (value) {
@@ -945,7 +945,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     decoration: const InputDecoration(
                       labelText: '日期格式',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.calendar_today),
+                      prefixIcon: const Icon(Icons.calendar_today),
                     ),
                     items: _getDateFormatItems(),
                     onChanged: (value) {
@@ -998,7 +998,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                             style: TextStyle(fontSize: 14),
                           ),
                           const SizedBox(height: 16),
-                          SizedBox(
+                          const SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: _resetAccount,
@@ -1064,7 +1064,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          SizedBox(
+                          const SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
@@ -1118,9 +1118,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   List<DropdownMenuItem<String>> _getCountryItems() {
     // 默认的国家列表
     final defaultCountries = [
-      const DropdownMenuItem(value: 'CN', child: Text('中国')),
-      const DropdownMenuItem(value: 'US', child: Text('美国')),
-      const DropdownMenuItem(value: 'JP', child: Text('日本')),
+      const DropdownMenuItem(value: 'CN', child: const Text('中国')),
+      const DropdownMenuItem(value: 'US', child: const Text('美国')),
+      const DropdownMenuItem(value: 'JP', child: const Text('日本')),
     ];
 
     if (_localeData == null) {
@@ -1135,7 +1135,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     final apiCountries = countries.map((country) {
       return DropdownMenuItem<String>(
         value: country['code']?.toString() ?? '',
-        child: Text(country['name']?.toString() ?? ''),
+        child: const Text(country['name']?.toString() ?? ''),
       );
     }).toList();
 
@@ -1147,7 +1147,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           0,
           DropdownMenuItem<String>(
             value: _selectedCountry,
-            child: Text(_selectedCountry),
+            child: const Text(_selectedCountry),
           ));
     }
 
@@ -1157,8 +1157,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   List<DropdownMenuItem<String>> _getCurrencyItems() {
     if (_localeData == null) {
       return [
-        const DropdownMenuItem(value: 'CNY', child: Text('人民币 (¥)')),
-        const DropdownMenuItem(value: 'USD', child: Text('美元 (\$)')),
+        const DropdownMenuItem(value: 'CNY', child: const Text('人民币 (¥)')),
+        const DropdownMenuItem(value: 'USD', child: const Text('美元 (\$)')),
       ];
     }
 
@@ -1166,7 +1166,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     return currencies.map((currency) {
       return DropdownMenuItem<String>(
         value: currency['code'],
-        child: Text('${currency['name']} (${currency['symbol']})'),
+        child: const Text('${currency['name']} (${currency['symbol']})'),
       );
     }).toList();
   }
@@ -1174,8 +1174,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   List<DropdownMenuItem<String>> _getLanguageItems() {
     // 默认的语言列表
     final defaultLanguages = [
-      const DropdownMenuItem(value: 'zh-CN', child: Text('简体中文')),
-      const DropdownMenuItem(value: 'en-US', child: Text('English')),
+      const DropdownMenuItem(value: 'zh-CN', child: const Text('简体中文')),
+      const DropdownMenuItem(value: 'en-US', child: const Text('English')),
     ];
 
     if (_localeData == null) {
@@ -1190,7 +1190,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     final apiLanguages = languages.map((language) {
       return DropdownMenuItem<String>(
         value: language['code']?.toString() ?? '',
-        child: Text(language['name']?.toString() ?? ''),
+        child: const Text(language['name']?.toString() ?? ''),
       );
     }).toList();
 
@@ -1202,7 +1202,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           0,
           DropdownMenuItem<String>(
             value: _selectedLanguage,
-            child: Text(_selectedLanguage),
+            child: const Text(_selectedLanguage),
           ));
     }
 
@@ -1212,10 +1212,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   List<DropdownMenuItem<String>> _getTimezoneItems() {
     // 默认的时区列表
     final defaultTimezones = [
-      const DropdownMenuItem(value: 'Asia/Shanghai', child: Text('北京时间')),
-      const DropdownMenuItem(value: 'America/New_York', child: Text('纽约时间')),
-      const DropdownMenuItem(value: 'Europe/London', child: Text('伦敦时间')),
-      const DropdownMenuItem(value: 'Asia/Tokyo', child: Text('东京时间')),
+      const DropdownMenuItem(value: 'Asia/Shanghai', child: const Text('北京时间')),
+      const DropdownMenuItem(value: 'America/New_York', child: const Text('纽约时间')),
+      const DropdownMenuItem(value: 'Europe/London', child: const Text('伦敦时间')),
+      const DropdownMenuItem(value: 'Asia/Tokyo', child: const Text('东京时间')),
     ];
 
     if (_localeData == null) {
@@ -1231,7 +1231,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     final apiTimezones = timezones.map((timezone) {
       return DropdownMenuItem<String>(
         value: timezone['zone']?.toString() ?? '',
-        child: Text(timezone['name']?.toString() ?? ''),
+        child: const Text(timezone['name']?.toString() ?? ''),
       );
     }).toList();
 
@@ -1244,7 +1244,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           0,
           DropdownMenuItem<String>(
             value: _selectedTimezone,
-            child: Text(_selectedTimezone),
+            child: const Text(_selectedTimezone),
           ));
     }
 
@@ -1254,9 +1254,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   List<DropdownMenuItem<String>> _getDateFormatItems() {
     // 默认的日期格式列表
     final defaultFormats = [
-      const DropdownMenuItem(value: 'YYYY-MM-DD', child: Text('2024-12-31')),
-      const DropdownMenuItem(value: 'MM/DD/YYYY', child: Text('12/31/2024')),
-      const DropdownMenuItem(value: 'DD/MM/YYYY', child: Text('31/12/2024')),
+      const DropdownMenuItem(value: 'YYYY-MM-DD', child: const Text('2024-12-31')),
+      const DropdownMenuItem(value: 'MM/DD/YYYY', child: const Text('12/31/2024')),
+      const DropdownMenuItem(value: 'DD/MM/YYYY', child: const Text('31/12/2024')),
     ];
 
     if (_localeData == null) {
@@ -1271,7 +1271,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     final apiFormats = formats.map((format) {
       return DropdownMenuItem<String>(
         value: format['format']?.toString() ?? '',
-        child: Text(format['example']?.toString() ?? ''),
+        child: const Text(format['example']?.toString() ?? ''),
       );
     }).toList();
 
@@ -1283,7 +1283,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           0,
           DropdownMenuItem<String>(
             value: _selectedDateFormat,
-            child: Text(_selectedDateFormat),
+            child: const Text(_selectedDateFormat),
           ));
     }
 

@@ -491,7 +491,7 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('成功加入家庭！')),
+          const SnackBar(content: const Text('成功加入家庭！')),
         );
         Navigator.pushReplacementNamed(context, '/home');
       }
@@ -527,12 +527,12 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
                 color: Colors.red,
               ),
               const SizedBox(height: 16),
-              Text(
+              const Text(
                 '邀请无效或已过期',
                 style: theme.textTheme.titleLarge,
               ),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 _error!,
                 style: theme.textTheme.bodyMedium,
                 textAlign: TextAlign.center,
@@ -564,12 +564,12 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
               color: Colors.blue,
             ),
             const SizedBox(height: 24),
-            Text(
+            const Text(
               '${_invitationData!['inviterName']} 邀请你加入',
               style: theme.textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               _invitationData!['familyName'],
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -579,7 +579,7 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -621,8 +621,8 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label),
-        Text(
+        const Text(label),
+        const Text(
           value,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
@@ -653,7 +653,7 @@ class LoginScreen extends StatelessWidget {
                 margin: const EdgeInsets.all(16),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: Colors.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Text(

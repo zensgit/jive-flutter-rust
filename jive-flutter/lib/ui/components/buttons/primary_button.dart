@@ -46,7 +46,7 @@ class PrimaryButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
           ),
           elevation: isEnabled ? 2 : 0,
-          shadowColor: theme.primaryColor.withOpacity(0.3),
+          shadowColor: theme.primaryColor.withValues(alpha: 0.3),
         ),
         icon: _buildIcon(),
         label: _buildLabel(),

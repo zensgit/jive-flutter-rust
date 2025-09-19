@@ -65,9 +65,9 @@ class _PendingInvitationsScreenState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('您确定要加入 "${invitation.family.name}" 吗？'),
+            const Text('您确定要加入 "${invitation.family.name}" 吗？'),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               '角色: ${_getRoleDisplayName(invitation.invitation.role)}',
               style: Theme.of(context).textTheme.bodySmall,
             ),
@@ -98,7 +98,7 @@ class _PendingInvitationsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('已加入 ${invitation.family.name}'),
+            content: const Text('已加入 ${invitation.family.name}'),
             backgroundColor: Colors.green,
           ),
         );
@@ -114,7 +114,7 @@ class _PendingInvitationsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('接受邀请失败: ${e.toString()}'),
+            content: const Text('接受邀请失败: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -127,7 +127,7 @@ class _PendingInvitationsScreenState
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('拒绝邀请'),
-        content: Text('您确定要拒绝来自 "${invitation.family.name}" 的邀请吗？'),
+        content: const Text('您确定要拒绝来自 "${invitation.family.name}" 的邀请吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -154,7 +154,7 @@ class _PendingInvitationsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('已拒绝邀请'),
+            content: const Text('已拒绝邀请'),
           ),
         );
       }
@@ -162,7 +162,7 @@ class _PendingInvitationsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('操作失败: ${e.toString()}'),
+            content: const Text('操作失败: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -217,12 +217,12 @@ class _PendingInvitationsScreenState
             itemBuilder: (context) => [
               const PopupMenuItem(
                 value: null,
-                child: Text('全部'),
+                child: const Text('全部'),
               ),
               const PopupMenuDivider(),
               ...InvitationStatus.values.map((status) => PopupMenuItem(
                     value: status,
-                    child: Text(status.label),
+                    child: const Text(status.label),
                   )),
             ],
           ),
@@ -238,15 +238,15 @@ class _PendingInvitationsScreenState
             itemBuilder: (context) => [
               const PopupMenuItem(
                 value: 'date',
-                child: Text('按日期'),
+                child: const Text('按日期'),
               ),
               const PopupMenuItem(
                 value: 'family',
-                child: Text('按Family'),
+                child: const Text('按Family'),
               ),
               const PopupMenuItem(
                 value: 'role',
-                child: Text('按角色'),
+                child: const Text('按角色'),
               ),
             ],
           ),
@@ -270,7 +270,7 @@ class _PendingInvitationsScreenState
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            Text(_error!),
+            const Text(_error!),
             const SizedBox(height: 16),
             FilledButton(
               onPressed: _loadInvitations,
@@ -288,13 +288,13 @@ class _PendingInvitationsScreenState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.mail_outline,
               size: 64,
               color: Colors.grey[400],
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               _filterStatus != null
                   ? '没有${_filterStatus!.label}的邀请'
                   : '暂无待处理的邀请',
@@ -351,7 +351,7 @@ class _PendingInvitationsScreenState
                   CircleAvatar(
                     radius: 24,
                     backgroundColor: theme.colorScheme.primaryContainer,
-                    child: Text(
+                    child: const Text(
                       StringUtils.safeInitial(invitation.family.name),
                       style: TextStyle(
                         color: theme.colorScheme.onPrimaryContainer,
@@ -365,14 +365,14 @@ class _PendingInvitationsScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           invitation.family.name,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 2),
-                        Text(
+                        const Text(
                           '邀请者: ${invitation.inviter.fullName}',
                           style: theme.textTheme.bodySmall,
                         ),
@@ -390,10 +390,10 @@ class _PendingInvitationsScreenState
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: _getRoleColor(invitation.invitation.role)
-                      .withOpacity(0.1),
+                      .withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: Text(
+                child: const Text(
                   '角色: ${_getRoleDisplayName(invitation.invitation.role)}',
                   style: TextStyle(
                     color: _getRoleColor(invitation.invitation.role),
@@ -407,13 +407,13 @@ class _PendingInvitationsScreenState
               // 时间信息
               Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.access_time,
                     size: 16,
                     color: isExpired ? Colors.red : Colors.grey,
                   ),
                   const SizedBox(width: 4),
-                  Text(
+                  const Text(
                     invitation.invitation.remainingTimeDescription,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: isExpired ? Colors.red : null,
@@ -477,7 +477,7 @@ class _PendingInvitationsScreenState
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -485,7 +485,7 @@ class _PendingInvitationsScreenState
         children: [
           Icon(icon, size: 14, color: color),
           const SizedBox(width: 4),
-          Text(
+          const Text(
             invitation.status.label,
             style: TextStyle(
               color: color,
@@ -526,7 +526,7 @@ class _PendingInvitationsScreenState
               ),
 
               // 标题
-              Text(
+              const Text(
                 '邀请详情',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
@@ -602,7 +602,7 @@ class _PendingInvitationsScreenState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -620,15 +620,15 @@ class _PendingInvitationsScreenState
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          const SizedBox(
             width: 100,
-            child: Text(
+            child: const Text(
               label,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
           Expanded(
-            child: Text(
+            child: const Text(
               value,
               style: Theme.of(context).textTheme.bodyMedium,
             ),

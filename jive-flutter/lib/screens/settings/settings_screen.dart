@@ -42,7 +42,7 @@ class SettingsScreen extends ConsumerWidget {
                 leading: const Icon(Icons.swap_horiz),
                 title: const Text('家庭切换'),
                 subtitle:
-                    Text(ref.watch(currentLedgerProvider)?.name ?? '默认家庭'),
+                    const Text(ref.watch(currentLedgerProvider)?.name ?? '默认家庭'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () => _showLedgerSwitcher(context, ref),
               ),
@@ -261,20 +261,20 @@ class SettingsScreen extends ConsumerWidget {
                 ? NetworkImage(userAvatar)
                 : null,
             child: userAvatar == null || userAvatar.isEmpty
-                ? Text(
+                ? const Text(
                     initial,
                     style: const TextStyle(fontSize: 24),
                   )
                 : null,
           ),
-          title: Text(
+          title: const Text(
             userName,
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
-          subtitle: userEmail.isNotEmpty ? Text(userEmail) : null,
+          subtitle: userEmail.isNotEmpty ? const Text(userEmail) : null,
           trailing: IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () => context.go('/settings/profile'),
@@ -291,7 +291,7 @@ class SettingsScreen extends ConsumerWidget {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Text(
+          child: const Text(
             title,
             style: const TextStyle(
               fontSize: 14,
@@ -326,7 +326,7 @@ class SettingsScreen extends ConsumerWidget {
   void _navigateToLedgerSharing(BuildContext context) {
     // TODO: 实现账本共享页面
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('账本共享功能开发中')),
+      const SnackBar(content: const Text('账本共享功能开发中')),
     );
   }
 
@@ -340,14 +340,14 @@ class SettingsScreen extends ConsumerWidget {
   void _navigateToArchivedAccounts(BuildContext context) {
     // TODO: 实现归档账户页面
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('归档账户功能开发中')),
+      const SnackBar(content: const Text('归档账户功能开发中')),
     );
   }
 
   void _showCurrencySelector(BuildContext context, WidgetRef ref) {
     // Navigate to currency settings in settings screen
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('请在设置中管理货币')),
+      const SnackBar(content: const Text('请在设置中管理货币')),
     );
   }
 
@@ -371,7 +371,7 @@ class SettingsScreen extends ConsumerWidget {
           children: [
             const Padding(
               padding: EdgeInsets.all(16),
-              child: Text(
+              child: const Text(
                 '选择基础货币',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
@@ -383,12 +383,12 @@ class SettingsScreen extends ConsumerWidget {
                   final currency = currencies[index];
                   final isSelected = currency.code == currentBase.code;
                   return ListTile(
-                    leading: Text(
+                    leading: const Text(
                       currency.flag ?? currency.symbol,
                       style: const TextStyle(fontSize: 24),
                     ),
-                    title: Text(currency.nameZh),
-                    subtitle: Text(currency.code),
+                    title: const Text(currency.nameZh),
+                    subtitle: const Text(currency.code),
                     trailing: isSelected
                         ? const Icon(Icons.check, color: Colors.green)
                         : null,
@@ -405,11 +405,11 @@ class SettingsScreen extends ConsumerWidget {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: const [
-                              Text('1. 旧账单若有币种转换，将保留原转换单位'),
-                              SizedBox(height: 8),
-                              Text('2. 旧账单若无币种转换，将以新币种显示'),
-                              SizedBox(height: 8),
-                              Text('3. 所有统计将以新基础货币汇总，请谨慎更换'),
+                              const Text('1. 旧账单若有币种转换，将保留原转换单位'),
+                              const SizedBox(height: 8),
+                              const Text('2. 旧账单若无币种转换，将以新币种显示'),
+                              const SizedBox(height: 8),
+                              const Text('3. 所有统计将以新基础货币汇总，请谨慎更换'),
                             ],
                           ),
                           actions: [
@@ -446,42 +446,42 @@ class SettingsScreen extends ConsumerWidget {
   void _navigateToBudgetTemplates(BuildContext context) {
     // TODO: 实现预算模板页面
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('预算模板功能开发中')),
+      const SnackBar(content: const Text('预算模板功能开发中')),
     );
   }
 
   void _navigateToBackup(BuildContext context) {
     // TODO: 实现备份页面
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('备份功能开发中')),
+      const SnackBar(content: const Text('备份功能开发中')),
     );
   }
 
   void _navigateToRestore(BuildContext context) {
     // TODO: 实现恢复页面
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('恢复功能开发中')),
+      const SnackBar(content: const Text('恢复功能开发中')),
     );
   }
 
   void _navigateToImportExport(BuildContext context) {
     // TODO: 实现导入导出页面
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('导入导出功能开发中')),
+      const SnackBar(content: const Text('导入导出功能开发中')),
     );
   }
 
   void _showLanguageSelector(BuildContext context) {
     // TODO: 实现语言选择
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('多语言支持开发中')),
+      const SnackBar(content: const Text('多语言支持开发中')),
     );
   }
 
   void _navigateToHelp(BuildContext context) {
     // TODO: 实现帮助页面
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('帮助中心开发中')),
+      const SnackBar(content: const Text('帮助中心开发中')),
     );
   }
 
@@ -492,9 +492,9 @@ class SettingsScreen extends ConsumerWidget {
       applicationVersion: '1.0.0',
       applicationIcon: const Icon(Icons.account_balance_wallet, size: 64),
       children: const [
-        Text('智能财务管理应用'),
-        SizedBox(height: 8),
-        Text('让财务管理变得简单高效'),
+        const Text('智能财务管理应用'),
+        const SizedBox(height: 8),
+        const Text('让财务管理变得简单高效'),
       ],
     );
   }
@@ -559,7 +559,7 @@ class LedgerManagementScreen extends ConsumerWidget {
           },
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('加载失败: $error')),
+        error: (error, _) => Center(child: const Text('加载失败: $error')),
       ),
     );
   }
@@ -571,19 +571,19 @@ class LedgerManagementScreen extends ConsumerWidget {
       leading: CircleAvatar(
         backgroundColor:
             isDefault ? Theme.of(context).primaryColor : Colors.grey[300],
-        child: Icon(
-          _getLedgerIcon(ledger.type),
+        child: const Icon(
+          _getLedgerconst Icon(ledger.type),
           color: isDefault ? Colors.white : Colors.grey[600],
         ),
       ),
-      title: Text(ledger.name),
-      subtitle: Text(ledger.description ?? ''),
+      title: const Text(ledger.name),
+      subtitle: const Text(ledger.description ?? ''),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (isDefault)
             const Chip(
-              label: Text('当前', style: TextStyle(fontSize: 12)),
+              label: const Text('当前', style: TextStyle(fontSize: 12)),
               padding: EdgeInsets.zero,
             ),
           PopupMenuButton<String>(
@@ -598,8 +598,8 @@ class LedgerManagementScreen extends ConsumerWidget {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(value: 'edit', child: Text('编辑')),
-              const PopupMenuItem(value: 'delete', child: Text('删除')),
+              const PopupMenuItem(value: 'edit', child: const Text('编辑')),
+              const PopupMenuItem(value: 'delete', child: const Text('删除')),
             ],
           ),
         ],
@@ -612,7 +612,7 @@ class LedgerManagementScreen extends ConsumerWidget {
     );
   }
 
-  IconData _getLedgerIcon(String type) {
+  IconData _getLedgerconst Icon(String type) {
     switch (type) {
       case 'personal':
         return Icons.person;
@@ -638,14 +638,14 @@ class LedgerManagementScreen extends ConsumerWidget {
   void _editLedger(BuildContext context, dynamic ledger) {
     // TODO: 实现编辑家庭
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('编辑家庭功能开发中')),
+      const SnackBar(content: const Text('编辑家庭功能开发中')),
     );
   }
 
   void _deleteLedger(BuildContext context, WidgetRef ref, dynamic ledger) {
     // TODO: 实现删除家庭
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('删除家庭功能开发中')),
+      const SnackBar(content: const Text('删除家庭功能开发中')),
     );
   }
 }
@@ -669,7 +669,7 @@ class AccountGroupsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('账户分组')),
-      body: const Center(child: Text('账户分组管理')),
+      body: const Center(child: const Text('账户分组管理')),
     );
   }
 }
@@ -697,12 +697,12 @@ class CurrencySelectionScreen extends ConsumerWidget {
         itemBuilder: (context, index) {
           final currency = currencies[index];
           return ListTile(
-            leading: Text(
+            leading: const Text(
               currency['symbol']!,
               style: const TextStyle(fontSize: 24),
             ),
-            title: Text(currency['name']!),
-            subtitle: Text(currency['code']!),
+            title: const Text(currency['name']!),
+            subtitle: const Text(currency['code']!),
             onTap: () {
               ref.read(settingsProvider.notifier).updateSetting(
                     'defaultCurrency',
@@ -725,7 +725,7 @@ class ExchangeRatesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('汇率管理')),
-      body: const Center(child: Text('汇率管理')),
+      body: const Center(child: const Text('汇率管理')),
     );
   }
 }

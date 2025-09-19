@@ -30,7 +30,7 @@ class _DevQuickActionsState extends State<DevQuickActions> {
             FloatingActionButton.small(
               heroTag: 'dev_fab',
               onPressed: () => setState(() => _open = !_open),
-              child: Icon(_open ? Icons.close : Icons.build, size: 18),
+              child: const Icon(_open ? Icons.close : Icons.build, size: 18),
             ),
             if (_open)
               Material(
@@ -39,7 +39,7 @@ class _DevQuickActionsState extends State<DevQuickActions> {
                   margin: const EdgeInsets.only(top: 8),
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.8),
+                    color: Colors.black.withValues(alpha: 0.8),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   width: 220,
@@ -72,10 +72,10 @@ class _DevQuickActionsState extends State<DevQuickActions> {
           child: Row(children: [
             const Icon(Icons.chevron_right, size: 14, color: Colors.white70),
             const SizedBox(width: 4),
-            Expanded(child: Text(label)),
+            Expanded(child: const Text(label)),
           ]),
         ),
       );
   void _reload() => html.window.location.reload();
-  void _toast(String msg) { if (!mounted) return; WidgetsBinding.instance.addPostFrameCallback((_) { if(!mounted) return; ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), duration: const Duration(seconds: 1), behavior: SnackBarBehavior.floating));}); }
+  void _toast(String msg) { if (!mounted) return; WidgetsBinding.instance.addPostFrameCallback((_) { if(!mounted) return; ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text(msg), duration: const Duration(seconds: 1), behavior: SnackBarBehavior.floating));}); }
 }

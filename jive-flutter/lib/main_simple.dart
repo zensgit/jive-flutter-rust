@@ -156,13 +156,13 @@ class _HomePageState extends State<HomePage> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, -4),
             spreadRadius: 0,
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 1,
             offset: const Offset(0, -1),
             spreadRadius: 0,
@@ -214,7 +214,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
-              child: Icon(
+              child: const Icon(
                 isSelected ? filledIcon : outlinedIcon,
                 key: ValueKey(isSelected),
                 color: isSelected ? const Color(0xFF00E676) : Colors.grey[600],
@@ -222,7 +222,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 6),
-            Text(
+            const Text(
               label,
               style: TextStyle(
                 fontSize: 11,
@@ -257,21 +257,21 @@ class _HomePageState extends State<HomePage> {
           boxShadow: [
             // 主阴影
             BoxShadow(
-              color: const Color(0xFF00E676).withOpacity(0.4),
+              color: const Color(0xFF00E676).withValues(alpha: 0.4),
               blurRadius: 16,
               offset: const Offset(0, 8),
               spreadRadius: 0,
             ),
             // 内层光晕
             BoxShadow(
-              color: const Color(0xFF00E676).withOpacity(0.2),
+              color: const Color(0xFF00E676).withValues(alpha: 0.2),
               blurRadius: 24,
               offset: const Offset(0, 4),
               spreadRadius: 4,
             ),
             // 顶部高光
             BoxShadow(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               blurRadius: 1,
               offset: const Offset(0, -1),
               spreadRadius: 0,
@@ -282,7 +282,7 @@ class _HomePageState extends State<HomePage> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(34),
             border: Border.all(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               width: 1,
             ),
           ),
@@ -290,8 +290,8 @@ class _HomePageState extends State<HomePage> {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(34),
-              splashColor: Colors.white.withOpacity(0.2),
-              highlightColor: Colors.white.withOpacity(0.1),
+              splashColor: Colors.white.withValues(alpha: 0.2),
+              highlightColor: Colors.white.withValues(alpha: 0.1),
               onTap: () {
                 // 添加触觉反馈
                 // HapticFeedback.lightImpact(); // 如果需要的话可以取消注释
@@ -309,14 +309,14 @@ class _HomePageState extends State<HomePage> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.white.withOpacity(0.1),
+                      Colors.white.withValues(alpha: 0.1),
                       Colors.transparent,
                     ],
                     stops: const [0.0, 0.3],
                   ),
                 ),
                 child: const Center(
-                  child: Icon(
+                  child: const Icon(
                     Icons.add_rounded,
                     color: Colors.white,
                     size: 32,
@@ -469,7 +469,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.1),
+                    color: Colors.blue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: SvgPicture.asset(
@@ -496,7 +496,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.1),
+                        color: Colors.orange.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -508,7 +508,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             child: _isLoading
                                 ? Row(
                                     children: [
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 12,
                                         height: 12,
                                         child: CircularProgressIndicator(
@@ -528,7 +528,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                       ),
                                     ],
                                   )
-                                : Text(
+                                : const Text(
                                     '坚持记账第$_accountingDays天，已记录$_totalTransactions条账单，继续保持！',
                                     style: const TextStyle(
                                       color: Colors.black87,
@@ -594,13 +594,13 @@ class _DashboardPageState extends State<DashboardPage> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: color, size: 32),
         ),
         const SizedBox(height: 8),
-        Text(label, style: const TextStyle(fontSize: 12)),
+        const Text(label, style: const TextStyle(fontSize: 12)),
       ],
     );
   }
@@ -611,27 +611,27 @@ class _DashboardPageState extends State<DashboardPage> {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: isExpense
-            ? Colors.red.withOpacity(0.1)
-            : Colors.green.withOpacity(0.1),
-        child: Icon(
+            ? Colors.red.withValues(alpha: 0.1)
+            : Colors.green.withValues(alpha: 0.1),
+        child: const Icon(
           isExpense ? Icons.arrow_downward : Icons.arrow_upward,
           color: isExpense ? Colors.red : Colors.green,
         ),
       ),
-      title: Text(title),
-      subtitle: Text(category),
+      title: const Text(title),
+      subtitle: const Text(category),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Text(
+          const Text(
             amount,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: isExpense ? Colors.red : Colors.green,
             ),
           ),
-          Text(
+          const Text(
             '${date.month}/${date.day}',
             style: const TextStyle(fontSize: 12, color: Colors.grey),
           ),
@@ -648,7 +648,7 @@ class TransactionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('交易记录', style: TextStyle(fontSize: 24)),
+      child: const Text('交易记录', style: TextStyle(fontSize: 24)),
     );
   }
 }
@@ -660,7 +660,7 @@ class BudgetPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('预算管理', style: TextStyle(fontSize: 24)),
+      child: const Text('预算管理', style: TextStyle(fontSize: 24)),
     );
   }
 }
@@ -672,7 +672,7 @@ class ReportsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('财务报表', style: TextStyle(fontSize: 24)),
+      child: const Text('财务报表', style: TextStyle(fontSize: 24)),
     );
   }
 }
@@ -688,7 +688,7 @@ class SettingsPage extends StatelessWidget {
         // 账户设置分组
         const Padding(
           padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Text(
+          child: const Text(
             '账户设置',
             style: TextStyle(
               fontSize: 14,
@@ -713,7 +713,7 @@ class SettingsPage extends StatelessWidget {
         // 财务管理分组
         const Padding(
           padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
-          child: Text(
+          child: const Text(
             '财务管理',
             style: TextStyle(
               fontSize: 14,
@@ -805,7 +805,7 @@ class SettingsPage extends StatelessWidget {
         // 应用设置分组
         const Padding(
           padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
-          child: Text(
+          child: const Text(
             '应用设置',
             style: TextStyle(
               fontSize: 14,
@@ -1027,14 +1027,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('用户信息更新成功'),
+            content: const Text('用户信息更新成功'),
             backgroundColor: Colors.green,
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result.message ?? '更新失败'),
+            content: const Text(result.message ?? '更新失败'),
             backgroundColor: Colors.red,
           ),
         );
@@ -1042,7 +1042,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('更新用户信息时发生错误: $e'),
+          content: const Text('更新用户信息时发生错误: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -1091,7 +1091,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(result.message ?? '微信账户解绑成功'),
+                  content: const Text(result.message ?? '微信账户解绑成功'),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -1100,7 +1100,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(result.message ?? '解绑失败'),
+                  content: const Text(result.message ?? '解绑失败'),
                   backgroundColor: Colors.red,
                 ),
               );
@@ -1171,7 +1171,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('账户已删除'),
+              content: const Text('账户已删除'),
               backgroundColor: Colors.green,
             ),
           );
@@ -1181,7 +1181,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('删除账户时发生错误: $e'),
+              content: const Text('删除账户时发生错误: $e'),
               backgroundColor: Colors.red,
             ),
           );
@@ -1233,7 +1233,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  const Text(
                     '个人资料设置和头像管理',
                     style: TextStyle(
                       fontSize: 14,
@@ -1264,7 +1264,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                         fit: BoxFit.cover,
                                       ),
                                     )
-                                  : Icon(
+                                  : const Icon(
                                       Icons.image_outlined,
                                       size: 32,
                                       color: Colors.grey[400],
@@ -1276,7 +1276,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         OutlinedButton.icon(
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('头像上传功能开发中')),
+                              const SnackBar(content: const Text('头像上传功能开发中')),
                             );
                           },
                           icon: const Icon(Icons.upload, size: 16),
@@ -1289,7 +1289,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text(
+                        const Text(
                           'JPG or PNG. 5MB max.',
                           style: TextStyle(
                             fontSize: 12,
@@ -1350,7 +1350,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(color: Colors.grey[300]!),
                               ),
-                              child: Text(
+                              child: const Text(
                                 currentUser?.email ?? 'user@example.com',
                                 style: const TextStyle(fontSize: 14),
                               ),
@@ -1407,7 +1407,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(color: Colors.grey[300]!),
                               ),
-                              child: Text(
+                              child: const Text(
                                 _getDisplayName(currentUser),
                                 style: const TextStyle(fontSize: 14),
                               ),
@@ -1469,7 +1469,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                       border:
                                           Border.all(color: Colors.grey[300]!),
                                     ),
-                                    child: Text(
+                                    child: const Text(
                                       _getFirstName(currentUser),
                                       style: const TextStyle(fontSize: 14),
                                     ),
@@ -1527,7 +1527,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                       border:
                                           Border.all(color: Colors.grey[300]!),
                                     ),
-                                    child: Text(
+                                    child: const Text(
                                       _getLastName(currentUser),
                                       style: const TextStyle(fontSize: 14),
                                     ),
@@ -1671,7 +1671,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  const Text(
                     '管理您的家庭成员，邀请或移除成员。家庭成员可以访问共享的财务数据。',
                     style: TextStyle(
                       fontSize: 14,
@@ -1718,7 +1718,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.wechat, color: Colors.grey[600], size: 20),
+                      const Icon(Icons.wechat, color: Colors.grey[600], size: 20),
                       const SizedBox(width: 8),
                       const Text(
                         '微信账户',
@@ -1734,11 +1734,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: _weChatInfo != null
-                              ? Colors.green.withOpacity(0.1)
-                              : Colors.blue.withOpacity(0.1),
+                              ? Colors.green.withValues(alpha: 0.1)
+                              : Colors.blue.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(
+                        child: const Text(
                           _weChatInfo != null ? '已绑定' : '未绑定',
                           style: TextStyle(
                             fontSize: 12,
@@ -1752,7 +1752,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  const Text(
                     '绑定微信账户后，您可以使用微信快速登录',
                     style: TextStyle(
                       fontSize: 14,
@@ -1764,10 +1764,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.05),
+                        color: Colors.green.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(8),
                         border:
-                            Border.all(color: Colors.green.withOpacity(0.2)),
+                            Border.all(color: Colors.green.withValues(alpha: 0.2)),
                       ),
                       child: Row(
                         children: [
@@ -1785,12 +1785,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                const Text(
                                   _weChatInfo!.nickname,
                                   style: const TextStyle(
                                       fontWeight: FontWeight.w500),
                                 ),
-                                Text(
+                                const Text(
                                   '${_weChatInfo!.country} ${_weChatInfo!.province} ${_weChatInfo!.city}',
                                   style: const TextStyle(
                                       fontSize: 12, color: Colors.grey),
@@ -1823,7 +1823,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         ),
                       ),
                       child: _isLoading
-                          ? SizedBox(
+                          ? const SizedBox(
                               width: 16,
                               height: 16,
                               child: CircularProgressIndicator(
@@ -1835,7 +1835,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 ),
                               ),
                             )
-                          : Text(_weChatInfo != null ? '解绑微信' : '绑定微信'),
+                          : const Text(_weChatInfo != null ? '解绑微信' : '绑定微信'),
                     ),
                   ),
                 ],
@@ -1875,7 +1875,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            Text(
+                            const Text(
                               '删除您的账户将永久删除所有数据且无法撤销。',
                               style: TextStyle(
                                 fontSize: 14,
@@ -1911,7 +1911,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             Container(
               color: Colors.white,
               padding: const EdgeInsets.all(24.0),
-              child: SizedBox(
+              child: const SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: _isLoading ? null : _logout,
@@ -1924,7 +1924,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           ),
                         )
                       : const Icon(Icons.logout),
-                  label: Text(_isLoading ? '退出中...' : '退出登录'),
+                  label: const Text(_isLoading ? '退出中...' : '退出登录'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.grey[700],
                     side: BorderSide(color: Colors.grey[300]!),
@@ -1947,7 +1947,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       children: [
         CircleAvatar(
           radius: 16,
-          backgroundColor: color.withOpacity(0.1),
+          backgroundColor: color.withValues(alpha: 0.1),
           child: Icon(icon, color: color, size: 16),
         ),
         const SizedBox(width: 12),
@@ -1955,12 +1955,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 name,
                 style:
                     const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
               ),
-              Text(
+              const Text(
                 role,
                 style: const TextStyle(color: Colors.grey, fontSize: 12),
               ),
@@ -1982,8 +1982,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontSize: 16)),
-          Text(value,
+          const Text(label, style: const TextStyle(fontSize: 16)),
+          const Text(value,
               style:
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         ],
@@ -2014,16 +2014,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.05),
+        color: Colors.blue.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.blue.withOpacity(0.2)),
+        border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.home, color: Colors.blue[600], size: 20),
+              const Icon(Icons.home, color: Colors.blue[600], size: 20),
               const SizedBox(width: 8),
               const Text(
                 'Current Household',
@@ -2035,7 +2035,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             ],
           ),
           const SizedBox(height: 12),
-          Text(
+          const Text(
             user?.username ?? 'Default Family', // 模拟家庭名称
             style: const TextStyle(
               fontSize: 18,
@@ -2047,9 +2047,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
             children: [
               _buildRoleBadge(_getUserRole()),
               const SizedBox(width: 12),
-              Icon(Icons.person, size: 14, color: Colors.grey[600]),
+              const Icon(Icons.person, size: 14, color: Colors.grey[600]),
               const SizedBox(width: 4),
-              Text(
+              const Text(
                 _getUserRole() == 'Owner' ? '4 members' : '1 member', // 动态成员数量
                 style: TextStyle(
                   fontSize: 12,
@@ -2119,21 +2119,21 @@ class _UserProfilePageState extends State<UserProfilePage> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isCurrentUser
-            ? Colors.green.withOpacity(0.05)
-            : Colors.grey.withOpacity(0.05),
+            ? Colors.green.withValues(alpha: 0.05)
+            : Colors.grey.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isCurrentUser
-              ? Colors.green.withOpacity(0.2)
-              : Colors.grey.withOpacity(0.2),
+              ? Colors.green.withValues(alpha: 0.2)
+              : Colors.grey.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
         children: [
           CircleAvatar(
             radius: 20,
-            backgroundColor: _getRoleColor(role).withOpacity(0.1),
-            child: Text(
+            backgroundColor: _getRoleColor(role).withValues(alpha: 0.1),
+            child: const Text(
               name.substring(0, 1).toUpperCase(),
               style: TextStyle(
                 color: _getRoleColor(role),
@@ -2148,7 +2148,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               children: [
                 Row(
                   children: [
-                    Text(
+                    const Text(
                       name,
                       style: const TextStyle(
                         fontWeight: FontWeight.w500,
@@ -2177,7 +2177,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ],
                 ),
                 const SizedBox(height: 2),
-                Text(
+                const Text(
                   email,
                   style: TextStyle(
                     fontSize: 12,
@@ -2207,9 +2207,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   value: 'change_role',
                   child: Row(
                     children: [
-                      Icon(Icons.swap_horiz, size: 16),
-                      SizedBox(width: 8),
-                      Text('Change Role'),
+                      const Icon(Icons.swap_horiz, size: 16),
+                      const SizedBox(width: 8),
+                      const Text('Change Role'),
                     ],
                   ),
                 ),
@@ -2218,10 +2218,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   value: 'remove',
                   child: Row(
                     children: [
-                      Icon(Icons.remove_circle_outline,
+                      const Icon(Icons.remove_circle_outline,
                           size: 16, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text('Remove Member',
+                      const SizedBox(width: 8),
+                      const Text('Remove Member',
                           style: TextStyle(color: Colors.red)),
                     ],
                   ),
@@ -2239,10 +2239,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: _getRoleColor(role).withOpacity(0.1),
+        color: _getRoleColor(role).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Text(
+      child: const Text(
         role,
         style: TextStyle(
           fontSize: 10,
@@ -2298,7 +2298,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$memberName\'s role has been changed to $newRole'),
+        content: const Text('$memberName\'s role has been changed to $newRole'),
         backgroundColor: Colors.green,
       ),
     );
@@ -2327,11 +2327,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(0.05),
+          color: Colors.grey.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Center(
-          child: Text(
+          child: const Text(
             'You are not a member of any other households',
             style: TextStyle(
               color: Colors.grey[600],
@@ -2358,19 +2358,19 @@ class _UserProfilePageState extends State<UserProfilePage> {
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.05),
+                color: Colors.grey.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.business, color: Colors.grey[600], size: 20),
+                  const Icon(Icons.business, color: Colors.grey[600], size: 20),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           household['name'],
                           style: const TextStyle(
                             fontWeight: FontWeight.w500,
@@ -2382,10 +2382,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           children: [
                             _buildRoleBadge(household['role']),
                             const SizedBox(width: 8),
-                            Icon(Icons.person,
+                            const Icon(Icons.person,
                                 size: 12, color: Colors.grey[600]),
                             const SizedBox(width: 2),
-                            Text(
+                            const Text(
                               '${household['members']} members',
                               style: TextStyle(
                                 fontSize: 10,
@@ -2423,7 +2423,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Leave Household'),
-        content: Text('Are you sure you want to leave "$householdName"?'),
+        content: const Text('Are you sure you want to leave "$householdName"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -2434,7 +2434,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('You have left "$householdName"'),
+                  content: const Text('You have left "$householdName"'),
                   backgroundColor: Colors.orange,
                 ),
               );
@@ -2458,7 +2458,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
           await _loadWeChatInfo();
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('微信绑定成功！'),
+              content: const Text('微信绑定成功！'),
               backgroundColor: Colors.green,
             ),
           );
@@ -2521,7 +2521,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
               children: [
                 const Padding(
                   padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  child: Text(
+                  child: const Text(
                     '账户安全',
                     style: TextStyle(
                       fontSize: 14,
@@ -2538,14 +2538,14 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
                       color: _mfaEnabled ? Colors.green[50] : Colors.grey[100],
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.security,
                       color: _mfaEnabled ? Colors.green[600] : Colors.grey[600],
                       size: 20,
                     ),
                   ),
                   title: const Text('多因素认证 (2FA)'),
-                  subtitle: Text(
+                  subtitle: const Text(
                     _mfaEnabled ? '已启用 - 您的账户已受到额外保护' : '未启用 - 启用以增强账户安全',
                     style: TextStyle(
                       color: _mfaEnabled ? Colors.green[600] : Colors.grey[600],
@@ -2573,7 +2573,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
                         color: Colors.orange[50],
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.backup_outlined,
                         color: Colors.orange[600],
                         size: 20,
@@ -2595,7 +2595,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
                           : Colors.grey[100],
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.fingerprint,
                       color: _biometricEnabled
                           ? Colors.blue[600]
@@ -2604,7 +2604,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
                     ),
                   ),
                   title: const Text('生物识别认证'),
-                  subtitle: Text(
+                  subtitle: const Text(
                     _biometricEnabled
                         ? '已启用 - 使用指纹或面部识别快速登录'
                         : '未启用 - 启用以便快速安全登录',
@@ -2640,7 +2640,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
               children: [
                 const Padding(
                   padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  child: Text(
+                  child: const Text(
                     '密码管理',
                     style: TextStyle(
                       fontSize: 14,
@@ -2657,7 +2657,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
                       color: Colors.purple[50],
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.lock_outline,
                       color: Colors.purple[600],
                       size: 20,
@@ -2687,7 +2687,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
               children: [
                 const Padding(
                   padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  child: Text(
+                  child: const Text(
                     '设备与会话',
                     style: TextStyle(
                       fontSize: 14,
@@ -2704,7 +2704,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
                       color: Colors.indigo[50],
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.devices_other,
                       color: Colors.indigo[600],
                       size: 20,
@@ -2722,7 +2722,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
                           color: Colors.blue[50],
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(
+                        child: const Text(
                           '3 设备',
                           style: TextStyle(
                             fontSize: 12,
@@ -2752,7 +2752,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
                       color: Colors.teal[50],
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.history,
                       color: Colors.teal[600],
                       size: 20,
@@ -2818,7 +2818,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('多因素认证已禁用'),
+                  content: const Text('多因素认证已禁用'),
                   backgroundColor: Colors.orange,
                 ),
               );
@@ -2858,7 +2858,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
     });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('生物识别认证已启用'),
+        content: const Text('生物识别认证已启用'),
         backgroundColor: Colors.green,
       ),
     );
@@ -2871,7 +2871,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
     });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('生物识别认证已禁用'),
+        content: const Text('生物识别认证已禁用'),
         backgroundColor: Colors.orange,
       ),
     );
@@ -2942,7 +2942,7 @@ class _MFASetupPageState extends State<MFASetupPage> {
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('多因素认证已成功启用'),
+                content: const Text('多因素认证已成功启用'),
                 backgroundColor: Colors.green,
               ),
             );
@@ -2990,7 +2990,7 @@ class _MFASetupPageState extends State<MFASetupPage> {
                           color: Colors.grey[100],
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: SelectableText(
+                        child: Selectableconst Text(
                           _totpSecret,
                           style: const TextStyle(
                               fontFamily: 'monospace', fontSize: 12),
@@ -3050,7 +3050,7 @@ class _MFASetupPageState extends State<MFASetupPage> {
                   ),
                   child: Column(
                     children: [
-                      Icon(Icons.warning, color: Colors.orange[700], size: 32),
+                      const Icon(Icons.warning, color: Colors.orange[700], size: 32),
                       const SizedBox(height: 8),
                       const Text(
                         '请保存这些备份代码',
@@ -3076,7 +3076,7 @@ class _MFASetupPageState extends State<MFASetupPage> {
                         .map(
                           (code) => Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: Text(
+                            child: const Text(
                               code,
                               style: const TextStyle(
                                 fontFamily: 'monospace',
@@ -3093,7 +3093,7 @@ class _MFASetupPageState extends State<MFASetupPage> {
                   onPressed: () {
                     // 复制到剪贴板
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('备份代码已复制')),
+                      const SnackBar(content: const Text('备份代码已复制')),
                     );
                   },
                   icon: const Icon(Icons.copy, size: 16),
@@ -3119,7 +3119,7 @@ class _MFASetupPageState extends State<MFASetupPage> {
     }
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('验证码无效，请重试'),
+        content: const Text('验证码无效，请重试'),
         backgroundColor: Colors.red,
       ),
     );
@@ -3168,10 +3168,10 @@ class BackupCodesPage extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: Colors.blue[700]),
+                  const Icon(Icons.info_outline, color: Colors.blue[700]),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
+                    child: const Text(
                       '每个备份代码只能使用一次。请将它们保存在安全的地方。',
                       style: TextStyle(color: Colors.blue[700], fontSize: 14),
                     ),
@@ -3200,10 +3200,10 @@ class BackupCodesPage extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 6),
                         child: Row(
                           children: [
-                            Icon(Icons.fiber_manual_record,
+                            const Icon(Icons.fiber_manual_record,
                                 size: 8, color: Colors.grey[400]),
                             const SizedBox(width: 12),
-                            Text(
+                            const Text(
                               code,
                               style: const TextStyle(
                                 fontFamily: 'monospace',
@@ -3226,7 +3226,7 @@ class BackupCodesPage extends StatelessWidget {
                     onPressed: () {
                       // 复制所有代码
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('备份代码已复制')),
+                        const SnackBar(content: const Text('备份代码已复制')),
                       );
                     },
                     icon: const Icon(Icons.copy, size: 16),
@@ -3277,7 +3277,7 @@ class BackupCodesPage extends StatelessWidget {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('备份代码已重新生成'),
+                  content: const Text('备份代码已重新生成'),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -3332,10 +3332,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.tips_and_updates, color: Colors.amber[700]),
+                  const Icon(Icons.tips_and_updates, color: Colors.amber[700]),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
+                    child: const Text(
                       '建议使用包含大小写字母、数字和特殊字符的强密码',
                       style: TextStyle(color: Colors.amber[800], fontSize: 14),
                     ),
@@ -3360,7 +3360,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 suffixIcon: IconButton(
-                  icon: Icon(_showCurrentPassword
+                  icon: const Icon(_showCurrentPassword
                       ? Icons.visibility_off
                       : Icons.visibility),
                   onPressed: () {
@@ -3388,7 +3388,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 suffixIcon: IconButton(
-                  icon: Icon(_showNewPassword
+                  icon: const Icon(_showNewPassword
                       ? Icons.visibility_off
                       : Icons.visibility),
                   onPressed: () {
@@ -3416,7 +3416,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 suffixIcon: IconButton(
-                  icon: Icon(_showConfirmPassword
+                  icon: const Icon(_showConfirmPassword
                       ? Icons.visibility_off
                       : Icons.visibility),
                   onPressed: () {
@@ -3434,7 +3434,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             const SizedBox(height: 32),
 
             // 提交按钮
-            SizedBox(
+            const SizedBox(
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
@@ -3500,7 +3500,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           valueColor: AlwaysStoppedAnimation<Color>(color),
         ),
         const SizedBox(height: 4),
-        Text(
+        const Text(
           message,
           style: TextStyle(fontSize: 12, color: color),
         ),
@@ -3514,7 +3514,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         _confirmPasswordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('请填写所有字段'),
+          content: const Text('请填写所有字段'),
           backgroundColor: Colors.red,
         ),
       );
@@ -3524,7 +3524,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     if (_newPasswordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('新密码两次输入不一致'),
+          content: const Text('新密码两次输入不一致'),
           backgroundColor: Colors.red,
         ),
       );
@@ -3534,7 +3534,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     if (_newPasswordController.text.length < 8) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('新密码长度至少8位'),
+          content: const Text('新密码长度至少8位'),
           backgroundColor: Colors.red,
         ),
       );
@@ -3555,7 +3555,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('密码修改成功'),
+        content: const Text('密码修改成功'),
         backgroundColor: Colors.green,
       ),
     );
@@ -3697,10 +3697,10 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.warning_amber_rounded, color: Colors.orange[700]),
+                  const Icon(Icons.warning_amber_rounded, color: Colors.orange[700]),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
+                    child: const Text(
                       '您有未受信任的设备登录，建议检查并移除可疑设备',
                       style: TextStyle(color: Colors.orange[800], fontSize: 13),
                     ),
@@ -3728,20 +3728,20 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: color, size: 24),
         ),
         const SizedBox(height: 8),
-        Text(
+        const Text(
           value,
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
-        Text(
+        const Text(
           label,
           style: TextStyle(
             fontSize: 12,
@@ -3782,7 +3782,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -3796,7 +3796,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color),
@@ -3808,7 +3808,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
                 children: [
                   Row(
                     children: [
-                      Text(
+                      const Text(
                         device['name'],
                         style: const TextStyle(
                           fontSize: 16,
@@ -3824,7 +3824,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
                             color: Colors.green[50],
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Text(
+                          child: const Text(
                             '当前设备',
                             style: TextStyle(
                               fontSize: 11,
@@ -3836,7 +3836,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  const Text(
                     '${device['location']} • ${device['lastActive']}',
                     style: TextStyle(
                       fontSize: 13,
@@ -3859,9 +3859,9 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
                     value: 'remove',
                     child: Row(
                       children: [
-                        Icon(Icons.logout, size: 16, color: Colors.red),
-                        SizedBox(width: 8),
-                        Text('移除设备', style: TextStyle(color: Colors.red)),
+                        const Icon(Icons.logout, size: 16, color: Colors.red),
+                        const SizedBox(width: 8),
+                        const Text('移除设备', style: TextStyle(color: Colors.red)),
                       ],
                     ),
                   ),
@@ -3881,7 +3881,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
+        content: const Text(
           isTrusted ? '已取消设备信任' : '设备已标记为受信任',
         ),
         backgroundColor: isTrusted ? Colors.orange : Colors.green,
@@ -3899,9 +3899,9 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('确定要从 ${device['name']} 登出吗？'),
+            const Text('确定要从 ${device['name']} 登出吗？'),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               '该设备将需要重新登录才能访问您的账户。',
               style: TextStyle(fontSize: 13, color: Colors.grey[600]),
             ),
@@ -3920,7 +3920,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
               });
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('设备已登出'),
+                  content: const Text('设备已登出'),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -3942,7 +3942,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.orange[700]),
+            const Icon(Icons.warning_amber_rounded, color: Colors.orange[700]),
             const SizedBox(width: 8),
             const Text('登出所有其他设备'),
           ],
@@ -3951,9 +3951,9 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('这将登出除当前设备外的所有设备。'),
-            SizedBox(height: 8),
-            Text(
+            const Text('这将登出除当前设备外的所有设备。'),
+            const SizedBox(height: 8),
+            const Text(
               '所有其他设备将需要重新登录。',
               style: TextStyle(fontSize: 13, color: Colors.grey),
             ),
@@ -3972,7 +3972,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
               });
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('已登出所有其他设备'),
+                  content: const Text('已登出所有其他设备'),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -4072,13 +4072,13 @@ class LoginHistoryPage extends StatelessWidget {
                   color: isSuccess ? Colors.green[50] : Colors.red[50],
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
+                child: const Icon(
                   isSuccess ? Icons.check_circle : Icons.error,
                   color: isSuccess ? Colors.green[600] : Colors.red[600],
                   size: 20,
                 ),
               ),
-              title: Text(
+              title: const Text(
                 item['device']!,
                 style: const TextStyle(fontWeight: FontWeight.w500),
               ),
@@ -4086,11 +4086,11 @@ class LoginHistoryPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 4),
-                  Text(
+                  const Text(
                     '${item['date']}',
                     style: const TextStyle(fontSize: 12),
                   ),
-                  Text(
+                  const Text(
                     '${item['location']} • IP: ${item['ip']}',
                     style: const TextStyle(fontSize: 12),
                   ),
@@ -4103,7 +4103,7 @@ class LoginHistoryPage extends StatelessWidget {
                         color: Colors.red[50],
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text(
+                      child: const Text(
                         '登录失败',
                         style: TextStyle(
                           fontSize: 11,
@@ -4120,7 +4120,7 @@ class LoginHistoryPage extends StatelessWidget {
                   if (value == 'report') {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('已报告可疑活动'),
+                        content: const Text('已报告可疑活动'),
                         backgroundColor: Colors.orange,
                       ),
                     );
@@ -4131,9 +4131,9 @@ class LoginHistoryPage extends StatelessWidget {
                     value: 'report',
                     child: Row(
                       children: [
-                        Icon(Icons.flag, size: 16, color: Colors.orange),
-                        SizedBox(width: 8),
-                        Text('报告可疑活动'),
+                        const Icon(Icons.flag, size: 16, color: Colors.orange),
+                        const SizedBox(width: 8),
+                        const Text('报告可疑活动'),
                       ],
                     ),
                   ),
@@ -4204,11 +4204,11 @@ class FamilyManagementPage extends StatelessWidget {
       String name, String role, IconData icon, Color color) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: color.withOpacity(0.1),
+        backgroundColor: color.withValues(alpha: 0.1),
         child: Icon(icon, color: color),
       ),
-      title: Text(name),
-      subtitle: Text(role),
+      title: const Text(name),
+      subtitle: const Text(role),
       trailing: const Icon(Icons.more_vert),
       onTap: () {},
     );
@@ -4242,7 +4242,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
         children: [
           const Padding(
             padding: EdgeInsets.all(16),
-            child: Text(
+            child: const Text(
               '通知类型',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -4367,7 +4367,7 @@ class DataImportExportPage extends StatelessWidget {
   Widget _buildImportOption(String title, IconData icon) {
     return ListTile(
       leading: Icon(icon),
-      title: Text(title),
+      title: const Text(title),
       trailing: const Icon(Icons.upload_file),
       onTap: () {},
     );
@@ -4376,7 +4376,7 @@ class DataImportExportPage extends StatelessWidget {
   Widget _buildExportOption(String title, IconData icon) {
     return ListTile(
       leading: Icon(icon),
-      title: Text(title),
+      title: const Text(title),
       trailing: const Icon(Icons.download),
       onTap: () {},
     );
@@ -4433,13 +4433,13 @@ class AboutPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       '集腋成裘，细水长流',
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 8),
-                    Text(
+                    const SizedBox(height: 8),
+                    const Text(
                       '用心记录每一笔收支，积小成大，理财从记账开始。',
                       style: TextStyle(fontSize: 14),
                     ),
@@ -4493,7 +4493,7 @@ class _RemoveMemberDialogState extends State<_RemoveMemberDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content:
-              Text('${widget.memberName} has been removed from the household'),
+              const Text('${widget.memberName} has been removed from the household'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -4503,7 +4503,7 @@ class _RemoveMemberDialogState extends State<_RemoveMemberDialog> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Invalid verification code'),
+          content: const Text('Invalid verification code'),
           backgroundColor: Colors.red,
         ),
       );
@@ -4515,7 +4515,7 @@ class _RemoveMemberDialogState extends State<_RemoveMemberDialog> {
     return AlertDialog(
       title: Row(
         children: [
-          Icon(Icons.warning, color: Colors.red[600]),
+          const Icon(Icons.warning, color: Colors.red[600]),
           const SizedBox(width: 8),
           const Text('Remove Member'),
         ],
@@ -4524,7 +4524,7 @@ class _RemoveMemberDialogState extends State<_RemoveMemberDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Are you sure you want to remove ${widget.memberName} from this household?',
             style: const TextStyle(fontSize: 16),
           ),
@@ -4532,9 +4532,9 @@ class _RemoveMemberDialogState extends State<_RemoveMemberDialog> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.1),
+              color: Colors.red.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.red.withOpacity(0.2)),
+              border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -4547,7 +4547,7 @@ class _RemoveMemberDialogState extends State<_RemoveMemberDialog> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
+                const Text(
                   'Enter verification code: $_verificationCode',
                   style: TextStyle(
                     fontSize: 12,
@@ -4666,7 +4666,7 @@ class _ChangeRoleDialogState extends State<_ChangeRoleDialog> {
     return AlertDialog(
       title: Row(
         children: [
-          Icon(Icons.swap_horiz, color: Colors.blue[600]),
+          const Icon(Icons.swap_horiz, color: Colors.blue[600]),
           const SizedBox(width: 8),
           const Text('Change Member Role'),
         ],
@@ -4675,12 +4675,12 @@ class _ChangeRoleDialogState extends State<_ChangeRoleDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Change role for ${widget.memberName}',
             style: const TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Current role: ${widget.currentRole}',
             style: TextStyle(
               fontSize: 14,
@@ -4709,13 +4709,13 @@ class _ChangeRoleDialogState extends State<_ChangeRoleDialog> {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: _selectedRole == role
-                          ? _getRoleColor(role).withOpacity(0.1)
-                          : Colors.grey.withOpacity(0.05),
+                          ? _getRoleColor(role).withValues(alpha: 0.1)
+                          : Colors.grey.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: _selectedRole == role
                             ? _getRoleColor(role)
-                            : Colors.grey.withOpacity(0.3),
+                            : Colors.grey.withValues(alpha: 0.3),
                         width: _selectedRole == role ? 2 : 1,
                       ),
                     ),
@@ -4736,7 +4736,7 @@ class _ChangeRoleDialogState extends State<_ChangeRoleDialog> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              const Text(
                                 role,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
@@ -4746,7 +4746,7 @@ class _ChangeRoleDialogState extends State<_ChangeRoleDialog> {
                                 ),
                               ),
                               const SizedBox(height: 2),
-                              Text(
+                              const Text(
                                 _getRoleDescription(role),
                                 style: TextStyle(
                                   fontSize: 12,
@@ -4818,7 +4818,7 @@ class _DissolveHouseholdDialogState extends State<_DissolveHouseholdDialog> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
+          content: const Text(
               'Household has been dissolved. All members have been notified.'),
           backgroundColor: Colors.red,
         ),
@@ -4829,7 +4829,7 @@ class _DissolveHouseholdDialogState extends State<_DissolveHouseholdDialog> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Invalid verification code'),
+          content: const Text('Invalid verification code'),
           backgroundColor: Colors.red,
         ),
       );
@@ -4841,7 +4841,7 @@ class _DissolveHouseholdDialogState extends State<_DissolveHouseholdDialog> {
     return AlertDialog(
       title: Row(
         children: [
-          Icon(Icons.warning_amber, color: Colors.red[700], size: 28),
+          const Icon(Icons.warning_amber, color: Colors.red[700], size: 28),
           const SizedBox(width: 12),
           const Text('Dissolve Household'),
         ],
@@ -4858,16 +4858,16 @@ class _DissolveHouseholdDialogState extends State<_DissolveHouseholdDialog> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.1),
+              color: Colors.red.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.red.withOpacity(0.3)),
+              border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.info_outline, size: 16, color: Colors.red[700]),
+                    const Icon(Icons.info_outline, size: 16, color: Colors.red[700]),
                     const SizedBox(width: 8),
                     const Text(
                       'This action cannot be undone',
@@ -4893,9 +4893,9 @@ class _DissolveHouseholdDialogState extends State<_DissolveHouseholdDialog> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.1),
+              color: Colors.orange.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.orange.withOpacity(0.3)),
+              border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -4908,7 +4908,7 @@ class _DissolveHouseholdDialogState extends State<_DissolveHouseholdDialog> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
+                const Text(
                   'Enter verification code: $_verificationCode',
                   style: TextStyle(
                     fontSize: 12,

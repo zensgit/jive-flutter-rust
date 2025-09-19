@@ -23,7 +23,7 @@ class AppNavigationBar extends StatelessWidget {
         color: theme.scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
-            color: theme.shadowColor.withOpacity(0.1),
+            color: theme.shadowColor.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -83,15 +83,15 @@ class _NavigationBarItem extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? theme.primaryColor.withOpacity(0.1)
+                        ? theme.primaryColor.withValues(alpha: 0.1)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     isSelected ? item.selectedIcon : item.icon,
                     color: isSelected
                         ? theme.primaryColor
-                        : theme.colorScheme.onSurface.withOpacity(0.6),
+                        : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     size: 24,
                   ),
                 ),
@@ -101,12 +101,12 @@ class _NavigationBarItem extends StatelessWidget {
                   style: theme.textTheme.bodySmall!.copyWith(
                     color: isSelected
                         ? theme.primaryColor
-                        : theme.colorScheme.onSurface.withOpacity(0.6),
+                        : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     fontWeight:
                         isSelected ? FontWeight.w600 : FontWeight.normal,
                     fontSize: 12,
                   ),
-                  child: Text(
+                  child: const Text(
                     item.label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -126,7 +126,7 @@ class _NavigationBarItem extends StatelessWidget {
                         minWidth: 16,
                         minHeight: 16,
                       ),
-                      child: Text(
+                      child: const Text(
                         item.badge!,
                         style: const TextStyle(
                           color: Colors.white,

@@ -92,7 +92,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            SelectableText('加载失败: $errorText'),
+            Selectableconst Text('加载失败: $errorText'),
             const SizedBox(height: 16),
             Wrap(
               spacing: 12,
@@ -110,7 +110,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                     await Clipboard.setData(ClipboardData(text: errorText));
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('已复制错误信息')),
+                        const SnackBar(content: const Text('已复制错误信息')),
                       );
                     }
                   },
@@ -173,13 +173,13 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             icon,
             size: 80,
             color: Colors.grey[300],
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             message,
             style: TextStyle(
               fontSize: 16,
@@ -190,7 +190,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           ElevatedButton.icon(
             onPressed: () => _showAddTransactionDialog(context),
             icon: const Icon(Icons.add),
-            label: Text('添加${_getTypeLabel(type)}'),
+            label: const Text('添加${_getTypeLabel(type)}'),
           ),
         ],
       ),
@@ -239,7 +239,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
             // 日期范围选择
             ListTile(
               leading: const Icon(Icons.date_range),
-              title: Text(_dateRange == null
+              title: const Text(_dateRange == null
                   ? '选择日期范围'
                   : '${_dateRange!.start.toString().split(' ')[0]} - ${_dateRange!.end.toString().split(' ')[0]}'),
               onTap: () async {
@@ -333,7 +333,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.1),
+                    color: Colors.red.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(Icons.remove, color: Colors.red),
@@ -349,7 +349,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
+                    color: Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(Icons.add, color: Colors.green),
@@ -365,7 +365,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.1),
+                    color: Colors.blue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(Icons.swap_horiz, color: Colors.blue),
@@ -417,7 +417,7 @@ class TransactionSearchDelegate extends SearchDelegate {
   Widget buildResults(BuildContext context) {
     // TODO: 实现搜索结果
     return Center(
-      child: Text('搜索: $query'),
+      child: const Text('搜索: $query'),
     );
   }
 
@@ -425,7 +425,7 @@ class TransactionSearchDelegate extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     // TODO: 实现搜索建议
     return const Center(
-      child: Text('输入关键词搜索交易'),
+      child: const Text('输入关键词搜索交易'),
     );
   }
 }

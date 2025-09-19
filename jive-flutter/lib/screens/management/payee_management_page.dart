@@ -190,13 +190,13 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Column(
           children: [
-            Text(
+            const Text(
               value.toString(),
               style: TextStyle(
                 fontSize: 18,
@@ -205,7 +205,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
               ),
             ),
             const SizedBox(height: 4),
-            Text(
+            const Text(
               label,
               style: TextStyle(
                 fontSize: 12,
@@ -239,13 +239,13 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               type == 'family' ? Icons.family_restroom : Icons.business,
               size: 64,
               color: Colors.grey[300],
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               _searchQuery.isNotEmpty ? '未找到匹配的交易对方' : '暂无交易对方',
               style: TextStyle(
                 fontSize: 16,
@@ -257,7 +257,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
               TextButton.icon(
                 onPressed: () => _showAddPayeeDialog(),
                 icon: const Icon(Icons.add),
-                label: Text('添加${type == 'family' ? '家庭成员' : '服务提供商'}'),
+                label: const Text('添加${type == 'family' ? '家庭成员' : '服务提供商'}'),
               ),
             ],
           ],
@@ -284,7 +284,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: payee['color'] as Color,
-          child: Text(
+          child: const Text(
             StringUtils.safeInitial(payee['name']?.toString()),
             style: const TextStyle(
               color: Colors.white,
@@ -292,7 +292,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
             ),
           ),
         ),
-        title: Text(
+        title: const Text(
           payee['name'] as String,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
@@ -300,16 +300,16 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (payee['email'].toString().isNotEmpty)
-              Text(
+              const Text(
                 '邮箱: ${payee['email']}',
                 style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
             if (payee['phone'].toString().isNotEmpty)
-              Text(
+              const Text(
                 '电话: ${payee['phone']}',
                 style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
-            Text(
+            const Text(
               '交易次数: ${payee['transactionCount']} 次 - 基于maybe-main设计',
               style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             ),
@@ -327,8 +327,8 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
             }
           },
           itemBuilder: (context) => [
-            const PopupMenuItem(value: 'edit', child: Text('编辑')),
-            const PopupMenuItem(value: 'delete', child: Text('删除')),
+            const PopupMenuItem(value: 'edit', child: const Text('编辑')),
+            const PopupMenuItem(value: 'delete', child: const Text('删除')),
           ],
         ),
         onTap: () => _showPayeeDetails(payee),
@@ -351,7 +351,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('交易对方创建功能演示')),
+                const SnackBar(content: const Text('交易对方创建功能演示')),
               );
             },
             child: const Text('创建'),
@@ -365,7 +365,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('编辑: ${payee['name']}'),
+        title: const Text('编辑: ${payee['name']}'),
         content: const Text('这里是编辑交易对方的功能界面。'),
         actions: [
           TextButton(
@@ -376,7 +376,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('已编辑: ${payee['name']}')),
+                SnackBar(content: const Text('已编辑: ${payee['name']}')),
               );
             },
             child: const Text('保存'),
@@ -391,7 +391,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('删除交易对方'),
-        content: Text(
+        content: const Text(
           '确定要删除"${payee['name']}"吗？\n这将影响 ${payee['transactionCount']} 笔交易记录。',
         ),
         actions: [
@@ -403,7 +403,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('已删除: ${payee['name']}')),
+                SnackBar(content: const Text('已删除: ${payee['name']}')),
               );
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
@@ -431,7 +431,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
                 CircleAvatar(
                   radius: 25,
                   backgroundColor: payee['color'] as Color,
-                  child: Text(
+                  child: const Text(
                     StringUtils.safeInitial(payee['name']?.toString()),
                     style: const TextStyle(
                       color: Colors.white,
@@ -445,14 +445,14 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         payee['name'] as String,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text(
+                      const Text(
                         payee['type'] == 'family' ? '家庭成员' : '服务提供商',
                         style: TextStyle(
                           color: Colors.grey[600],
@@ -475,9 +475,9 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
             if (payee['email'].toString().isNotEmpty) ...[
               Row(
                 children: [
-                  Icon(Icons.email, size: 16, color: Colors.grey[600]),
+                  const Icon(Icons.email, size: 16, color: Colors.grey[600]),
                   const SizedBox(width: 8),
-                  Text(
+                  const Text(
                     payee['email'] as String,
                     style: TextStyle(color: Colors.grey[600]),
                   ),
@@ -488,9 +488,9 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
             if (payee['phone'].toString().isNotEmpty) ...[
               Row(
                 children: [
-                  Icon(Icons.phone, size: 16, color: Colors.grey[600]),
+                  const Icon(Icons.phone, size: 16, color: Colors.grey[600]),
                   const SizedBox(width: 8),
-                  Text(
+                  const Text(
                     payee['phone'] as String,
                     style: TextStyle(color: Colors.grey[600]),
                   ),
@@ -500,16 +500,16 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
             ],
             Row(
               children: [
-                Icon(Icons.receipt_long, size: 16, color: Colors.grey[600]),
+                const Icon(Icons.receipt_long, size: 16, color: Colors.grey[600]),
                 const SizedBox(width: 8),
-                Text(
+                const Text(
                   '共 ${payee['transactionCount']} 笔交易',
                   style: TextStyle(color: Colors.grey[600]),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               '这是基于maybe-main项目设计的交易对方管理功能。在实际应用中，这里会显示与该交易对方的所有交易记录、金额统计等详细信息。',
               style: TextStyle(
                 color: Colors.grey[600],

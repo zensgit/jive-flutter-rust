@@ -81,12 +81,12 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
     try {
       await _apiService.deletePayee(payeeId);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('收款人已删除')),
+        const SnackBar(content: const Text('收款人已删除')),
       );
       _loadPayees(); // 重新加载列表
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('删除失败: $e')),
+        SnackBar(content: const Text('删除失败: $e')),
       );
     }
   }
@@ -107,7 +107,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
               controller: nameController,
               decoration: const InputDecoration(
                 labelText: '名称',
-                prefixIcon: Icon(Icons.person_outline),
+                prefixIcon: const Icon(Icons.person_outline),
               ),
             ),
             const SizedBox(height: 16),
@@ -115,7 +115,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
               controller: notesController,
               decoration: const InputDecoration(
                 labelText: '备注',
-                prefixIcon: Icon(Icons.note_outlined),
+                prefixIcon: const Icon(Icons.note_outlined),
               ),
               maxLines: 2,
             ),
@@ -155,12 +155,12 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
 
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('收款人已创建')),
+                    const SnackBar(content: const Text('收款人已创建')),
                   );
                   _loadPayees();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('创建失败: $e')),
+                    SnackBar(content: const Text('创建失败: $e')),
                   );
                 }
               }
@@ -238,7 +238,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
                             const Icon(Icons.error_outline,
                                 size: 48, color: Colors.red),
                             const SizedBox(height: 16),
-                            Text('加载失败: $_error'),
+                            const Text('加载失败: $_error'),
                             const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: _loadPayees,
@@ -267,9 +267,9 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.person_off, size: 48, color: Colors.grey[400]),
+            const Icon(Icons.person_off, size: 48, color: Colors.grey[400]),
             const SizedBox(height: 16),
-            Text('暂无收款人', style: TextStyle(color: Colors.grey[600])),
+            const Text('暂无收款人', style: TextStyle(color: Colors.grey[600])),
           ],
         ),
       );
@@ -288,12 +288,12 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
           child: ListTile(
             leading: CircleAvatar(
               backgroundColor: _getColorForPayee(payee),
-              child: Text(
+              child: const Text(
                 StringUtils.safeInitial(payee.name),
                 style: const TextStyle(color: Colors.white),
               ),
             ),
-            title: Text(
+            title: const Text(
               payee.name,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
@@ -301,15 +301,15 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (payee.categoryName != null)
-                  Text('分类: ${payee.categoryName}'),
-                Text('交易次数: ${payee.transactionCount}'),
+                  const Text('分类: ${payee.categoryName}'),
+                const Text('交易次数: ${payee.transactionCount}'),
                 if (payee.totalAmount != null)
                   Consumer(builder: (context, ref, _) {
                     final base = ref.watch(baseCurrencyProvider).code;
                     final str = ref
                         .read(currencyProvider.notifier)
                         .formatCurrency(payee.totalAmount ?? 0, base);
-                    return Text('总金额: $str');
+                    return const Text('总金额: $str');
                   }),
               ],
             ),
@@ -324,9 +324,9 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
                 }
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(value: 'edit', child: Text('编辑')),
-                const PopupMenuItem(value: 'merge', child: Text('合并')),
-                const PopupMenuItem(value: 'delete', child: Text('删除')),
+                const PopupMenuItem(value: 'edit', child: const Text('编辑')),
+                const PopupMenuItem(value: 'merge', child: const Text('合并')),
+                const PopupMenuItem(value: 'delete', child: const Text('删除')),
               ],
             ),
           ),

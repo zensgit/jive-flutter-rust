@@ -55,7 +55,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!_agreeToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('请先同意用户协议和隐私政策'),
+          content: const Text('请先同意用户协议和隐私政策'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -81,7 +81,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           // 注册成功
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result.message ?? '注册成功！请使用您的账户登录'),
+              content: const Text(result.message ?? '注册成功！请使用您的账户登录'),
               backgroundColor: Colors.green,
             ),
           );
@@ -90,7 +90,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           // 注册失败
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result.message ?? '注册失败'),
+              content: const Text(result.message ?? '注册失败'),
               backgroundColor: Colors.red,
             ),
           );
@@ -100,7 +100,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('注册过程中发生错误: $e'),
+            content: const Text('注册过程中发生错误: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -158,7 +158,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       decoration: const InputDecoration(
                         labelText: '用户名',
                         hintText: '设置您的用户名',
-                        prefixIcon: Icon(Icons.account_circle),
+                        prefixIcon: const Icon(Icons.account_circle),
                         border: OutlineInputBorder(),
                         helperText: '用户名将用于登录和显示',
                       ),
@@ -187,7 +187,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       decoration: const InputDecoration(
                         labelText: '邮箱地址',
                         hintText: '请输入您的邮箱地址',
-                        prefixIcon: Icon(Icons.email),
+                        prefixIcon: const Icon(Icons.email),
                         border: OutlineInputBorder(),
                         helperText: '将用作登录账户',
                       ),
@@ -214,7 +214,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       decoration: const InputDecoration(
                         labelText: '邀请码 (可选)',
                         hintText: '如果您有邀请码，请输入',
-                        prefixIcon: Icon(Icons.card_giftcard),
+                        prefixIcon: const Icon(Icons.card_giftcard),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -228,7 +228,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         hintText: '创建安全密码',
                         prefixIcon: const Icon(Icons.lock),
                         suffixIcon: IconButton(
-                          icon: Icon(
+                          icon: const Icon(
                             _isPasswordVisible
                                 ? Icons.visibility
                                 : Icons.visibility_off,
@@ -270,7 +270,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         labelText: '确认密码',
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
-                          icon: Icon(
+                          icon: const Icon(
                             _isConfirmPasswordVisible
                                 ? Icons.visibility
                                 : Icons.visibility_off,
@@ -326,7 +326,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 24),
 
                     // 注册按钮
-                    SizedBox(
+                    const SizedBox(
                       height: 50,
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _register,
@@ -353,7 +353,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const Expanded(child: Divider()),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
+                          child: const Text(
                             '或',
                             style: TextStyle(
                               color: Colors.grey[600],
@@ -374,7 +374,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         // 微信注册成功，显示成功消息并导航到登录页面
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('微信注册成功！请使用您的账户登录'),
+                            content: const Text('微信注册成功！请使用您的账户登录'),
                             backgroundColor: Colors.green,
                           ),
                         );
@@ -383,7 +383,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onError: (error) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('微信注册失败: $error'),
+                            content: const Text('微信注册失败: $error'),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -411,7 +411,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           children: [
                             Row(
                               children: [
-                                Icon(Icons.family_restroom, color: Colors.blue),
+                                const Icon(Icons.family_restroom, color: Colors.blue),
                                 const SizedBox(width: 8),
                                 const Text(
                                   '家庭协作',
@@ -525,13 +525,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Icon(
+          const Icon(
             isMet ? Icons.check_circle : Icons.radio_button_unchecked,
             size: 16,
             color: isMet ? Colors.green : Colors.grey,
           ),
           const SizedBox(width: 8),
-          Text(
+          const Text(
             text,
             style: TextStyle(
               fontSize: 12,

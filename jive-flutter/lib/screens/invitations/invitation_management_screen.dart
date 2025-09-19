@@ -85,7 +85,7 @@ class _InvitationManagementScreenState
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('取消邀请'),
-        content: Text('确定要取消发送给 ${invitation.email} 的邀请吗？'),
+        content: const Text('确定要取消发送给 ${invitation.email} 的邀请吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -140,21 +140,21 @@ class _InvitationManagementScreenState
             Tab(
               text: '待处理',
               icon: Badge(
-                label: Text(_pendingInvitations.length.toString()),
+                label: const Text(_pendingInvitations.length.toString()),
                 child: const Icon(Icons.pending),
               ),
             ),
             Tab(
               text: '已接受',
               icon: Badge(
-                label: Text(_acceptedInvitations.length.toString()),
+                label: const Text(_acceptedInvitations.length.toString()),
                 child: const Icon(Icons.check_circle),
               ),
             ),
             Tab(
               text: '已过期',
               icon: Badge(
-                label: Text(_expiredInvitations.length.toString()),
+                label: const Text(_expiredInvitations.length.toString()),
                 child: const Icon(Icons.schedule),
               ),
             ),
@@ -178,7 +178,7 @@ class _InvitationManagementScreenState
                 gradient: LinearGradient(
                   colors: [
                     theme.colorScheme.primaryContainer,
-                    theme.colorScheme.primaryContainer.withOpacity(0.7),
+                    theme.colorScheme.primaryContainer.withValues(alpha: 0.7),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -258,13 +258,13 @@ class _InvitationManagementScreenState
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
+        const Icon(
           icon,
           color: theme.colorScheme.onPrimaryContainer,
           size: 24,
         ),
         const SizedBox(height: 4),
-        Text(
+        const Text(
           value,
           style: TextStyle(
             fontSize: 20,
@@ -272,11 +272,11 @@ class _InvitationManagementScreenState
             color: theme.colorScheme.onPrimaryContainer,
           ),
         ),
-        Text(
+        const Text(
           label,
           style: TextStyle(
             fontSize: 12,
-            color: theme.colorScheme.onPrimaryContainer.withOpacity(0.8),
+            color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
           ),
         ),
       ],
@@ -295,13 +295,13 @@ class _InvitationManagementScreenState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.inbox,
               size: 64,
               color: Colors.grey[400],
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               emptyMessage,
               style: TextStyle(
                 fontSize: 16,
@@ -324,27 +324,27 @@ class _InvitationManagementScreenState
           child: ListTile(
             leading: CircleAvatar(
               backgroundColor:
-                  _getStatusColor(invitation.status).withOpacity(0.2),
-              child: Icon(
-                _getStatusIcon(invitation.status),
+                  _getStatusColor(invitation.status).withValues(alpha: 0.2),
+              child: const Icon(
+                _getStatusconst Icon(invitation.status),
                 color: _getStatusColor(invitation.status),
               ),
             ),
-            title: Text(invitation.email),
+            title: const Text(invitation.email),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   '角色: ${_getRoleDisplay(invitation.role)}',
                   style: const TextStyle(fontSize: 12),
                 ),
                 if (showAcceptedInfo && invitation.acceptedAt != null)
-                  Text(
+                  const Text(
                     '接受时间: ${_formatDateTime(invitation.acceptedAt!)}',
                     style: const TextStyle(fontSize: 12),
                   )
                 else if (!invitation.isExpired)
-                  Text(
+                  const Text(
                     invitation.remainingTimeDescription,
                     style: TextStyle(
                       fontSize: 12,
@@ -396,7 +396,7 @@ class _InvitationManagementScreenState
     }
   }
 
-  IconData _getStatusIcon(InvitationStatus status) {
+  IconData _getStatusconst Icon(InvitationStatus status) {
     switch (status) {
       case InvitationStatus.pending:
         return Icons.hourglass_empty;

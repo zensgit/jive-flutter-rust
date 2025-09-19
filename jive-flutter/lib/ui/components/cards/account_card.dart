@@ -46,7 +46,7 @@ class AccountCard extends ConsumerWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       elevation: 2,
-      shadowColor: (color ?? theme.primaryColor).withOpacity(0.2),
+      shadowColor: (color ?? theme.primaryColor).withValues(alpha: 0.2),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
       ),
@@ -58,7 +58,7 @@ class AccountCard extends ConsumerWidget {
             end: Alignment.bottomRight,
             colors: [
               color ?? theme.primaryColor,
-              (color ?? theme.primaryColor).withOpacity(0.8),
+              (color ?? theme.primaryColor).withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -77,10 +77,10 @@ class AccountCard extends ConsumerWidget {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Icon(
+                      child: const Icon(
                         icon ?? _getAccountTypeIcon(),
                         color: Colors.white,
                         size: 20,
@@ -91,7 +91,7 @@ class AccountCard extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             name,
                             style: theme.textTheme.titleMedium?.copyWith(
                               color: Colors.white,
@@ -100,10 +100,10 @@ class AccountCard extends ConsumerWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          Text(
+                          const Text(
                             _getAccountSubtitle(),
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: Colors.white.withOpacity(0.8),
+                              color: Colors.white.withValues(alpha: 0.8),
                             ),
                           ),
                         ],
@@ -116,10 +116,10 @@ class AccountCard extends ConsumerWidget {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.orange.withOpacity(0.9),
+                          color: Colors.orange.withValues(alpha: 0.9),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(
+                        child: const Text(
                           '已停用',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: Colors.white,
@@ -142,14 +142,14 @@ class AccountCard extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             '余额',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: Colors.white.withOpacity(0.8),
+                              color: Colors.white.withValues(alpha: 0.8),
                             ),
                           ),
                           const SizedBox(height: 4),
-                          Text(
+                          const Text(
                             ref
                                 .read(currencyProvider.notifier)
                                 .formatCurrency(balance, currency),
@@ -170,9 +170,9 @@ class AccountCard extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(20),
                           child: Container(
                             padding: const EdgeInsets.all(8),
-                            child: Icon(
+                            child: const Icon(
                               Icons.sync,
-                              color: Colors.white.withOpacity(0.8),
+                              color: Colors.white.withValues(alpha: 0.8),
                               size: 20,
                             ),
                           ),
@@ -187,16 +187,16 @@ class AccountCard extends ConsumerWidget {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.sync,
-                        color: Colors.white.withOpacity(0.6),
+                        color: Colors.white.withValues(alpha: 0.6),
                         size: 14,
                       ),
                       const SizedBox(width: 4),
-                      Text(
+                      const Text(
                         '上次同步: ${_formatLastSync()}',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: Colors.white.withOpacity(0.6),
+                          color: Colors.white.withValues(alpha: 0.6),
                           fontSize: 12,
                         ),
                       ),

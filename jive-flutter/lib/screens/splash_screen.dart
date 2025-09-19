@@ -68,7 +68,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             end: Alignment.bottomRight,
             colors: [
               Theme.of(context).primaryColor,
-              Theme.of(context).primaryColor.withOpacity(0.7),
+              Theme.of(context).primaryColor.withValues(alpha: 0.7),
             ],
           ),
         ),
@@ -84,7 +84,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withValues(alpha: 0.2),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),

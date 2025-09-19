@@ -58,7 +58,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
     final ledgerId = ref.read(currentLedgerProvider)?.id;
     if (ledgerId == null) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('无当前账本，无法导入模板')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: const Text('无当前账本，无法导入模板')));
       return;
     }
 
@@ -123,7 +123,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
 
             return AlertDialog(
               title: const Text('从模板库导入'),
-              content: SizedBox(
+              content: const SizedBox(
                 width: 480,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -135,16 +135,16 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                       DropdownButton<String>(
                         value: conflict,
                         items: const [
-                          DropdownMenuItem(value: 'skip', child: Text('跳过')),
-                          DropdownMenuItem(value: 'rename', child: Text('重命名')),
-                          DropdownMenuItem(value: 'update', child: Text('覆盖')),
+                          DropdownMenuItem(value: 'skip', child: const Text('跳过')),
+                          DropdownMenuItem(value: 'rename', child: const Text('重命名')),
+                          DropdownMenuItem(value: 'update', child: const Text('覆盖')),
                         ],
                         onChanged: (v) { if (v!=null) setLocal((){ conflict = v; }); },
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  SizedBox(
+                  const SizedBox(
                     height: 320,
                     child: Column(
                       children: [
@@ -161,8 +161,8 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                                   if (checked) { selected.remove(t); } else { selected.add(t); }
                                 }),
                                 dense: true,
-                                title: Text(t.name),
-                                subtitle: Text(t.classification.name),
+                                title: const Text(t.name),
+                                subtitle: const Text(t.classification.name),
                               );
                             },
                           ),
@@ -172,7 +172,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('共 $total 项，当前 ${list.length}', style: Theme.of(context).textTheme.bodySmall),
+                              const Text('共 $total 项，当前 ${list.length}', style: Theme.of(context).textTheme.bodySmall),
                               OutlinedButton.icon(
                                 onPressed: (!fetching && list.length < total) ? () => fetch(next: true) : null,
                                 icon: const Icon(Icons.more_horiz),
@@ -188,9 +188,9 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                     const Divider(),
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: Text('预览（服务端 dry-run ）', style: Theme.of(context).textTheme.titleSmall),
+                      child: const Text('预览（服务端 dry-run ）', style: Theme.of(context).textTheme.titleSmall),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 160,
                       child: ListView.builder(
                         itemCount: preview!.details.length,
@@ -199,9 +199,9 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                           final color = (d.action == 'failed' || d.action == 'skipped') ? Colors.orange : Colors.green;
                           return ListTile(
                             dense: true,
-                            title: Text(d.predictedName ?? d.finalName ?? d.originalName),
-                            subtitle: Text(_renderDryRunSubtitle(d)),
-                            trailing: Icon(
+                            title: const Text(d.predictedName ?? d.finalName ?? d.originalName),
+                            subtitle: const Text(_renderDryRunSubtitle(d)),
+                            trailing: const Icon(
                               d.action == 'failed' ? Icons.error : (d.action=='skipped'? Icons.warning_amber : Icons.check_circle),
                               color: color,
                             ),
@@ -228,7 +228,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                     setLocal((){ preview = res; });
                   } catch (e) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('预览失败: $e')));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text('预览失败: $e')));
                     }
                   }
                 },
@@ -249,7 +249,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                     await ImportDetailsSheet.show(context, result);
                   } catch (e) {
                     if (!mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('导入失败: $e')));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text('导入失败: $e')));
                   }
                 },
                 child: const Text('确认导入'),

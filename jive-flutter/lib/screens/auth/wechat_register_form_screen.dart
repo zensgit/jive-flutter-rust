@@ -99,7 +99,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
           // 绑定失败但账户已创建，提示用户
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('账户创建成功，但微信绑定失败: ${bindResult.message}'),
+              content: const Text('账户创建成功，但微信绑定失败: ${bindResult.message}'),
               backgroundColor: Colors.orange,
             ),
           );
@@ -113,7 +113,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result.message ?? '注册失败'),
+            content: const Text(result.message ?? '注册失败'),
             backgroundColor: Colors.red,
           ),
         );
@@ -121,7 +121,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('注册过程中发生错误: $e'),
+          content: const Text('注册过程中发生错误: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -178,7 +178,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                                   const Icon(Icons.wechat,
                                       color: Colors.green, size: 16),
                                   const SizedBox(width: 4),
-                                  Text(
+                                  const Text(
                                     widget.weChatUserInfo.nickname,
                                     style: const TextStyle(
                                       fontSize: 16,
@@ -187,7 +187,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                                   ),
                                 ],
                               ),
-                              Text(
+                              const Text(
                                 '${widget.weChatUserInfo.country} ${widget.weChatUserInfo.province} ${widget.weChatUserInfo.city}',
                                 style: TextStyle(
                                   fontSize: 12,
@@ -240,7 +240,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                   decoration: const InputDecoration(
                     labelText: '用户名',
                     hintText: '请输入用户名',
-                    prefixIcon: Icon(Icons.person),
+                    prefixIcon: const Icon(Icons.person),
                     border: OutlineInputBorder(),
                     helperText: '用户名将用于登录，3-20个字符',
                   ),
@@ -267,7 +267,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                   decoration: const InputDecoration(
                     labelText: '邮箱地址',
                     hintText: '请输入邮箱地址',
-                    prefixIcon: Icon(Icons.email),
+                    prefixIcon: const Icon(Icons.email),
                     border: OutlineInputBorder(),
                     helperText: '邮箱将用于登录和接收重要通知',
                   ),
@@ -295,7 +295,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                     hintText: '请输入密码',
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         _isPasswordVisible
                             ? Icons.visibility
                             : Icons.visibility_off,
@@ -330,14 +330,14 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Text(
+                      const Text(
                         '密码强度: ',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[600],
                         ),
                       ),
-                      Text(
+                      const Text(
                         _passwordStrength.description,
                         style: TextStyle(
                           fontSize: 12,
@@ -366,7 +366,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                     hintText: '请再次输入密码',
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         _isConfirmPasswordVisible
                             ? Icons.visibility
                             : Icons.visibility_off,
@@ -395,7 +395,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                 const SizedBox(height: 32),
 
                 // 注册按钮
-                SizedBox(
+                const SizedBox(
                   height: 50,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _register,
@@ -427,7 +427,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.info, color: Colors.blue[700], size: 16),
+                            const Icon(Icons.info, color: Colors.blue[700], size: 16),
                             const SizedBox(width: 8),
                             const Text(
                               '注册说明',

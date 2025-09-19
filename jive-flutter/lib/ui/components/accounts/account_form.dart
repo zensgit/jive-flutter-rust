@@ -148,7 +148,7 @@ class _AccountFormState extends State<AccountForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           '账户类型',
           style: theme.textTheme.titleSmall,
         ),
@@ -159,7 +159,7 @@ class _AccountFormState extends State<AccountForm> {
             color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
             border: Border.all(
-              color: theme.colorScheme.outline.withOpacity(0.2),
+              color: theme.colorScheme.outline.withValues(alpha: 0.2),
             ),
           ),
           child: Row(
@@ -200,7 +200,7 @@ class _AccountFormState extends State<AccountForm> {
     final isSelected = _type == type;
 
     return Material(
-      color: isSelected ? color.withOpacity(0.1) : Colors.transparent,
+      color: isSelected ? color.withValues(alpha: 0.1) : Colors.transparent,
       borderRadius: BorderRadius.circular(AppConstants.smallBorderRadius),
       child: InkWell(
         onTap: () {
@@ -218,20 +218,20 @@ class _AccountFormState extends State<AccountForm> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 icon,
                 size: 20,
                 color: isSelected
                     ? color
-                    : theme.colorScheme.onSurface.withOpacity(0.6),
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               const SizedBox(width: 8),
-              Text(
+              const Text(
                 label,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: isSelected
                       ? color
-                      : theme.colorScheme.onSurface.withOpacity(0.6),
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
@@ -261,7 +261,7 @@ class _AccountFormState extends State<AccountForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           '账户子类型',
           style: theme.textTheme.titleSmall,
         ),
@@ -272,13 +272,13 @@ class _AccountFormState extends State<AccountForm> {
           children: subTypes
               .map(
                 (subType) => ChoiceChip(
-                  label: Text(_getSubTypeName(subType)),
+                  label: const Text(_getSubTypeName(subType)),
                   selected: _subType == subType,
                   onSelected: (selected) {
                     if (selected) {
                       setState(() {
                         _subType = subType;
-                        _icon = _getSubTypeIcon(subType);
+                        _icon = _getSubTypeconst Icon(subType);
                       });
                     }
                   },
@@ -378,7 +378,7 @@ class _AccountFormState extends State<AccountForm> {
           .map(
             (currency) => DropdownMenuItem(
               value: currency,
-              child: Text(_getCurrencyDisplay(currency)),
+              child: const Text(_getCurrencyDisplay(currency)),
             ),
           )
           .toList(),
@@ -413,7 +413,7 @@ class _AccountFormState extends State<AccountForm> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Text('选择颜色'),
+                  const Text('选择颜色'),
                 ],
               ),
             ),
@@ -437,9 +437,9 @@ class _AccountFormState extends State<AccountForm> {
               ),
               child: Row(
                 children: [
-                  Icon(_icon, size: 24),
+                  const Icon(_icon, size: 24),
                   const SizedBox(width: 8),
-                  Text('选择图标'),
+                  const Text('选择图标'),
                 ],
               ),
             ),
@@ -468,7 +468,7 @@ class _AccountFormState extends State<AccountForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           '高级选项',
           style: theme.textTheme.titleSmall,
         ),
@@ -543,7 +543,7 @@ class _AccountFormState extends State<AccountForm> {
     }
   }
 
-  IconData _getSubTypeIcon(AccountSubType subType) {
+  IconData _getSubTypeconst Icon(AccountSubType subType) {
     switch (subType) {
       case AccountSubType.cash:
         return Icons.payments;
@@ -627,7 +627,7 @@ class _AccountFormState extends State<AccountForm> {
     }
   }
 
-  Future<void> _selectIcon() async {
+  Future<void> _selectconst Icon() async {
     // 这里应该显示图标选择器
     // 暂时使用预定义的图标列表
     final icons = [

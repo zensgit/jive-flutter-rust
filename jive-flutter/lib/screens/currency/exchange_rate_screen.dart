@@ -63,7 +63,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('汇率已更新'),
+            content: const Text('汇率已更新'),
             duration: Duration(seconds: 2),
           ),
         );
@@ -72,7 +72,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('更新汇率失败: $e'),
+            content: const Text('更新汇率失败: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -147,7 +147,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                         color: Colors.orange, size: 18),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(
+                      child: const Text(
                         catalogMeta.lastError != null
                             ? '使用本地内置货币列表：${catalogMeta.lastError}'
                             : '使用本地内置货币列表（服务器未加载）',
@@ -175,7 +175,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                     const Icon(Icons.schedule, size: 16, color: Colors.grey),
                     const SizedBox(width: 6),
                     Expanded(
-                      child: Text(
+                      child: const Text(
                         _buildSyncLine(catalogMeta),
                         style: Theme.of(context)
                             .textTheme
@@ -204,7 +204,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
               decoration: const InputDecoration(
                 labelText: '金额',
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.attach_money),
+                prefixIcon: const Icon(Icons.attach_money),
               ),
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
@@ -224,19 +224,19 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
               decoration: const InputDecoration(
                 labelText: '从',
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.currency_exchange),
+                prefixIcon: const Icon(Icons.currency_exchange),
               ),
               items: availableCurrencies.map((currency) {
                 return DropdownMenuItem(
                   value: currency.code,
                   child: Row(
                     children: [
-                      Text(currency.symbol),
+                      const Text(currency.symbol),
                       const SizedBox(width: 8),
-                      Text(currency.code),
+                      const Text(currency.code),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: Text(
+                        child: const Text(
                           currency.name,
                           style: Theme.of(context).textTheme.bodySmall,
                           overflow: TextOverflow.ellipsis,
@@ -282,19 +282,19 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
               decoration: const InputDecoration(
                 labelText: '到',
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.currency_exchange),
+                prefixIcon: const Icon(Icons.currency_exchange),
               ),
               items: availableCurrencies.map((currency) {
                 return DropdownMenuItem(
                   value: currency.code,
                   child: Row(
                     children: [
-                      Text(currency.symbol),
+                      const Text(currency.symbol),
                       const SizedBox(width: 8),
-                      Text(currency.code),
+                      const Text(currency.code),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: Text(
+                        child: const Text(
                           currency.name,
                           style: Theme.of(context).textTheme.bodySmall,
                           overflow: TextOverflow.ellipsis,
@@ -324,17 +324,17 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      Text(
+                      const Text(
                         '转换结果',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 8),
-                      Text(
+                      const Text(
                         '${_amount.toStringAsFixed(2)} $_fromCurrency',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const Icon(Icons.arrow_downward),
-                      Text(
+                      const Text(
                         '${_convertedAmount!.toStringAsFixed(2)} $_toCurrency',
                         style: Theme.of(context)
                             .textTheme
@@ -345,7 +345,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                             ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
+                      const Text(
                         '汇率: 1 $_fromCurrency = ${(_convertedAmount! / _amount).toStringAsFixed(4)} $_toCurrency',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
@@ -365,7 +365,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                     const Icon(Icons.info_outline, size: 20),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(
+                      child: const Text(
                         '汇率会在您打开此页面时自动更新',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),

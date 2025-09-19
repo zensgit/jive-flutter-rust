@@ -21,10 +21,10 @@ class TagDeletionDialog extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('确定要删除标签"${tag.name}"吗？'),
+          const Text('确定要删除标签"${tag.name}"吗？'),
           if (tag.usageCount > 0) ...[
             const SizedBox(height: 8),
-            Text(
+            const Text(
               '该标签已被使用 ${tag.usageCount} 次。',
               style: TextStyle(color: Colors.orange[700]),
             ),
@@ -45,7 +45,7 @@ class TagDeletionDialog extends ConsumerWidget {
               Navigator.pop(context);
               onDeleted?.call();
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('标签"${tag.name}"已删除')),
+                SnackBar(content: const Text('标签"${tag.name}"已删除')),
               );
             }
           },

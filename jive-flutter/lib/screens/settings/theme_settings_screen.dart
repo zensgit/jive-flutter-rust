@@ -20,7 +20,7 @@ class ThemeSettingsScreen extends ConsumerWidget {
           // 主题模式
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Text('主题模式', style: Theme.of(context).textTheme.titleMedium),
+            child: const Text('主题模式', style: Theme.of(context).textTheme.titleMedium),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),

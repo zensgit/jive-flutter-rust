@@ -55,7 +55,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('选择颜色'),
-      content: SizedBox(
+      content: const SizedBox(
         width: 300,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -166,9 +166,9 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          SizedBox(
+          const SizedBox(
             width: 16,
-            child: Text(
+            child: const Text(
               label,
               style: const TextStyle(fontWeight: FontWeight.w500),
             ),
@@ -179,7 +179,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
               data: SliderTheme.of(context).copyWith(
                 activeTrackColor: color,
                 thumbColor: color,
-                inactiveTrackColor: color.withOpacity(0.3),
+                inactiveTrackColor: color.withValues(alpha: 0.3),
               ),
               child: Slider(
                 value: value,
@@ -191,9 +191,9 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
             ),
           ),
           const SizedBox(width: 8),
-          SizedBox(
+          const SizedBox(
             width: 32,
-            child: Text(
+            child: const Text(
               value.toInt().toString(),
               style: const TextStyle(fontSize: 12),
               textAlign: TextAlign.right,

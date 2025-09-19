@@ -37,7 +37,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('家庭成员'),
-            Text(
+            const Text(
               widget.ledger.name,
               style: Theme.of(context).textTheme.bodySmall,
             ),
@@ -60,7 +60,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
               color: theme.cardColor,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -103,11 +103,11 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                     items: [
                       const DropdownMenuItem(
                         value: null,
-                        child: Text('全部角色'),
+                        child: const Text('全部角色'),
                       ),
                       ...LedgerRole.values.map((role) => DropdownMenuItem(
                             value: role,
-                            child: Text(_getRoleLabel(role)),
+                            child: const Text(_getRoleLabel(role)),
                           )),
                     ],
                     onChanged: (value) {
@@ -164,7 +164,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                     const Icon(Icons.error_outline,
                         size: 64, color: Colors.red),
                     const SizedBox(height: 16),
-                    Text('加载失败: $error'),
+                    const Text('加载失败: $error'),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
@@ -200,11 +200,11 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
               // 头像
               CircleAvatar(
                 radius: 28,
-                backgroundColor: _getRoleColor(member.role).withOpacity(0.1),
+                backgroundColor: _getRoleColor(member.role).withValues(alpha: 0.1),
                 backgroundImage:
                     member.avatar != null ? NetworkImage(member.avatar!) : null,
                 child: member.avatar == null
-                    ? Text(
+                    ? const Text(
                         StringUtils.safeInitial(member.name),
                         style: TextStyle(
                           fontSize: 20,
@@ -223,7 +223,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                   children: [
                     Row(
                       children: [
-                        Text(
+                        const Text(
                           member.name,
                           style: const TextStyle(
                             fontSize: 16,
@@ -238,10 +238,10 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: _getRoleColor(member.role).withOpacity(0.1),
+                            color: _getRoleColor(member.role).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Text(
+                          child: const Text(
                             _getRoleLabel(member.role),
                             style: TextStyle(
                               fontSize: 12,
@@ -253,7 +253,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    const Text(
                       member.email,
                       style: TextStyle(
                         fontSize: 14,
@@ -263,13 +263,13 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.calendar_today,
                           size: 14,
                           color: Colors.grey[500],
                         ),
                         const SizedBox(width: 4),
-                        Text(
+                        const Text(
                           '加入于 ${_formatDate(member.joinedAt)}',
                           style: TextStyle(
                             fontSize: 12,
@@ -278,13 +278,13 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                         ),
                         if (member.lastAccessedAt != null) ...[
                           const SizedBox(width: 12),
-                          Icon(
+                          const Icon(
                             Icons.access_time,
                             size: 14,
                             color: Colors.grey[500],
                           ),
                           const SizedBox(width: 4),
-                          Text(
+                          const Text(
                             '最近访问 ${_formatRelativeTime(member.lastAccessedAt!)}',
                             style: TextStyle(
                               fontSize: 12,
@@ -309,9 +309,9 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                         value: 'edit',
                         child: Row(
                           children: [
-                            Icon(Icons.edit, size: 20),
-                            SizedBox(width: 8),
-                            Text('编辑权限'),
+                            const Icon(Icons.edit, size: 20),
+                            const SizedBox(width: 8),
+                            const Text('编辑权限'),
                           ],
                         ),
                       ),
@@ -319,10 +319,10 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                         value: 'remove',
                         child: Row(
                           children: [
-                            Icon(Icons.person_remove,
+                            const Icon(Icons.person_remove,
                                 size: 20, color: Colors.red),
-                            SizedBox(width: 8),
-                            Text('移除成员', style: TextStyle(color: Colors.red)),
+                            const SizedBox(width: 8),
+                            const Text('移除成员', style: TextStyle(color: Colors.red)),
                           ],
                         ),
                       ),
@@ -331,9 +331,9 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                       value: 'view',
                       child: Row(
                         children: [
-                          Icon(Icons.info, size: 20),
-                          SizedBox(width: 8),
-                          Text('查看详情'),
+                          const Icon(Icons.info, size: 20),
+                          const SizedBox(width: 8),
+                          const Text('查看详情'),
                         ],
                       ),
                     ),
@@ -351,13 +351,13 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.people_outline,
             size: 80,
             color: Colors.grey[400],
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             '暂无成员',
             style: TextStyle(
               fontSize: 18,
@@ -365,7 +365,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             '点击右上角邀请新成员',
             style: TextStyle(
               fontSize: 14,
@@ -435,7 +435,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('权限更新成功'),
+              content: const Text('权限更新成功'),
               backgroundColor: Colors.green,
             ),
           );
@@ -444,7 +444,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('更新失败: $e'),
+              content: const Text('更新失败: $e'),
               backgroundColor: Colors.red,
             ),
           );
@@ -462,7 +462,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('确认移除成员'),
-        content: Text('确定要将 ${member.name} 从家庭中移除吗？'),
+        content: const Text('确定要将 ${member.name} 从家庭中移除吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -489,7 +489,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('成员已移除'),
+            content: const Text('成员已移除'),
             backgroundColor: Colors.green,
           ),
         );
@@ -498,7 +498,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('移除失败: $e'),
+            content: const Text('移除失败: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -614,14 +614,14 @@ class _MemberDetailsSheet extends StatelessWidget {
             backgroundImage:
                 member.avatar != null ? NetworkImage(member.avatar!) : null,
             child: member.avatar == null
-                ? Text(
+                ? const Text(
                     StringUtils.safeInitial(member.name),
                     style: const TextStyle(fontSize: 32),
                   )
                 : null,
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             member.name,
             style: const TextStyle(
               fontSize: 20,
@@ -629,7 +629,7 @@ class _MemberDetailsSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             member.email,
             style: TextStyle(
               fontSize: 16,
@@ -670,7 +670,7 @@ class _MemberDetailsSheet extends StatelessWidget {
         children: [
           Icon(icon, size: 20, color: Colors.grey[600]),
           const SizedBox(width: 12),
-          Text(
+          const Text(
             '$label:',
             style: TextStyle(
               fontSize: 14,
@@ -678,7 +678,7 @@ class _MemberDetailsSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Text(
+          const Text(
             value,
             style: const TextStyle(
               fontSize: 14,
@@ -705,13 +705,13 @@ class _MemberDetailsSheet extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: Row(
             children: [
-              Icon(
+              const Icon(
                 entry.value ? Icons.check_circle : Icons.cancel,
                 size: 18,
                 color: entry.value ? Colors.green : Colors.grey[400],
               ),
               const SizedBox(width: 8),
-              Text(
+              const Text(
                 permissionLabels[entry.key] ?? entry.key,
                 style: const TextStyle(fontSize: 14),
               ),
@@ -770,12 +770,12 @@ class _EditPermissionsDialogState extends State<_EditPermissionsDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('成员: ${widget.member.name}'),
+          const Text('成员: ${widget.member.name}'),
           const SizedBox(height: 16),
           ...LedgerRole.values.where((r) => r != LedgerRole.owner).map((role) {
             return RadioListTile<LedgerRole>(
-              title: Text(_getRoleLabel(role)),
-              subtitle: Text(_getRoleDescription(role)),
+              title: const Text(_getRoleLabel(role)),
+              subtitle: const Text(_getRoleDescription(role)),
               value: role,
               groupValue: _selectedRole,
               onChanged: (value) {

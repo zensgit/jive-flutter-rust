@@ -98,7 +98,7 @@ class TransactionCard extends ConsumerWidget {
     return Card(
       margin: cardMargin,
       elevation: cardElevation,
-      shadowColor: theme.shadowColor.withOpacity(0.1),
+      shadowColor: theme.shadowColor.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
       ),
@@ -111,7 +111,7 @@ class TransactionCard extends ConsumerWidget {
           child: Row(
             children: [
               // 分类图标
-              _buildCategoryIcon(theme),
+              _buildCategoryconst Icon(theme),
               const SizedBox(width: 12),
 
               // 交易信息
@@ -123,7 +123,7 @@ class TransactionCard extends ConsumerWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
+                          child: const Text(
                             cardTitle,
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
@@ -132,10 +132,10 @@ class TransactionCard extends ConsumerWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        Text(
+                        const Text(
                           DateFormat('MM/dd HH:mm').format(cardDate),
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(0.6),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                         ),
                       ],
@@ -156,10 +156,10 @@ class TransactionCard extends ConsumerWidget {
                             color: (transaction?.type.color ??
                                     categoryColor ??
                                     theme.primaryColor)
-                                .withOpacity(0.1),
+                                .withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Text(
+                          child: const Text(
                             cardCategory,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: transaction?.type.color ??
@@ -172,11 +172,11 @@ class TransactionCard extends ConsumerWidget {
 
                         if (cardPayee != null) ...[
                           const SizedBox(width: 8),
-                          Text(
+                          const Text(
                             '• $cardPayee',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color:
-                                  theme.colorScheme.onSurface.withOpacity(0.6),
+                                  theme.colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -189,10 +189,10 @@ class TransactionCard extends ConsumerWidget {
                     if (cardDescription != null &&
                         cardDescription.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      Text(
+                      const Text(
                         cardDescription,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withOpacity(0.7),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -213,10 +213,10 @@ class TransactionCard extends ConsumerWidget {
                             ),
                             decoration: BoxDecoration(
                               color:
-                                  theme.colorScheme.secondary.withOpacity(0.1),
+                                  theme.colorScheme.secondary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Text(
+                            child: const Text(
                               tag,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.secondary,
@@ -237,7 +237,7 @@ class TransactionCard extends ConsumerWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
+                  const Text(
                     '${cardIsIncome ? '+' : '-'}${formatter.formatCurrency(cardAmount.abs(), ref.read(baseCurrencyProvider).code)}',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -254,10 +254,10 @@ class TransactionCard extends ConsumerWidget {
                         vertical: 1,
                       ),
                       decoration: BoxDecoration(
-                        color: theme.primaryColor.withOpacity(0.1),
+                        color: theme.primaryColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      child: Text(
+                      child: const Text(
                         '今天',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.primaryColor,
@@ -276,7 +276,7 @@ class TransactionCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildCategoryIcon(ThemeData theme) {
+  Widget _buildCategoryconst Icon(ThemeData theme) {
     final iconColor =
         transaction?.type.color ?? categoryColor ?? theme.primaryColor;
     final iconData = transaction?.type.icon ?? categoryIcon ?? Icons.category;
@@ -285,10 +285,10 @@ class TransactionCard extends ConsumerWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: iconColor.withOpacity(0.1),
+        color: iconColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Icon(
+      child: const Icon(
         iconData,
         color: iconColor,
         size: 20,

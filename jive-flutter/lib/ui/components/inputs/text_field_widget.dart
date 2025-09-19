@@ -94,7 +94,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (widget.label != null) ...[
-          Text(
+          const Text(
             widget.label!,
             style: theme.textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w500,
@@ -127,7 +127,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
             fillColor: widget.fillColor ??
                 (widget.enabled
                     ? theme.colorScheme.surface
-                    : theme.disabledColor.withOpacity(0.1)),
+                    : theme.disabledColor.withValues(alpha: 0.1)),
             contentPadding: widget.contentPadding ??
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             border: _buildBorder(theme, false),
@@ -148,7 +148,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
       borderSide: BorderSide(
         color: isFocused
             ? theme.primaryColor
-            : theme.colorScheme.outline.withOpacity(0.3),
+            : theme.colorScheme.outline.withValues(alpha: 0.3),
         width: isFocused ? 2 : 1,
       ),
     );

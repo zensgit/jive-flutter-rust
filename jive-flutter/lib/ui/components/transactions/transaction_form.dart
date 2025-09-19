@@ -140,7 +140,7 @@ class _TransactionFormState extends State<TransactionForm> {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.2),
+          color: theme.colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
@@ -189,7 +189,7 @@ class _TransactionFormState extends State<TransactionForm> {
     final isSelected = _type == type;
 
     return Material(
-      color: isSelected ? color.withOpacity(0.1) : Colors.transparent,
+      color: isSelected ? color.withValues(alpha: 0.1) : Colors.transparent,
       borderRadius: BorderRadius.circular(AppConstants.smallBorderRadius),
       child: InkWell(
         onTap: () => setState(() => _type = type),
@@ -199,20 +199,20 @@ class _TransactionFormState extends State<TransactionForm> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 icon,
                 size: 20,
                 color: isSelected
                     ? color
-                    : theme.colorScheme.onSurface.withOpacity(0.6),
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               const SizedBox(width: 8),
-              Text(
+              const Text(
                 label,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: isSelected
                       ? color
-                      : theme.colorScheme.onSurface.withOpacity(0.6),
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
@@ -289,7 +289,7 @@ class _TransactionFormState extends State<TransactionForm> {
           ),
           suffixIcon: const Icon(Icons.calendar_today),
         ),
-        child: Text(
+        child: const Text(
           _formatDate(_selectedDate),
           style: theme.textTheme.bodyLarge,
         ),
@@ -313,7 +313,7 @@ class _TransactionFormState extends State<TransactionForm> {
           .map(
             (account) => DropdownMenuItem(
               value: account,
-              child: Text(account),
+              child: const Text(account),
             ),
           )
           .toList(),
@@ -356,7 +356,7 @@ class _TransactionFormState extends State<TransactionForm> {
                       shape: BoxShape.circle,
                     ),
                   ),
-                  Text(category),
+                  const Text(category),
                 ],
               ),
             ),
@@ -393,10 +393,10 @@ class _TransactionFormState extends State<TransactionForm> {
           suffixIcon: const Icon(Icons.label_outline),
         ),
         child: _selectedTags.isEmpty
-            ? Text(
+            ? const Text(
                 '选择标签',
                 style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               )
             : Wrap(
@@ -404,11 +404,11 @@ class _TransactionFormState extends State<TransactionForm> {
                 children: _selectedTags
                     .map(
                       (tag) => Chip(
-                        label: Text(tag),
+                        label: const Text(tag),
                         onDeleted: () =>
                             setState(() => _selectedTags.remove(tag)),
                         deleteIconColor:
-                            theme.colorScheme.onSurface.withOpacity(0.6),
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     )
                     .toList(),
@@ -568,7 +568,7 @@ class _TagSelectionDialogState extends State<_TagSelectionDialog> {
           children: widget.availableTags
               .map(
                 (tag) => CheckboxListTile(
-                  title: Text(tag),
+                  title: const Text(tag),
                   value: _selected.contains(tag),
                   onChanged: (checked) {
                     setState(() {

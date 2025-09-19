@@ -151,11 +151,11 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                             _showArchived = value;
                           });
                         },
-                        selectedColor: Colors.blue.withOpacity(0.2),
+                        selectedColor: Colors.blue.withValues(alpha: 0.2),
                         checkmarkColor: Colors.blue,
                       ),
                       const SizedBox(width: 16),
-                      Text(
+                      const Text(
                         '共 ${filteredTags.length} 个标签',
                         style: TextStyle(color: Colors.grey[600], fontSize: 14),
                       ),
@@ -176,7 +176,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -260,7 +260,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
     required VoidCallback onPressed,
   }) {
     return Material(
-      color: Colors.blue.withOpacity(0.1),
+      color: Colors.blue.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onPressed,
@@ -272,7 +272,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
             children: [
               Icon(icon, size: 16, color: Colors.blue),
               const SizedBox(width: 6),
-              Text(
+              const Text(
                 label,
                 style: const TextStyle(
                   color: Colors.blue,
@@ -297,13 +297,13 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: Colors.blue.withOpacity(0.3),
+            color: Colors.blue.withValues(alpha: 0.3),
             width: 1.5,
             style: BorderStyle.solid,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -312,13 +312,13 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.add_circle_outline,
               color: Colors.blue,
               size: 24,
             ),
             const SizedBox(width: 8),
-            Text(
+            const Text(
               '新建分组',
               style: TextStyle(
                 color: Colors.blue,
@@ -344,13 +344,13 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Icon(icon, color: color, size: 20),
         ),
         const SizedBox(height: 8),
-        Text(
+        const Text(
           count.toString(),
           style: TextStyle(
             fontSize: 24,
@@ -358,7 +358,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
             color: color,
           ),
         ),
-        Text(
+        const Text(
           title,
           style: TextStyle(
             fontSize: 12,
@@ -382,7 +382,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -395,7 +395,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
             children: [
               Icon(icon, size: 20, color: Colors.grey[700]),
               const SizedBox(width: 8),
-              Text(
+              const Text(
                 title,
                 style: const TextStyle(
                   fontSize: 16,
@@ -409,7 +409,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
+                child: const Text(
                   '${tags.length}',
                   style: TextStyle(
                     fontSize: 12,
@@ -455,7 +455,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -477,7 +477,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                   AnimatedRotation(
                     turns: isExpanded ? 0.25 : 0,
                     duration: const Duration(milliseconds: 200),
-                    child: Icon(
+                    child: const Icon(
                       Icons.chevron_right,
                       color: Colors.grey[700],
                     ),
@@ -487,21 +487,21 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: groupColor.withOpacity(0.15),
+                      color: groupColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (group.icon != null) ...[
-                          Icon(
+                          const Icon(
                             _getIconData(group.icon!),
                             size: 16,
                             color: groupColor,
                           ),
                           const SizedBox(width: 6),
                         ],
-                        Text(
+                        const Text(
                           group.name,
                           style: TextStyle(
                             color: groupColor,
@@ -519,7 +519,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                       color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Text(
+                    child: const Text(
                       '${groupTags.length} 个标签',
                       style: TextStyle(
                         fontSize: 12,
@@ -545,7 +545,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                         tooltip: '编辑分组',
                       ),
                       IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.delete,
                           size: 18,
                           color:
@@ -570,7 +570,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                   ? Center(
                       child: Padding(
                         padding: const EdgeInsets.all(20),
-                        child: Text(
+                        child: const Text(
                           '该分组暂无标签',
                           style: TextStyle(
                             color: Colors.grey[500],
@@ -600,10 +600,10 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -611,7 +611,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (tag.icon != null) ...[
-            Icon(
+            const Icon(
               _getIconData(tag.icon!),
               size: 16,
               color: color,
@@ -620,10 +620,10 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
           ],
           InkWell(
             onTap: isArchived ? null : () => _showEditTagDialog(tag),
-            child: Text(
+            child: const Text(
               tag.name,
               style: TextStyle(
-                color: isArchived ? color.withOpacity(0.6) : color,
+                color: isArchived ? color.withValues(alpha: 0.6) : color,
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 decoration: isArchived ? TextDecoration.lineThrough : null,
@@ -634,10 +634,10 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Text(
+            child: const Text(
               tag.usageCount.toString(),
               style: const TextStyle(
                 fontSize: 11,
@@ -655,7 +655,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   padding: const EdgeInsets.all(4),
-                  child: Icon(
+                  child: const Icon(
                     Icons.edit,
                     size: 16,
                     color: isArchived ? Colors.grey[300] : Colors.grey[600],
@@ -667,7 +667,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   padding: const EdgeInsets.all(4),
-                  child: Icon(
+                  child: const Icon(
                     tag.archived ? Icons.unarchive : Icons.archive,
                     size: 16,
                     color: Colors.grey[600],
@@ -679,7 +679,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   padding: const EdgeInsets.all(4),
-                  child: Icon(
+                  child: const Icon(
                     Icons.delete,
                     size: 16,
                     color: isArchived ? Colors.grey[300] : Colors.red[400],
@@ -722,10 +722,10 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                     decoration: BoxDecoration(
                       color: Color(int.parse((tag.color ?? '#6471eb')
                               .replaceFirst('#', '0xff')))
-                          .withOpacity(0.2),
+                          .withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       tag.icon != null ? _getIconData(tag.icon!) : Icons.label,
                       color: Color(int.parse(
                           (tag.color ?? '#6471eb').replaceFirst('#', '0xff'))),
@@ -736,14 +736,14 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           tag.name,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        Text(
+                        const Text(
                           '已使用 ${tag.usageCount} 次',
                           style: TextStyle(
                             fontSize: 13,
@@ -767,10 +767,10 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
               },
             ),
             ListTile(
-              leading: Icon(
+              leading: const Icon(
                 tag.archived ? Icons.unarchive : Icons.archive,
               ),
-              title: Text(tag.archived ? '恢复标签' : '归档标签'),
+              title: const Text(tag.archived ? '恢复标签' : '归档标签'),
               onTap: () {
                 Navigator.pop(context);
                 _toggleArchive(tag);
@@ -892,7 +892,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('删除分组'),
-        content: Text('确定要删除分组"${group.name}"吗？'),
+        content: const Text('确定要删除分组"${group.name}"吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -906,7 +906,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
               setState(() {});
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('分组"${group.name}"已删除'),
+                  content: const Text('分组"${group.name}"已删除'),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -932,7 +932,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content:
-              Text(tag.archived ? '标签"${tag.name}"已恢复' : '标签"${tag.name}"已归档'),
+              const Text(tag.archived ? '标签"${tag.name}"已恢复' : '标签"${tag.name}"已归档'),
           action: SnackBarAction(
             label: '撤销',
             onPressed: () => _toggleArchive(updatedTag),

@@ -56,23 +56,23 @@ class AccountList extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.account_balance_wallet_outlined,
             size: 64,
-            color: theme.colorScheme.onSurface.withOpacity(0.3),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             '暂无账户',
             style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             '添加您的第一个账户开始管理财务',
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.4),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
             ),
           ),
           if (onAddAccount != null) ...[
@@ -164,7 +164,7 @@ class AccountList extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             theme.primaryColor,
-            theme.primaryColor.withOpacity(0.8),
+            theme.primaryColor.withValues(alpha: 0.8),
           ],
         ),
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
@@ -172,14 +172,14 @@ class AccountList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             '净资产',
             style: theme.textTheme.titleMedium?.copyWith(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             _formatAmount(netWorth),
             style: theme.textTheme.headlineMedium?.copyWith(
               color: Colors.white,
@@ -193,13 +193,13 @@ class AccountList extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       '总资产',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                       ),
                     ),
-                    Text(
+                    const Text(
                       _formatAmount(totalAssets),
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: Colors.white,
@@ -212,19 +212,19 @@ class AccountList extends StatelessWidget {
               Container(
                 width: 1,
                 height: 40,
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
               ),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
+                    const Text(
                       '总负债',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                       ),
                     ),
-                    Text(
+                    const Text(
                       _formatAmount(totalLiabilities),
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: Colors.white,
@@ -251,20 +251,20 @@ class AccountList extends StatelessWidget {
       color: theme.colorScheme.surface,
       child: Row(
         children: [
-          Icon(
-            _getTypeIcon(type),
+          const Icon(
+            _getTypeconst Icon(type),
             size: 20,
             color: _getTypeColor(type),
           ),
           const SizedBox(width: 8),
-          Text(
+          const Text(
             _getTypeName(type),
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w600,
             ),
           ),
           const Spacer(),
-          Text(
+          const Text(
             _formatAmount(total),
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w600,
@@ -299,7 +299,7 @@ class AccountList extends StatelessWidget {
         .fold(0.0, (sum, account) => sum + account.balance);
   }
 
-  IconData _getTypeIcon(AccountType type) {
+  IconData _getTypeconst Icon(AccountType type) {
     switch (type) {
       case AccountType.asset:
         return Icons.account_balance_wallet;
@@ -384,7 +384,7 @@ class GroupedAccountList extends StatelessWidget {
         return ExpansionTile(
           title: Row(
             children: [
-              Text(
+              const Text(
                 groupName,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
@@ -394,10 +394,10 @@ class GroupedAccountList extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: theme.primaryColor.withOpacity(0.1),
+                  color: theme.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
+                child: const Text(
                   '${accounts.length}',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.primaryColor,
@@ -408,10 +408,10 @@ class GroupedAccountList extends StatelessWidget {
             ],
           ),
           subtitle: showGroupTotal
-              ? Text(
+              ? const Text(
                   '总计: ${_formatGroupTotal(accounts)}',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 )
               : null,

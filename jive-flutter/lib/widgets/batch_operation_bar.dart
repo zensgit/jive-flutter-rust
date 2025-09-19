@@ -70,7 +70,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
           color: colorScheme.primaryContainer,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -92,7 +92,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
                 // 选中数量
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text(
+                  child: const Text(
                     '已选择 ${widget.selectedIds.length} 项',
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: colorScheme.onPrimaryContainer,
@@ -103,10 +103,10 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
 
                 // 全选/取消全选
                 TextButton.icon(
-                  icon: Icon(
+                  icon: const Icon(
                     widget.isAllSelected ? Icons.deselect : Icons.select_all,
                   ),
-                  label: Text(widget.isAllSelected ? '取消全选' : '全选'),
+                  label: const Text(widget.isAllSelected ? '取消全选' : '全选'),
                   onPressed: widget.onSelectAll,
                 ),
 
@@ -165,7 +165,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: Material(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         child: InkWell(
           onTap: onPressed,
@@ -177,7 +177,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
               children: [
                 Icon(icon, size: 18, color: color),
                 const SizedBox(width: 4),
-                Text(
+                const Text(
                   label,
                   style: TextStyle(
                     color: color,
@@ -221,7 +221,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('批量归档'),
-        content: Text('确定要归档选中的 ${widget.selectedIds.length} 个项目吗？'),
+        content: const Text('确定要归档选中的 ${widget.selectedIds.length} 个项目吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -234,7 +234,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
               widget.onCancel();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('已归档 ${widget.selectedIds.length} 个项目'),
+                  content: const Text('已归档 ${widget.selectedIds.length} 个项目'),
                 ),
               );
             },
@@ -251,7 +251,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.warning, color: Theme.of(context).colorScheme.error),
+            const Icon(Icons.warning, color: Theme.of(context).colorScheme.error),
             const SizedBox(width: 8),
             const Text('批量删除'),
           ],
@@ -260,7 +260,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('确定要删除选中的 ${widget.selectedIds.length} 个项目吗？'),
+            const Text('确定要删除选中的 ${widget.selectedIds.length} 个项目吗？'),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(8),
@@ -270,14 +270,14 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
               ),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.info_outline,
                     size: 16,
                     color: Theme.of(context).colorScheme.onErrorContainer,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
+                    child: const Text(
                       '此操作不可恢复！',
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onErrorContainer,
@@ -306,7 +306,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
               widget.onCancel();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('已删除 ${widget.selectedIds.length} 个项目'),
+                  content: const Text('已删除 ${widget.selectedIds.length} 个项目'),
                   action: SnackBarAction(
                     label: '撤销',
                     onPressed: () {
@@ -350,7 +350,7 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('将 ${widget.selectedIds.length} 个分类移动到：'),
+          const Text('将 ${widget.selectedIds.length} 个分类移动到：'),
           const SizedBox(height: 16),
           // TODO: 添加分类选择器
           DropdownButtonFormField<String>(
@@ -363,7 +363,7 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
             items: const [
               DropdownMenuItem(
                 value: null,
-                child: Text('根目录'),
+                child: const Text('根目录'),
               ),
               // TODO: 从provider获取分类列表
             ],
@@ -391,7 +391,7 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
             widget.onConfirm();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('已移动 ${widget.selectedIds.length} 个分类'),
+                content: const Text('已移动 ${widget.selectedIds.length} 个分类'),
               ),
             );
           },
@@ -431,7 +431,7 @@ class _BatchConvertToTagDialogState
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('将 ${widget.selectedIds.length} 个分类转换为标签'),
+          const Text('将 ${widget.selectedIds.length} 个分类转换为标签'),
           const SizedBox(height: 16),
           CheckboxListTile(
             title: const Text('应用到历史交易'),
@@ -478,7 +478,7 @@ class _BatchConvertToTagDialogState
             widget.onConfirm();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('已转换 ${widget.selectedIds.length} 个分类为标签'),
+                content: const Text('已转换 ${widget.selectedIds.length} 个分类为标签'),
               ),
             );
           },

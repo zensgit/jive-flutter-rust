@@ -102,7 +102,7 @@ class _FamilyActivityLogScreenState
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('加载活动日志失败: $e')),
+          SnackBar(content: const Text('加载活动日志失败: $e')),
         );
       }
     }
@@ -146,7 +146,7 @@ class _FamilyActivityLogScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('活动日志'),
-            Text(
+            const Text(
               widget.familyName,
               style: theme.textTheme.bodySmall,
             ),
@@ -168,7 +168,7 @@ class _FamilyActivityLogScreenState
           // 搜索栏
           Container(
             padding: const EdgeInsets.all(16),
-            color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+            color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
@@ -243,7 +243,7 @@ class _FamilyActivityLogScreenState
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: FilterChip(
-        label: Text(label),
+        label: const Text(label),
         selected: isSelected,
         onSelected: (_) => onTap(),
         backgroundColor: theme.colorScheme.surfaceVariant,
@@ -257,18 +257,18 @@ class _FamilyActivityLogScreenState
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.history,
             size: 64,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             '暂无活动记录',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             '家庭成员的操作都会记录在这里',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -335,7 +335,7 @@ class _FamilyActivityLogScreenState
                   color: theme.colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
+                child: const Text(
                   dateLabel,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onPrimaryContainer,
@@ -344,7 +344,7 @@ class _FamilyActivityLogScreenState
                 ),
               ),
               const SizedBox(width: 8),
-              Text(
+              const Text(
                 '${logs.length} 条活动',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
@@ -383,7 +383,7 @@ class _FamilyActivityLogScreenState
             // 时间轴
             Column(
               children: [
-                Text(
+                const Text(
                   timeStr,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
@@ -394,11 +394,11 @@ class _FamilyActivityLogScreenState
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: _getActionColor(log.actionType).withOpacity(0.1),
+                    color: _getActionColor(log.actionType).withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
-                    _getActionIcon(log.actionType),
+                  child: const Icon(
+                    _getActionconst Icon(log.actionType),
                     size: 20,
                     color: _getActionColor(log.actionType),
                   ),
@@ -416,7 +416,7 @@ class _FamilyActivityLogScreenState
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
+                        child: const Text(
                           log.userName ?? '未知用户',
                           style: theme.textTheme.titleSmall,
                         ),
@@ -425,13 +425,13 @@ class _FamilyActivityLogScreenState
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  const Text(
                     log.description,
                     style: theme.textTheme.bodyMedium,
                   ),
                   if (log.details != null && log.details!.isNotEmpty) ...[
                     const SizedBox(height: 4),
-                    Text(
+                    const Text(
                       log.details!,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
@@ -449,7 +449,7 @@ class _FamilyActivityLogScreenState
                         color: theme.colorScheme.surfaceVariant,
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      child: Text(
+                      child: const Text(
                         log.entityName!,
                         style: theme.textTheme.bodySmall,
                       ),
@@ -526,11 +526,11 @@ class _FamilyActivityLogScreenState
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: color, width: 0.5),
       ),
-      child: Text(
+      child: const Text(
         label,
         style: TextStyle(
           color: color,
@@ -541,7 +541,7 @@ class _FamilyActivityLogScreenState
     );
   }
 
-  IconData _getActionIcon(AuditActionType type) {
+  IconData _getActionconst Icon(AuditActionType type) {
     switch (type) {
       case AuditActionType.create:
         return Icons.add_circle_outline;
@@ -648,7 +648,7 @@ class _ActivityDetailSheet extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -659,7 +659,7 @@ class _ActivityDetailSheet extends StatelessWidget {
                   controller: scrollController,
                   padding: const EdgeInsets.all(16),
                   children: [
-                    Text('活动详情', style: theme.textTheme.titleLarge),
+                    const Text('活动详情', style: theme.textTheme.titleLarge),
                     const SizedBox(height: 16),
                     _buildDetailRow('操作者', log.userName ?? '未知用户'),
                     _buildDetailRow(
@@ -674,7 +674,7 @@ class _ActivityDetailSheet extends StatelessWidget {
                       _buildDetailRow('实体名称', log.entityName!),
                     if (log.details != null) ...[
                       const SizedBox(height: 16),
-                      Text('详细信息', style: theme.textTheme.titleMedium),
+                      const Text('详细信息', style: theme.textTheme.titleMedium),
                       const SizedBox(height: 8),
                       Container(
                         padding: const EdgeInsets.all(12),
@@ -682,12 +682,12 @@ class _ActivityDetailSheet extends StatelessWidget {
                           color: theme.colorScheme.surfaceVariant,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(log.details!),
+                        child: const Text(log.details!),
                       ),
                     ],
                     if (log.ipAddress != null) ...[
                       const SizedBox(height: 16),
-                      Text('技术信息', style: theme.textTheme.titleMedium),
+                      const Text('技术信息', style: theme.textTheme.titleMedium),
                       const SizedBox(height: 8),
                       _buildDetailRow('IP地址', log.ipAddress!),
                       if (log.userAgent != null)
@@ -709,9 +709,9 @@ class _ActivityDetailSheet extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          const SizedBox(
             width: 100,
-            child: Text(
+            child: const Text(
               label,
               style: const TextStyle(
                 fontWeight: FontWeight.w500,
@@ -720,7 +720,7 @@ class _ActivityDetailSheet extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: Text(value),
+            child: const Text(value),
           ),
         ],
       ),
@@ -770,7 +770,7 @@ class _FilterDialogState extends State<_FilterDialog> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 操作类型
-          Text('操作类型', style: theme.textTheme.titleSmall),
+          const Text('操作类型', style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),
           DropdownButtonFormField<AuditActionType?>(
             value: _actionType,
@@ -781,11 +781,11 @@ class _FilterDialogState extends State<_FilterDialog> {
             items: [
               const DropdownMenuItem(
                 value: null,
-                child: Text('全部'),
+                child: const Text('全部'),
               ),
               ...AuditActionType.values.map((type) => DropdownMenuItem(
                     value: type,
-                    child: Text(type.toString().split('.').last),
+                    child: const Text(type.toString().split('.').last),
                   )),
             ],
             onChanged: (value) => setState(() => _actionType = value),
@@ -794,7 +794,7 @@ class _FilterDialogState extends State<_FilterDialog> {
           const SizedBox(height: 16),
 
           // 日期范围
-          Text('日期范围', style: theme.textTheme.titleSmall),
+          const Text('日期范围', style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),
           InkWell(
             onTap: () async {
@@ -817,7 +817,7 @@ class _FilterDialogState extends State<_FilterDialog> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     _dateRange == null
                         ? '选择日期范围'
                         : '${DateFormat('MM/dd').format(_dateRange!.start)} - ${DateFormat('MM/dd').format(_dateRange!.end)}',
@@ -897,8 +897,8 @@ class _StatisticsDialog extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label),
-          Text(
+          const Text(label),
+          const Text(
             value,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),

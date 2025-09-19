@@ -23,7 +23,7 @@ class LoadingWidget extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
+        const SizedBox(
           width: size,
           height: size,
           child: CircularProgressIndicator(
@@ -35,10 +35,10 @@ class LoadingWidget extends StatelessWidget {
         ),
         if (showMessage && message != null) ...[
           const SizedBox(height: 16),
-          Text(
+          const Text(
             message!,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             textAlign: TextAlign.center,
           ),
@@ -233,7 +233,7 @@ class _ShimmerCardState extends State<ShimmerCard>
               end: Alignment.centerRight,
               colors: [
                 theme.cardColor,
-                theme.cardColor.withOpacity(0.5),
+                theme.cardColor.withValues(alpha: 0.5),
                 theme.cardColor,
               ],
               stops: [
@@ -285,10 +285,10 @@ class EmptyWidget extends StatelessWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: theme.primaryColor.withOpacity(0.1),
+                color: theme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(40),
               ),
-              child: Icon(
+              child: const Icon(
                 icon,
                 size: 40,
                 color: theme.primaryColor,
@@ -298,7 +298,7 @@ class EmptyWidget extends StatelessWidget {
           const SizedBox(height: 24),
 
           // 标题
-          Text(
+          const Text(
             title,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
@@ -309,10 +309,10 @@ class EmptyWidget extends StatelessWidget {
           // 副标题
           if (subtitle != null) ...[
             const SizedBox(height: 8),
-            Text(
+            const Text(
               subtitle!,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               textAlign: TextAlign.center,
             ),
@@ -335,7 +335,7 @@ class EmptyWidget extends StatelessWidget {
                       BorderRadius.circular(AppConstants.borderRadius),
                 ),
               ),
-              child: Text(actionText!),
+              child: const Text(actionText!),
             ),
           ],
         ],

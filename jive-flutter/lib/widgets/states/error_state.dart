@@ -30,13 +30,13 @@ class ErrorState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline,
               size: 64,
               color: theme.colorScheme.error,
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               title ?? '出错了',
               style: theme.textTheme.titleLarge?.copyWith(
                 color: theme.colorScheme.onSurface,
@@ -44,7 +44,7 @@ class ErrorState extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               message ?? errorMessage,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
@@ -56,10 +56,10 @@ class ErrorState extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.errorContainer.withOpacity(0.3),
+                  color: theme.colorScheme.errorContainer.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(
+                child: const Text(
                   error.toString(),
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontFamily: 'monospace',
@@ -188,7 +188,7 @@ class ErrorSnackBar {
   }) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: const Text(message),
         duration: duration,
         backgroundColor: Theme.of(context).colorScheme.error,
         action: actionLabel != null && onAction != null
@@ -241,27 +241,27 @@ class ErrorDialog extends StatelessWidget {
     final theme = Theme.of(context);
 
     return AlertDialog(
-      icon: Icon(
+      icon: const Icon(
         Icons.error_outline,
         color: theme.colorScheme.error,
         size: 48,
       ),
-      title: Text(title),
+      title: const Text(title),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(message),
+          const Text(message),
           if (showDetails && error != null) ...[
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: theme.colorScheme.errorContainer.withOpacity(0.3),
+                color: theme.colorScheme.errorContainer.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: SingleChildScrollView(
-                child: Text(
+                child: const Text(
                   error.toString(),
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontFamily: 'monospace',

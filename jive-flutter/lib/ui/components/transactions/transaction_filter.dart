@@ -59,7 +59,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
           // 标题栏
           Row(
             children: [
-              Text(
+              const Text(
                 '筛选交易',
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -133,7 +133,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           '交易类型',
           style: theme.textTheme.titleSmall,
         ),
@@ -207,7 +207,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           '日期范围',
           style: theme.textTheme.titleSmall,
         ),
@@ -226,7 +226,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
                           BorderRadius.circular(AppConstants.borderRadius),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     _filter.startDate != null
                         ? _formatDate(_filter.startDate!)
                         : '选择日期',
@@ -247,7 +247,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
                           BorderRadius.circular(AppConstants.borderRadius),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     _filter.endDate != null
                         ? _formatDate(_filter.endDate!)
                         : '选择日期',
@@ -291,7 +291,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           '金额范围',
           style: theme.textTheme.titleSmall,
         ),
@@ -348,7 +348,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           '账户',
           style: theme.textTheme.titleSmall,
         ),
@@ -358,7 +358,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
           children: accounts
               .map(
                 (account) => FilterChip(
-                  label: Text(account),
+                  label: const Text(account),
                   selected: _filter.accounts.contains(account),
                   onSelected: (selected) {
                     setState(() {
@@ -386,7 +386,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           '分类',
           style: theme.textTheme.titleSmall,
         ),
@@ -396,7 +396,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
           children: categories
               .map(
                 (category) => FilterChip(
-                  label: Text(category),
+                  label: const Text(category),
                   selected: _filter.categories.contains(category),
                   onSelected: (selected) {
                     setState(() {
@@ -424,7 +424,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           '标签',
           style: theme.textTheme.titleSmall,
         ),
@@ -434,7 +434,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
           children: tags
               .map(
                 (tag) => FilterChip(
-                  label: Text(tag),
+                  label: const Text(tag),
                   selected: _filter.tags.contains(tag),
                   onSelected: (selected) {
                     setState(() {

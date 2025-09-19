@@ -55,7 +55,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${_getTypeLabel(_selectedType)}创建成功'),
+            content: const Text('${_getTypeLabel(_selectedType)}创建成功'),
             backgroundColor: Colors.green,
           ),
         );
@@ -64,7 +64,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('创建失败: ${e.toString()}'),
+            content: const Text('创建失败: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -93,7 +93,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
     }
   }
 
-  IconData _getTypeIcon(LedgerType type) {
+  IconData _getTypeconst Icon(LedgerType type) {
     switch (type) {
       case LedgerType.personal:
         return Icons.person;
@@ -128,14 +128,14 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: theme.primaryColor.withOpacity(0.1),
+                color: theme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(16),
                 ),
               ),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.add_home,
                     color: theme.primaryColor,
                     size: 28,
@@ -188,7 +188,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                       value: _selectedType,
                       decoration: InputDecoration(
                         labelText: '类型',
-                        prefixIcon: Icon(_getTypeIcon(_selectedType)),
+                        prefixIcon: const Icon(_getTypeconst Icon(_selectedType)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -198,9 +198,9 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                           value: type,
                           child: Row(
                             children: [
-                              Icon(_getTypeIcon(type), size: 20),
+                              const Icon(_getTypeconst Icon(type), size: 20),
                               const SizedBox(width: 8),
-                              Text(_getTypeLabel(type)),
+                              const Text(_getTypeLabel(type)),
                             ],
                           ),
                         );
@@ -226,27 +226,27 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                       items: const [
                         DropdownMenuItem(
                           value: 'CNY',
-                          child: Text('CNY - 人民币 ¥'),
+                          child: const Text('CNY - 人民币 ¥'),
                         ),
                         DropdownMenuItem(
                           value: 'USD',
-                          child: Text('USD - 美元 \$'),
+                          child: const Text('USD - 美元 \$'),
                         ),
                         DropdownMenuItem(
                           value: 'EUR',
-                          child: Text('EUR - 欧元 €'),
+                          child: const Text('EUR - 欧元 €'),
                         ),
                         DropdownMenuItem(
                           value: 'GBP',
-                          child: Text('GBP - 英镑 £'),
+                          child: const Text('GBP - 英镑 £'),
                         ),
                         DropdownMenuItem(
                           value: 'JPY',
-                          child: Text('JPY - 日元 ¥'),
+                          child: const Text('JPY - 日元 ¥'),
                         ),
                         DropdownMenuItem(
                           value: 'HKD',
-                          child: Text('HKD - 港币 HK\$'),
+                          child: const Text('HKD - 港币 HK\$'),
                         ),
                       ],
                       onChanged: (value) {
@@ -289,23 +289,23 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: theme.primaryColor.withOpacity(0.05),
+                        color: theme.primaryColor.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: theme.primaryColor.withOpacity(0.2),
+                          color: theme.primaryColor.withValues(alpha: 0.2),
                         ),
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.info_outline,
                             size: 16,
                             color: theme.primaryColor,
                           ),
                           const SizedBox(width: 8),
                           const Expanded(
-                            child: Text(
+                            child: const Text(
                               '您将成为此账本的所有者（Owner），拥有全部管理权限',
                               style: TextStyle(fontSize: 12),
                             ),

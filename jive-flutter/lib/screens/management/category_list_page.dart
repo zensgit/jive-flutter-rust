@@ -27,9 +27,9 @@ class CategoryListPage extends ConsumerWidget {
                 return ListTile(
                   leading: CircleAvatar(
                     backgroundColor: _parseColor(c.color, colorScheme.primary),
-                    child: Text(c.icon, style: const TextStyle(fontSize: 14)),
+                    child: const Text(c.icon, style: const TextStyle(fontSize: 14)),
                   ),
-                  title: Text(c.name),
+                  title: const Text(c.name),
                   subtitle: c.parentId != null
                       ? const Text('子分类', style: TextStyle(fontSize: 11))
                       : null,
@@ -42,7 +42,7 @@ class CategoryListPage extends ConsumerWidget {
         onPressed: () {
           // 占位：后续 PR 将实现创建分类对话框
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('创建分类功能后续 PR 提供')),
+            const SnackBar(content: const Text('创建分类功能后续 PR 提供')),
           );
         },
         child: const Icon(Icons.add),
@@ -75,17 +75,17 @@ class _EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.category_outlined, size: 56, color: colorScheme.primary),
+            const Icon(Icons.category_outlined, size: 56, color: colorScheme.primary),
             const SizedBox(height: 16),
             const Text(
               '暂无分类',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               '点击右下角 + 按钮创建你的第一个分类',
               textAlign: TextAlign.center,
-              style: TextStyle(color: colorScheme.onSurface.withOpacity(.65)),
+              style: TextStyle(color: colorScheme.onSurface.withValues(alpha: .65)),
             ),
           ],
         ),

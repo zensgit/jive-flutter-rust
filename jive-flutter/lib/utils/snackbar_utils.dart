@@ -5,7 +5,7 @@ class SnackbarUtils {
   static void showSuccess(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: const Text(message),
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
       ),
@@ -15,7 +15,7 @@ class SnackbarUtils {
   static void showError(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: const Text(message),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
       ),
@@ -25,7 +25,7 @@ class SnackbarUtils {
   static void showInfo(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: const Text(message),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -34,7 +34,7 @@ class SnackbarUtils {
   static void showWarning(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: const Text(message),
         backgroundColor: Colors.orange,
         behavior: SnackBarBehavior.floating,
       ),

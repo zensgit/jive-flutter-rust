@@ -86,7 +86,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                       decoration: const InputDecoration(
                         labelText: '账户名称',
                         hintText: '例如：工商银行储蓄卡',
-                        prefixIcon: Icon(Icons.account_balance),
+                        prefixIcon: const Icon(Icons.account_balance),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -103,16 +103,16 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                       initialValue: _selectedType,
                       decoration: const InputDecoration(
                         labelText: '账户类型',
-                        prefixIcon: Icon(Icons.category),
+                        prefixIcon: const Icon(Icons.category),
                       ),
                       items: const [
                         DropdownMenuItem(
                           value: 'checking',
                           child: Row(
                             children: [
-                              Icon(Icons.account_balance, size: 20),
-                              SizedBox(width: 8),
-                              Text('支票账户'),
+                              const Icon(Icons.account_balance, size: 20),
+                              const SizedBox(width: 8),
+                              const Text('支票账户'),
                             ],
                           ),
                         ),
@@ -120,9 +120,9 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                           value: 'savings',
                           child: Row(
                             children: [
-                              Icon(Icons.savings, size: 20),
-                              SizedBox(width: 8),
-                              Text('储蓄账户'),
+                              const Icon(Icons.savings, size: 20),
+                              const SizedBox(width: 8),
+                              const Text('储蓄账户'),
                             ],
                           ),
                         ),
@@ -130,9 +130,9 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                           value: 'credit_card',
                           child: Row(
                             children: [
-                              Icon(Icons.credit_card, size: 20),
-                              SizedBox(width: 8),
-                              Text('信用卡'),
+                              const Icon(Icons.credit_card, size: 20),
+                              const SizedBox(width: 8),
+                              const Text('信用卡'),
                             ],
                           ),
                         ),
@@ -140,9 +140,9 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                           value: 'cash',
                           child: Row(
                             children: [
-                              Icon(Icons.account_balance_wallet, size: 20),
-                              SizedBox(width: 8),
-                              Text('现金'),
+                              const Icon(Icons.account_balance_wallet, size: 20),
+                              const SizedBox(width: 8),
+                              const Text('现金'),
                             ],
                           ),
                         ),
@@ -150,9 +150,9 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                           value: 'investment',
                           child: Row(
                             children: [
-                              Icon(Icons.trending_up, size: 20),
-                              SizedBox(width: 8),
-                              Text('投资账户'),
+                              const Icon(Icons.trending_up, size: 20),
+                              const SizedBox(width: 8),
+                              const Text('投资账户'),
                             ],
                           ),
                         ),
@@ -160,9 +160,9 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                           value: 'loan',
                           child: Row(
                             children: [
-                              Icon(Icons.money_off, size: 20),
-                              SizedBox(width: 8),
-                              Text('贷款'),
+                              const Icon(Icons.money_off, size: 20),
+                              const SizedBox(width: 8),
+                              const Text('贷款'),
                             ],
                           ),
                         ),
@@ -170,9 +170,9 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                           value: 'other',
                           child: Row(
                             children: [
-                              Icon(Icons.account_circle, size: 20),
-                              SizedBox(width: 8),
-                              Text('其他'),
+                              const Icon(Icons.account_circle, size: 20),
+                              const SizedBox(width: 8),
+                              const Text('其他'),
                             ],
                           ),
                         ),
@@ -241,7 +241,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                       decoration: const InputDecoration(
                         labelText: '账户号码（可选）',
                         hintText: '卡号后4位或完整账号',
-                        prefixIcon: Icon(Icons.numbers),
+                        prefixIcon: const Icon(Icons.numbers),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -251,18 +251,18 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                       initialValue: _selectedCurrency,
                       decoration: const InputDecoration(
                         labelText: '货币',
-                        prefixIcon: Icon(Icons.currency_exchange),
+                        prefixIcon: const Icon(Icons.currency_exchange),
                       ),
                       items: const [
                         DropdownMenuItem(
-                            value: 'CNY', child: Text('CNY - 人民币')),
-                        DropdownMenuItem(value: 'USD', child: Text('USD - 美元')),
-                        DropdownMenuItem(value: 'EUR', child: Text('EUR - 欧元')),
-                        DropdownMenuItem(value: 'GBP', child: Text('GBP - 英镑')),
-                        DropdownMenuItem(value: 'JPY', child: Text('JPY - 日元')),
-                        DropdownMenuItem(value: 'HKD', child: Text('HKD - 港币')),
-                        DropdownMenuItem(value: 'TWD', child: Text('TWD - 台币')),
-                        DropdownMenuItem(value: 'KRW', child: Text('KRW - 韩元')),
+                            value: 'CNY', child: const Text('CNY - 人民币')),
+                        DropdownMenuItem(value: 'USD', child: const Text('USD - 美元')),
+                        DropdownMenuItem(value: 'EUR', child: const Text('EUR - 欧元')),
+                        DropdownMenuItem(value: 'GBP', child: const Text('GBP - 英镑')),
+                        DropdownMenuItem(value: 'JPY', child: const Text('JPY - 日元')),
+                        DropdownMenuItem(value: 'HKD', child: const Text('HKD - 港币')),
+                        DropdownMenuItem(value: 'TWD', child: const Text('TWD - 台币')),
+                        DropdownMenuItem(value: 'KRW', child: const Text('KRW - 韩元')),
                       ],
                       onChanged: (value) {
                         setState(() {
@@ -331,7 +331,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                       decoration: const InputDecoration(
                         labelText: '描述（可选）',
                         hintText: '添加备注信息',
-                        prefixIcon: Icon(Icons.description),
+                        prefixIcon: const Icon(Icons.description),
                         alignLabelWithHint: true,
                       ),
                     ),
@@ -350,7 +350,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
                   children: [
                     const Padding(
                       padding: EdgeInsets.all(8),
-                      child: Text(
+                      child: const Text(
                         '设置选项',
                         style: TextStyle(
                           fontSize: 18,
@@ -427,7 +427,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
 
       // 显示成功消息
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('账户已创建')),
+        const SnackBar(content: const Text('账户已创建')),
       );
 
       // 刷新账户列表
@@ -437,7 +437,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
       context.pop();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('创建失败: $e')),
+        SnackBar(content: const Text('创建失败: $e')),
       );
     }
   }

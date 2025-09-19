@@ -59,7 +59,7 @@ class _CurrencyConverterScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('转换失败: $e')),
+          SnackBar(content: const Text('转换失败: $e')),
         );
       }
     } finally {
@@ -94,7 +94,7 @@ class _CurrencyConverterScreenState
               decoration: const InputDecoration(
                 labelText: '金额',
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.attach_money),
+                prefixIcon: const Icon(Icons.attach_money),
               ),
               onChanged: (_) => _refreshAndConvert(),
             ),
@@ -118,7 +118,7 @@ class _CurrencyConverterScreenState
                     items: selectedCurrencies.map((currency) {
                       return DropdownMenuItem(
                         value: currency.code,
-                        child: Text('${currency.code} - ${currency.nameZh}'),
+                        child: const Text('${currency.code} - ${currency.nameZh}'),
                       );
                     }).toList(),
                     onChanged: (value) {
@@ -168,7 +168,7 @@ class _CurrencyConverterScreenState
                     items: selectedCurrencies.map((currency) {
                       return DropdownMenuItem(
                         value: currency.code,
-                        child: Text('${currency.code} - ${currency.nameZh}'),
+                        child: const Text('${currency.code} - ${currency.nameZh}'),
                       );
                     }).toList(),
                     onChanged: (value) {
@@ -197,7 +197,7 @@ class _CurrencyConverterScreenState
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
+                      const Text(
                         formatter.formatCurrency(
                             double.tryParse(_amountController.text) ?? 0,
                             _fromCurrency),
@@ -206,7 +206,7 @@ class _CurrencyConverterScreenState
                       const SizedBox(height: 10),
                       const Icon(Icons.arrow_downward, size: 24),
                       const SizedBox(height: 10),
-                      Text(
+                      const Text(
                         formatter.formatCurrency(_result ?? 0, _toCurrency),
                         style: Theme.of(context)
                             .textTheme
@@ -217,7 +217,7 @@ class _CurrencyConverterScreenState
                             ),
                       ),
                       const SizedBox(height: 10),
-                      Text(
+                      const Text(
                         '汇率: 1 $_fromCurrency = ${(_result! / (double.tryParse(_amountController.text) ?? 1)).toStringAsFixed(4)} $_toCurrency',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
@@ -241,7 +241,7 @@ class _CurrencyConverterScreenState
             const SizedBox(height: 10),
 
             // Info
-            Text(
+            const Text(
               '汇率数据实时更新',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.grey,

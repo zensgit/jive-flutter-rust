@@ -134,7 +134,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isLogin ? '微信登录' : '微信注册'),
+        title: const Text(widget.isLogin ? '微信登录' : '微信注册'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0.5,
@@ -173,7 +173,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
@@ -203,7 +203,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                             ),
                             child: Center(
                               child: _scanSuccess
-                                  ? Icon(
+                                  ? const Icon(
                                       Icons.check_circle,
                                       size: 80,
                                       color: Colors.green[600],
@@ -221,7 +221,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                                                 BorderRadius.circular(8),
                                           ),
                                           child: const Center(
-                                            child: Text(
+                                            child: const Text(
                                               'QR\nCODE',
                                               style: TextStyle(
                                                 color: Colors.white,
@@ -233,7 +233,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                                           ),
                                         ),
                                         const SizedBox(height: 8),
-                                        Text(
+                                        const Text(
                                           '模拟二维码',
                                           style: TextStyle(
                                             fontSize: 12,
@@ -316,7 +316,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
               const SizedBox(height: 30),
 
               // 状态文字
-              Text(
+              const Text(
                 _statusText,
                 style: const TextStyle(
                   fontSize: 18,
@@ -329,7 +329,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
 
               // 提示文字
               if (_isScanning) ...[
-                Text(
+                const Text(
                   widget.isLogin ? '使用微信扫描二维码即可快速登录' : '扫码后需要设置账户信息完成注册',
                   style: TextStyle(
                     fontSize: 14,

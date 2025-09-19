@@ -46,7 +46,7 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.2),
+          color: theme.colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -56,7 +56,7 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
           if (widget.title.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: Text(
+              child: const Text(
                 widget.title,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -164,7 +164,7 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
+                  child: const Text(
                     budget.category,
                     style: theme.textTheme.bodySmall,
                     overflow: TextOverflow.ellipsis,
@@ -189,7 +189,7 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
       margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primary.withOpacity(0.05),
+        color: theme.colorScheme.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -198,13 +198,13 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 '总预算',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
-              Text(
+              const Text(
                 '¥${totalBudget.toStringAsFixed(2)}',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -215,13 +215,13 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
+              const Text(
                 '已使用',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
-              Text(
+              const Text(
                 '¥${totalSpent.toStringAsFixed(2)} (${percentage.toStringAsFixed(0)}%)',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -242,16 +242,16 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.pie_chart_outline,
               size: 64,
-              color: theme.colorScheme.onSurface.withOpacity(0.3),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               '暂无预算数据',
               style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ],
@@ -313,7 +313,7 @@ class BudgetComparisonChart extends StatelessWidget {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.2),
+          color: theme.colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -323,7 +323,7 @@ class BudgetComparisonChart extends StatelessWidget {
           if (title.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: Text(
+              child: const Text(
                 title,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -367,7 +367,7 @@ class BudgetComparisonChart extends StatelessWidget {
                         }
                         return Padding(
                           padding: const EdgeInsets.only(top: 8),
-                          child: Text(
+                          child: const Text(
                             budgets[value.toInt()].category,
                             style: theme.textTheme.bodySmall,
                             overflow: TextOverflow.ellipsis,
@@ -381,7 +381,7 @@ class BudgetComparisonChart extends StatelessWidget {
                       showTitles: true,
                       reservedSize: 40,
                       getTitlesWidget: (value, meta) {
-                        return Text(
+                        return const Text(
                           '¥${value.toInt()}',
                           style: theme.textTheme.bodySmall,
                         );
@@ -403,7 +403,7 @@ class BudgetComparisonChart extends StatelessWidget {
                   horizontalInterval: _calculateInterval(),
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                      color: theme.colorScheme.outline.withOpacity(0.1),
+                      color: theme.colorScheme.outline.withValues(alpha: 0.1),
                       strokeWidth: 1,
                     );
                   },
@@ -474,7 +474,7 @@ class BudgetComparisonChart extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 4),
-        Text(
+        const Text(
           label,
           style: theme.textTheme.bodySmall,
         ),
@@ -489,16 +489,16 @@ class BudgetComparisonChart extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.bar_chart_outlined,
               size: 64,
-              color: theme.colorScheme.onSurface.withOpacity(0.3),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               '暂无预算数据',
               style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ],

@@ -76,7 +76,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
   void _showSnackBar(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: const Text(message),
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
@@ -85,7 +85,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
   }
 
   // 获取加密货币图标
-  Widget _getCryptoIcon(String code) {
+  Widget _getCryptoconst Icon(String code) {
     // 这里可以根据不同的加密货币返回不同的图标
     final Map<String, IconData> cryptoIcons = {
       'BTC': Icons.currency_bitcoin,
@@ -100,7 +100,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
       'DOGE': Icons.pets,
     };
 
-    return Icon(
+    return const Icon(
       cryptoIcons[code] ?? Icons.currency_bitcoin,
       size: 24,
       color: _getCryptoColor(code),
@@ -194,7 +194,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
           width: _compact ? 40 : 48,
           height: _compact ? 40 : 48,
           decoration: BoxDecoration(
-            color: _getCryptoColor(crypto.code).withOpacity(0.12),
+            color: _getCryptoColor(crypto.code).withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color:
@@ -202,7 +202,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
             ),
           ),
           child: Center(
-            child: Icon(
+            child: const Icon(
               Icons.currency_bitcoin,
               // use onSurface in dark to avoid low contrast
               color: Theme.of(context).brightness == Brightness.dark
@@ -220,22 +220,22 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                 children: [
                   Row(
                     children: [
-                      Text(
+                      const Text(
                         crypto.code,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(width: _compact ? 6 : 8),
+                      const SizedBox(width: _compact ? 6 : 8),
                       Container(
                         padding: EdgeInsets.symmetric(
                             horizontal: _compact ? 4 : 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: _getCryptoColor(crypto.code).withOpacity(0.2),
+                          color: _getCryptoColor(crypto.code).withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Text(
+                        child: const Text(
                           crypto.symbol,
                           style: TextStyle(
                             fontSize: _compact ? 10 : 11,
@@ -246,7 +246,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                       ),
                     ],
                   ),
-                  Text(
+                  const Text(
                     crypto.nameZh,
                     style: TextStyle(
                         fontSize: _compact ? 12 : 13,
@@ -260,7 +260,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
+                  const Text(
                     ref
                         .read(currencyProvider.notifier)
                         .formatCurrency(price, baseCurrency.code),
@@ -307,7 +307,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.trending_up,
+                          const Icon(Icons.trending_up,
                               size: 16, color: _getCryptoColor(crypto.code)),
                           const SizedBox(width: 8),
                           const Text(
@@ -328,7 +328,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                                 color: Colors.orange[100],
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              child: Text(
+                              child: const Text(
                                 '手动设置',
                                 style: TextStyle(
                                   fontSize: 11,
@@ -364,7 +364,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                               },
                             ),
                           ),
-                          SizedBox(width: _compact ? 8 : 12),
+                          const SizedBox(width: _compact ? 8 : 12),
                           Column(
                             children: [
                               TextButton.icon(
@@ -451,7 +451,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                       const SizedBox(height: 8),
                       if (_manualPrices[crypto.code] == true &&
                           _manualExpiry[crypto.code] != null)
-                        Text(
+                        const Text(
                           '手动价格有效期: ${_manualExpiry[crypto.code]!.toLocal().toString().split(" ").first} 00:00',
                           style:
                               const TextStyle(fontSize: 12, color: Colors.grey),
@@ -485,7 +485,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
   Widget _buildPriceChange(String period, String change, Color color) {
     return Column(
       children: [
-        Text(
+        const Text(
           period,
           style: TextStyle(
             fontSize: 11,
@@ -493,7 +493,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
           ),
         ),
         const SizedBox(height: 2),
-        Text(
+        const Text(
           change,
           style: TextStyle(
             fontSize: 12,
@@ -581,10 +581,10 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                Icon(Icons.info_outline, size: 14, color: Colors.purple[700]),
+                const Icon(Icons.info_outline, size: 14, color: Colors.purple[700]),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
+                  child: const Text(
                     '勾选要使用的加密货币，展开可设置价格',
                     style: TextStyle(
                       fontSize: 12,
@@ -628,7 +628,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   '已选择 $selectedCount 种加密货币',
                   style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
@@ -650,7 +650,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
   Widget _buildMarketStat(String label, String value, Color color) {
     return Column(
       children: [
-        Text(
+        const Text(
           label,
           style: TextStyle(
             fontSize: 11,
@@ -658,7 +658,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
+        const Text(
           value,
           style: TextStyle(
             fontSize: 14,

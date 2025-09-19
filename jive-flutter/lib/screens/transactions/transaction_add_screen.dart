@@ -72,7 +72,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_getTitle()),
+        title: const Text(_getTitle()),
         actions: [
           TextButton(
             onPressed: _isValid() ? _saveTransaction : null,
@@ -102,18 +102,18 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                         segments: const [
                           ButtonSegment(
                             value: 'expense',
-                            label: Text('支出'),
-                            icon: Icon(Icons.remove_circle_outline),
+                            label: const Text('支出'),
+                            icon: const Icon(Icons.remove_circle_outline),
                           ),
                           ButtonSegment(
                             value: 'income',
-                            label: Text('收入'),
-                            icon: Icon(Icons.add_circle_outline),
+                            label: const Text('收入'),
+                            icon: const Icon(Icons.add_circle_outline),
                           ),
                           ButtonSegment(
                             value: 'transfer',
-                            label: Text('转账'),
-                            icon: Icon(Icons.swap_horiz),
+                            label: const Text('转账'),
+                            icon: const Icon(Icons.swap_horiz),
                           ),
                         ],
                         selected: {_type},
@@ -192,7 +192,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       _type == 'transfer' ? '转出账户' : '账户',
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
@@ -210,15 +210,15 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                           value: account.id,
                           child: Row(
                             children: [
-                              Icon(
-                                _getAccountIcon(account.type.value),
+                              const Icon(
+                                _getAccountconst Icon(account.type.value),
                                 size: 20,
                                 color: Theme.of(context).primaryColor,
                               ),
                               const SizedBox(width: 8),
-                              Text(account.name ?? '未命名'),
+                              const Text(account.name ?? '未命名'),
                               const Spacer(),
-                              Text(
+                              const Text(
                                 '¥${(account.balance ?? 0).toStringAsFixed(2)}',
                                 style: TextStyle(
                                   color: Colors.grey[600],
@@ -266,15 +266,15 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                             value: account.id,
                             child: Row(
                               children: [
-                                Icon(
-                                  _getAccountIcon(account.type.value),
+                                const Icon(
+                                  _getAccountconst Icon(account.type.value),
                                   size: 20,
                                   color: Theme.of(context).primaryColor,
                                 ),
                                 const SizedBox(width: 8),
-                                Text(account.name ?? '未命名'),
+                                const Text(account.name ?? '未命名'),
                                 const Spacer(),
-                                Text(
+                                const Text(
                                   '¥${(account.balance ?? 0).toStringAsFixed(2)}',
                                   style: TextStyle(
                                     color: Colors.grey[600],
@@ -324,7 +324,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                         children: _categories[_type]?.map((category) {
                               final isSelected = _selectedCategory == category;
                               return FilterChip(
-                                label: Text(category),
+                                label: const Text(category),
                                 selected: isSelected,
                                 onSelected: (selected) {
                                   setState(() {
@@ -361,7 +361,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                           child: OutlinedButton.icon(
                             onPressed: _selectDate,
                             icon: const Icon(Icons.calendar_today),
-                            label: Text(
+                            label: const Text(
                               DateFormat('yyyy年MM月dd日').format(_selectedDate),
                             ),
                           ),
@@ -371,7 +371,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                           child: OutlinedButton.icon(
                             onPressed: _selectTime,
                             icon: const Icon(Icons.access_time),
-                            label: Text(
+                            label: const Text(
                               _selectedTime.format(context),
                             ),
                           ),
@@ -470,10 +470,10 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                           ),
                         ),
                         items: const [
-                          DropdownMenuItem(value: 'daily', child: Text('每天')),
-                          DropdownMenuItem(value: 'weekly', child: Text('每周')),
-                          DropdownMenuItem(value: 'monthly', child: Text('每月')),
-                          DropdownMenuItem(value: 'yearly', child: Text('每年')),
+                          DropdownMenuItem(value: 'daily', child: const Text('每天')),
+                          DropdownMenuItem(value: 'weekly', child: const Text('每周')),
+                          DropdownMenuItem(value: 'monthly', child: const Text('每月')),
+                          DropdownMenuItem(value: 'yearly', child: const Text('每年')),
                         ],
                         onChanged: (value) {
                           setState(() {
@@ -573,7 +573,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
 
       // 显示成功消息
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('交易已保存')),
+        const SnackBar(content: const Text('交易已保存')),
       );
 
       // 刷新交易列表
@@ -585,12 +585,12 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
       context.pop();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('保存失败: $e')),
+        SnackBar(content: const Text('保存失败: $e')),
       );
     }
   }
 
-  IconData _getAccountIcon(String? type) {
+  IconData _getAccountconst Icon(String? type) {
     switch (type) {
       case 'checking':
         return Icons.account_balance;

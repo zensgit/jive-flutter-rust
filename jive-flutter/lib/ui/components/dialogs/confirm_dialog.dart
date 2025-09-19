@@ -48,10 +48,10 @@ class ConfirmDialog extends StatelessWidget {
               decoration: BoxDecoration(
                 color:
                     (isDangerous ? AppConstants.errorColor : theme.primaryColor)
-                        .withOpacity(0.1),
+                        .withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(32),
               ),
-              child: Icon(
+              child: const Icon(
                 icon,
                 size: 32,
                 color:
@@ -62,7 +62,7 @@ class ConfirmDialog extends StatelessWidget {
           ],
 
           // 标题
-          Text(
+          const Text(
             title,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
@@ -73,10 +73,10 @@ class ConfirmDialog extends StatelessWidget {
           const SizedBox(height: 12),
 
           // 消息
-          Text(
+          const Text(
             message,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             textAlign: TextAlign.center,
           ),

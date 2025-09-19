@@ -15,7 +15,7 @@ class AccountDetailScreen extends StatelessWidget {
         title: const Text('账户详情'),
       ),
       body: Center(
-        child: Text('Account Detail: $accountId'),
+        child: const Text('Account Detail: $accountId'),
       ),
     );
   }

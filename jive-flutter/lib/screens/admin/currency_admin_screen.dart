@@ -41,7 +41,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
             child: TextField(
               decoration: const InputDecoration(
                 hintText: '搜索（代码/名称/符号）',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
               onChanged: (v) => setState(() => _query = v.trim().toLowerCase()),
@@ -71,7 +71,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                               if (mounted) {
                                 ref.invalidate(currencyAdminProvider);
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('已触发目录刷新')));
+                                    const SnackBar(content: const Text('已触发目录刷新')));
                               }
                             },
                             icon: const Icon(Icons.refresh),
@@ -92,7 +92,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, st) => Center(child: Text('加载失败：$e')),
+              error: (e, st) => Center(child: const Text('加载失败：$e')),
             ),
           )
         ],
@@ -115,12 +115,12 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
           ),
           child: Center(
             child:
-                Text(c.flag ?? c.symbol, style: const TextStyle(fontSize: 18)),
+                const Text(c.flag ?? c.symbol, style: const TextStyle(fontSize: 18)),
           ),
         ),
         title: Row(
           children: [
-            Text(c.code, style: const TextStyle(fontWeight: FontWeight.w700)),
+            const Text(c.code, style: const TextStyle(fontWeight: FontWeight.w700)),
             const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -128,7 +128,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                 color: cs.surfaceVariant,
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: Text(c.symbol,
+              child: const Text(c.symbol,
                   style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12)),
             ),
             const SizedBox(width: 8),
@@ -139,7 +139,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                   color: cs.secondaryContainer,
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: Text('加密',
+                child: const Text('加密',
                     style: TextStyle(
                         color: cs.onSecondaryContainer, fontSize: 11)),
               )
@@ -148,7 +148,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${c.name} · ${c.nameZh} · 小数位: ${c.decimalPlaces}'),
+            const Text('${c.name} · ${c.nameZh} · 小数位: ${c.decimalPlaces}'),
             const SizedBox(height: 4),
             Row(
               children: [
@@ -156,26 +156,26 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: Chip(
-                        label: Text('CoinGecko: ${c.coingeckoId}'),
+                        label: const Text('CoinGecko: ${c.coingeckoId}'),
                         visualDensity: VisualDensity.compact),
                   ),
                 if (c.coincapSymbol != null && c.coincapSymbol!.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: Chip(
-                        label: Text('CoinCap: ${c.coincapSymbol}'),
+                        label: const Text('CoinCap: ${c.coincapSymbol}'),
                         visualDensity: VisualDensity.compact),
                   ),
                 if (c.binanceSymbol != null && c.binanceSymbol!.isNotEmpty)
                   Chip(
-                      label: Text('Binance: ${c.binanceSymbol}'),
+                      label: const Text('Binance: ${c.binanceSymbol}'),
                       visualDensity: VisualDensity.compact),
               ],
             ),
             if (c.updatedAt != null || c.lastRefreshedAt != null)
               Padding(
                 padding: const EdgeInsets.only(top: 4.0),
-                child: Text(
+                child: const Text(
                   '更新: ${c.updatedAt?.toLocal().toString().split(".").first ?? '-'} · 抓取: ${c.lastRefreshedAt?.toLocal().toString().split(".").first ?? '-'}',
                   style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
@@ -198,11 +198,11 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                 PopupMenuItem(
                     value: 'edit',
                     child:
-                        ListTile(leading: Icon(Icons.edit), title: Text('编辑'))),
+                        ListTile(leading: const Icon(Icons.edit), title: const Text('编辑'))),
                 PopupMenuItem(
                     value: 'alias',
                     child: ListTile(
-                        leading: Icon(Icons.merge_type), title: Text('改码/合并'))),
+                        leading: const Icon(Icons.merge_type), title: const Text('改码/合并'))),
               ],
             ),
           ],
@@ -225,7 +225,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('改码 / 合并'),
-        content: SizedBox(
+        content: const SizedBox(
           width: 420,
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -248,7 +248,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
               Row(
                 children: [
                   Expanded(
-                      child: Text(validUntil == null
+                      child: const Text(validUntil == null
                           ? '有效期（可选）'
                           : '有效期：${validUntil!.toString().split(' ').first}')),
                   TextButton(
@@ -304,7 +304,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
       if (mounted) {
         ref.invalidate(currencyAdminProvider);
         ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('已创建别名并保存')));
+            .showSnackBar(const SnackBar(content: const Text('已创建别名并保存')));
       }
     }
   }
@@ -365,8 +365,8 @@ class _EditCurrencyDialogState extends State<_EditCurrencyDialog> {
   Widget build(BuildContext context) {
     final isEdit = widget.target != null;
     return AlertDialog(
-      title: Text(isEdit ? '编辑币种' : '新增币种'),
-      content: SizedBox(
+      title: const Text(isEdit ? '编辑币种' : '新增币种'),
+      content: const SizedBox(
         width: 520,
         child: Form(
           key: _formKey,

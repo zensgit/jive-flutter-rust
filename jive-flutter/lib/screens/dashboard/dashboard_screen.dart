@@ -27,7 +27,7 @@ class DashboardScreen extends ConsumerWidget {
           children: [
             const Text('概览'),
             if (currentLedger != null)
-              Text(
+              const Text(
                 currentLedger.name,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
@@ -104,7 +104,7 @@ class DashboardScreen extends ConsumerWidget {
           gradient: LinearGradient(
             colors: [
               Theme.of(context).primaryColor,
-              Theme.of(context).primaryColor.withOpacity(0.8),
+              Theme.of(context).primaryColor.withValues(alpha: 0.8),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -117,13 +117,13 @@ class DashboardScreen extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   '净资产',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Colors.white70,
                       ),
                 ),
-                Icon(
+                const Icon(
                   Icons.trending_up,
                   color: Colors.white70,
                 ),
@@ -135,7 +135,7 @@ class DashboardScreen extends ConsumerWidget {
               final formatted = ref
                   .read(currencyProvider.notifier)
                   .formatCurrency(total, ref.read(baseCurrencyProvider).code);
-              return Text(
+              return const Text(
                 formatted,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Colors.white,
@@ -185,7 +185,7 @@ class DashboardScreen extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           label,
           style: TextStyle(
             color: Colors.white60,
@@ -204,7 +204,7 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Text(
+            const Text(
               amount,
               style: const TextStyle(
                 color: Colors.white,
@@ -223,7 +223,7 @@ class DashboardScreen extends ConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
+        const Text(
           title,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -278,7 +278,7 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 '切换账本',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -304,15 +304,15 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
                     backgroundColor: isSelected
                         ? Theme.of(context).primaryColor
                         : Colors.grey[300],
-                    child: Icon(
-                      _getLedgerIcon(ledger.type.value),
+                    child: const Icon(
+                      _getLedgerconst Icon(ledger.type.value),
                       color: isSelected ? Colors.white : Colors.grey[600],
                     ),
                   ),
-                  title: Text(ledger.name),
-                  subtitle: Text(ledger.description ?? ''),
+                  title: const Text(ledger.name),
+                  subtitle: const Text(ledger.description ?? ''),
                   trailing: isSelected
-                      ? Icon(
+                      ? const Icon(
                           Icons.check_circle,
                           color: Theme.of(context).primaryColor,
                         )
@@ -327,10 +327,10 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
               }).toList(),
             ),
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, _) => Center(child: Text('加载失败: $error')),
+            error: (error, _) => Center(child: const Text('加载失败: $error')),
           ),
           const SizedBox(height: 16),
-          SizedBox(
+          const SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
               onPressed: () {
@@ -346,7 +346,7 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
     );
   }
 
-  IconData _getLedgerIcon(String type) {
+  IconData _getLedgerconst Icon(String type) {
     switch (type) {
       case 'personal':
         return Icons.person;

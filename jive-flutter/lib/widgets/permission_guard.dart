@@ -78,21 +78,21 @@ class PermissionGuard extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.errorContainer.withOpacity(0.3),
+        color: theme.colorScheme.errorContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: theme.colorScheme.error.withOpacity(0.3),
+          color: theme.colorScheme.error.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.lock_outline,
             color: theme.colorScheme.error,
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
+            child: const Text(
               '您没有权限访问此内容',
               style: TextStyle(
                 color: theme.colorScheme.onErrorContainer,
@@ -191,29 +191,29 @@ class RoleBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final color = _getRoleColor(role);
-    final icon = _getRoleIcon(role);
+    final icon = _getRoleconst Icon(role);
     final label = _getRoleLabel(role);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(0.5),
+          color: color.withValues(alpha: 0.5),
         ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
+          const Icon(
             icon,
             size: 16,
             color: color,
           ),
           if (showLabel) ...[
             const SizedBox(width: 4),
-            Text(
+            const Text(
               label,
               style: TextStyle(
                 fontSize: 12,
@@ -240,7 +240,7 @@ class RoleBadge extends StatelessWidget {
     }
   }
 
-  IconData _getRoleIcon(family_model.FamilyRole role) {
+  IconData _getRoleconst Icon(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:
         return Icons.star;
@@ -285,22 +285,22 @@ class PermissionHint extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.warningContainer.withOpacity(0.3),
+        color: theme.colorScheme.warningContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: theme.colorScheme.onWarningContainer.withOpacity(0.3),
+          color: theme.colorScheme.onWarningContainer.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.info_outline,
             color: theme.colorScheme.onWarningContainer,
             size: 20,
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
+            child: const Text(
               customMessage ?? _getDefaultMessage(action),
               style: TextStyle(
                 fontSize: 14,

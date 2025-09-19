@@ -87,7 +87,7 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.account_balance_wallet,
                           size: 32,
                           color: Theme.of(context).primaryColor,
@@ -96,14 +96,14 @@ class HomeScreen extends StatelessWidget {
                         const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               '欢迎使用 Jive Money',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Text(
+                            const Text(
                               '个人财务管理系统',
                               style: TextStyle(
                                 fontSize: 14,
@@ -204,13 +204,13 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 icon,
                 size: 32,
                 color: color,
               ),
               const SizedBox(height: 12),
-              Text(
+              const Text(
                 title,
                 style: const TextStyle(
                   fontSize: 16,
@@ -242,13 +242,13 @@ class TransactionsScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.receipt_long, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text(
+            const Icon(Icons.receipt_long, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
+            const Text(
               '交易记录功能',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            Text('功能开发中...', style: TextStyle(color: Colors.grey)),
+            const Text('功能开发中...', style: TextStyle(color: Colors.grey)),
           ],
         ),
       ),
@@ -271,13 +271,13 @@ class AccountsScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.account_balance, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text(
+            const Icon(Icons.account_balance, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
+            const Text(
               '账户管理功能',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            Text('功能开发中...', style: TextStyle(color: Colors.grey)),
+            const Text('功能开发中...', style: TextStyle(color: Colors.grey)),
           ],
         ),
       ),
@@ -300,13 +300,13 @@ class BudgetsScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.savings, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text(
+            const Icon(Icons.savings, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
+            const Text(
               '预算管理功能',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            Text('功能开发中...', style: TextStyle(color: Colors.grey)),
+            const Text('功能开发中...', style: TextStyle(color: Colors.grey)),
           ],
         ),
       ),
@@ -329,13 +329,13 @@ class ReportsScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.analytics, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text(
+            const Icon(Icons.analytics, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
+            const Text(
               '财务报表功能',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            Text('功能开发中...', style: TextStyle(color: Colors.grey)),
+            const Text('功能开发中...', style: TextStyle(color: Colors.grey)),
           ],
         ),
       ),
@@ -358,13 +358,13 @@ class SettingsScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.settings, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text(
+            const Icon(Icons.settings, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
+            const Text(
               '系统设置功能',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            Text('功能开发中...', style: TextStyle(color: Colors.grey)),
+            const Text('功能开发中...', style: TextStyle(color: Colors.grey)),
           ],
         ),
       ),

@@ -94,7 +94,7 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: SvgPicture.asset(
@@ -115,7 +115,7 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     content,
                     style: TextStyle(
                       color: isUser ? Colors.white : Colors.black87,
@@ -124,7 +124,7 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  const Text(
                     '${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}',
                     style: TextStyle(
                       color: isUser ? Colors.white70 : Colors.grey[600],
@@ -140,7 +140,7 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
             CircleAvatar(
               radius: 20,
               backgroundColor: Colors.blue,
-              child: Text(
+              child: const Text(
                 '我',
                 style: const TextStyle(color: Colors.white, fontSize: 14),
               ),
@@ -208,7 +208,7 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: Colors.blue.withOpacity(0.1),
+                              color: Colors.blue.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: SvgPicture.asset(
@@ -227,7 +227,7 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                SizedBox(
+                                const SizedBox(
                                   width: 16,
                                   height: 16,
                                   child: CircularProgressIndicator(

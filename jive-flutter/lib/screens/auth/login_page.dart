@@ -63,7 +63,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // 标题
-                Text(
+                const Text(
                   'Jive Money',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
@@ -72,7 +72,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                Text(
+                const Text(
                   '个人财务管理系统',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -88,7 +88,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   decoration: const InputDecoration(
                     labelText: '邮箱',
                     hintText: '请输入您的邮箱地址',
-                    prefixIcon: Icon(Icons.email_outlined),
+                    prefixIcon: const Icon(Icons.email_outlined),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -109,7 +109,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   decoration: const InputDecoration(
                     labelText: '密码',
                     hintText: '请输入您的密码',
-                    prefixIcon: Icon(Icons.lock_outlined),
+                    prefixIcon: const Icon(Icons.lock_outlined),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {

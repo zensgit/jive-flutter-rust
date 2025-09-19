@@ -140,13 +140,13 @@ class _GenerateInviteCodeSheetState
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         '生成邀请码',
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text(
+                      const Text(
                         '邀请新成员加入 ${widget.familyName}',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
@@ -199,13 +199,13 @@ class _GenerateInviteCodeSheetState
                     value: role,
                     child: Row(
                       children: [
-                        Icon(
-                          _getRoleIcon(role),
+                        const Icon(
+                          _getRoleconst Icon(role),
                           size: 20,
                           color: _getRoleColor(role),
                         ),
                         const SizedBox(width: 8),
-                        Text(_getRoleDisplay(role)),
+                        const Text(_getRoleDisplay(role)),
                       ],
                     ),
                   );
@@ -228,13 +228,13 @@ class _GenerateInviteCodeSheetState
                 },
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       _showAdvancedOptions
                           ? Icons.expand_less
                           : Icons.expand_more,
                     ),
                     const SizedBox(width: 8),
-                    Text(
+                    const Text(
                       '高级选项',
                       style: TextStyle(
                         color: theme.colorScheme.primary,
@@ -252,7 +252,7 @@ class _GenerateInviteCodeSheetState
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       '邀请有效期',
                       style: theme.textTheme.labelLarge,
                     ),
@@ -291,7 +291,7 @@ class _GenerateInviteCodeSheetState
               const SizedBox(height: 24),
 
               // 生成按钮
-              SizedBox(
+              const SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
                   onPressed: _isLoading ? null : _generateInvitation,
@@ -305,7 +305,7 @@ class _GenerateInviteCodeSheetState
                           ),
                         )
                       : const Icon(Icons.send),
-                  label: Text(_isLoading ? '生成中...' : '生成邀请'),
+                  label: const Text(_isLoading ? '生成中...' : '生成邀请'),
                 ),
               ),
             ],
@@ -329,7 +329,7 @@ class _GenerateInviteCodeSheetState
           decoration: BoxDecoration(
             color: isSelected
                 ? theme.colorScheme.primaryContainer
-                : theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                : theme.colorScheme.surfaceVariant.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color:
@@ -337,7 +337,7 @@ class _GenerateInviteCodeSheetState
             ),
           ),
           child: Center(
-            child: Text(
+            child: const Text(
               label,
               style: TextStyle(
                 color: isSelected
@@ -364,7 +364,7 @@ class _GenerateInviteCodeSheetState
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.1),
+              color: Colors.green.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -381,7 +381,7 @@ class _GenerateInviteCodeSheetState
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+            color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -392,7 +392,7 @@ class _GenerateInviteCodeSheetState
                   const Icon(Icons.email_outlined, size: 20),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
+                    child: const Text(
                       _generatedInvitation!.email,
                       style: theme.textTheme.bodyLarge,
                     ),
@@ -404,7 +404,7 @@ class _GenerateInviteCodeSheetState
                 children: [
                   const Icon(Icons.shield_outlined, size: 20),
                   const SizedBox(width: 8),
-                  Text(
+                  const Text(
                     '角色: ${_getRoleDisplay(_generatedInvitation!.role)}',
                     style: theme.textTheme.bodyMedium,
                   ),
@@ -415,7 +415,7 @@ class _GenerateInviteCodeSheetState
                 children: [
                   const Icon(Icons.access_time, size: 20),
                   const SizedBox(width: 8),
-                  Text(
+                  const Text(
                     '有效期: ${_generatedInvitation!.remainingTimeDescription}',
                     style: theme.textTheme.bodyMedium,
                   ),
@@ -437,7 +437,7 @@ class _GenerateInviteCodeSheetState
           child: Row(
             children: [
               Expanded(
-                child: Text(
+                child: const Text(
                   _inviteLink!,
                   style: theme.textTheme.bodySmall,
                   overflow: TextOverflow.ellipsis,
@@ -485,7 +485,7 @@ class _GenerateInviteCodeSheetState
     );
   }
 
-  IconData _getRoleIcon(family_model.FamilyRole role) {
+  IconData _getRoleconst Icon(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:
         return Icons.star;

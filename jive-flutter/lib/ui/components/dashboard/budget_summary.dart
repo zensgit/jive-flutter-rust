@@ -58,7 +58,7 @@ class BudgetSummary extends ConsumerWidget {
             if (budgetList.length > 3)
               TextButton(
                 onPressed: () => context.go(AppRoutes.budgets),
-                child: Text('查看全部 ${budgetList.length} 个预算'),
+                child: const Text('查看全部 ${budgetList.length} 个预算'),
               ),
           ],
         );
@@ -71,7 +71,7 @@ class BudgetSummary extends ConsumerWidget {
           children: [
             const Icon(Icons.error_outline, color: Colors.red),
             const SizedBox(height: 8),
-            Text('加载失败: $error'),
+            const Text('加载失败: $error'),
             TextButton(
               onPressed: () => ref.invalidate(currentMonthBudgetsProvider),
               child: const Text('重试'),
@@ -91,7 +91,7 @@ class BudgetSummary extends ConsumerWidget {
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              Icon(
+              const Icon(
                 Icons.pie_chart_outline,
                 size: 48,
                 color: Theme.of(context).primaryColor,
@@ -105,7 +105,7 @@ class BudgetSummary extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
+              const Text(
                 '控制支出，实现财务目标',
                 style: TextStyle(
                   fontSize: 14,
@@ -137,8 +137,8 @@ class BudgetSummary extends ConsumerWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              warningLevel.color.withOpacity(0.1),
-              warningLevel.color.withOpacity(0.05),
+              warningLevel.color.withValues(alpha: 0.1),
+              warningLevel.color.withValues(alpha: 0.05),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -154,7 +154,7 @@ class BudgetSummary extends ConsumerWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       '本月预算',
                       style: TextStyle(
                         fontSize: 14,
@@ -162,7 +162,7 @@ class BudgetSummary extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    const Text(
                       '¥${totalBudget.toStringAsFixed(2)}',
                       style: const TextStyle(
                         fontSize: 24,
@@ -174,7 +174,7 @@ class BudgetSummary extends ConsumerWidget {
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 80,
                       height: 80,
                       child: CircularProgressIndicator(
@@ -187,7 +187,7 @@ class BudgetSummary extends ConsumerWidget {
                     ),
                     Column(
                       children: [
-                        Text(
+                        const Text(
                           '${(spentPercentage * 100).toStringAsFixed(0)}%',
                           style: TextStyle(
                             fontSize: 18,
@@ -195,7 +195,7 @@ class BudgetSummary extends ConsumerWidget {
                             color: warningLevel.color,
                           ),
                         ),
-                        Text(
+                        const Text(
                           '已用',
                           style: TextStyle(
                             fontSize: 12,
@@ -214,19 +214,19 @@ class BudgetSummary extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: warningLevel.color.withOpacity(0.1),
+                color: warningLevel.color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     warningLevel.icon,
                     color: warningLevel.color,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
+                    child: const Text(
                       warningLevel.message,
                       style: TextStyle(
                         color: warningLevel.color,
@@ -260,7 +260,7 @@ class BudgetSummary extends ConsumerWidget {
       {String suffix = ''}) {
     return Column(
       children: [
-        Text(
+        const Text(
           label,
           style: TextStyle(
             fontSize: 12,
@@ -268,7 +268,7 @@ class BudgetSummary extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
+        const Text(
           suffix.isEmpty
               ? '¥${value.toStringAsFixed(2)}'
               : '${value.toInt()}$suffix',
@@ -305,11 +305,11 @@ class BudgetSummary extends ConsumerWidget {
                     height: 36,
                     decoration: BoxDecoration(
                       color:
-                          _getCategoryColor(budget.category).withOpacity(0.1),
+                          _getCategoryColor(budget.category).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(
-                      _getCategoryIcon(budget.category),
+                    child: const Icon(
+                      _getCategoryconst Icon(budget.category),
                       color: _getCategoryColor(budget.category),
                       size: 20,
                     ),
@@ -319,13 +319,13 @@ class BudgetSummary extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           budget.name ?? budget.category ?? '未分类',
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        Text(
+                        const Text(
                           '¥${spent.toStringAsFixed(2)} / ¥${amount.toStringAsFixed(2)}',
                           style: TextStyle(
                             fontSize: 12,
@@ -338,14 +338,14 @@ class BudgetSummary extends ConsumerWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
+                      const Text(
                         isOverBudget ? '超支' : '剩余',
                         style: TextStyle(
                           fontSize: 12,
                           color: isOverBudget ? Colors.red : Colors.green,
                         ),
                       ),
-                      Text(
+                      const Text(
                         '¥${remaining.abs().toStringAsFixed(2)}',
                         style: TextStyle(
                           fontSize: 14,
@@ -408,7 +408,7 @@ class BudgetSummary extends ConsumerWidget {
     }
   }
 
-  IconData _getCategoryIcon(String? category) {
+  IconData _getCategoryconst Icon(String? category) {
     switch (category?.toLowerCase()) {
       case 'food':
       case '餐饮':

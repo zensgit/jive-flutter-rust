@@ -179,7 +179,7 @@ class _CategoryTemplateLibraryPageState
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('导入分类模板'),
-        content: Text('确定要导入 ${_selectedTemplateIds.length} 个分类模板吗？'),
+        content: const Text('确定要导入 ${_selectedTemplateIds.length} 个分类模板吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -203,7 +203,7 @@ class _CategoryTemplateLibraryPageState
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('成功导入 ${_selectedTemplateIds.length} 个分类'),
+            content: const Text('成功导入 ${_selectedTemplateIds.length} 个分类'),
             backgroundColor: Colors.green,
           ),
         );
@@ -214,7 +214,7 @@ class _CategoryTemplateLibraryPageState
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('导入失败: $e'),
+            content: const Text('导入失败: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -231,7 +231,7 @@ class _CategoryTemplateLibraryPageState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('确定要导入"${template.name}"作为分类吗？'),
+            const Text('确定要导入"${template.name}"作为分类吗？'),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -245,10 +245,10 @@ class _CategoryTemplateLibraryPageState
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(template.icon ?? ''),
+                const Text(template.icon ?? ''),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
+                  child: const Text(
                     template.name,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
@@ -276,14 +276,14 @@ class _CategoryTemplateLibraryPageState
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('分类导入成功'),
+            content: const Text('分类导入成功'),
             backgroundColor: Colors.green,
           ),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('导入失败: $e'),
+            content: const Text('导入失败: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -326,7 +326,7 @@ class _CategoryTemplateLibraryPageState
             ),
           ],
           IconButton(
-            icon: Icon(_isSelectionMode ? Icons.close : Icons.checklist),
+            icon: const Icon(_isSelectionMode ? Icons.close : Icons.checklist),
             onPressed: _toggleSelectionMode,
             tooltip: _isSelectionMode ? '退出选择' : '批量选择',
           ),
@@ -372,7 +372,7 @@ class _CategoryTemplateLibraryPageState
         color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -428,15 +428,15 @@ class _CategoryTemplateLibraryPageState
                   items: [
                     const DropdownMenuItem<CategoryGroup?>(
                       value: null,
-                      child: Text('全部分组'),
+                      child: const Text('全部分组'),
                     ),
                     ..._groups.map((group) => DropdownMenuItem(
                           value: group,
                           child: Row(
                             children: [
-                              Text(group.icon),
+                              const Text(group.icon),
                               const SizedBox(width: 8),
-                              Text(group.displayName),
+                              const Text(group.displayName),
                             ],
                           ),
                         )),
@@ -475,10 +475,10 @@ class _CategoryTemplateLibraryPageState
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: Text(
+              child: const Text(
                 '已选择 ${_selectedTemplateIds.length} / ${_filteredTemplates.length} 个模板',
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
@@ -502,13 +502,13 @@ class _CategoryTemplateLibraryPageState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.category_outlined,
               size: 64,
               color: Colors.grey[400],
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               _searchQuery.isNotEmpty ? '没有找到匹配的模板' : '暂无模板',
               style: TextStyle(
                 fontSize: 16,
@@ -543,12 +543,12 @@ class _CategoryTemplateLibraryPageState
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Row(
                 children: [
-                  Text(
+                  const Text(
                     group.icon,
                     style: const TextStyle(fontSize: 24),
                   ),
                   const SizedBox(width: 8),
-                  Text(
+                  const Text(
                     group.displayName,
                     style: const TextStyle(
                       fontSize: 18,
@@ -563,7 +563,7 @@ class _CategoryTemplateLibraryPageState
                       color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Text(
+                    child: const Text(
                       '${groupTemplates.length}',
                       style: const TextStyle(fontSize: 12),
                     ),
@@ -617,7 +617,7 @@ class _CategoryTemplateLibraryPageState
       child: Container(
         decoration: BoxDecoration(
           color:
-              isSelected ? color.withOpacity(0.1) : Theme.of(context).cardColor,
+              isSelected ? color.withValues(alpha: 0.1) : Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? color : Colors.grey[300]!,
@@ -625,7 +625,7 @@ class _CategoryTemplateLibraryPageState
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -640,11 +640,11 @@ class _CategoryTemplateLibraryPageState
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
+                  color: color.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
-                  child: Text(
+                  child: const Text(
                     template.icon ?? '📂',
                     style: const TextStyle(fontSize: 20),
                   ),
@@ -661,7 +661,7 @@ class _CategoryTemplateLibraryPageState
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
+                          child: const Text(
                             template.name,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
@@ -703,7 +703,7 @@ class _CategoryTemplateLibraryPageState
                                   color: Colors.grey[200],
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   tag,
                                   style: const TextStyle(fontSize: 10),
                                 ),
@@ -761,11 +761,11 @@ class _CategoryTemplateLibraryPageState
                     decoration: BoxDecoration(
                       color: Color(int.parse(
                               template.color.replaceFirst('#', '0xFF')))
-                          .withOpacity(0.2),
+                          .withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(
-                      child: Text(
+                      child: const Text(
                         template.icon ?? '📂',
                         style: const TextStyle(fontSize: 24),
                       ),
@@ -776,7 +776,7 @@ class _CategoryTemplateLibraryPageState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           template.name,
                           style: const TextStyle(
                             fontSize: 20,
@@ -784,7 +784,7 @@ class _CategoryTemplateLibraryPageState
                           ),
                         ),
                         if (template.nameEn != null)
-                          Text(
+                          const Text(
                             template.nameEn!,
                             style: TextStyle(
                               fontSize: 14,
@@ -807,7 +807,7 @@ class _CategoryTemplateLibraryPageState
 
               if (template.description != null) ...[
                 const SizedBox(height: 16),
-                Text(
+                const Text(
                   '描述',
                   style: TextStyle(
                     fontSize: 14,
@@ -815,7 +815,7 @@ class _CategoryTemplateLibraryPageState
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
+                const Text(
                   template.description!,
                   style: const TextStyle(fontSize: 16),
                 ),
@@ -829,7 +829,7 @@ class _CategoryTemplateLibraryPageState
                   runSpacing: 8,
                   children: template.tags
                       .map((tag) => Chip(
-                            label: Text(tag),
+                            label: const Text(tag),
                             backgroundColor: Colors.grey[200],
                           ))
                       .toList(),
@@ -847,9 +847,9 @@ class _CategoryTemplateLibraryPageState
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.people, color: Colors.blue[700]),
+                      const Icon(Icons.people, color: Colors.blue[700]),
                       const SizedBox(width: 8),
-                      Text(
+                      const Text(
                         '${template.globalUsageCount} 人使用',
                         style: TextStyle(color: Colors.blue[700]),
                       ),
@@ -895,9 +895,9 @@ class _CategoryTemplateLibraryPageState
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          SizedBox(
+          const SizedBox(
             width: 80,
-            child: Text(
+            child: const Text(
               label,
               style: TextStyle(
                 fontSize: 14,
@@ -916,7 +916,7 @@ class _CategoryTemplateLibraryPageState
             ),
             const SizedBox(width: 8),
           ],
-          Text(
+          const Text(
             value,
             style: const TextStyle(
               fontSize: 16,

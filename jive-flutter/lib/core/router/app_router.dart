@@ -10,11 +10,7 @@ import '../../screens/auth/registration_wizard.dart';
 import '../../screens/home/home_screen.dart';
 import '../../screens/dashboard/dashboard_screen.dart';
 import '../../screens/transactions/transactions_screen.dart';
-import '../../screens/transactions/transaction_add_screen.dart';
-import '../../screens/transactions/transaction_detail_screen.dart';
 import '../../screens/accounts/accounts_screen.dart';
-import '../../screens/accounts/account_add_screen.dart';
-import '../../screens/accounts/account_detail_screen.dart';
 import '../../screens/budgets/budgets_screen.dart';
 import '../../screens/settings/settings_screen.dart';
 import '../../screens/settings/theme_settings_screen.dart';
@@ -23,7 +19,6 @@ import '../../screens/currency/exchange_rate_screen.dart';
 import '../../screens/management/currency_management_page_v2.dart';
 import '../../screens/management/user_currency_browser.dart';
 import '../../screens/management/tag_management_page.dart';
-import '../../screens/management/category_management_enhanced.dart';
 import '../../screens/management/category_list_page.dart';
 import '../../screens/family/family_members_screen.dart';
 import '../../screens/family/family_settings_screen.dart';
@@ -201,14 +196,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: 'security',
                 builder: (context, state) => const Scaffold(
                     body: Center(
-                        child: Text(
+                        child: const Text(
                             'Security Settings'))), // TODO: Create SecurityScreen
               ),
               GoRoute(
                 path: 'preferences',
                 builder: (context, state) => const Scaffold(
                     body: Center(
-                        child: Text(
+                        child: const Text(
                             'Preferences'))), // TODO: Create PreferencesScreen
               ),
               GoRoute(
@@ -254,7 +249,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           // 获取当前选中的账本
           final currentLedger = ref.read(currentLedgerProvider);
           if (currentLedger == null) {
-            return Scaffold(body: Center(child: Text('错误: 未选择家庭')));
+            return Scaffold(body: Center(child: const Text('错误: 未选择家庭')));
           }
           return FamilyMembersScreen(ledger: currentLedger);
         },
@@ -264,7 +259,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final currentLedger = ref.read(currentLedgerProvider);
           if (currentLedger == null) {
-            return Scaffold(body: Center(child: Text('错误: 未选择家庭')));
+            return Scaffold(body: Center(child: const Text('错误: 未选择家庭')));
           }
           return FamilySettingsScreen(ledger: currentLedger);
         },
@@ -274,7 +269,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final currentLedger = ref.read(currentLedgerProvider);
           if (currentLedger == null) {
-            return Scaffold(body: Center(child: Text('错误: 未选择家庭')));
+            return Scaffold(body: Center(child: const Text('错误: 未选择家庭')));
           }
           return FamilyDashboardScreen(ledger: currentLedger);
         },
@@ -322,7 +317,7 @@ class ErrorPage extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               error?.toString() ?? '未知错误',
               style: const TextStyle(color: Colors.grey),
               textAlign: TextAlign.center,
@@ -344,7 +339,7 @@ class TransactionAddScreen extends StatelessWidget {
   const TransactionAddScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('添加交易')));
+    return const Scaffold(body: Center(child: const Text('添加交易')));
   }
 }
 
@@ -353,7 +348,7 @@ class TransactionDetailScreen extends StatelessWidget {
   const TransactionDetailScreen({super.key, required this.transactionId});
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text('交易详情: $transactionId')));
+    return Scaffold(body: Center(child: const Text('交易详情: $transactionId')));
   }
 }
 
@@ -361,7 +356,7 @@ class AccountAddScreen extends StatelessWidget {
   const AccountAddScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('添加账户')));
+    return const Scaffold(body: Center(child: const Text('添加账户')));
   }
 }
 
@@ -370,7 +365,7 @@ class AccountDetailScreen extends StatelessWidget {
   const AccountDetailScreen({super.key, required this.accountId});
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text('账户详情: $accountId')));
+    return Scaffold(body: Center(child: const Text('账户详情: $accountId')));
   }
 }
 
@@ -378,7 +373,7 @@ class BudgetAddScreen extends StatelessWidget {
   const BudgetAddScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('添加预算')));
+    return const Scaffold(body: Center(child: const Text('添加预算')));
   }
 }
 
@@ -387,7 +382,7 @@ class BudgetDetailScreen extends StatelessWidget {
   const BudgetDetailScreen({super.key, required this.budgetId});
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text('预算详情: $budgetId')));
+    return Scaffold(body: Center(child: const Text('预算详情: $budgetId')));
   }
 }
 
@@ -395,7 +390,7 @@ class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('个人资料')));
+    return const Scaffold(body: Center(child: const Text('个人资料')));
   }
 }
 
@@ -403,7 +398,7 @@ class SecurityScreen extends StatelessWidget {
   const SecurityScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('安全设置')));
+    return const Scaffold(body: Center(child: const Text('安全设置')));
   }
 }
 
@@ -411,6 +406,6 @@ class PreferencesScreen extends StatelessWidget {
   const PreferencesScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('偏好设置')));
+    return const Scaffold(body: Center(child: const Text('偏好设置')));
   }
 }

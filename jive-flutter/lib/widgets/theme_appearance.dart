@@ -25,7 +25,7 @@ class ThemeAppearance extends ConsumerWidget {
           if (showTitle)
             Row(
               children: [
-                Icon(Icons.tune, color: cs.primary, size: 20),
+                const Icon(Icons.tune, color: cs.primary, size: 20),
                 const SizedBox(width: 8),
                 const Text(
                   '主题外观',
@@ -52,15 +52,15 @@ class ThemeAppearance extends ConsumerWidget {
           // 圆角
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: Icon(Icons.crop_square_rounded, color: cs.secondary),
+            leading: const Icon(Icons.crop_square_rounded, color: cs.secondary),
             title: const Text('圆角大小'),
             subtitle: const Text('小 / 中 / 大'),
             trailing: DropdownButton<String>(
               value: settings.cornerRadius,
               items: const [
-                DropdownMenuItem(value: 'small', child: Text('小')),
-                DropdownMenuItem(value: 'medium', child: Text('中')),
-                DropdownMenuItem(value: 'large', child: Text('大')),
+                DropdownMenuItem(value: 'small', child: const Text('小')),
+                DropdownMenuItem(value: 'medium', child: const Text('中')),
+                DropdownMenuItem(value: 'large', child: const Text('大')),
               ],
               onChanged: (v) async {
                 if (v != null) {
@@ -76,15 +76,15 @@ class ThemeAppearance extends ConsumerWidget {
             margin: const EdgeInsets.only(top: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: cs.primaryContainer.withOpacity(0.35),
+              color: cs.primaryContainer.withValues(alpha: 0.35),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               children: [
-                Icon(Icons.info_outline,
+                const Icon(Icons.info_outline,
                     size: 16, color: cs.onPrimaryContainer),
                 const SizedBox(width: 8),
-                Text(
+                const Text(
                   '密度与圆角设置将影响列表、卡片、输入框等组件。',
                   style: TextStyle(fontSize: 12, color: cs.onPrimaryContainer),
                 ),

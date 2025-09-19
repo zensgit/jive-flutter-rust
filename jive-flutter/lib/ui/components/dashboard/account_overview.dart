@@ -22,7 +22,7 @@ class AccountOverview extends ConsumerWidget {
           children: [
             const Icon(Icons.error_outline, color: Colors.red),
             const SizedBox(height: 8),
-            Text('加载失败: ${accountState.errorMessage}'),
+            const Text('加载失败: ${accountState.errorMessage}'),
             TextButton(
               onPressed: () => ref.read(accountProvider.notifier).refresh(),
               child: const Text('重试'),
@@ -66,7 +66,7 @@ class AccountOverview extends ConsumerWidget {
         if (accountList.length > 5)
           TextButton(
             onPressed: () => context.go(AppRoutes.accounts),
-            child: Text('查看全部 ${accountList.length} 个账户'),
+            child: const Text('查看全部 ${accountList.length} 个账户'),
           ),
       ],
     );
@@ -81,7 +81,7 @@ class AccountOverview extends ConsumerWidget {
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              Icon(
+              const Icon(
                 Icons.add_circle_outline,
                 size: 48,
                 color: Theme.of(context).primaryColor,
@@ -95,7 +95,7 @@ class AccountOverview extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
+              const Text(
                 '开始记录您的财务状况',
                 style: TextStyle(
                   fontSize: 14,
@@ -112,7 +112,7 @@ class AccountOverview extends ConsumerWidget {
   Widget _buildAssetLiabilityOverview(double assets, double liabilities) {
     final netWorth = assets - liabilities;
 
-    return SizedBox(
+    return const SizedBox(
       width: double.infinity,
       child: Row(
         children: [
@@ -152,10 +152,10 @@ class AccountOverview extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -166,7 +166,7 @@ class AccountOverview extends ConsumerWidget {
             children: [
               Icon(icon, size: 16, color: color),
               const SizedBox(width: 4),
-              Text(
+              const Text(
                 title,
                 style: TextStyle(
                   fontSize: 12,
@@ -177,7 +177,7 @@ class AccountOverview extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             '¥${amount.abs().toStringAsFixed(2)}',
             style: TextStyle(
               fontSize: 16,
@@ -200,18 +200,18 @@ class AccountOverview extends ConsumerWidget {
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: account.displayColor.withOpacity(0.2),
-          child: Icon(
+          backgroundColor: account.displayColor.withValues(alpha: 0.2),
+          child: const Icon(
             account.icon,
             color: account.displayColor,
             size: 20,
           ),
         ),
-        title: Text(
+        title: const Text(
           account.name,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
-        subtitle: Text(
+        subtitle: const Text(
           account.type.label,
           style: TextStyle(fontSize: 12, color: Colors.grey[600]),
         ),
@@ -219,7 +219,7 @@ class AccountOverview extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(
+            const Text(
               account.formattedBalance,
               style: TextStyle(
                 fontSize: 16,
@@ -228,7 +228,7 @@ class AccountOverview extends ConsumerWidget {
               ),
             ),
             if (account.lastTransactionDate != null)
-              Text(
+              const Text(
                 _formatLastUpdated(account.lastTransactionDate),
                 style: TextStyle(
                   fontSize: 10,

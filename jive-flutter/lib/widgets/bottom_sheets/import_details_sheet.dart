@@ -45,7 +45,7 @@ class ImportDetailsSheet {
                       onPressed: () async {
                         await Clipboard.setData(ClipboardData(text: jsonPayload));
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('已复制 JSON 到剪贴板')));
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: const Text('已复制 JSON 到剪贴板')));
                         }
                       },
                       icon: const Icon(Icons.copy, size: 18),
@@ -53,8 +53,8 @@ class ImportDetailsSheet {
                     ),
                   ],
                 ),
-                Text('新增: ${result.imported}  跳过: ${result.skipped}  失败: ${result.failed}',
-                    style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface.withOpacity(.8))),
+                const Text('新增: ${result.imported}  跳过: ${result.skipped}  失败: ${result.failed}',
+                    style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface.withValues(alpha: .8))),
                 const SizedBox(height: 8),
                 Expanded(
                   child: ListView(
@@ -64,12 +64,12 @@ class ImportDetailsSheet {
                       final items = e.value;
                       final color = (action == 'failed' || action == 'skipped') ? Colors.orange : Colors.green;
                       return ExpansionTile(
-                        title: Text('$action (${items.length})', style: TextStyle(color: color, fontWeight: FontWeight.w600)),
+                        title: const Text('$action (${items.length})', style: TextStyle(color: color, fontWeight: FontWeight.w600)),
                         children: items.map((d) => ListTile(
                               dense: true,
-                              title: Text(d.predictedName ?? d.finalName ?? d.originalName),
-                              subtitle: Text(d.reason != null ? d.reason! : ''),
-                              trailing: Icon(
+                              title: const Text(d.predictedName ?? d.finalName ?? d.originalName),
+                              subtitle: const Text(d.reason != null ? d.reason! : ''),
+                              trailing: const Icon(
                                 action == 'failed'
                                     ? Icons.error
                                     : (action == 'skipped' ? Icons.warning_amber : Icons.check_circle),

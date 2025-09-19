@@ -59,7 +59,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? '编辑主题' : '创建新主题'),
+        title: const Text(_isEditing ? '编辑主题' : '创建新主题'),
         centerTitle: true,
         actions: [
           if (_isEditing)
@@ -218,7 +218,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    const Text(
                       preset.name,
                       style: const TextStyle(fontSize: 10),
                       textAlign: TextAlign.center,
@@ -314,9 +314,9 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
           trailing: DropdownButton<String>(
             value: _editingTheme.cornerRadius,
             items: const [
-              DropdownMenuItem(value: 'small', child: Text('小')),
-              DropdownMenuItem(value: 'medium', child: Text('中')),
-              DropdownMenuItem(value: 'large', child: Text('大')),
+              DropdownMenuItem(value: 'small', child: const Text('小')),
+              DropdownMenuItem(value: 'medium', child: const Text('中')),
+              DropdownMenuItem(value: 'large', child: const Text('大')),
             ],
             onChanged: (v) {
               if (v != null) {
@@ -328,7 +328,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
           ),
         ),
         const SizedBox(height: 16),
-        Text(
+        const Text(
           '提示：密度与圆角设置会随主题一起保存/分享，应用到卡片、输入框、列表等组件。',
           style: Theme.of(context)
               .textTheme
@@ -482,7 +482,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           title,
           style: const TextStyle(
             fontSize: 18,
@@ -514,12 +514,12 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
           ),
         ),
       ),
-      title: Text(
+      title: const Text(
         item.title,
         style: const TextStyle(fontWeight: FontWeight.w500),
       ),
-      subtitle: Text(item.subtitle),
-      trailing: Text(
+      subtitle: const Text(item.subtitle),
+      trailing: const Text(
         '#${item.color.value.toRadixString(16).substring(2).toUpperCase()}',
         style: const TextStyle(
           fontFamily: 'monospace',
@@ -615,7 +615,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('已应用"${preset.name}"模板'),
+        content: const Text('已应用"${preset.name}"模板'),
         backgroundColor: Colors.green,
       ),
     );
@@ -644,7 +644,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         '示例标题',
                         style: TextStyle(
                           fontSize: 18,
@@ -653,7 +653,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
+                      const Text(
                         '这是一段示例文本，用于展示主题在实际应用中的效果。',
                         style: TextStyle(color: _editingTheme.onSurface),
                       ),
@@ -690,9 +690,9 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
                         trailing: DropdownButton<String>(
                           value: _editingTheme.cornerRadius,
                           items: const [
-                            DropdownMenuItem(value: 'small', child: Text('小')),
-                            DropdownMenuItem(value: 'medium', child: Text('中')),
-                            DropdownMenuItem(value: 'large', child: Text('大')),
+                            DropdownMenuItem(value: 'small', child: const Text('小')),
+                            DropdownMenuItem(value: 'medium', child: const Text('中')),
+                            DropdownMenuItem(value: 'large', child: const Text('大')),
                           ],
                           onChanged: (v) {
                             if (v != null) {
@@ -724,7 +724,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('请输入主题名称'),
+          content: const Text('请输入主题名称'),
           backgroundColor: Colors.red,
         ),
       );
@@ -757,7 +757,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('保存失败: $e'),
+          content: const Text('保存失败: $e'),
           backgroundColor: Colors.red,
         ),
       );

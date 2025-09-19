@@ -20,7 +20,7 @@ Future<void> showDataSourceInfoSheet(BuildContext context) async {
             children: [
               Row(
                 children: [
-                  Icon(Icons.info_outline, color: cs.primary),
+                  const Icon(Icons.info_outline, color: cs.primary),
                   const SizedBox(width: 8),
                   const Text(
                     '数据来源与缓存说明',
@@ -34,22 +34,22 @@ Future<void> showDataSourceInfoSheet(BuildContext context) async {
                 ],
               ),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 '法定货币：默认优先顺序 ExchangeRate-API → Frankfurter(ECB) → FXRates；后端按优先顺序合并缺失币种，并标注每个币种的来源。',
                 style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant),
               ),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 '加密货币：默认优先顺序 CoinGecko → CoinCap(USD) → Binance(USDT)。',
                 style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant),
               ),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 '缓存策略：法币 15 分钟、加密 5 分钟；后端自动回退。UI 中的来源徽标显示每个币种的实际数据来源。',
                 style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant),
               ),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 '说明：部分来源可能不覆盖全部币种，系统会自动从后备来源补齐（如 AED/ARS/CLP/COP 等）。',
                 style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant),
               ),

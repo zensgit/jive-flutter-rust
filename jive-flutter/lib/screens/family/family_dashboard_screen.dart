@@ -51,7 +51,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('家庭概览'),
-            Text(
+            const Text(
               widget.ledger.name,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.white70,
@@ -66,11 +66,11 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
               setState(() => _selectedPeriod = value);
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(value: '本周', child: Text('本周')),
-              const PopupMenuItem(value: '本月', child: Text('本月')),
-              const PopupMenuItem(value: '本季度', child: Text('本季度')),
-              const PopupMenuItem(value: '本年', child: Text('本年')),
-              const PopupMenuItem(value: '全部', child: Text('全部')),
+              const PopupMenuItem(value: '本周', child: const Text('本周')),
+              const PopupMenuItem(value: '本月', child: const Text('本月')),
+              const PopupMenuItem(value: '本季度', child: const Text('本季度')),
+              const PopupMenuItem(value: '本年', child: const Text('本年')),
+              const PopupMenuItem(value: '全部', child: const Text('全部')),
             ],
           ),
           IconButton(
@@ -170,7 +170,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            Text('加载失败: $error'),
+            const Text('加载失败: $error'),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
@@ -219,10 +219,10 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(
+                  child: const Text(
                     _selectedPeriod,
                     style: const TextStyle(
                       color: Colors.white,
@@ -233,7 +233,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
               ],
             ),
             const SizedBox(height: 12),
-            Text(
+            const Text(
               '${widget.ledger.currency} ${_formatAmount(netWorth)}',
               style: const TextStyle(
                 color: Colors.white,
@@ -244,13 +244,13 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(
+                const Icon(
                   isPositive ? Icons.trending_up : Icons.trending_down,
                   color: Colors.white,
                   size: 16,
                 ),
                 const SizedBox(width: 4),
-                Text(
+                const Text(
                   isPositive ? '资产健康' : '需要关注',
                   style: const TextStyle(
                     color: Colors.white,
@@ -281,7 +281,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
               children: [
                 Icon(icon, size: 20, color: color),
                 const SizedBox(width: 8),
-                Text(
+                const Text(
                   title,
                   style: TextStyle(
                     fontSize: 14,
@@ -291,7 +291,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
               ],
             ),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               _formatAmount(amount),
               style: TextStyle(
                 fontSize: 20,
@@ -324,7 +324,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
               ),
             ),
             const SizedBox(height: 16),
-            SizedBox(
+            const SizedBox(
               height: 200,
               child: PieChart(
                 PieChartData(
@@ -399,7 +399,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
               ),
             ),
             const SizedBox(width: 4),
-            Text(
+            const Text(
               '${_getAccountTypeLabel(item.key)} ${item.value.toStringAsFixed(1)}%',
               style: const TextStyle(fontSize: 12),
             ),
@@ -465,7 +465,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
       children: [
         Icon(icon, size: 24, color: color),
         const SizedBox(height: 8),
-        Text(
+        const Text(
           value,
           style: const TextStyle(
             fontSize: 18,
@@ -473,7 +473,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
           ),
         ),
         const SizedBox(height: 4),
-        Text(
+        const Text(
           label,
           style: TextStyle(
             fontSize: 12,
@@ -514,7 +514,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
-                child: Text(
+                child: const Text(
                   '暂无最近活动',
                   style: TextStyle(color: Colors.grey[500]),
                 ),
@@ -531,7 +531,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
       data: (stats) {
         if (stats.monthlyTrend.isEmpty) {
           return const Center(
-            child: Text('暂无趋势数据'),
+            child: const Text('暂无趋势数据'),
           );
         }
 
@@ -554,7 +554,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Center(child: Text('加载失败: $error')),
+      error: (error, _) => Center(child: const Text('加载失败: $error')),
     );
   }
 
@@ -573,7 +573,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
               ),
             ),
             const SizedBox(height: 16),
-            SizedBox(
+            const SizedBox(
               height: 200,
               child: LineChart(
                 LineChartData(
@@ -604,7 +604,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                         getTitlesWidget: (value, meta) {
                           final months = monthlyTrend.keys.toList();
                           if (value.toInt() < months.length) {
-                            return Text(
+                            return const Text(
                               months[value.toInt()].substring(5),
                               style: const TextStyle(fontSize: 10),
                             );
@@ -630,7 +630,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                       dotData: FlDotData(show: true),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                       ),
                     ),
                   ],
@@ -660,7 +660,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
             const SizedBox(height: 16),
             // TODO: 实现收支对比图表
             const Center(
-              child: Text('收支对比图表开发中'),
+              child: const Text('收支对比图表开发中'),
             ),
           ],
         ),
@@ -685,7 +685,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
             const SizedBox(height: 16),
             // TODO: 实现类别趋势图表
             const Center(
-              child: Text('类别趋势图表开发中'),
+              child: const Text('类别趋势图表开发中'),
             ),
           ],
         ),
@@ -705,7 +705,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
             return Card(
               child: ListTile(
                 leading: const Icon(Icons.people, color: Colors.blue),
-                title: Text('共 ${members.length} 位成员'),
+                title: const Text('共 ${members.length} 位成员'),
                 subtitle: const Text('点击查看详情'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () {
@@ -728,13 +728,13 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                 backgroundImage:
                     member.avatar != null ? NetworkImage(member.avatar!) : null,
                 child: member.avatar == null
-                    ? Text(StringUtils.safeInitial(member.name))
+                    ? const Text(StringUtils.safeInitial(member.name))
                     : null,
               ),
-              title: Text(member.name),
-              subtitle: Text(member.role.label),
+              title: const Text(member.name),
+              subtitle: const Text(member.role.label),
               trailing: member.lastAccessedAt != null
-                  ? Text(
+                  ? const Text(
                       _formatRelativeDate(member.lastAccessedAt!),
                       style: const TextStyle(fontSize: 12),
                     )
@@ -744,7 +744,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
         },
       ),
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Center(child: Text('加载失败: $error')),
+      error: (error, _) => Center(child: const Text('加载失败: $error')),
     );
   }
 

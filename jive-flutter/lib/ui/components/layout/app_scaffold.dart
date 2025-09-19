@@ -63,7 +63,7 @@ class AppScaffold extends StatelessWidget {
   PreferredSizeWidget _buildAppBar(ThemeData theme) {
     return AppBar(
       title: title != null
-          ? Text(
+          ? const Text(
               title!,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -206,7 +206,7 @@ class AppCard extends StatelessWidget {
       margin: margin ?? const EdgeInsets.all(8),
       elevation: elevation ?? 1,
       backgroundColor: backgroundColor ?? theme.cardColor,
-      shadowColor: theme.shadowColor.withOpacity(0.1),
+      shadowColor: theme.shadowColor.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius:
             borderRadius ?? BorderRadius.circular(AppConstants.borderRadius),
@@ -256,7 +256,7 @@ class AppSectionHeader extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     title,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -264,10 +264,10 @@ class AppSectionHeader extends StatelessWidget {
                   ),
                   if (subtitle != null) ...[
                     const SizedBox(height: 2),
-                    Text(
+                    const Text(
                       subtitle!,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                   ],

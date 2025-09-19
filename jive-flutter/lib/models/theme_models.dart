@@ -149,7 +149,7 @@ class CustomThemeData {
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: navigationBar,
         selectedItemColor: navigationBarSelected,
-        unselectedItemColor: navigationBarText.withOpacity(0.6),
+        unselectedItemColor: navigationBarText.withValues(alpha: 0.6),
         type: BottomNavigationBarType.fixed,
       ),
 
@@ -176,7 +176,7 @@ class CustomThemeData {
           borderRadius: BorderRadius.circular(
             cornerRadius == 'small' ? 8 : (cornerRadius == 'large' ? 16 : 12),
           ),
-          side: BorderSide(color: borderColor.withOpacity(0.1)),
+          side: BorderSide(color: borderColor.withValues(alpha: 0.1)),
         ),
       ),
 

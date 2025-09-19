@@ -139,7 +139,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
               await _categoryService.createTemplate(updatedTemplate);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('模板创建成功'),
+                  content: const Text('模板创建成功'),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -147,7 +147,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
               await _categoryService.updateTemplate(updatedTemplate);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('模板更新成功'),
+                  content: const Text('模板更新成功'),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -157,7 +157,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('保存失败: $e'),
+                content: const Text('保存失败: $e'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -175,7 +175,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('删除模板'),
-        content: Text('确定要删除模板"${template.name}"吗？此操作不可恢复。'),
+        content: const Text('确定要删除模板"${template.name}"吗？此操作不可恢复。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -197,7 +197,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         await _categoryService.deleteTemplate(template.id);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('模板已删除'),
+            content: const Text('模板已删除'),
             backgroundColor: Colors.green,
           ),
         );
@@ -205,7 +205,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('删除失败: $e'),
+            content: const Text('删除失败: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -219,7 +219,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
       await _categoryService.updateTemplate(template);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
+          content: const Text(
             template.isFeatured ? '已设为精选' : '已取消精选',
           ),
         ),
@@ -228,7 +228,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('操作失败: $e'),
+          content: const Text('操作失败: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -252,7 +252,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
                 color: Colors.red,
               ),
               const SizedBox(height: 16),
-              Text(
+              const Text(
                 _error,
                 style: const TextStyle(
                   fontSize: 18,
@@ -328,7 +328,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -385,11 +385,11 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
                   items: [
                     const DropdownMenuItem<CategoryGroup?>(
                       value: null,
-                      child: Text('全部分组'),
+                      child: const Text('全部分组'),
                     ),
                     ...CategoryGroup.values.map((group) => DropdownMenuItem(
                           value: group,
-                          child: Text(group.displayName),
+                          child: const Text(group.displayName),
                         )),
                   ],
                   onChanged: (value) {
@@ -468,13 +468,13 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.category_outlined,
               size: 64,
               color: Colors.grey[400],
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               _searchQuery.isNotEmpty ? '没有找到匹配的模板' : '暂无模板',
               style: TextStyle(
                 fontSize: 16,
@@ -506,11 +506,11 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
+            color: color.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Center(
-            child: Text(
+            child: const Text(
               template.icon ?? '📂',
               style: const TextStyle(fontSize: 24),
             ),
@@ -518,7 +518,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         ),
         title: Row(
           children: [
-            Text(
+            const Text(
               template.name,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
@@ -544,12 +544,12 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               '${template.categoryGroup.displayName} | ${_getClassificationName(template.classification)}',
               style: TextStyle(color: Colors.grey[600]),
             ),
             if (template.nameEn != null)
-              Text(
+              const Text(
                 template.nameEn!,
                 style: TextStyle(
                   fontSize: 12,
@@ -562,7 +562,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
                 children: template.tags
                     .take(3)
                     .map((tag) => Chip(
-                          label: Text(
+                          label: const Text(
                             tag,
                             style: const TextStyle(fontSize: 10),
                           ),
@@ -579,7 +579,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: Icon(
+              icon: const Icon(
                 template.isFeatured ? Icons.star : Icons.star_border,
                 color: template.isFeatured ? Colors.orange : null,
               ),
@@ -635,14 +635,14 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
         children: [
           Icon(icon, color: color, size: 24),
           const SizedBox(height: 4),
-          Text(
+          const Text(
             value,
             style: TextStyle(
               fontSize: 20,
@@ -650,7 +650,7 @@ class _StatCard extends StatelessWidget {
               color: color,
             ),
           ),
-          Text(
+          const Text(
             label,
             style: TextStyle(
               fontSize: 12,
@@ -739,7 +739,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   widget.template == null ? '创建模板' : '编辑模板',
                   style: const TextStyle(
                     fontSize: 20,
@@ -806,7 +806,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                             .map(
                               (c) => DropdownMenuItem(
                                 value: c,
-                                child: Text(_getClassificationName(c)),
+                                child: const Text(_getClassificationName(c)),
                               ),
                             )
                             .toList(),
@@ -829,7 +829,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                             .map(
                               (g) => DropdownMenuItem(
                                 value: g,
-                                child: Text(g.displayName),
+                                child: const Text(g.displayName),
                               ),
                             )
                             .toList(),

@@ -26,7 +26,7 @@ class SelectableTextWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SelectableText(
+    return Selectableconst Text(
       text,
       style: style,
       textAlign: textAlign,
@@ -132,9 +132,9 @@ class SelectableContainer extends StatelessWidget {
         PopupMenuItem(
           child: const Row(
             children: [
-              Icon(Icons.copy, size: 20),
-              SizedBox(width: 8),
-              Text('复制'),
+              const Icon(Icons.copy, size: 20),
+              const SizedBox(width: 8),
+              const Text('复制'),
             ],
           ),
           onTap: () {
@@ -142,7 +142,7 @@ class SelectableContainer extends StatelessWidget {
               Clipboard.setData(ClipboardData(text: textToCopy!));
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('已复制到剪贴板'),
+                  content: const Text('已复制到剪贴板'),
                   duration: Duration(seconds: 2),
                 ),
               );

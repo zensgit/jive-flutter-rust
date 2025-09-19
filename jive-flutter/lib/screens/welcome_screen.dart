@@ -83,7 +83,7 @@ class WelcomeScreen extends StatelessWidget {
                   const SizedBox(height: 48),
 
                   // 登录按钮
-                  SizedBox(
+                  const SizedBox(
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
@@ -104,7 +104,7 @@ class WelcomeScreen extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   // 注册按钮
-                  SizedBox(
+                  const SizedBox(
                     width: double.infinity,
                     height: 50,
                     child: OutlinedButton(
@@ -149,7 +149,7 @@ class WelcomeScreen extends StatelessWidget {
   Widget _buildFeatureRow(IconData icon, String title, String subtitle) {
     return Row(
       children: [
-        Icon(
+        const Icon(
           icon,
           color: Colors.blue,
           size: 24,
@@ -158,14 +158,14 @@ class WelcomeScreen extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               title,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
             ),
-            Text(
+            const Text(
               subtitle,
               style: const TextStyle(
                 color: Colors.grey,

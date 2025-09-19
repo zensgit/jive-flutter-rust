@@ -78,7 +78,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('登录失败: $e'),
+            content: const Text('登录失败: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -148,10 +148,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.security, color: Colors.red[700]),
+                          const Icon(Icons.security, color: Colors.red[700]),
                           const SizedBox(width: 12),
                           const Expanded(
-                            child: Text(
+                            child: const Text(
                               '此页面仅供系统管理员使用\n需要双重认证验证',
                               style: TextStyle(
                                 fontSize: 12,
@@ -169,7 +169,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       controller: _usernameController,
                       decoration: const InputDecoration(
                         labelText: '管理员账户',
-                        prefixIcon: Icon(Icons.admin_panel_settings),
+                        prefixIcon: const Icon(Icons.admin_panel_settings),
                         border: OutlineInputBorder(),
                         fillColor: Colors.red,
                       ),
@@ -189,7 +189,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                         labelText: '管理员密码',
                         prefixIcon: const Icon(Icons.lock),
                         suffixIcon: IconButton(
-                          icon: Icon(
+                          icon: const Icon(
                             _isPasswordVisible
                                 ? Icons.visibility
                                 : Icons.visibility_off,
@@ -218,7 +218,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                         controller: _totpController,
                         decoration: const InputDecoration(
                           labelText: 'TOTP验证码',
-                          prefixIcon: Icon(Icons.verified_user),
+                          prefixIcon: const Icon(Icons.verified_user),
                           border: OutlineInputBorder(),
                           helperText: '请输入6位TOTP验证码',
                         ),
@@ -239,7 +239,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                     const SizedBox(height: 24),
 
                     // 登录按钮
-                    SizedBox(
+                    const SizedBox(
                       height: 50,
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _login,
@@ -252,7 +252,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                 valueColor:
                                     AlwaysStoppedAnimation<Color>(Colors.white),
                               )
-                            : Text(
+                            : const Text(
                                 _showTotpField ? '验证并登录' : '下一步',
                                 style: const TextStyle(fontSize: 16),
                               ),
@@ -271,7 +271,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                           children: [
                             Row(
                               children: [
-                                Icon(Icons.info,
+                                const Icon(Icons.info,
                                     color: Colors.blue[700], size: 20),
                                 const SizedBox(width: 8),
                                 const Text(

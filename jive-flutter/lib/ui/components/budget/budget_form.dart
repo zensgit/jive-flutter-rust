@@ -156,7 +156,7 @@ class _BudgetFormState extends State<BudgetForm> {
       items: [
         const DropdownMenuItem(
           value: null,
-          child: Text('全部分类'),
+          child: const Text('全部分类'),
         ),
         ...categories.map(
           (category) => DropdownMenuItem(
@@ -172,7 +172,7 @@ class _BudgetFormState extends State<BudgetForm> {
                     shape: BoxShape.circle,
                   ),
                 ),
-                Text(category),
+                const Text(category),
               ],
             ),
           ),
@@ -195,7 +195,7 @@ class _BudgetFormState extends State<BudgetForm> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         ),
-        helperText: _getPeriodHelperText(),
+        helperText: _getPeriodHelperconst Text(),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -214,7 +214,7 @@ class _BudgetFormState extends State<BudgetForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           '预算周期',
           style: theme.textTheme.titleSmall,
         ),
@@ -225,7 +225,7 @@ class _BudgetFormState extends State<BudgetForm> {
             color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
             border: Border.all(
-              color: theme.colorScheme.outline.withOpacity(0.2),
+              color: theme.colorScheme.outline.withValues(alpha: 0.2),
             ),
           ),
           child: Row(
@@ -249,7 +249,7 @@ class _BudgetFormState extends State<BudgetForm> {
     return Expanded(
       child: Material(
         color: isSelected
-            ? theme.primaryColor.withOpacity(0.1)
+            ? theme.primaryColor.withValues(alpha: 0.1)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(AppConstants.smallBorderRadius),
         child: InkWell(
@@ -257,12 +257,12 @@ class _BudgetFormState extends State<BudgetForm> {
           borderRadius: BorderRadius.circular(AppConstants.smallBorderRadius),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Text(
+            child: const Text(
               label,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: isSelected
                     ? theme.primaryColor
-                    : theme.colorScheme.onSurface.withOpacity(0.6),
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
               textAlign: TextAlign.center,
@@ -289,7 +289,7 @@ class _BudgetFormState extends State<BudgetForm> {
                 ),
                 suffixIcon: const Icon(Icons.calendar_today),
               ),
-              child: Text(
+              child: const Text(
                 _formatDate(_startDate),
                 style: theme.textTheme.bodyLarge,
               ),
@@ -311,7 +311,7 @@ class _BudgetFormState extends State<BudgetForm> {
                   ),
                   suffixIcon: const Icon(Icons.calendar_today),
                 ),
-                child: Text(
+                child: const Text(
                   _endDate != null ? _formatDate(_endDate!) : '选择日期',
                   style: theme.textTheme.bodyLarge,
                 ),
@@ -327,7 +327,7 @@ class _BudgetFormState extends State<BudgetForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           '高级选项',
           style: theme.textTheme.titleSmall,
         ),
@@ -368,7 +368,7 @@ class _BudgetFormState extends State<BudgetForm> {
                         setState(() => _notificationThreshold = value),
                   ),
                 ),
-                Text(
+                const Text(
                   '${(_notificationThreshold * 100).toInt()}%',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
@@ -417,7 +417,7 @@ class _BudgetFormState extends State<BudgetForm> {
     );
   }
 
-  String _getPeriodHelperText() {
+  String _getPeriodHelperconst Text() {
     switch (_period) {
       case BudgetPeriod.weekly:
         return '每周预算金额';

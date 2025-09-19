@@ -32,7 +32,7 @@ class SummaryCard extends StatelessWidget {
 
     return Card(
       elevation: 2,
-      shadowColor: theme.shadowColor.withOpacity(0.1),
+      shadowColor: theme.shadowColor.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
       ),
@@ -49,7 +49,7 @@ class SummaryCard extends StatelessWidget {
                     end: Alignment.bottomRight,
                     colors: [
                       backgroundColor!,
-                      backgroundColor!.withOpacity(0.8),
+                      backgroundColor!.withValues(alpha: 0.8),
                     ],
                   )
                 : null,
@@ -64,10 +64,10 @@ class SummaryCard extends StatelessWidget {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: (iconColor ?? theme.primaryColor).withOpacity(0.1),
+                      color: (iconColor ?? theme.primaryColor).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       icon,
                       size: 24,
                       color: iconColor ?? theme.primaryColor,
@@ -81,12 +81,12 @@ class SummaryCard extends StatelessWidget {
               const SizedBox(height: 16),
 
               // 标题
-              Text(
+              const Text(
                 title,
                 style: theme.textTheme.titleMedium?.copyWith(
                   color: backgroundColor != null
-                      ? Colors.white.withOpacity(0.9)
-                      : theme.colorScheme.onSurface.withOpacity(0.7),
+                      ? Colors.white.withValues(alpha: 0.9)
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.7),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -94,7 +94,7 @@ class SummaryCard extends StatelessWidget {
               const SizedBox(height: 8),
 
               // 金额
-              Text(
+              const Text(
                 amount,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   color: backgroundColor != null
@@ -107,12 +107,12 @@ class SummaryCard extends StatelessWidget {
               // 副标题
               if (subtitle != null) ...[
                 const SizedBox(height: 4),
-                Text(
+                const Text(
                   subtitle!,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: backgroundColor != null
-                        ? Colors.white.withOpacity(0.8)
-                        : theme.colorScheme.onSurface.withOpacity(0.6),
+                        ? Colors.white.withValues(alpha: 0.8)
+                        : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -131,19 +131,19 @@ class SummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
+          const Icon(
             icon,
             size: 14,
             color: color,
           ),
           const SizedBox(width: 4),
-          Text(
+          const Text(
             trend!,
             style: theme.textTheme.bodySmall?.copyWith(
               color: color,

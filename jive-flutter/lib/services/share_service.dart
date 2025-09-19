@@ -92,7 +92,7 @@ Jive Money - 您的智能家庭财务管家
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
+                const Text(
                   '$familyName - $period',
                   style: const TextStyle(
                     fontSize: 18,
@@ -183,7 +183,7 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(message ?? '已复制到剪贴板'),
+            content: const Text(message ?? '已复制到剪贴板'),
             duration: const Duration(seconds: 2),
           ),
         );
@@ -326,7 +326,7 @@ $data
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(message),
+          content: const Text(message),
           backgroundColor: Colors.red,
         ),
       );
@@ -381,7 +381,7 @@ class ShareDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            const Text(
               title,
               style: theme.textTheme.titleLarge,
             ),
@@ -391,10 +391,10 @@ class ShareDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Text(
+              child: const Text(
                 content,
                 style: theme.textTheme.bodyMedium,
                 maxLines: 3,
@@ -416,7 +416,7 @@ class ShareDialog extends StatelessWidget {
                     const Icon(Icons.link, size: 16),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(
+                      child: const Text(
                         url!,
                         style: theme.textTheme.bodySmall,
                         overflow: TextOverflow.ellipsis,
@@ -443,7 +443,7 @@ class ShareDialog extends StatelessWidget {
             const SizedBox(height: 24),
 
             // 分享平台
-            Text(
+            const Text(
               '分享到',
               style: theme.textTheme.titleSmall,
             ),
@@ -554,17 +554,17 @@ class _SharePlatformButton extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 icon,
                 color: color,
                 size: 24,
               ),
             ),
             const SizedBox(height: 4),
-            Text(
+            const Text(
               label,
               style: TextStyle(
                 fontSize: 12,

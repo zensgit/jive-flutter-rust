@@ -57,7 +57,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (result.success) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result.message ?? '用户信息更新成功'),
+              content: const Text(result.message ?? '用户信息更新成功'),
               backgroundColor: Colors.green,
             ),
           );
@@ -65,7 +65,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result.message ?? '更新失败'),
+              content: const Text(result.message ?? '更新失败'),
               backgroundColor: Colors.red,
             ),
           );
@@ -75,7 +75,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('更新过程中发生错误: $e'),
+            content: const Text('更新过程中发生错误: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -101,7 +101,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         actions: [
           TextButton(
             onPressed: _isLoading ? null : _saveProfile,
-            child: Text(
+            child: const Text(
               '保存',
               style: TextStyle(
                 color: _isLoading ? Colors.grey : Colors.white,
@@ -126,12 +126,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       children: [
                         CircleAvatar(
                           radius: 60,
-                          backgroundColor: Colors.blue.withOpacity(0.1),
+                          backgroundColor: Colors.blue.withValues(alpha: 0.1),
                           backgroundImage: currentUser?.avatar != null
                               ? NetworkImage(currentUser!.avatar!)
                               : null,
                           child: currentUser?.avatar == null
-                              ? Icon(
+                              ? const Icon(
                                   Icons.person,
                                   size: 60,
                                   color: Colors.blue[700],
@@ -155,7 +155,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               onPressed: () {
                                 // TODO: 实现头像上传功能
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('头像上传功能开发中')),
+                                  const SnackBar(content: const Text('头像上传功能开发中')),
                                 );
                               },
                             ),
@@ -164,7 +164,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text(
+                    const Text(
                       '点击更换头像',
                       style: TextStyle(
                         fontSize: 14,
@@ -205,9 +205,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.account_circle, color: Colors.grey[600]),
+                            const Icon(Icons.account_circle, color: Colors.grey[600]),
                             const SizedBox(width: 12),
-                            Text(
+                            const Text(
                               currentUser?.username ?? '未知',
                               style: TextStyle(
                                 fontSize: 16,
@@ -221,10 +221,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.orange.withOpacity(0.1),
+                                color: Colors.orange.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: Text(
+                              child: const Text(
                                 '不可修改',
                                 style: TextStyle(
                                   fontSize: 12,
@@ -261,7 +261,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         controller: _realNameController,
                         decoration: const InputDecoration(
                           hintText: '请输入您的真实姓名（可选）',
-                          prefixIcon: Icon(Icons.person_outline),
+                          prefixIcon: const Icon(Icons.person_outline),
                           border: OutlineInputBorder(),
                           helperText: '用于显示在家庭成员中',
                         ),
@@ -300,7 +300,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         controller: _emailController,
                         decoration: const InputDecoration(
                           hintText: '请输入邮箱地址',
-                          prefixIcon: Icon(Icons.email_outlined),
+                          prefixIcon: const Icon(Icons.email_outlined),
                           border: OutlineInputBorder(),
                           helperText: '用于登录和接收重要通知',
                         ),
@@ -325,7 +325,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               const SizedBox(height: 24),
 
               // 保存按钮
-              SizedBox(
+              const SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
@@ -355,10 +355,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   padding: const EdgeInsets.all(12.0),
                   child: Row(
                     children: [
-                      Icon(Icons.info, color: Colors.blue[700], size: 20),
+                      const Icon(Icons.info, color: Colors.blue[700], size: 20),
                       const SizedBox(width: 8),
                       const Expanded(
-                        child: Text(
+                        child: const Text(
                           '用户名一旦设置后无法修改，请谨慎填写其他信息',
                           style: TextStyle(fontSize: 14),
                         ),

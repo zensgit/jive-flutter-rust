@@ -33,7 +33,7 @@ class SecondaryButton extends StatelessWidget {
     final theme = Theme.of(context);
     final isEnabled = !isDisabled && !isLoading && onPressed != null;
 
-    return SizedBox(
+    return const SizedBox(
       width: width,
       height: height,
       child: OutlinedButton.icon(
@@ -59,7 +59,7 @@ class SecondaryButton extends StatelessWidget {
 
   Widget _buildIcon(ThemeData theme) {
     if (isLoading) {
-      return SizedBox(
+      return const SizedBox(
         width: 20,
         height: 20,
         child: CircularProgressIndicator(
@@ -79,7 +79,7 @@ class SecondaryButton extends StatelessWidget {
   }
 
   Widget _buildLabel() {
-    return Text(
+    return const Text(
       text,
       style: const TextStyle(
         fontSize: 16,

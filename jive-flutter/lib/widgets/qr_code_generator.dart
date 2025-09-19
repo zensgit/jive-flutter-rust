@@ -98,7 +98,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('分享失败: $e')),
+          SnackBar(content: const Text('分享失败: $e')),
         );
       }
     }
@@ -122,7 +122,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('已复制到剪贴板'),
+          content: const Text('已复制到剪贴板'),
           duration: Duration(seconds: 2),
         ),
       );
@@ -144,7 +144,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('二维码已保存到: $imagePath'),
+            content: const Text('二维码已保存到: $imagePath'),
             action: SnackBarAction(
               label: '查看',
               onPressed: () {
@@ -157,7 +157,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('保存失败: $e')),
+          SnackBar(content: const Text('保存失败: $e')),
         );
       }
     }
@@ -175,14 +175,14 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
       mainAxisSize: MainAxisSize.min,
       children: [
         // 标题
-        Text(
+        const Text(
           widget.title,
           style: theme.textTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
         if (widget.subtitle != null) ...[
           const SizedBox(height: 8),
-          Text(
+          const Text(
             widget.subtitle!,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
@@ -196,7 +196,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
         // 二维码
         Center(
           child: _isGenerating
-              ? SizedBox(
+              ? const SizedBox(
                   width: widget.size,
                   height: widget.size,
                   child: const Center(
@@ -214,7 +214,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -247,13 +247,13 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+            color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
             children: [
               Expanded(
-                child: Text(
+                child: const Text(
                   widget.data,
                   style: theme.textTheme.bodySmall,
                   maxLines: 2,
@@ -324,7 +324,7 @@ class _ActionButton extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Material(
-      color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+      color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onPressed,
@@ -336,7 +336,7 @@ class _ActionButton extends StatelessWidget {
             children: [
               Icon(icon, size: 24),
               const SizedBox(height: 4),
-              Text(
+              const Text(
                 label,
                 style: theme.textTheme.bodySmall,
               ),
@@ -403,7 +403,7 @@ class InvitationQrCodeDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+                color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -444,7 +444,7 @@ class InvitationQrCodeDialog extends StatelessWidget {
                       await Clipboard.setData(ClipboardData(text: inviteLink));
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('链接已复制')),
+                          const SnackBar(content: const Text('链接已复制')),
                         );
                       }
                     },
@@ -498,14 +498,14 @@ class _InfoRow extends StatelessWidget {
       children: [
         Icon(icon, size: 16, color: theme.colorScheme.onSurfaceVariant),
         const SizedBox(width: 8),
-        Text(
+        const Text(
           '$label:',
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
         const Spacer(),
-        Text(
+        const Text(
           value,
           style: theme.textTheme.bodyMedium?.copyWith(
             fontWeight: isBold ? FontWeight.bold : null,

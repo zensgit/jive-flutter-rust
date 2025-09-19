@@ -395,7 +395,7 @@ class _FamilyPermissionsEditorScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text('权限管理'),
-              Text(
+              const Text(
                 widget.familyName,
                 style: theme.textTheme.bodySmall,
               ),
@@ -434,24 +434,24 @@ class _FamilyPermissionsEditorScreenState
                 const PopupMenuItem(
                   value: 'create_role',
                   child: ListTile(
-                    leading: Icon(Icons.add),
-                    title: Text('创建自定义角色'),
+                    leading: const Icon(Icons.add),
+                    title: const Text('创建自定义角色'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
                 const PopupMenuItem(
                   value: 'apply_template',
                   child: ListTile(
-                    leading: Icon(Icons.dashboard_customize),
-                    title: Text('应用权限模板'),
+                    leading: const Icon(Icons.dashboard_customize),
+                    title: const Text('应用权限模板'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
                 const PopupMenuItem(
                   value: 'export',
                   child: ListTile(
-                    leading: Icon(Icons.download),
-                    title: Text('导出权限配置'),
+                    leading: const Icon(Icons.download),
+                    title: const Text('导出权限配置'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -473,7 +473,7 @@ class _FamilyPermissionsEditorScreenState
                 children: [
                   Container(
                     padding: const EdgeInsets.all(16),
-                    color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                    color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
                     child: const Text(
                       '角色列表',
                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -485,7 +485,7 @@ class _FamilyPermissionsEditorScreenState
                         // 系统角色
                         const Padding(
                           padding: EdgeInsets.all(16),
-                          child: Text(
+                          child: const Text(
                             '系统角色',
                             style: TextStyle(fontSize: 12, color: Colors.grey),
                           ),
@@ -498,7 +498,7 @@ class _FamilyPermissionsEditorScreenState
                         if (_customRoles.isNotEmpty) ...[
                           const Padding(
                             padding: EdgeInsets.all(16),
-                            child: Text(
+                            child: const Text(
                               '自定义角色',
                               style:
                                   TextStyle(fontSize: 12, color: Colors.grey),
@@ -521,13 +521,13 @@ class _FamilyPermissionsEditorScreenState
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.security,
                             size: 64,
                             color: theme.colorScheme.outline,
                           ),
                           const SizedBox(height: 16),
-                          Text(
+                          const Text(
                             '请选择一个角色查看权限',
                             style: theme.textTheme.titleMedium?.copyWith(
                               color: theme.colorScheme.outline,
@@ -550,18 +550,18 @@ class _FamilyPermissionsEditorScreenState
 
     return ListTile(
       selected: isSelected,
-      leading: Icon(
-        _getRoleIcon(rolePermissions.roleKey),
+      leading: const Icon(
+        _getRoleconst Icon(rolePermissions.roleKey),
         color: isSelected ? theme.colorScheme.primary : null,
       ),
-      title: Text(rolePermissions.roleName ?? rolePermissions.roleKey),
-      subtitle: Text(
+      title: const Text(rolePermissions.roleName ?? rolePermissions.roleKey),
+      subtitle: const Text(
         '${rolePermissions.permissions.length} 项权限',
         style: const TextStyle(fontSize: 12),
       ),
       trailing: rolePermissions.isSystem
           ? const Chip(
-              label: Text('系统', style: TextStyle(fontSize: 10)),
+              label: const Text('系统', style: TextStyle(fontSize: 10)),
               padding: EdgeInsets.zero,
               visualDensity: VisualDensity.compact,
             )
@@ -581,12 +581,12 @@ class _FamilyPermissionsEditorScreenState
 
     return ListTile(
       selected: isSelected,
-      leading: Icon(
+      leading: const Icon(
         Icons.person_outline,
         color: isSelected ? theme.colorScheme.primary : null,
       ),
-      title: Text(role.name),
-      subtitle: Text(
+      title: const Text(role.name),
+      subtitle: const Text(
         role.description ?? '${role.permissions.length} 项权限',
         style: const TextStyle(fontSize: 12),
       ),
@@ -620,14 +620,14 @@ class _FamilyPermissionsEditorScreenState
         // 头部信息
         Container(
           padding: const EdgeInsets.all(16),
-          color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+          color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
           child: Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       _rolePermissions
                               .firstWhere((rp) => rp.roleKey == _selectedRole)
                               .roleName ??
@@ -635,7 +635,7 @@ class _FamilyPermissionsEditorScreenState
                       style: theme.textTheme.titleLarge,
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    const Text(
                       isOwner ? '拥有者角色拥有所有权限，不可修改' : '勾选权限项以授予该角色相应权限',
                       style: theme.textTheme.bodySmall,
                     ),
@@ -644,7 +644,7 @@ class _FamilyPermissionsEditorScreenState
               ),
               if (_pendingChanges.isNotEmpty)
                 Chip(
-                  label: Text('${_pendingChanges.length} 项待保存'),
+                  label: const Text('${_pendingChanges.length} 项待保存'),
                   backgroundColor: theme.colorScheme.errorContainer,
                 ),
             ],
@@ -660,7 +660,7 @@ class _FamilyPermissionsEditorScreenState
                 margin: const EdgeInsets.only(bottom: 16),
                 child: ExpansionTile(
                   initiallyExpanded: true,
-                  title: Text(
+                  title: const Text(
                     category.key,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
@@ -688,13 +688,13 @@ class _FamilyPermissionsEditorScreenState
                                 });
                               },
                       ),
-                      title: Text(permission.name),
-                      subtitle: Text(
+                      title: const Text(permission.name),
+                      subtitle: const Text(
                         permission.description,
                         style: const TextStyle(fontSize: 12),
                       ),
                       trailing: hasPendingChange
-                          ? Icon(
+                          ? const Icon(
                               Icons.circle,
                               size: 8,
                               color: theme.colorScheme.error,
@@ -711,7 +711,7 @@ class _FamilyPermissionsEditorScreenState
     );
   }
 
-  IconData _getRoleIcon(String role) {
+  IconData _getRoleconst Icon(String role) {
     if (role == family_model.FamilyRole.owner.toString()) {
       return Icons.star;
     } else if (role == family_model.FamilyRole.admin.toString()) {
@@ -731,14 +731,14 @@ class _FamilyPermissionsEditorScreenState
 
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+      SnackBar(content: const Text(message)),
     );
   }
 
   void _showError(String error) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(error),
+        content: const Text(error),
         backgroundColor: Colors.red,
       ),
     );

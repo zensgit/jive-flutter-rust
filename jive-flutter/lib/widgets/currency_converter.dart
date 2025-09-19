@@ -110,7 +110,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('转换失败: ${e.toString()}'),
+            content: const Text('转换失败: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -163,9 +163,9 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
             // Title
             Row(
               children: [
-                Icon(Icons.currency_exchange, color: Colors.blue[700]),
+                const Icon(Icons.currency_exchange, color: Colors.blue[700]),
                 const SizedBox(width: 8),
-                Text(
+                const Text(
                   '货币转换',
                   style: TextStyle(
                     fontSize: 18,
@@ -175,7 +175,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                 ),
                 const Spacer(),
                 if (_isConverting)
-                  SizedBox(
+                  const SizedBox(
                     width: 16,
                     height: 16,
                     child: CircularProgressIndicator(
@@ -196,7 +196,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         '从',
                         style: TextStyle(
                           fontSize: 12,
@@ -218,7 +218,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                   padding: const EdgeInsets.only(top: 20),
                   child: IconButton(
                     onPressed: _swapCurrencies,
-                    icon: Icon(Icons.swap_horiz, color: Colors.blue[600]),
+                    icon: const Icon(Icons.swap_horiz, color: Colors.blue[600]),
                     tooltip: '交换货币',
                   ),
                 ),
@@ -226,7 +226,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         '到',
                         style: TextStyle(
                           fontSize: 12,
@@ -287,7 +287,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     '转换结果',
                     style: TextStyle(
                       fontSize: 12,
@@ -298,7 +298,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Text(
+                      const Text(
                         _getCurrencySymbol(_toCurrency),
                         style: TextStyle(
                           fontSize: 24,
@@ -307,7 +307,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                         ),
                       ),
                       const SizedBox(width: 4),
-                      Text(
+                      const Text(
                         _convertedAmount?.toStringAsFixed(2) ?? '0.00',
                         style: TextStyle(
                           fontSize: 24,
@@ -322,7 +322,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                       padding: const EdgeInsets.only(top: 4),
                       child: Row(
                         children: [
-                          Text(
+                          const Text(
                             '汇率: 1 $_fromCurrency = ${(_convertedAmount! / (double.tryParse(_amountController.text) ?? 1)).toStringAsFixed(4)} $_toCurrency',
                             style: TextStyle(
                               fontSize: 11,
@@ -355,9 +355,9 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.update, size: 12, color: Colors.grey[500]),
+                    const Icon(Icons.update, size: 12, color: Colors.grey[500]),
                     const SizedBox(width: 4),
-                    Text(
+                    const Text(
                       '汇率更新于 ${_formatUpdateTime(_lastFetchTime!)}',
                       style: TextStyle(
                         fontSize: 10,
@@ -394,7 +394,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
         ),
         child: Row(
           children: [
-            Text(
+            const Text(
               selected.flag ?? selected.symbol,
               style: const TextStyle(fontSize: 20),
             ),
@@ -403,14 +403,14 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     selected.code,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Text(
+                  const Text(
                     selected.nameZh,
                     style: TextStyle(
                       fontSize: 10,
@@ -421,7 +421,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                 ],
               ),
             ),
-            Icon(Icons.arrow_drop_down, color: Colors.grey[600]),
+            const Icon(Icons.arrow_drop_down, color: Colors.grey[600]),
           ],
         ),
       ),
@@ -442,7 +442,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
         padding: const EdgeInsets.only(top: 16),
         child: Column(
           children: [
-            Text(
+            const Text(
               '选择货币',
               style: TextStyle(
                 fontSize: 16,
@@ -471,19 +471,19 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Center(
-                        child: Text(
+                        child: const Text(
                           currency.flag ?? currency.symbol,
                           style: const TextStyle(fontSize: 16),
                         ),
                       ),
                     ),
-                    title: Text(
+                    title: const Text(
                       currency.code,
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
-                    subtitle: Text('${currency.name} · ${currency.nameZh}'),
+                    subtitle: const Text('${currency.name} · ${currency.nameZh}'),
                     trailing: isSelected
-                        ? Icon(Icons.check, color: Colors.blue[600])
+                        ? const Icon(Icons.check, color: Colors.blue[600])
                         : null,
                     onTap: () {
                       onChanged(currency.code);

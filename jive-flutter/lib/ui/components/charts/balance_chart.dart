@@ -45,7 +45,7 @@ class BalanceChart extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (title.isNotEmpty) ...[
-            Text(
+            const Text(
               title,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -62,7 +62,7 @@ class BalanceChart extends ConsumerWidget {
                   horizontalInterval: _calculateInterval(),
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                      color: theme.dividerColor.withOpacity(0.3),
+                      color: theme.dividerColor.withValues(alpha: 0.3),
                       strokeWidth: 1,
                     );
                   },
@@ -107,7 +107,7 @@ class BalanceChart extends ConsumerWidget {
                     gradient: LinearGradient(
                       colors: [
                         gradientStartColor ?? primaryColor,
-                        gradientEndColor ?? primaryColor.withOpacity(0.3),
+                        gradientEndColor ?? primaryColor.withValues(alpha: 0.3),
                       ],
                     ),
                     barWidth: 3,
@@ -129,8 +129,8 @@ class BalanceChart extends ConsumerWidget {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          (gradientStartColor ?? primaryColor).withOpacity(0.3),
-                          (gradientEndColor ?? primaryColor).withOpacity(0.1),
+                          (gradientStartColor ?? primaryColor).withValues(alpha: 0.3),
+                          (gradientEndColor ?? primaryColor).withValues(alpha: 0.1),
                         ],
                       ),
                     ),
@@ -193,13 +193,13 @@ class BalanceChart extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.show_chart,
             size: 48,
             color: theme.disabledColor,
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             '暂无数据',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.disabledColor,
@@ -243,7 +243,7 @@ class BalanceChart extends ConsumerWidget {
       final point = data[index];
       return SideTitleWidget(
         axisSide: meta.axisSide,
-        child: Text(
+        child: const Text(
           point.formattedDate,
           style: const TextStyle(
             fontSize: 10,
@@ -274,7 +274,7 @@ class BalanceChart extends ConsumerWidget {
     }
     return SideTitleWidget(
       axisSide: meta.axisSide,
-      child: Text(
+      child: const Text(
         label,
         style: const TextStyle(
           fontSize: 10,

@@ -155,10 +155,10 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
+                    color: Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.wechat,
                     color: Colors.green[600],
                     size: 24,
@@ -166,7 +166,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
                 ),
                 const SizedBox(width: 12),
                 const Expanded(
-                  child: Text(
+                  child: const Text(
                     '绑定微信账户',
                     style: TextStyle(
                       fontSize: 20,
@@ -199,7 +199,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
 
             // 状态文本
             if (_isScanning) ...[
-              Text(
+              const Text(
                 '请使用微信扫描二维码',
                 style: TextStyle(
                   fontSize: 16,
@@ -208,7 +208,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 '二维码${_countdown}秒后过期',
                 style: TextStyle(
                   fontSize: 14,
@@ -216,7 +216,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
                 ),
               ),
             ] else ...[
-              Text(
+              const Text(
                 '二维码已过期',
                 style: TextStyle(
                   fontSize: 16,
@@ -257,16 +257,16 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.05),
+                color: Colors.blue.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.blue.withOpacity(0.2)),
+                border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.info, size: 16, color: Colors.blue[600]),
+                      const Icon(Icons.info, size: 16, color: Colors.blue[600]),
                       const SizedBox(width: 8),
                       const Text(
                         '绑定说明',
@@ -347,10 +347,10 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
+                child: const Text(
                   '扫码中...',
                   style: TextStyle(
                     fontSize: 12,
@@ -382,13 +382,13 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.refresh,
                   size: 48,
                   color: Colors.grey[400],
                 ),
                 const SizedBox(height: 8),
-                Text(
+                const Text(
                   '已过期',
                   style: TextStyle(
                     fontSize: 12,

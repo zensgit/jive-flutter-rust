@@ -27,12 +27,12 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
     return AlertDialog(
       title: Row(
         children: [
-          Icon(Icons.share, color: Colors.blue[600]),
+          const Icon(Icons.share, color: Colors.blue[600]),
           const SizedBox(width: 8),
           const Text('分享主题'),
         ],
       ),
-      content: SizedBox(
+      content: const SizedBox(
         width: 320,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -43,14 +43,14 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     widget.theme.name,
                     style: const TextStyle(
                       fontSize: 16,
@@ -59,7 +59,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                   ),
                   if (widget.theme.author.isNotEmpty) ...[
                     const SizedBox(height: 4),
-                    Text(
+                    const Text(
                       '作者: ${widget.theme.author}',
                       style: TextStyle(
                         color: Colors.grey[600],
@@ -69,7 +69,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                   ],
                   if (widget.theme.description.isNotEmpty) ...[
                     const SizedBox(height: 4),
-                    Text(
+                    const Text(
                       widget.theme.description,
                       style: TextStyle(
                         color: Colors.grey[600],
@@ -91,7 +91,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
               const SizedBox(height: 12),
 
               // 生成分享链接
-              SizedBox(
+              const SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: _isSharing ? null : _generateShareLink,
@@ -102,7 +102,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.link),
-                  label: Text(_isSharing ? '生成中...' : '生成分享链接'),
+                  label: const Text(_isSharing ? '生成中...' : '生成分享链接'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
@@ -114,7 +114,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
               const SizedBox(height: 8),
 
               // 复制到剪贴板
-              SizedBox(
+              const SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: _copyToClipboard,
@@ -143,9 +143,9 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: Colors.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                  border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,7 +161,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
+                          child: const Text(
                             _shareCode!,
                             style: const TextStyle(
                               fontSize: 18,
@@ -171,7 +171,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                           ),
                         ),
                         IconButton(
-                          onPressed: () => _copyText(_shareCode!),
+                          onPressed: () => _copyconst Text(_shareCode!),
                           icon: const Icon(Icons.copy, size: 16),
                           tooltip: '复制分享码',
                         ),
@@ -188,9 +188,9 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green.withOpacity(0.3)),
+                  border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,7 +206,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
+                          child: const Text(
                             _shareUrl!,
                             style: const TextStyle(
                               fontSize: 12,
@@ -218,7 +218,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                           ),
                         ),
                         IconButton(
-                          onPressed: () => _copyText(_shareUrl!),
+                          onPressed: () => _copyconst Text(_shareUrl!),
                           icon: const Icon(Icons.copy, size: 16),
                           tooltip: '复制链接',
                         ),
@@ -234,16 +234,16 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.1),
+                  color: Colors.orange.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.orange.withOpacity(0.2)),
+                  border: Border.all(color: Colors.orange.withValues(alpha: 0.2)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.info, size: 16, color: Colors.orange[700]),
+                        const Icon(Icons.info, size: 16, color: Colors.orange[700]),
                         const SizedBox(width: 8),
                         const Text(
                           '使用说明',
@@ -302,7 +302,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('分享链接生成成功'),
+          content: const Text('分享链接生成成功'),
           backgroundColor: Colors.green,
         ),
       );
@@ -313,7 +313,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('生成分享链接失败: $e'),
+          content: const Text('生成分享链接失败: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -325,25 +325,25 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
       await _themeService.copyThemeToClipboard(widget.theme.id);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('主题数据已复制到剪贴板'),
+          content: const Text('主题数据已复制到剪贴板'),
           backgroundColor: Colors.green,
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('复制失败: $e'),
+          content: const Text('复制失败: $e'),
           backgroundColor: Colors.red,
         ),
       );
     }
   }
 
-  Future<void> _copyText(String text) async {
+  Future<void> _copyconst Text(String text) async {
     await Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('已复制到剪贴板'),
+        content: const Text('已复制到剪贴板'),
         backgroundColor: Colors.green,
       ),
     );
@@ -369,7 +369,7 @@ ${widget.theme.description.isNotEmpty ? '描述：${widget.theme.description}\n'
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('分享内容已复制到剪贴板，可以粘贴到其他应用分享'),
+        content: const Text('分享内容已复制到剪贴板，可以粘贴到其他应用分享'),
         backgroundColor: Colors.green,
       ),
     );

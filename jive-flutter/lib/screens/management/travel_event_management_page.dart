@@ -190,13 +190,13 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Column(
           children: [
-            Text(
+            const Text(
               value.toString(),
               style: TextStyle(
                 fontSize: 18,
@@ -205,7 +205,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
               ),
             ),
             const SizedBox(height: 4),
-            Text(
+            const Text(
               label,
               style: TextStyle(
                 fontSize: 12,
@@ -242,13 +242,13 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.travel_explore,
               size: 64,
               color: Colors.grey[300],
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               _searchQuery.isNotEmpty ? '未找到匹配的旅行事件' : '暂无旅行事件',
               style: TextStyle(
                 fontSize: 16,
@@ -300,19 +300,19 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
             size: 24,
           ),
         ),
-        title: Text(
+        title: const Text(
           event['name'] as String,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               '${event['destination']} • ${event['startDate']} - ${event['endDate']}',
               style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             ),
             const SizedBox(height: 4),
-            Text(
+            const Text(
               event['description'] as String,
               style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             ),
@@ -326,12 +326,12 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
+              const Text(
                 '预算: ¥${event['budget'].toStringAsFixed(0)} / 已花: ¥${event['spent'].toStringAsFixed(0)} - 基于maybe-main设计',
                 style: TextStyle(fontSize: 11, color: Colors.grey[500]),
               ),
             ] else ...[
-              Text(
+              const Text(
                 '预算: ¥${event['budget'].toStringAsFixed(0)} - 基于maybe-main设计',
                 style: TextStyle(fontSize: 11, color: Colors.grey[500]),
               ),
@@ -345,10 +345,10 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: (event['color'] as Color).withOpacity(0.2),
+                        color: (event['color'] as Color).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Text(
+                      child: const Text(
                         tag as String,
                         style: TextStyle(
                           fontSize: 10,
@@ -373,8 +373,8 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
             }
           },
           itemBuilder: (context) => [
-            const PopupMenuItem(value: 'edit', child: Text('编辑')),
-            const PopupMenuItem(value: 'delete', child: Text('删除')),
+            const PopupMenuItem(value: 'edit', child: const Text('编辑')),
+            const PopupMenuItem(value: 'delete', child: const Text('删除')),
           ],
         ),
         onTap: () => _showEventDetails(event),
@@ -397,7 +397,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('旅行事件创建功能演示')),
+                const SnackBar(content: const Text('旅行事件创建功能演示')),
               );
             },
             child: const Text('创建'),
@@ -411,7 +411,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('编辑: ${event['name']}'),
+        title: const Text('编辑: ${event['name']}'),
         content: const Text('这里是编辑旅行事件的功能界面。'),
         actions: [
           TextButton(
@@ -422,7 +422,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('已编辑: ${event['name']}')),
+                SnackBar(content: const Text('已编辑: ${event['name']}')),
               );
             },
             child: const Text('保存'),
@@ -437,7 +437,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('删除旅行事件'),
-        content: Text(
+        content: const Text(
           '确定要删除旅行事件"${event['name']}"吗？\n这将删除相关的所有记录。',
         ),
         actions: [
@@ -449,7 +449,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('已删除: ${event['name']}')),
+                SnackBar(content: const Text('已删除: ${event['name']}')),
               );
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
@@ -492,15 +492,15 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         event['name'] as String,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text(
-                        '${event['destination']} • ${_getStatusText(event['status'] as String)}',
+                      const Text(
+                        '${event['destination']} • ${_getStatusconst Text(event['status'] as String)}',
                         style: TextStyle(
                           color: Colors.grey[600],
                         ),
@@ -519,7 +519,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
               ),
             ),
             const SizedBox(height: 12),
-            Text(
+            const Text(
               event['description'] as String,
               style: TextStyle(
                 color: Colors.grey[600],
@@ -529,9 +529,9 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
             const SizedBox(height: 16),
             Row(
               children: [
-                Icon(Icons.date_range, size: 16, color: Colors.grey[600]),
+                const Icon(Icons.date_range, size: 16, color: Colors.grey[600]),
                 const SizedBox(width: 8),
-                Text(
+                const Text(
                   '${event['startDate']} - ${event['endDate']}',
                   style: TextStyle(color: Colors.grey[600]),
                 ),
@@ -540,15 +540,15 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.attach_money, size: 16, color: Colors.grey[600]),
+                const Icon(Icons.attach_money, size: 16, color: Colors.grey[600]),
                 const SizedBox(width: 8),
-                Text(
+                const Text(
                   '预算: ¥${event['budget'].toStringAsFixed(0)}',
                   style: TextStyle(color: Colors.grey[600]),
                 ),
                 if (event['status'] != 'upcoming') ...[
                   const SizedBox(width: 16),
-                  Text(
+                  const Text(
                     '已花: ¥${event['spent'].toStringAsFixed(0)}',
                     style: TextStyle(color: Colors.grey[600]),
                   ),
@@ -556,7 +556,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
               ],
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               '这是基于maybe-main项目设计的旅行事件管理功能。在实际应用中，这里会显示详细的行程安排、费用明细、相关文档等信息。',
               style: TextStyle(
                 color: Colors.grey[600],
@@ -570,7 +570,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
     );
   }
 
-  String _getStatusText(String status) {
+  String _getStatusconst Text(String status) {
     switch (status) {
       case 'upcoming':
         return '即将开始';

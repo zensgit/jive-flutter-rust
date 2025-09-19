@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onDestinationSelected: (index) => _onItemTapped(index, context),
         destinations: _navItems
             .map((item) => NavigationDestination(
-                  icon: Icon(item.icon),
+                  icon: const Icon(item.icon),
                   label: item.label,
                 ))
             .toList(),
@@ -200,17 +200,17 @@ class _QuickActionButton extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(
+              child: const Icon(
                 icon,
                 color: color,
                 size: 28,
               ),
             ),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               label,
               style: TextStyle(
                 color: color,

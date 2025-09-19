@@ -88,7 +88,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('加载日志失败: ${e.toString()}')),
+          SnackBar(content: const Text('加载日志失败: ${e.toString()}')),
         );
         setState(() => _isLoading = false);
       }
@@ -165,7 +165,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('审计日志'),
-            Text(
+            const Text(
               widget.familyName,
               style: theme.textTheme.bodySmall,
             ),
@@ -185,16 +185,16 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
               const PopupMenuItem(
                 value: 'export',
                 child: ListTile(
-                  leading: Icon(Icons.download),
-                  title: Text('导出日志'),
+                  leading: const Icon(Icons.download),
+                  title: const Text('导出日志'),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
               const PopupMenuItem(
                 value: 'clear',
                 child: ListTile(
-                  leading: Icon(Icons.clear_all),
-                  title: Text('清理旧日志'),
+                  leading: const Icon(Icons.clear_all),
+                  title: const Text('清理旧日志'),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
@@ -216,18 +216,18 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Icons.lock_outline,
                 size: 64,
                 color: theme.colorScheme.onSurfaceVariant,
               ),
               const SizedBox(height: 16),
-              Text(
+              const Text(
                 '您没有权限查看审计日志',
                 style: theme.textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 '只有管理员和拥有者可以查看',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
@@ -284,7 +284,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
         gradient: LinearGradient(
           colors: [
             theme.colorScheme.primaryContainer,
-            theme.colorScheme.primaryContainer.withOpacity(0.7),
+            theme.colorScheme.primaryContainer.withValues(alpha: 0.7),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -323,19 +323,19 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: theme.colorScheme.errorContainer.withOpacity(0.3),
+                color: theme.colorScheme.errorContainer.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.warning_amber,
                     color: theme.colorScheme.error,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
+                    child: const Text(
                       '最近警告: ${stats.recentAlerts.first}',
                       style: TextStyle(
                         fontSize: 12,
@@ -357,13 +357,13 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
 
     return Column(
       children: [
-        Icon(
+        const Icon(
           icon,
           color: theme.colorScheme.onPrimaryContainer,
           size: 20,
         ),
         const SizedBox(height: 4),
-        Text(
+        const Text(
           value,
           style: TextStyle(
             fontSize: 18,
@@ -371,11 +371,11 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
             color: theme.colorScheme.onPrimaryContainer,
           ),
         ),
-        Text(
+        const Text(
           label,
           style: TextStyle(
             fontSize: 12,
-            color: theme.colorScheme.onPrimaryContainer.withOpacity(0.8),
+            color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
           ),
         ),
       ],
@@ -388,10 +388,10 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+        color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
         border: Border(
           bottom: BorderSide(
-            color: theme.colorScheme.outline.withOpacity(0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
           ),
         ),
       ),
@@ -432,7 +432,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
               children: [
                 // 操作类型
                 FilterChip(
-                  label: Text(_selectedActionType?.label ?? '所有操作'),
+                  label: const Text(_selectedActionType?.label ?? '所有操作'),
                   selected: _selectedActionType != null,
                   onSelected: (_) => _showActionTypeSelector(),
                   avatar: const Icon(Icons.category, size: 18),
@@ -441,7 +441,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
 
                 // 严重级别
                 FilterChip(
-                  label: Text(_selectedSeverity?.label ?? '所有级别'),
+                  label: const Text(_selectedSeverity?.label ?? '所有级别'),
                   selected: _selectedSeverity != null,
                   onSelected: (_) => _showSeveritySelector(),
                   avatar: const Icon(Icons.warning, size: 18),
@@ -450,7 +450,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
 
                 // 日期范围
                 FilterChip(
-                  label: Text(_selectedDateRange != null
+                  label: const Text(_selectedDateRange != null
                       ? '${date_utils.DateUtils.formatDate(_selectedDateRange!.start)} - ${date_utils.DateUtils.formatDate(_selectedDateRange!.end)}'
                       : '时间范围'),
                   selected: _selectedDateRange != null,
@@ -509,14 +509,14 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(
-                          _getActionIcon(log.actionType),
+                        const Icon(
+                          _getActionconst Icon(log.actionType),
                           size: 16,
                           color: theme.colorScheme.primary,
                         ),
                         const SizedBox(width: 4),
                         Expanded(
-                          child: Text(
+                          child: const Text(
                             log.actionDescription,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w500,
@@ -532,24 +532,24 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                     // 用户和时间
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.person_outline,
                           size: 14,
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
                         const SizedBox(width: 4),
-                        Text(
+                        const Text(
                           log.userName ?? 'Unknown',
                           style: theme.textTheme.bodySmall,
                         ),
                         const SizedBox(width: 12),
-                        Icon(
+                        const Icon(
                           Icons.access_time,
                           size: 14,
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
                         const SizedBox(width: 4),
-                        Text(
+                        const Text(
                           log.timeAgo,
                           style: theme.textTheme.bodySmall,
                         ),
@@ -566,10 +566,10 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                         ),
                         decoration: BoxDecoration(
                           color:
-                              theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                              theme.colorScheme.surfaceVariant.withValues(alpha: 0.5),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Text(
+                        child: const Text(
                           log.changeSummary,
                           style: theme.textTheme.bodySmall,
                           maxLines: 2,
@@ -598,13 +598,13 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.description_outlined,
             size: 64,
             color: Colors.grey[400],
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             '暂无日志记录',
             style: TextStyle(
               fontSize: 16,
@@ -612,7 +612,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             '系统将自动记录所有重要操作',
             style: TextStyle(
               fontSize: 14,
@@ -633,7 +633,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               '选择操作类型',
               style: Theme.of(context).textTheme.titleLarge,
             ),
@@ -643,7 +643,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
               runSpacing: 8,
               children: AuditActionType.values.map((type) {
                 return ChoiceChip(
-                  label: Text(type.label),
+                  label: const Text(type.label),
                   selected: _selectedActionType == type,
                   onSelected: (selected) {
                     setState(() {
@@ -670,18 +670,18 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               '选择严重级别',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
             ...AuditSeverity.values.map((severity) {
               return ListTile(
-                leading: Icon(
+                leading: const Icon(
                   Icons.circle,
                   color: _getSeverityColor(severity),
                 ),
-                title: Text(severity.label),
+                title: const Text(severity.label),
                 selected: _selectedSeverity == severity,
                 onTap: () {
                   setState(() {
@@ -742,15 +742,15 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          const SizedBox(
             width: 80,
-            child: Text(
+            child: const Text(
               '$label:',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(
-            child: Text(value),
+            child: const Text(value),
           ),
         ],
       ),
@@ -770,7 +770,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
     }
   }
 
-  IconData _getActionIcon(AuditActionType type) {
+  IconData _getActionconst Icon(AuditActionType type) {
     switch (type) {
       case AuditActionType.userLogin:
       case AuditActionType.userLogout:
@@ -808,7 +808,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
   void _exportLogs() {
     // TODO: 实现导出功能
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('导出功能开发中')),
+      const SnackBar(content: const Text('导出功能开发中')),
     );
   }
 
@@ -828,7 +828,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
               Navigator.pop(context);
               // TODO: 实现清理功能
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('清理功能开发中')),
+                const SnackBar(content: const Text('清理功能开发中')),
               );
             },
             child: const Text('确定清理'),

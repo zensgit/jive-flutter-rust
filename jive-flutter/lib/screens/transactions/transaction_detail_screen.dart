@@ -15,7 +15,7 @@ class TransactionDetailScreen extends StatelessWidget {
         title: const Text('交易详情'),
       ),
       body: Center(
-        child: Text('Transaction Detail: $transactionId'),
+        child: const Text('Transaction Detail: $transactionId'),
       ),
     );
   }

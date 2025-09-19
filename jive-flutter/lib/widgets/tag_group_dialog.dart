@@ -63,7 +63,7 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               widget.group != null ? '编辑分组' : '创建分组',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -127,7 +127,7 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
                           height: 16,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : Text(widget.group != null ? '保存' : '创建'),
+                      : const Text(widget.group != null ? '保存' : '创建'),
                 ),
               ],
             ),
@@ -199,14 +199,14 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content:
-                Text(widget.group != null ? '分组"$name"更新成功' : '分组"$name"创建成功'),
+                const Text(widget.group != null ? '分组"$name"更新成功' : '分组"$name"创建成功'),
           ),
         );
       }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('操作失败: $error')),
+          SnackBar(content: const Text('操作失败: $error')),
         );
       }
     } finally {

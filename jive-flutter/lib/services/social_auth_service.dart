@@ -456,8 +456,8 @@ class SocialLoginButton extends StatelessWidget {
               height: 20,
               child: CircularProgressIndicator(strokeWidth: 2),
             )
-          : Icon(config['icon'], color: config['iconColor']),
-      label: Text(config['label']),
+          : const Icon(config['icon'], color: config['iconColor']),
+      label: const Text(config['label']),
       style: ElevatedButton.styleFrom(
         backgroundColor: config['backgroundColor'],
         foregroundColor: config['textColor'],

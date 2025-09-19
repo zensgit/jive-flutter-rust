@@ -38,7 +38,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('初始化微信SDK失败: $e')),
+          SnackBar(content: const Text('初始化微信SDK失败: $e')),
         );
       }
     } finally {
@@ -74,7 +74,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result.message ?? '微信账户绑定成功'),
+              content: const Text(result.message ?? '微信账户绑定成功'),
               backgroundColor: Colors.green,
             ),
           );
@@ -83,7 +83,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result.message ?? '绑定失败'),
+              content: const Text(result.message ?? '绑定失败'),
               backgroundColor: Colors.red,
             ),
           );
@@ -93,7 +93,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('绑定过程中发生错误: $e'),
+            content: const Text('绑定过程中发生错误: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -143,7 +143,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result.message ?? '微信账户解绑成功'),
+              content: const Text(result.message ?? '微信账户解绑成功'),
               backgroundColor: Colors.green,
             ),
           );
@@ -152,7 +152,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result.message ?? '解绑失败'),
+              content: const Text(result.message ?? '解绑失败'),
               backgroundColor: Colors.red,
             ),
           );
@@ -162,7 +162,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('解绑过程中发生错误: $e'),
+            content: const Text('解绑过程中发生错误: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -199,7 +199,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.info, color: Colors.blue[700]),
+                              const Icon(Icons.info, color: Colors.blue[700]),
                               const SizedBox(width: 8),
                               const Text(
                                 '关于微信绑定',
@@ -267,7 +267,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      const Text(
                                         _weChatInfo!.nickname,
                                         style: const TextStyle(
                                           fontSize: 18,
@@ -275,14 +275,14 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                                         ),
                                       ),
                                       const SizedBox(height: 4),
-                                      Text(
+                                      const Text(
                                         '性别: ${_weChatInfo!.sexText}',
                                         style: const TextStyle(
                                           fontSize: 14,
                                           color: Colors.grey,
                                         ),
                                       ),
-                                      Text(
+                                      const Text(
                                         '地区: ${_weChatInfo!.country} ${_weChatInfo!.province} ${_weChatInfo!.city}',
                                         style: const TextStyle(
                                           fontSize: 14,
@@ -295,7 +295,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                               ],
                             ),
                             const SizedBox(height: 20),
-                            SizedBox(
+                            const SizedBox(
                               width: double.infinity,
                               child: OutlinedButton(
                                 onPressed: _isLoading ? null : _handleUnbind,
@@ -358,7 +358,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                               onSuccess: _handleBind,
                               onError: (error) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('绑定失败: $error')),
+                                  SnackBar(content: const Text('绑定失败: $error')),
                                 );
                               },
                             ),
@@ -380,7 +380,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.security, color: Colors.orange[700]),
+                              const Icon(Icons.security, color: Colors.orange[700]),
                               const SizedBox(width: 8),
                               const Text(
                                 '安全提示',

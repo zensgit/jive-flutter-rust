@@ -78,7 +78,7 @@ class _WeChatLoginButtonState extends State<WeChatLoginButton> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return const SizedBox(
       width: double.infinity,
       height: 50,
       child: OutlinedButton.icon(
@@ -100,7 +100,7 @@ class _WeChatLoginButtonState extends State<WeChatLoginButton> {
                 ),
               )
             : const Icon(Icons.wechat_outlined, size: 24),
-        label: Text(
+        label: const Text(
           widget.buttonText,
           style: const TextStyle(
             fontSize: 16,
@@ -167,11 +167,11 @@ class WeChatBindingCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           weChatInfo!.nickname,
                           style: const TextStyle(fontWeight: FontWeight.w500),
                         ),
-                        Text(
+                        const Text(
                           '${weChatInfo!.country} ${weChatInfo!.province} ${weChatInfo!.city}',
                           style: const TextStyle(
                             fontSize: 12,
@@ -228,7 +228,7 @@ class WeChatBindingCard extends StatelessWidget {
                 onError: (error) {
                   // 处理绑定失败
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('绑定失败: $error')),
+                    SnackBar(content: const Text('绑定失败: $error')),
                   );
                 },
               ),

@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 /// 用法：
 /// RightClickCopy(
 ///   copyText: someString,
-///   child: Text(someString),
+///   child: const Text(someString),
 /// )
 /// 右键（Web/PC）或长按（移动端）将复制 copyText 到剪贴板，并显示 SnackBar。
 class RightClickCopy extends StatelessWidget {
@@ -32,7 +32,7 @@ class RightClickCopy extends StatelessWidget {
     messenger?.hideCurrentSnackBar();
     messenger?.showSnackBar(
       SnackBar(
-        content: Text(successMessage),
+        content: const Text(successMessage),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
       ),
@@ -53,9 +53,9 @@ class RightClickCopy extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.copy, size: 18),
-              SizedBox(width: 8),
-              Text('复制'),
+              const Icon(Icons.copy, size: 18),
+              const SizedBox(width: 8),
+              const Text('复制'),
             ],
           ),
         ),
@@ -120,12 +120,12 @@ class _HoverCopyIconWrapperState extends State<_HoverCopyIconWrapper> {
               right: -4,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.55),
+                  color: Colors.black.withValues(alpha: 0.55),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: const Padding(
                   padding: EdgeInsets.all(2.0),
-                  child: Icon(Icons.copy, size: 14, color: Colors.white),
+                  child: const Icon(Icons.copy, size: 14, color: Colors.white),
                 ),
               ),
             ),

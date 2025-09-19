@@ -59,7 +59,7 @@ class _InviteMemberDialogState extends State<InviteMemberDialog> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('邀请发送失败: $e'),
+          content: const Text('邀请发送失败: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -71,7 +71,7 @@ class _InviteMemberDialogState extends State<InviteMemberDialog> {
     Clipboard.setData(ClipboardData(text: _inviteLink));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('邀请链接已复制到剪贴板'),
+        content: const Text('邀请链接已复制到剪贴板'),
         backgroundColor: Colors.green,
       ),
     );
@@ -83,7 +83,7 @@ class _InviteMemberDialogState extends State<InviteMemberDialog> {
     Clipboard.setData(ClipboardData(text: emailContent));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('邮件内容已复制，可以粘贴到邮件或聊天软件中'),
+        content: const Text('邮件内容已复制，可以粘贴到邮件或聊天软件中'),
         backgroundColor: Colors.green,
       ),
     );
@@ -140,7 +140,7 @@ Jive Money - 集腋记账
     return AlertDialog(
       title: Row(
         children: [
-          Icon(Icons.person_add, color: Colors.blue[600]),
+          const Icon(Icons.person_add, color: Colors.blue[600]),
           const SizedBox(width: 8),
           const Text('邀请成员'),
         ],
@@ -156,7 +156,7 @@ Jive Money - 集腋记账
               decoration: const InputDecoration(
                 labelText: '邮箱地址',
                 hintText: '输入邀请用户的邮箱地址',
-                prefixIcon: Icon(Icons.email),
+                prefixIcon: const Icon(Icons.email),
                 border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.emailAddress,
@@ -177,17 +177,17 @@ Jive Money - 集腋记账
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(
                 labelText: '成员角色',
-                prefixIcon: Icon(Icons.person),
+                prefixIcon: const Icon(Icons.person),
                 border: OutlineInputBorder(),
               ),
               initialValue: _selectedRole,
               items: const [
                 DropdownMenuItem(
-                    value: 'Admin', child: Text('管理员 (Admin) - 管理家庭和成员')),
+                    value: 'Admin', child: const Text('管理员 (Admin) - 管理家庭和成员')),
                 DropdownMenuItem(
-                    value: 'Member', child: Text('成员 (Member) - 记录和查看交易')),
+                    value: 'Member', child: const Text('成员 (Member) - 记录和查看交易')),
                 DropdownMenuItem(
-                    value: 'Viewer', child: Text('查看者 (Viewer) - 仅查看数据')),
+                    value: 'Viewer', child: const Text('查看者 (Viewer) - 仅查看数据')),
               ],
               onChanged: (value) {
                 setState(() {
@@ -201,16 +201,16 @@ Jive Money - 集腋记账
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.blue.withOpacity(0.2)),
+                border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.info, size: 16, color: Colors.blue[600]),
+                      const Icon(Icons.info, size: 16, color: Colors.blue[600]),
                       const SizedBox(width: 8),
                       const Text(
                         '邀请说明',
@@ -269,7 +269,7 @@ Jive Money - 集腋记账
             // 成功标题
             Row(
               children: [
-                Icon(Icons.check_circle, color: Colors.green[600], size: 28),
+                const Icon(Icons.check_circle, color: Colors.green[600], size: 28),
                 const SizedBox(width: 12),
                 const Text(
                   '邀请已生成',
@@ -287,14 +287,14 @@ Jive Money - 集腋记账
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     '邀请信息',
                     style: TextStyle(
                       fontSize: 16,
@@ -321,9 +321,9 @@ Jive Money - 集腋记账
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                      border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
                     ),
-                    child: Text(
+                    child: const Text(
                       _inviteLink,
                       style: TextStyle(
                         fontSize: 12,
@@ -341,7 +341,7 @@ Jive Money - 集腋记账
             // 操作按钮
             Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: _copyInviteLink,
@@ -355,7 +355,7 @@ Jive Money - 集腋记账
                   ),
                 ),
                 const SizedBox(height: 8),
-                SizedBox(
+                const SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     onPressed: _copyEmailContent,
@@ -369,7 +369,7 @@ Jive Money - 集腋记账
                   ),
                 ),
                 const SizedBox(height: 16),
-                SizedBox(
+                const SizedBox(
                   width: double.infinity,
                   child: TextButton(
                     onPressed: () => Navigator.pop(context),
@@ -385,16 +385,16 @@ Jive Money - 集腋记账
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
+                color: Colors.orange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange.withOpacity(0.2)),
+                border: Border.all(color: Colors.orange.withValues(alpha: 0.2)),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.schedule, size: 16, color: Colors.orange[700]),
+                  const Icon(Icons.schedule, size: 16, color: Colors.orange[700]),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
+                    child: const Text(
                       '邀请码7天内有效，请及时通知被邀请人注册',
                       style: TextStyle(
                         fontSize: 12,
@@ -417,9 +417,9 @@ Jive Money - 集腋记账
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          const SizedBox(
             width: 60,
-            child: Text(
+            child: const Text(
               '$label:',
               style: const TextStyle(
                 fontSize: 14,
@@ -428,7 +428,7 @@ Jive Money - 集腋记账
             ),
           ),
           Expanded(
-            child: Text(
+            child: const Text(
               value,
               style: const TextStyle(fontSize: 14),
             ),
