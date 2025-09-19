@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import '../devtools/dev_quick_actions_stub.dart'
@@ -89,8 +88,8 @@ class _JiveAppState extends ConsumerState<JiveApp> {
 
       // 构建器 - 添加文本缩放控制
       builder: (context, child) {
-        debugPrint(
-            '@@ App.builder start (has Directionality=${Directionality.maybeOf(context) != null})');
+        // Debug-only log; avoid heavy string interpolation during build
+        debugPrint('@@ App.builder start');
 
         // Ensure child is never null and has proper constraints
         final safeChild = child ?? const SizedBox.expand();
@@ -108,9 +107,7 @@ class _JiveAppState extends ConsumerState<JiveApp> {
                     : 12.0;
             final mediaWrapped = MediaQuery(
               data: MediaQuery.of(context).copyWith(
-                textScaler: TextScaler.linear(
-                  MediaQuery.of(context).textScaler.scale(1.0).clamp(0.9, 1.15),
-                ),
+                textScaler: const TextScaler.linear(1.0),
                 padding: MediaQuery.of(context).padding,
               ),
               child: Theme(
