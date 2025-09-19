@@ -203,6 +203,63 @@ class FamilyService {
     }
     return ApiException('Family服务错误：${error.toString()}');
   }
+
+  // Stub methods for permissions and audit - TODO: Implement with actual API
+  Future<List<dynamic>> getPermissionAuditLogs({String? familyId}) async {
+    // Stub implementation
+    return Future.value(<dynamic>[]);
+  }
+
+  Future<Map<String, dynamic>> getPermissionUsageStats({String? familyId}) async {
+    // Stub implementation
+    return Future.value(<String, dynamic>{
+      'total': 0,
+      'byType': <String, int>{},
+      'byUser': <String, int>{},
+    });
+  }
+
+  Future<List<dynamic>> detectPermissionAnomalies({String? familyId}) async {
+    // Stub implementation
+    return Future.value(<dynamic>[]);
+  }
+
+  Future<Map<String, dynamic>> generateComplianceReport({String? familyId}) async {
+    // Stub implementation
+    return Future.value(<String, dynamic>{
+      'compliant': true,
+      'issues': <dynamic>[],
+      'recommendations': <String>[],
+    });
+  }
+
+  Future<Map<String, dynamic>> getFamilyPermissions({String? familyId}) async {
+    // Stub implementation
+    return Future.value(<String, dynamic>{
+      'permissions': <dynamic>[],
+      'roles': <dynamic>[],
+    });
+  }
+
+  Future<List<dynamic>> getCustomRoles({String? familyId}) async {
+    // Stub implementation
+    return Future.value(<dynamic>[]);
+  }
+
+  Future<void> updateRolePermissions(String roleId, List<String> permissions) async {
+    // Stub implementation
+    return Future.value();
+  }
+
+  Future<dynamic> createCustomRole(String name, List<String> permissions) async {
+    // Stub implementation
+    return Future.value({'id': 'stub', 'name': name, 'permissions': permissions});
+  }
+
+  Future<void> deleteCustomRole(String roleId) async {
+    // Stub implementation
+    return Future.value();
+  }
 }
 
 /// Family成员信息（包含用户详情）

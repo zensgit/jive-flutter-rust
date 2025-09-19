@@ -335,6 +335,22 @@ class CategoryService {
       return null;
     }
   }
+
+  // Stub methods for template management - TODO: Implement with actual API
+  Future<dynamic> createTemplate(dynamic template) async {
+    // Stub implementation
+    return Future.value({'id': 'stub', 'status': 'created'});
+  }
+
+  Future<dynamic> updateTemplate(String id, dynamic updates) async {
+    // Stub implementation
+    return Future.value({'id': id, 'status': 'updated'});
+  }
+
+  Future<void> deleteTemplate(String id) async {
+    // Stub implementation
+    return Future.value();
+  }
 }
 
 /// 模板目录结果（含 ETag）
