@@ -209,7 +209,7 @@ class _FamilyPermissionsAuditScreenState
         leading: CircleAvatar(
           backgroundColor: _getEventColor(log.eventType).withValues(alpha: 0.2),
           child: Icon(
-            _getEventconst Icon(log.eventType),
+            _getEventIcon(log.eventType),
             color: _getEventColor(log.eventType),
             size: 20,
           ),
@@ -421,7 +421,7 @@ class _FamilyPermissionsAuditScreenState
         leading: CircleAvatar(
           backgroundColor: severityColor.withValues(alpha: 0.2),
           child: Icon(
-            _getSeverityconst Icon(anomaly.severity),
+            _getSeverityIcon(anomaly.severity),
             color: severityColor,
           ),
         ),
@@ -976,7 +976,7 @@ class _FamilyPermissionsAuditScreenState
   }
 
   /// 获取事件图标
-  IconData _getEventconst Icon(AuditEventType type) {
+  IconData _getEventIcon(AuditEventType type) {
     switch (type) {
       case AuditEventType.grant:
         return Icons.add_circle;
@@ -1010,7 +1010,7 @@ class _FamilyPermissionsAuditScreenState
   }
 
   /// 获取严重程度图标
-  IconData _getSeverityconst Icon(Severity severity) {
+  IconData _getSeverityIcon(Severity severity) {
     switch (severity) {
       case Severity.critical:
         return Icons.error;

@@ -211,7 +211,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                           child: Row(
                             children: [
                               Icon(
-                                _getAccountconst Icon(account.type.value),
+                                _getAccountIcon(account.type.value),
                                 size: 20,
                                 color: Theme.of(context).primaryColor,
                               ),
@@ -267,7 +267,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                             child: Row(
                               children: [
                                 Icon(
-                                  _getAccountconst Icon(account.type.value),
+                                  _getAccountIcon(account.type.value),
                                   size: 20,
                                   color: Theme.of(context).primaryColor,
                                 ),
@@ -590,7 +590,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
     }
   }
 
-  IconData _getAccountconst Icon(String? type) {
+  IconData _getAccountIcon(String? type) {
     switch (type) {
       case 'checking':
         return Icons.account_balance;

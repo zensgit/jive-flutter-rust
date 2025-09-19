@@ -500,7 +500,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
                         ),
                       ),
                       Text(
-                        '${event['destination']} • ${_getStatusconst Text(event['status'] as String)}',
+                        '${event['destination']} • ${_getStatusText(event['status'] as String)}',
                         style: TextStyle(
                           color: Colors.grey[600],
                         ),
@@ -570,7 +570,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
     );
   }
 
-  String _getStatusconst Text(String status) {
+  String _getStatusText(String status) {
     switch (status) {
       case 'upcoming':
         return '即将开始';

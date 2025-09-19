@@ -126,7 +126,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                             : null,
                         child: _avatarImage == null
                             ? Icon(
-                                _getTypeconst Icon(_selectedType),
+                                _getTypeIcon(_selectedType),
                                 size: 50,
                                 color: theme.primaryColor,
                               )
@@ -202,7 +202,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                     value: _selectedType,
                     decoration: InputDecoration(
                       labelText: '类型',
-                      prefixIcon: Icon(_getTypeconst Icon(_selectedType)),
+                      prefixIcon: Icon(_getTypeIcon(_selectedType)),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -212,7 +212,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                         value: type,
                         child: Row(
                           children: [
-                            Icon(_getTypeconst Icon(type), size: 20),
+                            Icon(_getTypeIcon(type), size: 20),
                             const SizedBox(width: 8),
                             Text(type.label),
                           ],
@@ -640,7 +640,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
     }
   }
 
-  IconData _getTypeconst Icon(LedgerType type) {
+  IconData _getTypeIcon(LedgerType type) {
     switch (type) {
       case LedgerType.personal:
         return Icons.person;

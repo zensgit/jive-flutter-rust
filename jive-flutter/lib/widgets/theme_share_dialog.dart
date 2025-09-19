@@ -171,7 +171,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                           ),
                         ),
                         IconButton(
-                          onPressed: () => _copyconst Text(_shareCode!),
+                          onPressed: () => _copyText(_shareCode!),
                           icon: Icon(Icons.copy, size: 16),
                           tooltip: '复制分享码',
                         ),
@@ -218,7 +218,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                           ),
                         ),
                         IconButton(
-                          onPressed: () => _copyconst Text(_shareUrl!),
+                          onPressed: () => _copyText(_shareUrl!),
                           icon: Icon(Icons.copy, size: 16),
                           tooltip: '复制链接',
                         ),
@@ -339,7 +339,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
     }
   }
 
-  Future<void> _copyconst Text(String text) async {
+  Future<void> _copyText(String text) async {
     await Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(

@@ -93,7 +93,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
     }
   }
 
-  IconData _getTypeconst Icon(LedgerType type) {
+  IconData _getTypeIcon(LedgerType type) {
     switch (type) {
       case LedgerType.personal:
         return Icons.person;
@@ -188,7 +188,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                       value: _selectedType,
                       decoration: InputDecoration(
                         labelText: '类型',
-                        prefixIcon: Icon(_getTypeconst Icon(_selectedType)),
+                        prefixIcon: Icon(_getTypeIcon(_selectedType)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -198,7 +198,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                           value: type,
                           child: Row(
                             children: [
-                              Icon(_getTypeconst Icon(type), size: 20),
+                              Icon(_getTypeIcon(type), size: 20),
                               const SizedBox(width: 8),
                               Text(_getTypeLabel(type)),
                             ],

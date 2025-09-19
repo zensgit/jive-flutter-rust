@@ -85,7 +85,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
   }
 
   // 获取加密货币图标
-  Widget _getCryptoconst Icon(String code) {
+  Widget _getCryptoIcon(String code) {
     // 这里可以根据不同的加密货币返回不同的图标
     final Map<String, IconData> cryptoIcons = {
       'BTC': Icons.currency_bitcoin,

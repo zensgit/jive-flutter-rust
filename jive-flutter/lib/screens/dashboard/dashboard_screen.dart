@@ -305,7 +305,7 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
                         ? Theme.of(context).primaryColor
                         : Colors.grey[300],
                     child: Icon(
-                      _getLedgerconst Icon(ledger.type.value),
+                      _getLedgerIcon(ledger.type.value),
                       color: isSelected ? Colors.white : Colors.grey[600],
                     ),
                   ),
@@ -346,7 +346,7 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
     );
   }
 
-  IconData _getLedgerconst Icon(String type) {
+  IconData _getLedgerIcon(String type) {
     switch (type) {
       case 'personal':
         return Icons.person;

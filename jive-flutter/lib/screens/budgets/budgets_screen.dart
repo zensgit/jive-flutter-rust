@@ -341,7 +341,7 @@ class BudgetsScreen extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(
-                          _getCategoryconst Icon(budget.category),
+                          _getCategoryIcon(budget.category),
                           color: _getCategoryColor(budget.category),
                           size: 20,
                         ),
@@ -451,7 +451,7 @@ class BudgetsScreen extends ConsumerWidget {
     );
   }
 
-  IconData _getCategoryconst Icon(String? category) {
+  IconData _getCategoryIcon(String? category) {
     switch (category) {
       case 'food':
         return Icons.restaurant;

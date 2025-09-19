@@ -92,7 +92,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           children: [
             Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            Selectableconst Text('加载失败: $errorText'),
+            SelectableText('加载失败: $errorText'),
             const SizedBox(height: 16),
             Wrap(
               spacing: 12,

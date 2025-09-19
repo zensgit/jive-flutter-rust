@@ -189,7 +189,7 @@ class Transaction {
   Color get color => type.color;
 
   /// 获取分类图标
-  IconData getCategoryconst Icon() {
+  IconData getCategoryIcon() {
     if (category == null) return Icons.category;
 
     final lowerCategory = category!.toLowerCase();

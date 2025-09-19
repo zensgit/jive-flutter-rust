@@ -2990,7 +2990,7 @@ class _MFASetupPageState extends State<MFASetupPage> {
                           color: Colors.grey[100],
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Selectableconst Text(
+                        child: SelectableText(
                           _totpSecret,
                           style: const TextStyle(
                               fontFamily: 'monospace', fontSize: 12),

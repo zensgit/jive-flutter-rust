@@ -326,7 +326,7 @@ class _InvitationManagementScreenState
               backgroundColor:
                   _getStatusColor(invitation.status).withValues(alpha: 0.2),
               child: Icon(
-                _getStatusconst Icon(invitation.status),
+                _getStatusIcon(invitation.status),
                 color: _getStatusColor(invitation.status),
               ),
             ),
@@ -396,7 +396,7 @@ class _InvitationManagementScreenState
     }
   }
 
-  IconData _getStatusconst Icon(InvitationStatus status) {
+  IconData _getStatusIcon(InvitationStatus status) {
     switch (status) {
       case InvitationStatus.pending:
         return Icons.hourglass_empty;

@@ -252,7 +252,7 @@ class AccountList extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            _getTypeconst Icon(type),
+            _getTypeIcon(type),
             size: 20,
             color: _getTypeColor(type),
           ),
@@ -299,7 +299,7 @@ class AccountList extends StatelessWidget {
         .fold(0.0, (sum, account) => sum + account.balance);
   }
 
-  IconData _getTypeconst Icon(AccountType type) {
+  IconData _getTypeIcon(AccountType type) {
     switch (type) {
       case AccountType.asset:
         return Icons.account_balance_wallet;

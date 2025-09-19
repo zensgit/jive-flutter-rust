@@ -551,7 +551,7 @@ class _FamilyPermissionsEditorScreenState
     return ListTile(
       selected: isSelected,
       leading: Icon(
-        _getRoleconst Icon(rolePermissions.roleKey),
+        _getRoleIcon(rolePermissions.roleKey),
         color: isSelected ? theme.colorScheme.primary : null,
       ),
       title: Text(rolePermissions.roleName ?? rolePermissions.roleKey),
@@ -711,7 +711,7 @@ class _FamilyPermissionsEditorScreenState
     );
   }
 
-  IconData _getRoleconst Icon(String role) {
+  IconData _getRoleIcon(String role) {
     if (role == family_model.FamilyRole.owner.toString()) {
       return Icons.star;
     } else if (role == family_model.FamilyRole.admin.toString()) {

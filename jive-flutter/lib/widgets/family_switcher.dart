@@ -48,7 +48,7 @@ class FamilySwitcher extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              _getLedgerconst Icon(currentLedger?.type ?? LedgerType.family),
+              _getLedgerIcon(currentLedger?.type ?? LedgerType.family),
               size: 20,
               color: theme.primaryColor,
             ),
@@ -95,7 +95,7 @@ class FamilySwitcher extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
-                      _getLedgerconst Icon(ledger.type),
+                      _getLedgerIcon(ledger.type),
                       size: 20,
                       color: isSelected ? theme.primaryColor : Colors.grey[600],
                     ),
@@ -355,7 +355,7 @@ class FamilySwitcher extends ConsumerWidget {
     );
   }
 
-  IconData _getLedgerconst Icon(LedgerType type) {
+  IconData _getLedgerIcon(LedgerType type) {
     switch (type) {
       case LedgerType.personal:
         return Icons.person;

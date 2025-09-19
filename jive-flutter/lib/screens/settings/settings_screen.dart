@@ -572,7 +572,7 @@ class LedgerManagementScreen extends ConsumerWidget {
         backgroundColor:
             isDefault ? Theme.of(context).primaryColor : Colors.grey[300],
         child: Icon(
-          _getLedgerconst Icon(ledger.type),
+          _getLedgerIcon(ledger.type),
           color: isDefault ? Colors.white : Colors.grey[600],
         ),
       ),
@@ -612,7 +612,7 @@ class LedgerManagementScreen extends ConsumerWidget {
     );
   }
 
-  IconData _getLedgerconst Icon(String type) {
+  IconData _getLedgerIcon(String type) {
     switch (type) {
       case 'personal':
         return Icons.person;

@@ -448,7 +448,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                                             .replaceFirst('#', '0xff')))
                                     .withValues(alpha: 0.2),
                                 child: Icon(
-                                  _getGroupconst Icon(group.icon),
+                                  _getGroupIcon(group.icon),
                                   size: 16,
                                   color: Color(int.parse((group.color ?? '#6471eb')
                                       .replaceFirst('#', '0xff'))),
@@ -482,7 +482,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                                       .replaceFirst('#', '0xff')))
                               .withValues(alpha: 0.2),
                           child: Icon(
-                            _getGroupconst Icon(group.icon),
+                            _getGroupIcon(group.icon),
                             size: 16,
                             color: Color(int.parse((group.color ?? '#6471eb')
                                 .replaceFirst('#', '0xff'))),
@@ -540,7 +540,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
     );
   }
 
-  IconData _getGroupconst Icon(String? iconKey) {
+  IconData _getGroupIcon(String? iconKey) {
     final iconMap = {
       'work': Icons.work,
       'home': Icons.home,

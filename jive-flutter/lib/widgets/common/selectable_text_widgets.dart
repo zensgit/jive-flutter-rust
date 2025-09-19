@@ -26,7 +26,7 @@ class SelectableTextWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selectableconst Text(
+    return SelectableText(
       text,
       style: style,
       textAlign: textAlign,

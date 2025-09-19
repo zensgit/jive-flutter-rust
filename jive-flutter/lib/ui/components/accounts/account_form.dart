@@ -278,7 +278,7 @@ class _AccountFormState extends State<AccountForm> {
                     if (selected) {
                       setState(() {
                         _subType = subType;
-                        _icon = _getSubTypeconst Icon(subType);
+                        _icon = _getSubTypeIcon(subType);
                       });
                     }
                   },
@@ -543,7 +543,7 @@ class _AccountFormState extends State<AccountForm> {
     }
   }
 
-  IconData _getSubTypeconst Icon(AccountSubType subType) {
+  IconData _getSubTypeIcon(AccountSubType subType) {
     switch (subType) {
       case AccountSubType.cash:
         return Icons.payments;
@@ -627,7 +627,7 @@ class _AccountFormState extends State<AccountForm> {
     }
   }
 
-  Future<void> _selectconst Icon() async {
+  Future<void> _selectIcon() async {
     // 这里应该显示图标选择器
     // 暂时使用预定义的图标列表
     final icons = [

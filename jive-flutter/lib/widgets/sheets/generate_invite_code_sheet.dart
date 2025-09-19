@@ -200,7 +200,7 @@ class _GenerateInviteCodeSheetState
                     child: Row(
                       children: [
                         Icon(
-                          _getRoleconst Icon(role),
+                          _getRoleIcon(role),
                           size: 20,
                           color: _getRoleColor(role),
                         ),
@@ -485,7 +485,7 @@ class _GenerateInviteCodeSheetState
     );
   }
 
-  IconData _getRoleconst Icon(family_model.FamilyRole role) {
+  IconData _getRoleIcon(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:
         return Icons.star;

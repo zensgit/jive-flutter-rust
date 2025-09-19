@@ -191,7 +191,7 @@ class RoleBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final color = _getRoleColor(role);
-    final icon = _getRoleconst Icon(role);
+    final icon = _getRoleIcon(role);
     final label = _getRoleLabel(role);
 
     return Container(
@@ -240,7 +240,7 @@ class RoleBadge extends StatelessWidget {
     }
   }
 
-  IconData _getRoleconst Icon(family_model.FamilyRole role) {
+  IconData _getRoleIcon(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:
         return Icons.star;

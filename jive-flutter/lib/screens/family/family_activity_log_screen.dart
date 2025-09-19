@@ -398,7 +398,7 @@ class _FamilyActivityLogScreenState
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    _getActionconst Icon(log.actionType),
+                    _getActionIcon(log.actionType),
                     size: 20,
                     color: _getActionColor(log.actionType),
                   ),
@@ -541,7 +541,7 @@ class _FamilyActivityLogScreenState
     );
   }
 
-  IconData _getActionconst Icon(AuditActionType type) {
+  IconData _getActionIcon(AuditActionType type) {
     switch (type) {
       case AuditActionType.create:
         return Icons.add_circle_outline;

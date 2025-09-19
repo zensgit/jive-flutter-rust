@@ -510,7 +510,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                     Row(
                       children: [
                         Icon(
-                          _getActionconst Icon(log.actionType),
+                          _getActionIcon(log.actionType),
                           size: 16,
                           color: theme.colorScheme.primary,
                         ),
@@ -770,7 +770,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
     }
   }
 
-  IconData _getActionconst Icon(AuditActionType type) {
+  IconData _getActionIcon(AuditActionType type) {
     switch (type) {
       case AuditActionType.userLogin:
       case AuditActionType.userLogout:

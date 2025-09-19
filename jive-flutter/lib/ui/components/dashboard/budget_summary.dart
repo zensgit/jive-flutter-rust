@@ -408,7 +408,7 @@ class BudgetSummary extends ConsumerWidget {
     }
   }
 
-  IconData _getCategoryconst Icon(String? category) {
+  IconData _getCategoryIcon(String? category) {
     switch (category?.toLowerCase()) {
       case 'food':
       case '餐饮':

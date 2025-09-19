@@ -158,7 +158,7 @@ class TravelEventTemplateLibrary {
     ];
   }
 
-  static String getTemplateconst Icon(String templateId) {
+  static String getTemplateIcon(String templateId) {
     const iconMap = {
       'common_travel': '✈️',
       'complete_travel': '🌍',
