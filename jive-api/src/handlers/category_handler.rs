@@ -263,6 +263,16 @@ pub struct ImportActionDetail {
     pub category_id: Option<Uuid>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub predicted_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub existing_category_id: Option<Uuid>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub existing_category_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub final_classification: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub final_parent_id: Option<Uuid>,
 }
 
 pub async fn batch_import_templates(
@@ -325,7 +335,7 @@ pub async fn batch_import_templates(
 
         if let Some((existing_id,)) = exists {
             match strategy.as_str() {
-                "skip" => { skipped += 1; details.push(ImportActionDetail{ template_id, action: ImportActionKind::Skipped, original_name: name.clone(), final_name: Some(name.clone()), category_id: Some(existing_id), reason: Some("duplicate_name".into())}); continue 'outer; }
+                "skip" => { skipped += 1; details.push(ImportActionDetail{ template_id, action: ImportActionKind::Skipped, original_name: name.clone(), final_name: Some(name.clone()), category_id: Some(existing_id), reason: Some("duplicate_name".into()), predicted_name: None, existing_category_id: Some(existing_id), existing_category_name: None, final_classification: Some(classification.clone()), final_parent_id: parent_id }); continue 'outer; }
                 "update" => {
                     // Update existing entry fields
                     if !dry_run {
@@ -349,7 +359,7 @@ pub async fn batch_import_templates(
                         });
                     }
                     imported += 1; // treat update as success
-                    details.push(ImportActionDetail{ template_id, action: ImportActionKind::Updated, original_name: name.clone(), final_name: Some(name.clone()), category_id: Some(existing_id), reason: None});
+                    details.push(ImportActionDetail{ template_id, action: ImportActionKind::Updated, original_name: name.clone(), final_name: Some(name.clone()), category_id: Some(existing_id), reason: None, predicted_name: None, existing_category_id: Some(existing_id), existing_category_name: None, final_classification: Some(classification.clone()), final_parent_id: parent_id });
                     continue 'outer;
                 }
                 "rename" => {
@@ -363,7 +373,7 @@ pub async fn batch_import_templates(
                         ).bind(&req.ledger_id).bind(&candidate).fetch_optional(&pool).await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
                         if taken.is_none() { name = candidate; break; }
                         suffix += 1;
-                        if suffix > 100 { failed += 1; details.push(ImportActionDetail{ template_id, action: ImportActionKind::Failed, original_name: base.clone(), final_name: None, category_id: None, reason: Some("rename_exhausted".into())}); continue 'outer; }
+                        if suffix > 100 { failed += 1; details.push(ImportActionDetail{ template_id, action: ImportActionKind::Failed, original_name: base.clone(), final_name: None, category_id: None, reason: Some("rename_exhausted".into()), predicted_name: None, existing_category_id: Some(existing_id), existing_category_name: None, final_classification: Some(classification.clone()), final_parent_id: parent_id }); continue 'outer; }
                     }
                 }
                 _ => { skipped += 1; continue 'outer; }
@@ -410,16 +420,16 @@ pub async fn batch_import_templates(
                     usage_count: row.try_get("usage_count").unwrap_or(0), last_used_at: row.try_get("last_used_at").ok(),
                 });
                 imported += 1;
-                details.push(ImportActionDetail{ template_id, action: if exists.is_some() { ImportActionKind::Renamed } else { ImportActionKind::Imported }, original_name: tpl.get::<String,_>("name"), final_name: Some(name.clone()), category_id: Some(row.get("id")), reason: None});
+                details.push(ImportActionDetail{ template_id, action: if exists.is_some() { ImportActionKind::Renamed } else { ImportActionKind::Imported }, original_name: tpl.get::<String,_>("name"), final_name: Some(name.clone()), category_id: Some(row.get("id")), reason: None, predicted_name: None, existing_category_id: exists.map(|t| t.0), existing_category_name: None, final_classification: Some(classification.clone()), final_parent_id: parent_id });
             }
             Err(e) => {
                 if dry_run {
                     imported += 1;
-                    details.push(ImportActionDetail{ template_id, action: if exists.is_some() { ImportActionKind::Renamed } else { ImportActionKind::Imported }, original_name: tpl.get::<String,_>("name"), final_name: Some(name.clone()), category_id: None, reason: None});
+                    details.push(ImportActionDetail{ template_id, action: if exists.is_some() { ImportActionKind::Renamed } else { ImportActionKind::Imported }, original_name: tpl.get::<String,_>("name"), final_name: Some(name.clone()), category_id: None, reason: None, predicted_name: if exists.is_some() { Some(name.clone()) } else { None }, existing_category_id: exists.map(|t| t.0), existing_category_name: None, final_classification: Some(classification.clone()), final_parent_id: parent_id });
                 } else {
                     eprintln!("batch_import insert error: {:?}", e);
                     failed += 1;
-                    details.push(ImportActionDetail{ template_id, action: ImportActionKind::Failed, original_name: name.clone(), final_name: None, category_id: None, reason: Some("insert_error".into())});
+                    details.push(ImportActionDetail{ template_id, action: ImportActionKind::Failed, original_name: name.clone(), final_name: None, category_id: None, reason: Some("insert_error".into()), predicted_name: None, existing_category_id: exists.map(|t| t.0), existing_category_name: None, final_classification: Some(classification.clone()), final_parent_id: parent_id });
                 }
             }
         }
