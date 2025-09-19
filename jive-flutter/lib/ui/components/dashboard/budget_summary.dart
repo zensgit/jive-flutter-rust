@@ -309,7 +309,7 @@ class BudgetSummary extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
-                      _getCategoryconst Icon(budget.category),
+                      _getCategoryIcon(budget.category),
                       color: _getCategoryColor(budget.category),
                       size: 20,
                     ),

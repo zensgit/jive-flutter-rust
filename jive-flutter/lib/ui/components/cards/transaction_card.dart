@@ -111,7 +111,7 @@ class TransactionCard extends ConsumerWidget {
           child: Row(
             children: [
               // 分类图标
-              _buildCategoryconst Icon(theme),
+              _buildCategoryIcon(theme),
               const SizedBox(width: 12),
 
               // 交易信息

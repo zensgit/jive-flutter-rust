@@ -45,7 +45,7 @@ class TransactionListItem extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
-                  _getconst Icon(),
+                  _getIcon(),
                   color: _getIconColor(),
                   size: 24,
                 ),
@@ -162,7 +162,7 @@ class TransactionListItem extends ConsumerWidget {
     );
   }
 
-  IconData _getconst Icon() {
+  IconData _getIcon() {
     final category = transaction.category?.toLowerCase() ?? '';
 
     if (category.contains('餐') || category.contains('食')) {

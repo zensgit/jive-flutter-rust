@@ -195,7 +195,7 @@ class _BudgetFormState extends State<BudgetForm> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         ),
-        helperText: _getPeriodHelperconst Text(),
+        helperText: _getPeriodHelperText(),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -417,7 +417,7 @@ class _BudgetFormState extends State<BudgetForm> {
     );
   }
 
-  String _getPeriodHelperconst Text() {
+  String _getPeriodHelperText() {
     switch (_period) {
       case BudgetPeriod.weekly:
         return '每周预算金额';
