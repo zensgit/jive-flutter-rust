@@ -25,9 +25,9 @@ class ThemeAppearance extends ConsumerWidget {
           if (showTitle)
             Row(
               children: [
-                const Icon(Icons.tune, color: cs.primary, size: 20),
+                Icon(Icons.tune, color: cs.primary, size: 20),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   '主题外观',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
@@ -43,8 +43,8 @@ class ThemeAppearance extends ConsumerWidget {
                   .read(settingsProvider.notifier)
                   .updateSetting('listDensity', v ? 'compact' : 'comfortable');
             },
-            title: const Text('紧凑密度'),
-            subtitle: const Text('减少垂直留白，显示更多列表项'),
+            title: Text('紧凑密度'),
+            subtitle: Text('减少垂直留白，显示更多列表项'),
             contentPadding: EdgeInsets.zero,
             activeColor: cs.primary,
           ),
@@ -52,15 +52,15 @@ class ThemeAppearance extends ConsumerWidget {
           // 圆角
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.crop_square_rounded, color: cs.secondary),
-            title: const Text('圆角大小'),
-            subtitle: const Text('小 / 中 / 大'),
+            leading: Icon(Icons.crop_square_rounded, color: cs.secondary),
+            title: Text('圆角大小'),
+            subtitle: Text('小 / 中 / 大'),
             trailing: DropdownButton<String>(
               value: settings.cornerRadius,
               items: const [
-                DropdownMenuItem(value: 'small', child: const Text('小')),
-                DropdownMenuItem(value: 'medium', child: const Text('中')),
-                DropdownMenuItem(value: 'large', child: const Text('大')),
+                DropdownMenuItem(value: 'small', child: Text('小')),
+                DropdownMenuItem(value: 'medium', child: Text('中')),
+                DropdownMenuItem(value: 'large', child: Text('大')),
               ],
               onChanged: (v) async {
                 if (v != null) {
@@ -81,10 +81,10 @@ class ThemeAppearance extends ConsumerWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.info_outline,
+                Icon(Icons.info_outline,
                     size: 16, color: cs.onPrimaryContainer),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   '密度与圆角设置将影响列表、卡片、输入框等组件。',
                   style: TextStyle(fontSize: 12, color: cs.onPrimaryContainer),
                 ),

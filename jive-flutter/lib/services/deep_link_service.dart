@@ -490,7 +490,7 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: const Text('成功加入家庭！')),
+          const SnackBar(content: Text('成功加入家庭！')),
         );
         Navigator.pushReplacementNamed(context, '/home');
       }
@@ -520,18 +520,18 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 Icons.error_outline,
                 size: 64,
                 color: Colors.red,
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 '邀请无效或已过期',
                 style: theme.textTheme.titleLarge,
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 _error!,
                 style: theme.textTheme.bodyMedium,
                 textAlign: TextAlign.center,
@@ -540,7 +540,7 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
               ElevatedButton(
                 onPressed: () =>
                     Navigator.pushReplacementNamed(context, '/home'),
-                child: const Text('返回首页'),
+                child: Text('返回首页'),
               ),
             ],
           ),
@@ -550,25 +550,25 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('接受邀请'),
+        title: Text('接受邀请'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.group_add,
               size: 80,
               color: Colors.blue,
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               '${_invitationData!['inviterName']} 邀请你加入',
               style: theme.textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               _invitationData!['familyName'],
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -598,14 +598,14 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('拒绝'),
+                    child: Text('拒绝'),
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _acceptInvitation,
-                    child: const Text('接受邀请'),
+                    child: Text('接受邀请'),
                   ),
                 ),
               ],
@@ -620,8 +620,8 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(label),
-        const Text(
+        Text(label),
+        Text(
           value,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
@@ -642,7 +642,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('登录')),
+      appBar: AppBar(title: Text('登录')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -655,12 +655,12 @@ class LoginScreen extends StatelessWidget {
                   color: Colors.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text(
+                child: Text(
                   '登录后将自动处理邀请',
                   style: TextStyle(color: Colors.blue),
                 ),
               ),
-            const Text('登录页面'),
+            Text('登录页面'),
           ],
         ),
       ),

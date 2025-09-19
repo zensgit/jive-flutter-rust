@@ -105,13 +105,13 @@ class ErrorScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 Icons.error_outline,
                 size: 64,
                 color: Colors.white,
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'App Initialization Failed',
                 style: TextStyle(
                   fontSize: 24,
@@ -121,7 +121,7 @@ class ErrorScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 error,
                 style: const TextStyle(
                   fontSize: 16,
@@ -143,7 +143,7 @@ class ErrorScreen extends StatelessWidget {
                     vertical: 16,
                   ),
                 ),
-                child: const Text('Restart App'),
+                child: Text('Restart App'),
               ),
             ],
           ),

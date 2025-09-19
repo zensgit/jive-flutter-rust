@@ -67,7 +67,7 @@ class SummaryCard extends StatelessWidget {
                       color: (iconColor ?? theme.primaryColor).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       icon,
                       size: 24,
                       color: iconColor ?? theme.primaryColor,
@@ -81,7 +81,7 @@ class SummaryCard extends StatelessWidget {
               const SizedBox(height: 16),
 
               // 标题
-              const Text(
+              Text(
                 title,
                 style: theme.textTheme.titleMedium?.copyWith(
                   color: backgroundColor != null
@@ -94,7 +94,7 @@ class SummaryCard extends StatelessWidget {
               const SizedBox(height: 8),
 
               // 金额
-              const Text(
+              Text(
                 amount,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   color: backgroundColor != null
@@ -107,7 +107,7 @@ class SummaryCard extends StatelessWidget {
               // 副标题
               if (subtitle != null) ...[
                 const SizedBox(height: 4),
-                const Text(
+                Text(
                   subtitle!,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: backgroundColor != null
@@ -137,13 +137,13 @@ class SummaryCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             icon,
             size: 14,
             color: color,
           ),
           const SizedBox(width: 4),
-          const Text(
+          Text(
             trend!,
             style: theme.textTheme.bodySmall?.copyWith(
               color: color,

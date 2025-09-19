@@ -36,7 +36,7 @@ class RecentTransactions extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                const Text(
+                Text(
                   title,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
@@ -56,7 +56,7 @@ class RecentTransactions extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
+                        Text(
                           '查看全部',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.primaryColor,
@@ -64,7 +64,7 @@ class RecentTransactions extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 4),
-                        const Icon(
+                        Icon(
                           Icons.arrow_forward_ios,
                           size: 12,
                           color: theme.primaryColor,
@@ -103,13 +103,13 @@ class RecentTransactions extends StatelessWidget {
               child: Center(
                 child: Column(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.receipt_long_outlined,
                       size: 48,
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       '暂无交易记录',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
@@ -159,7 +159,7 @@ class GroupedRecentTransactions extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                const Text(
+                Text(
                   title,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
@@ -169,7 +169,7 @@ class GroupedRecentTransactions extends StatelessWidget {
                 if (onViewAll != null)
                   TextButton(
                     onPressed: onViewAll,
-                    child: const Text('查看全部'),
+                    child: Text('查看全部'),
                   ),
               ],
             ),
@@ -188,13 +188,13 @@ class GroupedRecentTransactions extends StatelessWidget {
               child: Center(
                 child: Column(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.receipt_long_outlined,
                       size: 48,
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       '暂无交易记录',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
@@ -219,7 +219,7 @@ class GroupedRecentTransactions extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           child: Row(
             children: [
-              const Text(
+              Text(
                 _formatDate(date),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.6),

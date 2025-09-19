@@ -98,7 +98,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('分享失败: $e')),
+          SnackBar(content: Text('分享失败: $e')),
         );
       }
     }
@@ -122,7 +122,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: const Text('已复制到剪贴板'),
+          content: Text('已复制到剪贴板'),
           duration: Duration(seconds: 2),
         ),
       );
@@ -144,7 +144,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('二维码已保存到: $imagePath'),
+            content: Text('二维码已保存到: $imagePath'),
             action: SnackBarAction(
               label: '查看',
               onPressed: () {
@@ -157,7 +157,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('保存失败: $e')),
+          SnackBar(content: Text('保存失败: $e')),
         );
       }
     }
@@ -175,14 +175,14 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
       mainAxisSize: MainAxisSize.min,
       children: [
         // 标题
-        const Text(
+        Text(
           widget.title,
           style: theme.textTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
         if (widget.subtitle != null) ...[
           const SizedBox(height: 8),
-          const Text(
+          Text(
             widget.subtitle!,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
@@ -253,7 +253,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
           child: Row(
             children: [
               Expanded(
-                child: const Text(
+                child: Text(
                   widget.data,
                   style: theme.textTheme.bodySmall,
                   maxLines: 2,
@@ -261,7 +261,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.copy, size: 20),
+                icon: Icon(Icons.copy, size: 20),
                 onPressed: _copyToClipboard,
                 tooltip: '复制链接',
               ),
@@ -336,7 +336,7 @@ class _ActionButton extends StatelessWidget {
             children: [
               Icon(icon, size: 24),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 label,
                 style: theme.textTheme.bodySmall,
               ),
@@ -383,7 +383,7 @@ class InvitationQrCodeDialog extends StatelessWidget {
             Align(
               alignment: Alignment.topRight,
               child: IconButton(
-                icon: const Icon(Icons.close),
+                icon: Icon(Icons.close),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -438,13 +438,13 @@ class InvitationQrCodeDialog extends StatelessWidget {
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    icon: const Icon(Icons.copy),
-                    label: const Text('复制链接'),
+                    icon: Icon(Icons.copy),
+                    label: Text('复制链接'),
                     onPressed: () async {
                       await Clipboard.setData(ClipboardData(text: inviteLink));
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: const Text('链接已复制')),
+                          const SnackBar(content: Text('链接已复制')),
                         );
                       }
                     },
@@ -453,8 +453,8 @@ class InvitationQrCodeDialog extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton.icon(
-                    icon: const Icon(Icons.share),
-                    label: const Text('分享'),
+                    icon: Icon(Icons.share),
+                    label: Text('分享'),
                     onPressed: () async {
                       await Share.share(
                         '邀请你加入家庭「$familyName」\n\n'
@@ -498,14 +498,14 @@ class _InfoRow extends StatelessWidget {
       children: [
         Icon(icon, size: 16, color: theme.colorScheme.onSurfaceVariant),
         const SizedBox(width: 8),
-        const Text(
+        Text(
           '$label:',
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
         const Spacer(),
-        const Text(
+        Text(
           value,
           style: theme.textTheme.bodyMedium?.copyWith(
             fontWeight: isBold ? FontWeight.bold : null,

@@ -79,7 +79,7 @@ class SecondaryButton extends StatelessWidget {
   }
 
   Widget _buildLabel() {
-    return const Text(
+    return Text(
       text,
       style: const TextStyle(
         fontSize: 16,

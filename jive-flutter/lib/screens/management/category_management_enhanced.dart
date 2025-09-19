@@ -36,11 +36,11 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('分类管理'),
+        title: Text('分类管理'),
         actions: [
           IconButton(
             tooltip: '从模板库导入',
-            icon: const Icon(Icons.library_add),
+            icon: Icon(Icons.library_add),
             onPressed: _busy ? null : _showTemplateLibrary,
           ),
         ],
@@ -48,7 +48,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
       body: Center(
         child: _busy
             ? const CircularProgressIndicator()
-            : const Text('分类管理（最小版）：点击右上角导入模板')
+            : Text('分类管理（最小版）：点击右上角导入模板')
       ),
     );
   }
@@ -57,7 +57,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
     final ledgerId = ref.read(currentLedgerProvider)?.id;
     if (ledgerId == null) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: const Text('无当前账本，无法导入模板')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('无当前账本，无法导入模板')));
       return;
     }
 
@@ -121,7 +121,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
             }
 
             return AlertDialog(
-              title: const Text('从模板库导入'),
+              title: Text('从模板库导入'),
               content: const SizedBox(
                 width: 480,
                 child: Column(
@@ -129,14 +129,14 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                   children: [
                   Row(
                     children: [
-                      const Text('冲突策略: '),
+                      Text('冲突策略: '),
                       const SizedBox(width: 8),
                       DropdownButton<String>(
                         value: conflict,
                         items: const [
-                          DropdownMenuItem(value: 'skip', child: const Text('跳过')),
-                          DropdownMenuItem(value: 'rename', child: const Text('重命名')),
-                          DropdownMenuItem(value: 'update', child: const Text('覆盖')),
+                          DropdownMenuItem(value: 'skip', child: Text('跳过')),
+                          DropdownMenuItem(value: 'rename', child: Text('重命名')),
+                          DropdownMenuItem(value: 'update', child: Text('覆盖')),
                         ],
                         onChanged: (v) { if (v!=null) setLocal((){ conflict = v; }); },
                       ),
@@ -160,8 +160,8 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                                   if (checked) { selected.remove(t); } else { selected.add(t); }
                                 }),
                                 dense: true,
-                                title: const Text(t.name),
-                                subtitle: const Text(t.classification.name),
+                                title: Text(t.name),
+                                subtitle: Text(t.classification.name),
                               );
                             },
                           ),
@@ -171,11 +171,11 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('共 $total 项，当前 ${list.length}', style: Theme.of(context).textTheme.bodySmall),
+                              Text('共 $total 项，当前 ${list.length}', style: Theme.of(context).textTheme.bodySmall),
                               OutlinedButton.icon(
                                 onPressed: (!fetching && list.length < total) ? () => fetch(next: true) : null,
-                                icon: const Icon(Icons.more_horiz),
-                                label: const Text('加载更多'),
+                                icon: Icon(Icons.more_horiz),
+                                label: Text('加载更多'),
                               ),
                             ],
                           ),
@@ -187,7 +187,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                     const Divider(),
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: const Text('预览（服务端 dry-run ）', style: Theme.of(context).textTheme.titleSmall),
+                      child: Text('预览（服务端 dry-run ）', style: Theme.of(context).textTheme.titleSmall),
                     ),
                     const SizedBox(
                       height: 160,
@@ -198,9 +198,9 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                           final color = (d.action == 'failed' || d.action == 'skipped') ? Colors.orange : Colors.green;
                           return ListTile(
                             dense: true,
-                            title: const Text(d.predictedName ?? d.finalName ?? d.originalName),
-                            subtitle: const Text(_renderDryRunSubtitle(d)),
-                            trailing: const Icon(
+                            title: Text(d.predictedName ?? d.finalName ?? d.originalName),
+                            subtitle: Text(_renderDryRunSubtitle(d)),
+                            trailing: Icon(
                               d.action == 'failed' ? Icons.error : (d.action=='skipped'? Icons.warning_amber : Icons.check_circle),
                               color: color,
                             ),
@@ -213,7 +213,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+              TextButton(onPressed: () => Navigator.pop(ctx), child: Text('取消')),
               TextButton(
                 onPressed: selected.isEmpty ? null : () async {
                   try {
@@ -227,11 +227,11 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                     setLocal((){ preview = res; });
                   } catch (e) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text('预览失败: $e')));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('预览失败: $e')));
                     }
                   }
                 },
-                child: const Text('预览'),
+                child: Text('预览'),
               ),
               FilledButton(
                 onPressed: (selected.isEmpty) ? null : () async {
@@ -248,10 +248,10 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                     await ImportDetailsSheet.show(context, result);
                   } catch (e) {
                     if (!mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text('导入失败: $e')));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('导入失败: $e')));
                   }
                 },
-                child: const Text('确认导入'),
+                child: Text('确认导入'),
               ),
             ],
           );

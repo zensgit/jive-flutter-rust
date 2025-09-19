@@ -97,7 +97,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
               height: 28,
             ),
             const SizedBox(width: 8),
-            const Text('系统管理'),
+            Text('系统管理'),
           ],
         ),
         backgroundColor: Colors.red[700],
@@ -108,12 +108,12 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
           tabs: [
-            const Tab(text: '仪表盘', icon: const Icon(Icons.dashboard)),
-            const Tab(text: '用户管理', icon: const Icon(Icons.people)),
-            const Tab(text: '系统配置', icon: const Icon(Icons.settings)),
-            const Tab(text: '日志监控', icon: const Icon(Icons.monitor)),
+            const Tab(text: '仪表盘', icon: Icon(Icons.dashboard)),
+            const Tab(text: '用户管理', icon: Icon(Icons.people)),
+            const Tab(text: '系统配置', icon: Icon(Icons.settings)),
+            const Tab(text: '日志监控', icon: Icon(Icons.monitor)),
             if ((ref.read(currentUserProvider)?.isAdmin ?? false))
-              const Tab(text: '币种管理', icon: const Icon(Icons.currency_exchange)),
+              const Tab(text: '币种管理', icon: Icon(Icons.currency_exchange)),
           ],
         ),
       ),
@@ -139,7 +139,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             '系统概览',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
@@ -164,7 +164,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         stat['icon'],
                         size: 32,
                         color: stat['color'],
@@ -175,14 +175,14 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text(
+                            Text(
                               stat['title'],
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey,
                               ),
                             ),
-                            const Text(
+                            Text(
                               stat['value'],
                               style: const TextStyle(
                                 fontSize: 20,
@@ -202,7 +202,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
           const SizedBox(height: 32),
 
           // 最近活动
-          const Text(
+          Text(
             '最近活动',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
@@ -233,9 +233,9 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
         backgroundColor: Colors.blue[100],
         child: Icon(icon, color: Colors.blue[700]),
       ),
-      title: const Text(title),
-      subtitle: const Text(subtitle),
-      trailing: const Text(
+      title: Text(title),
+      subtitle: Text(subtitle),
+      trailing: Text(
         time,
         style: const TextStyle(color: Colors.grey, fontSize: 12),
       ),
@@ -254,7 +254,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
                 child: TextField(
                   decoration: const InputDecoration(
                     labelText: '搜索用户',
-                    prefixIcon: const Icon(Icons.search),
+                    prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -262,8 +262,8 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
               const SizedBox(width: 16),
               ElevatedButton.icon(
                 onPressed: () => _showCreateUserDialog(),
-                icon: const Icon(Icons.person_add),
-                label: const Text('创建用户'),
+                icon: Icon(Icons.person_add),
+                label: Text('创建用户'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
@@ -284,27 +284,27 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
                 child: ListTile(
                   leading: CircleAvatar(
                     backgroundColor: _getUserRoleColor(user['role']),
-                    child: const Text(
+                    child: Text(
                       StringUtils.safeInitial(user['name']?.toString()),
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),
-                  title: const Text(user['name']),
+                  title: Text(user['name']),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(user['email']),
-                      const Text('角色: ${user['role']} | 家庭数: ${user['families']}'),
+                      Text(user['email']),
+                      Text('角色: ${user['role']} | 家庭数: ${user['families']}'),
                     ],
                   ),
                   trailing: PopupMenuButton<String>(
                     onSelected: (value) => _handleUserAction(value, user),
                     itemBuilder: (context) => [
-                      const PopupMenuItem(value: 'edit', child: const Text('编辑')),
-                      const PopupMenuItem(value: 'suspend', child: const Text('暂停')),
-                      const PopupMenuItem(value: 'delete', child: const Text('删除')),
+                      const PopupMenuItem(value: 'edit', child: Text('编辑')),
+                      const PopupMenuItem(value: 'suspend', child: Text('暂停')),
+                      const PopupMenuItem(value: 'delete', child: Text('删除')),
                       const PopupMenuItem(
-                          value: 'reset_password', child: const Text('重置密码')),
+                          value: 'reset_password', child: Text('重置密码')),
                     ],
                   ),
                   isThreeLine: true,
@@ -321,7 +321,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        const Text(
+        Text(
           '系统配置',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
@@ -363,7 +363,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               title,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -377,9 +377,9 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
 
   Widget _buildConfigItem(String title, String value, {Widget? trailing}) {
     return ListTile(
-      title: const Text(title),
-      subtitle: const Text(value),
-      trailing: trailing ?? const Icon(Icons.edit),
+      title: Text(title),
+      subtitle: Text(value),
+      trailing: trailing ?? Icon(Icons.edit),
       contentPadding: EdgeInsets.zero,
       onTap: trailing == null ? () {} : null,
     );
@@ -396,7 +396,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
                 child: TextField(
                   decoration: const InputDecoration(
                     labelText: '搜索日志',
-                    prefixIcon: const Icon(Icons.search),
+                    prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -405,10 +405,10 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
               DropdownButton<String>(
                 value: '全部',
                 items: const [
-                  DropdownMenuItem(value: '全部', child: const Text('全部')),
-                  DropdownMenuItem(value: '错误', child: const Text('错误')),
-                  DropdownMenuItem(value: '警告', child: const Text('警告')),
-                  DropdownMenuItem(value: '信息', child: const Text('信息')),
+                  DropdownMenuItem(value: '全部', child: Text('全部')),
+                  DropdownMenuItem(value: '错误', child: Text('错误')),
+                  DropdownMenuItem(value: '警告', child: Text('警告')),
+                  DropdownMenuItem(value: '信息', child: Text('信息')),
                 ],
                 onChanged: (value) {},
               ),
@@ -422,7 +422,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
                 child: ListTile(
-                  leading: const Icon(
+                  leading: Icon(
                     index % 3 == 0
                         ? Icons.error
                         : index % 3 == 1
@@ -434,9 +434,9 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
                             ? Colors.orange
                             : Colors.blue,
                   ),
-                  title: const Text('日志事件 ${index + 1}'),
-                  subtitle: const Text('2024-08-26 10:${30 + index}:00 - 系统正常运行'),
-                  trailing: const Text('IP: 192.168.1.${100 + index}'),
+                  title: Text('日志事件 ${index + 1}'),
+                  subtitle: Text('2024-08-26 10:${30 + index}:00 - 系统正常运行'),
+                  trailing: Text('IP: 192.168.1.${100 + index}'),
                 ),
               );
             },
@@ -480,7 +480,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('创建新用户'),
+        title: Text('创建新用户'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -494,11 +494,11 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('创建'),
+            child: Text('创建'),
           ),
         ],
       ),
@@ -509,7 +509,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('编辑用户 - ${user['name']}'),
+        title: Text('编辑用户 - ${user['name']}'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -527,11 +527,11 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('保存'),
+            child: Text('保存'),
           ),
         ],
       ),
@@ -542,17 +542,17 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('暂停用户'),
-        content: const Text('确定要暂停用户 "${user['name']}" 吗？暂停后用户将无法登录系统。'),
+        title: Text('暂停用户'),
+        content: Text('确定要暂停用户 "${user['name']}" 吗？暂停后用户将无法登录系统。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-            child: const Text('暂停'),
+            child: Text('暂停'),
           ),
         ],
       ),
@@ -563,17 +563,17 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('删除用户'),
-        content: const Text('确定要删除用户 "${user['name']}" 吗？此操作不可撤销，将删除用户的所有数据。'),
+        title: Text('删除用户'),
+        content: Text('确定要删除用户 "${user['name']}" 吗？此操作不可撤销，将删除用户的所有数据。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('删除'),
+            child: Text('删除'),
           ),
         ],
       ),
@@ -584,11 +584,11 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('重置密码'),
+        title: Text('重置密码'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('为用户 "${user['name']}" 重置密码'),
+            Text('为用户 "${user['name']}" 重置密码'),
             const SizedBox(height: 16),
             const TextField(
               decoration: InputDecoration(labelText: '新密码'),
@@ -599,11 +599,11 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('重置'),
+            child: Text('重置'),
           ),
         ],
       ),

@@ -47,7 +47,7 @@ class FamilySwitcher extends ConsumerWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               _getLedgerconst Icon(currentLedger?.type ?? LedgerType.family),
               size: 20,
               color: theme.primaryColor,
@@ -55,7 +55,7 @@ class FamilySwitcher extends ConsumerWidget {
             const SizedBox(width: 8),
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 150),
-              child: const Text(
+              child: Text(
                 currentLedger?.name ?? '选择家庭',
                 style: TextStyle(
                   color: theme.primaryColor,
@@ -65,7 +65,7 @@ class FamilySwitcher extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: 4),
-            const Icon(
+            Icon(
               Icons.arrow_drop_down,
               color: theme.primaryColor,
             ),
@@ -94,7 +94,7 @@ class FamilySwitcher extends ConsumerWidget {
                           : Colors.grey.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       _getLedgerconst Icon(ledger.type),
                       size: 20,
                       color: isSelected ? theme.primaryColor : Colors.grey[600],
@@ -110,7 +110,7 @@ class FamilySwitcher extends ConsumerWidget {
                         Row(
                           children: [
                             Expanded(
-                              child: const Text(
+                              child: Text(
                                 ledger.name,
                                 style: TextStyle(
                                   fontWeight: isSelected
@@ -129,7 +129,7 @@ class FamilySwitcher extends ConsumerWidget {
                                   color: Colors.orange.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   '默认',
                                   style: TextStyle(
                                     fontSize: 10,
@@ -142,7 +142,7 @@ class FamilySwitcher extends ConsumerWidget {
                         const SizedBox(height: 2),
                         Row(
                           children: [
-                            const Text(
+                            Text(
                               _getLedgerTypeLabel(ledger.type),
                               style: TextStyle(
                                 fontSize: 12,
@@ -150,13 +150,13 @@ class FamilySwitcher extends ConsumerWidget {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            const Icon(
+                            Icon(
                               Icons.people,
                               size: 12,
                               color: Colors.grey[600],
                             ),
                             const SizedBox(width: 2),
-                            const Text(
+                            Text(
                               '$memberCount',
                               style: TextStyle(
                                 fontSize: 12,
@@ -164,7 +164,7 @@ class FamilySwitcher extends ConsumerWidget {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            const Text(
+                            Text(
                               ledger.currency,
                               style: TextStyle(
                                 fontSize: 12,
@@ -179,7 +179,7 @@ class FamilySwitcher extends ConsumerWidget {
 
                   // 选中标记
                   if (isSelected)
-                    const Icon(
+                    Icon(
                       Icons.check_circle,
                       size: 20,
                       color: theme.primaryColor,
@@ -206,7 +206,7 @@ class FamilySwitcher extends ConsumerWidget {
                     color: Colors.blue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.add,
                     size: 20,
                     color: Colors.blue,
@@ -217,7 +217,7 @@ class FamilySwitcher extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         '创建新家庭',
                         style: TextStyle(
                           color: Colors.blue,
@@ -225,7 +225,7 @@ class FamilySwitcher extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 2),
-                      const Text(
+                      Text(
                         '成为Owner，拥有全部权限',
                         style: TextStyle(
                           fontSize: 12,
@@ -254,14 +254,14 @@ class FamilySwitcher extends ConsumerWidget {
                     color: Colors.grey.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.settings,
                     size: 20,
                     color: Colors.grey[600],
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Text('管理所有家庭'),
+                Text('管理所有家庭'),
               ],
             ),
           ),
@@ -291,7 +291,7 @@ class FamilySwitcher extends ConsumerWidget {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text('已切换到: ${selectedLedger.name}'),
+                content: Text('已切换到: ${selectedLedger.name}'),
                 duration: const Duration(seconds: 2),
               ),
             );
@@ -317,7 +317,7 @@ class FamilySwitcher extends ConsumerWidget {
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
           const SizedBox(width: 8),
-          const Text(currentLedger?.name ?? '加载中...'),
+          Text(currentLedger?.name ?? '加载中...'),
         ],
       ),
     );
@@ -333,19 +333,19 @@ class FamilySwitcher extends ConsumerWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.error_outline, size: 16, color: Colors.red),
+          Icon(Icons.error_outline, size: 16, color: Colors.red),
           const SizedBox(width: 8),
-          const Text(currentLedger?.name ?? '加载失败'),
+          Text(currentLedger?.name ?? '加载失败'),
           const SizedBox(width: 8),
           IconButton(
             tooltip: '复制错误',
-            icon: const Icon(Icons.copy, size: 16, color: Colors.red),
+            icon: Icon(Icons.copy, size: 16, color: Colors.red),
             onPressed: () async {
               final text = currentLedger?.name ?? '加载失败';
               await Clipboard.setData(ClipboardData(text: text));
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: const Text('已复制')),
+                  const SnackBar(content: Text('已复制')),
                 );
               }
             },

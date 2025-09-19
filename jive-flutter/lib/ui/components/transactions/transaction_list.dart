@@ -62,20 +62,20 @@ class TransactionList extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.receipt_long_outlined,
             size: 64,
             color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             emptyMessage ?? '暂无交易记录',
             style: theme.textTheme.titleMedium?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             '添加您的第一笔交易开始记账',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
@@ -153,13 +153,13 @@ class TransactionList extends ConsumerWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 _formatDate(date),
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const Text(
+              Text(
                 _formatWeekday(date),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
@@ -174,13 +174,13 @@ class TransactionList extends ConsumerWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Text(
+              Text(
                 '${transactions.length} 笔交易',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
-              const Text(
+              Text(
                 '${total >= 0 ? '+' : '-'}$formatted',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
@@ -309,7 +309,7 @@ class SwipeableTransactionList extends StatelessWidget {
             // 日期头部
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: const Text(
+              child: Text(
                 _formatDate(date),
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
@@ -352,7 +352,7 @@ class SwipeableTransactionList extends StatelessWidget {
         color: AppConstants.primaryColor,
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(left: 20),
-        child: const Icon(
+        child: Icon(
           Icons.edit,
           color: Colors.white,
         ),
@@ -361,7 +361,7 @@ class SwipeableTransactionList extends StatelessWidget {
         color: AppConstants.errorColor,
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
-        child: const Icon(
+        child: Icon(
           Icons.delete,
           color: Colors.white,
         ),
@@ -378,19 +378,19 @@ class SwipeableTransactionList extends StatelessWidget {
     return await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('确认删除'),
-            content: const Text('确定要删除这笔交易吗？'),
+            title: Text('确认删除'),
+            content: Text('确定要删除这笔交易吗？'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('取消'),
+                child: Text('取消'),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
                 style: TextButton.styleFrom(
                   foregroundColor: AppConstants.errorColor,
                 ),
-                child: const Text('删除'),
+                child: Text('删除'),
               ),
             ],
           ),

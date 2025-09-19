@@ -25,11 +25,11 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('账户管理'),
+        title: Text('账户管理'),
         actions: [
           // 视图切换
           IconButton(
-            icon: const Icon(_viewMode == 'list' ? Icons.folder : Icons.list),
+            icon: Icon(_viewMode == 'list' ? Icons.folder : Icons.list),
             onPressed: () {
               setState(() {
                 _viewMode = _viewMode == 'list' ? 'group' : 'list';
@@ -55,15 +55,15 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
             itemBuilder: (context) => [
               const PopupMenuItem(
                 value: 'sort',
-                child: const Text('排序'),
+                child: Text('排序'),
               ),
               const PopupMenuItem(
                 value: 'manage_groups',
-                child: const Text('管理分组'),
+                child: Text('管理分组'),
               ),
               const PopupMenuItem(
                 value: 'archive',
-                child: const Text('已归档账户'),
+                child: Text('已归档账户'),
               ),
             ],
           ),
@@ -72,8 +72,8 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
       body: _buildBody(accountState, accounts, accountGroups),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.go('${AppRoutes.accounts}/add'),
-        icon: const Icon(Icons.add),
-        label: const Text('新增账户'),
+        icon: Icon(Icons.add),
+        label: Text('新增账户'),
       ),
     );
   }
@@ -89,13 +89,13 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            const Text('加载失败: ${accountState.errorMessage}'),
+            Text('加载失败: ${accountState.errorMessage}'),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => ref.read(accountProvider.notifier).refresh(),
-              child: const Text('重试'),
+              child: Text('重试'),
             ),
           ],
         ),
@@ -118,13 +118,13 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.account_balance_outlined,
             size: 100,
             color: Colors.grey[300],
           ),
           const SizedBox(height: 24),
-          const Text(
+          Text(
             '还没有账户',
             style: TextStyle(
               fontSize: 20,
@@ -133,7 +133,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             '添加您的第一个账户开始记账',
             style: TextStyle(
               fontSize: 14,
@@ -143,8 +143,8 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
           const SizedBox(height: 32),
           ElevatedButton.icon(
             onPressed: () => context.go('${AppRoutes.accounts}/add'),
-            icon: const Icon(Icons.add),
-            label: const Text('添加账户'),
+            icon: Icon(Icons.add),
+            label: Text('添加账户'),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
@@ -228,13 +228,13 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
             children: [
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     type.icon,
                     size: 20,
                     color: Theme.of(context).primaryColor,
                   ),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     type.label,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
@@ -242,7 +242,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     '(${accounts.length})',
                     style: TextStyle(
                       color: Colors.grey[600],
@@ -251,7 +251,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                   ),
                 ],
               ),
-              const Text(
+              Text(
                 ref.read(currencyProvider.notifier).formatCurrency(
                     totalBalance, ref.read(baseCurrencyProvider).code),
                 style: TextStyle(
@@ -275,22 +275,22 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-        child: const Icon(
+        child: Icon(
           account.type.icon,
           color: Theme.of(context).primaryColor,
         ),
       ),
-      title: const Text(account.name),
+      title: Text(account.name),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (account.displayAccountNumber != null)
-            const Text(
+            Text(
               account.displayAccountNumber!,
               style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             ),
           if (account.lastTransactionDate != null)
-            const Text(
+            Text(
               '最后交易: ${account.lastTransactionDate!.toLocal().toString().split(' ')[0]}',
               style: TextStyle(fontSize: 12, color: Colors.grey[500]),
             ),
@@ -300,7 +300,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          const Text(
+          Text(
             account.formattedBalance,
             style: TextStyle(
               fontSize: 16,
@@ -309,7 +309,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
             ),
           ),
           if (account.currency != 'CNY')
-            const Text(
+            Text(
               account.currency,
               style: TextStyle(
                 fontSize: 12,
@@ -361,7 +361,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(
+                  Icon(
                     account.type.icon,
                     color: Theme.of(context).primaryColor,
                   ),
@@ -375,7 +375,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                         color: Colors.orange.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      child: const Text(
+                      child: Text(
                         '默认',
                         style: TextStyle(
                           fontSize: 10,
@@ -386,7 +386,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                     ),
                 ],
               ),
-              const Text(
+              Text(
                 account.name,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
@@ -395,7 +395,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              const Text(
+              Text(
                 account.formattedBalance,
                 style: TextStyle(
                   fontSize: 16,
@@ -419,32 +419,32 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('编辑账户'),
+              leading: Icon(Icons.edit),
+              title: Text('编辑账户'),
               onTap: () {
                 Navigator.pop(context);
                 // TODO: 导航到编辑页面
               },
             ),
             ListTile(
-              leading: const Icon(Icons.star),
-              title: const Text(account.isDefault ? '取消默认' : '设为默认'),
+              leading: Icon(Icons.star),
+              title: Text(account.isDefault ? '取消默认' : '设为默认'),
               onTap: () {
                 Navigator.pop(context);
                 // TODO: 设置默认账户
               },
             ),
             ListTile(
-              leading: const Icon(Icons.archive),
-              title: const Text('归档账户'),
+              leading: Icon(Icons.archive),
+              title: Text('归档账户'),
               onTap: () {
                 Navigator.pop(context);
                 // TODO: 归档账户
               },
             ),
             ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('删除账户', style: TextStyle(color: Colors.red)),
+              leading: Icon(Icons.delete, color: Colors.red),
+              title: Text('删除账户', style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(context);
                 _confirmDelete(account);
@@ -460,19 +460,19 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('确认删除'),
-        content: const Text('确定要删除账户"${account.name}"吗？此操作不可撤销。'),
+        title: Text('确认删除'),
+        content: Text('确定要删除账户"${account.name}"吗？此操作不可撤销。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           TextButton(
             onPressed: () {
               // TODO: 删除账户
               Navigator.pop(context);
             },
-            child: const Text('删除', style: TextStyle(color: Colors.red)),
+            child: Text('删除', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

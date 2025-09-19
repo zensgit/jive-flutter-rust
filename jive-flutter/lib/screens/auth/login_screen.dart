@@ -113,7 +113,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           // 登录成功，显示欢迎消息
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('欢迎回来，${authState.user?.name ?? '用户'}！'),
+              content: Text('欢迎回来，${authState.user?.name ?? '用户'}！'),
               backgroundColor: Colors.green,
             ),
           );
@@ -128,7 +128,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           // 登录失败，显示错误消息
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text(authState.errorMessage ?? '登录失败'),
+              content: Text(authState.errorMessage ?? '登录失败'),
               backgroundColor: Colors.red,
             ),
           );
@@ -141,7 +141,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('登录过程中发生错误: $e'),
+            content: Text('登录过程中发生错误: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -177,7 +177,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       height: 80,
                     ),
                     const SizedBox(height: 24),
-                    const Text(
+                    Text(
                       'Jive Money',
                       style: TextStyle(
                         fontSize: 32,
@@ -186,7 +186,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const Text(
+                    Text(
                       '集腋记账',
                       style: TextStyle(
                         fontSize: 16,
@@ -202,7 +202,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       decoration: const InputDecoration(
                         labelText: '用户名或邮箱',
                         hintText: '请输入用户名或邮箱地址',
-                        prefixIcon: const Icon(Icons.person),
+                        prefixIcon: Icon(Icons.person),
                         border: OutlineInputBorder(),
                         helperText: '支持用户名或邮箱地址登录',
                       ),
@@ -235,9 +235,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       controller: _passwordController,
                       decoration: InputDecoration(
                         labelText: '密码',
-                        prefixIcon: const Icon(Icons.lock),
+                        prefixIcon: Icon(Icons.lock),
                         suffixIcon: IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             _isPasswordVisible
                                 ? Icons.visibility
                                 : Icons.visibility_off,
@@ -280,7 +280,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 });
                               },
                             ),
-                            const Text('记住账号'),
+                            Text('记住账号'),
                             const SizedBox(width: 16),
                             Checkbox(
                               value: _rememberPassword && _rememberMe,
@@ -292,7 +292,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     }
                                   : null,
                             ),
-                            const Text('记住密码'),
+                            Text('记住密码'),
                             const Spacer(),
                             TextButton(
                               onPressed: () async {
@@ -309,13 +309,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 if (mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                      content: const Text('已清除保存的登录信息'),
+                                      content: Text('已清除保存的登录信息'),
                                       backgroundColor: Colors.blue,
                                     ),
                                   );
                                 }
                               },
-                              child: const Text(
+                              child: Text(
                                 '清除',
                                 style: TextStyle(fontSize: 12),
                               ),
@@ -335,7 +335,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   });
                                 },
                               ),
-                              const Text(
+                              Text(
                                 '永久记住（测试模式）',
                                 style: TextStyle(
                                   fontSize: 14,
@@ -344,13 +344,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              const Icon(
+                              Icon(
                                 Icons.warning_amber,
                                 size: 16,
                                 color: Colors.orange[600],
                               ),
                               const SizedBox(width: 4),
-                              const Text(
+                              Text(
                                 '永不过期',
                                 style: TextStyle(
                                   fontSize: 12,
@@ -381,7 +381,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   _rememberPermanently
                                       ? Icons.warning
                                       : Icons.security,
@@ -392,7 +392,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
-                                  child: const Text(
+                                  child: Text(
                                     _rememberPermanently
                                         ? '⚠️ 永久记住模式 - 测试专用'
                                         : '密码将保存在本地，请确保设备安全',
@@ -411,7 +411,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                             if (_rememberPermanently) ...[
                               const SizedBox(height: 4),
-                              const Text(
+                              Text(
                                 '• 凭据永不过期，适合测试环境\n• 生产环境请取消永久记住选项\n• 定期清除凭据确保安全',
                                 style: TextStyle(
                                   fontSize: 11,
@@ -421,7 +421,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                             ] else ...[
                               const SizedBox(height: 4),
-                              const Text(
+                              Text(
                                 '• 凭据30天后自动过期\n• 仅保存在本地设备',
                                 style: TextStyle(
                                   fontSize: 11,
@@ -449,7 +449,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 valueColor:
                                     AlwaysStoppedAnimation<Color>(Colors.white),
                               )
-                            : const Text(
+                            : Text(
                                 '登录',
                                 style: TextStyle(fontSize: 16),
                               ),
@@ -462,7 +462,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       onPressed: () {
                         context.push(AppRoutes.register);
                       },
-                      child: const Text('还没有账户？点击注册'),
+                      child: Text('还没有账户？点击注册'),
                     ),
 
                     // 忘记密码链接
@@ -470,10 +470,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       onPressed: () {
                         // TODO: 实现忘记密码功能
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: const Text('忘记密码功能暂未实现')),
+                          const SnackBar(content: Text('忘记密码功能暂未实现')),
                         );
                       },
-                      child: const Text('忘记密码？'),
+                      child: Text('忘记密码？'),
                     ),
 
                     const SizedBox(height: 24),
@@ -484,7 +484,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         const Expanded(child: Divider()),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: const Text(
+                          child: Text(
                             '或',
                             style: TextStyle(
                               color: Colors.grey[600],
@@ -508,7 +508,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content:
-                                  const Text('欢迎回来，${result.userData?.username}！'),
+                                  Text('欢迎回来，${result.userData?.username}！'),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -516,7 +516,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Text(result.message ?? '微信登录失败'),
+                              content: Text(result.message ?? '微信登录失败'),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -525,7 +525,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       onError: (error) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: const Text('微信登录失败: $error'),
+                            content: Text('微信登录失败: $error'),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -539,7 +539,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       onPressed: () {
                         Navigator.of(context).pushNamed('/admin-login');
                       },
-                      child: const Text(
+                      child: Text(
                         '系统管理员登录',
                         style: TextStyle(
                           fontSize: 12,
@@ -561,10 +561,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.info,
+                                Icon(Icons.info,
                                     color: Colors.blue[700], size: 16),
                                 const SizedBox(width: 8),
-                                const Text(
+                                Text(
                                   '登录说明',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
@@ -573,7 +573,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ],
                             ),
                             const SizedBox(height: 4),
-                            const Text(
+                            Text(
                               '• 支持用户名或邮箱地址登录\n'
                               '• 管理员账户：admin / 密码：admin123\n'
                               '• 邮箱和密码请填写完整\n'

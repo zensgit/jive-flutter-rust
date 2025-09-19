@@ -55,14 +55,14 @@ class QuickActions extends ConsumerWidget {
   void _scanReceipt(BuildContext context) {
     // TODO: 实现扫描票据功能
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: const Text('扫描票据功能开发中')),
+      const SnackBar(content: Text('扫描票据功能开发中')),
     );
   }
 
   void _navigateToScheduled(BuildContext context) {
     // TODO: 导航到定期交易页面
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: const Text('定期交易功能开发中')),
+      const SnackBar(content: Text('定期交易功能开发中')),
     );
   }
 }
@@ -100,13 +100,13 @@ class _QuickActionCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 icon,
                 color: color,
                 size: 32,
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 label,
                 style: TextStyle(
                   color: color,

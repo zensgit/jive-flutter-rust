@@ -148,7 +148,7 @@ class _AccountFormState extends State<AccountForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '账户类型',
           style: theme.textTheme.titleSmall,
         ),
@@ -218,7 +218,7 @@ class _AccountFormState extends State<AccountForm> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 icon,
                 size: 20,
                 color: isSelected
@@ -226,7 +226,7 @@ class _AccountFormState extends State<AccountForm> {
                     : theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 label,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: isSelected
@@ -261,7 +261,7 @@ class _AccountFormState extends State<AccountForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '账户子类型',
           style: theme.textTheme.titleSmall,
         ),
@@ -272,7 +272,7 @@ class _AccountFormState extends State<AccountForm> {
           children: subTypes
               .map(
                 (subType) => ChoiceChip(
-                  label: const Text(_getSubTypeName(subType)),
+                  label: Text(_getSubTypeName(subType)),
                   selected: _subType == subType,
                   onSelected: (selected) {
                     if (selected) {
@@ -378,7 +378,7 @@ class _AccountFormState extends State<AccountForm> {
           .map(
             (currency) => DropdownMenuItem(
               value: currency,
-              child: const Text(_getCurrencyDisplay(currency)),
+              child: Text(_getCurrencyDisplay(currency)),
             ),
           )
           .toList(),
@@ -413,7 +413,7 @@ class _AccountFormState extends State<AccountForm> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Text('选择颜色'),
+                  Text('选择颜色'),
                 ],
               ),
             ),
@@ -437,9 +437,9 @@ class _AccountFormState extends State<AccountForm> {
               ),
               child: Row(
                 children: [
-                  const Icon(_icon, size: 24),
+                  Icon(_icon, size: 24),
                   const SizedBox(width: 8),
-                  const Text('选择图标'),
+                  Text('选择图标'),
                 ],
               ),
             ),
@@ -468,20 +468,20 @@ class _AccountFormState extends State<AccountForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '高级选项',
           style: theme.textTheme.titleSmall,
         ),
         const SizedBox(height: 8),
         SwitchListTile(
-          title: const Text('激活账户'),
-          subtitle: const Text('停用的账户不会显示在列表中'),
+          title: Text('激活账户'),
+          subtitle: Text('停用的账户不会显示在列表中'),
           value: _isActive,
           onChanged: (value) => setState(() => _isActive = value),
         ),
         SwitchListTile(
-          title: const Text('计入总额'),
-          subtitle: const Text('是否将此账户余额计入净资产'),
+          title: Text('计入总额'),
+          subtitle: Text('是否将此账户余额计入净资产'),
           value: _includeInTotal,
           onChanged: (value) => setState(() => _includeInTotal = value),
         ),
@@ -600,7 +600,7 @@ class _AccountFormState extends State<AccountForm> {
     final selected = await showDialog<Color>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('选择颜色'),
+        title: Text('选择颜色'),
         content: Wrap(
           spacing: 8,
           children: colors
@@ -644,7 +644,7 @@ class _AccountFormState extends State<AccountForm> {
     final selected = await showDialog<IconData>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('选择图标'),
+        title: Text('选择图标'),
         content: Wrap(
           spacing: 8,
           children: icons

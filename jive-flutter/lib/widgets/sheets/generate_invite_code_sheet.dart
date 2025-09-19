@@ -140,13 +140,13 @@ class _GenerateInviteCodeSheetState
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         '生成邀请码',
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const Text(
+                      Text(
                         '邀请新成员加入 ${widget.familyName}',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
@@ -156,7 +156,7 @@ class _GenerateInviteCodeSheetState
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close),
+                  icon: Icon(Icons.close),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -174,7 +174,7 @@ class _GenerateInviteCodeSheetState
                 decoration: InputDecoration(
                   labelText: '邮箱地址',
                   hintText: '输入被邀请人的邮箱',
-                  prefixIcon: const Icon(Icons.email_outlined),
+                  prefixIcon: Icon(Icons.email_outlined),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -189,7 +189,7 @@ class _GenerateInviteCodeSheetState
                 value: _selectedRole,
                 decoration: InputDecoration(
                   labelText: '分配角色',
-                  prefixIcon: const Icon(Icons.shield_outlined),
+                  prefixIcon: Icon(Icons.shield_outlined),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -199,13 +199,13 @@ class _GenerateInviteCodeSheetState
                     value: role,
                     child: Row(
                       children: [
-                        const Icon(
+                        Icon(
                           _getRoleconst Icon(role),
                           size: 20,
                           color: _getRoleColor(role),
                         ),
                         const SizedBox(width: 8),
-                        const Text(_getRoleDisplay(role)),
+                        Text(_getRoleDisplay(role)),
                       ],
                     ),
                   );
@@ -228,13 +228,13 @@ class _GenerateInviteCodeSheetState
                 },
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       _showAdvancedOptions
                           ? Icons.expand_less
                           : Icons.expand_more,
                     ),
                     const SizedBox(width: 8),
-                    const Text(
+                    Text(
                       '高级选项',
                       style: TextStyle(
                         color: theme.colorScheme.primary,
@@ -252,7 +252,7 @@ class _GenerateInviteCodeSheetState
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       '邀请有效期',
                       style: theme.textTheme.labelLarge,
                     ),
@@ -279,7 +279,7 @@ class _GenerateInviteCodeSheetState
                   decoration: InputDecoration(
                     labelText: '附加消息（可选）',
                     hintText: '给被邀请人的留言',
-                    prefixIcon: const Icon(Icons.message_outlined),
+                    prefixIcon: Icon(Icons.message_outlined),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -304,8 +304,8 @@ class _GenerateInviteCodeSheetState
                             color: Colors.white,
                           ),
                         )
-                      : const Icon(Icons.send),
-                  label: const Text(_isLoading ? '生成中...' : '生成邀请'),
+                      : Icon(Icons.send),
+                  label: Text(_isLoading ? '生成中...' : '生成邀请'),
                 ),
               ),
             ],
@@ -337,7 +337,7 @@ class _GenerateInviteCodeSheetState
             ),
           ),
           child: Center(
-            child: const Text(
+            child: Text(
               label,
               style: TextStyle(
                 color: isSelected
@@ -367,7 +367,7 @@ class _GenerateInviteCodeSheetState
               color: Colors.green.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.check_circle,
               color: Colors.green,
               size: 48,
@@ -389,10 +389,10 @@ class _GenerateInviteCodeSheetState
             children: [
               Row(
                 children: [
-                  const Icon(Icons.email_outlined, size: 20),
+                  Icon(Icons.email_outlined, size: 20),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: const Text(
+                    child: Text(
                       _generatedInvitation!.email,
                       style: theme.textTheme.bodyLarge,
                     ),
@@ -402,9 +402,9 @@ class _GenerateInviteCodeSheetState
               const SizedBox(height: 8),
               Row(
                 children: [
-                  const Icon(Icons.shield_outlined, size: 20),
+                  Icon(Icons.shield_outlined, size: 20),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     '角色: ${_getRoleDisplay(_generatedInvitation!.role)}',
                     style: theme.textTheme.bodyMedium,
                   ),
@@ -413,9 +413,9 @@ class _GenerateInviteCodeSheetState
               const SizedBox(height: 8),
               Row(
                 children: [
-                  const Icon(Icons.access_time, size: 20),
+                  Icon(Icons.access_time, size: 20),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     '有效期: ${_generatedInvitation!.remainingTimeDescription}',
                     style: theme.textTheme.bodyMedium,
                   ),
@@ -437,14 +437,14 @@ class _GenerateInviteCodeSheetState
           child: Row(
             children: [
               Expanded(
-                child: const Text(
+                child: Text(
                   _inviteLink!,
                   style: theme.textTheme.bodySmall,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.copy),
+                icon: Icon(Icons.copy),
                 onPressed: () => _copyToClipboard(_inviteLink!),
                 tooltip: '复制链接',
               ),
@@ -467,16 +467,16 @@ class _GenerateInviteCodeSheetState
                     _messageController.clear();
                   });
                 },
-                icon: const Icon(Icons.add),
-                label: const Text('新建邀请'),
+                icon: Icon(Icons.add),
+                label: Text('新建邀请'),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: FilledButton.icon(
                 onPressed: _shareInvitation,
-                icon: const Icon(Icons.share),
-                label: const Text('分享邀请'),
+                icon: Icon(Icons.share),
+                label: Text('分享邀请'),
               ),
             ),
           ],

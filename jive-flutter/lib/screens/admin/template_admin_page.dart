@@ -139,7 +139,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
               await _categoryService.createTemplate(updatedTemplate);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: const Text('模板创建成功'),
+                  content: Text('模板创建成功'),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -147,7 +147,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
               await _categoryService.updateTemplate(updatedTemplate);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: const Text('模板更新成功'),
+                  content: Text('模板更新成功'),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -157,7 +157,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text('保存失败: $e'),
+                content: Text('保存失败: $e'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -174,19 +174,19 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('删除模板'),
-        content: const Text('确定要删除模板"${template.name}"吗？此操作不可恢复。'),
+        title: Text('删除模板'),
+        content: Text('确定要删除模板"${template.name}"吗？此操作不可恢复。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('删除'),
+            child: Text('删除'),
           ),
         ],
       ),
@@ -197,7 +197,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         await _categoryService.deleteTemplate(template.id);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: const Text('模板已删除'),
+            content: Text('模板已删除'),
             backgroundColor: Colors.green,
           ),
         );
@@ -205,7 +205,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('删除失败: $e'),
+            content: Text('删除失败: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -219,7 +219,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
       await _categoryService.updateTemplate(template);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text(
+          content: Text(
             template.isFeatured ? '已设为精选' : '已取消精选',
           ),
         ),
@@ -228,7 +228,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('操作失败: $e'),
+          content: Text('操作失败: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -240,19 +240,19 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
     if (_error.isNotEmpty && _error.contains('无权访问')) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('模板管理'),
+          title: Text('模板管理'),
         ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 Icons.lock,
                 size: 64,
                 color: Colors.red,
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 _error,
                 style: const TextStyle(
                   fontSize: 18,
@@ -267,7 +267,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('系统模板管理'),
+        title: Text('系统模板管理'),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -291,12 +291,12 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: Icon(Icons.add),
             onPressed: () => _showTemplateEditor(),
             tooltip: '创建模板',
           ),
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: Icon(Icons.refresh),
             onPressed: _loadTemplates,
             tooltip: '刷新',
           ),
@@ -340,10 +340,10 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
           TextField(
             decoration: InputDecoration(
               hintText: '搜索模板名称、标签...',
-              prefixIcon: const Icon(Icons.search),
+              prefixIcon: Icon(Icons.search),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
-                      icon: const Icon(Icons.clear),
+                      icon: Icon(Icons.clear),
                       onPressed: () {
                         setState(() {
                           _searchQuery = '';
@@ -385,11 +385,11 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
                   items: [
                     const DropdownMenuItem<CategoryGroup?>(
                       value: null,
-                      child: const Text('全部分组'),
+                      child: Text('全部分组'),
                     ),
                     ...CategoryGroup.values.map((group) => DropdownMenuItem(
                           value: group,
-                          child: const Text(group.displayName),
+                          child: Text(group.displayName),
                         )),
                   ],
                   onChanged: (value) {
@@ -405,7 +405,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
               // 精选过滤
               Row(
                 children: [
-                  const Text('仅精选'),
+                  Text('仅精选'),
                   Switch(
                     value: _showOnlyFeatured,
                     onChanged: (value) {
@@ -468,13 +468,13 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.category_outlined,
               size: 64,
               color: Colors.grey[400],
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               _searchQuery.isNotEmpty ? '没有找到匹配的模板' : '暂无模板',
               style: TextStyle(
                 fontSize: 16,
@@ -510,7 +510,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
             borderRadius: BorderRadius.circular(8),
           ),
           child: Center(
-            child: const Text(
+            child: Text(
               template.icon ?? '📂',
               style: const TextStyle(fontSize: 24),
             ),
@@ -518,7 +518,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         ),
         title: Row(
           children: [
-            const Text(
+            Text(
               template.name,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
@@ -530,7 +530,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
                   color: Colors.orange[100],
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: const Text(
+                child: Text(
                   '精选',
                   style: TextStyle(
                     fontSize: 10,
@@ -544,12 +544,12 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               '${template.categoryGroup.displayName} | ${_getClassificationName(template.classification)}',
               style: TextStyle(color: Colors.grey[600]),
             ),
             if (template.nameEn != null)
-              const Text(
+              Text(
                 template.nameEn!,
                 style: TextStyle(
                   fontSize: 12,
@@ -562,7 +562,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
                 children: template.tags
                     .take(3)
                     .map((tag) => Chip(
-                          label: const Text(
+                          label: Text(
                             tag,
                             style: const TextStyle(fontSize: 10),
                           ),
@@ -579,7 +579,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(
+              icon: Icon(
                 template.isFeatured ? Icons.star : Icons.star_border,
                 color: template.isFeatured ? Colors.orange : null,
               ),
@@ -587,12 +587,12 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
               tooltip: template.isFeatured ? '取消精选' : '设为精选',
             ),
             IconButton(
-              icon: const Icon(Icons.edit),
+              icon: Icon(Icons.edit),
               onPressed: () => _showTemplateEditor(template),
               tooltip: '编辑',
             ),
             IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
+              icon: Icon(Icons.delete, color: Colors.red),
               onPressed: () => _deleteTemplate(template),
               tooltip: '删除',
             ),
@@ -642,7 +642,7 @@ class _StatCard extends StatelessWidget {
         children: [
           Icon(icon, color: color, size: 24),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             value,
             style: TextStyle(
               fontSize: 20,
@@ -650,7 +650,7 @@ class _StatCard extends StatelessWidget {
               color: color,
             ),
           ),
-          const Text(
+          Text(
             label,
             style: TextStyle(
               fontSize: 12,
@@ -739,7 +739,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   widget.template == null ? '创建模板' : '编辑模板',
                   style: const TextStyle(
                     fontSize: 20,
@@ -806,7 +806,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                             .map(
                               (c) => DropdownMenuItem(
                                 value: c,
-                                child: const Text(_getClassificationName(c)),
+                                child: Text(_getClassificationName(c)),
                               ),
                             )
                             .toList(),
@@ -829,7 +829,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                             .map(
                               (g) => DropdownMenuItem(
                                 value: g,
-                                child: const Text(g.displayName),
+                                child: Text(g.displayName),
                               ),
                             )
                             .toList(),
@@ -902,7 +902,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                   children: [
                     Expanded(
                       child: SwitchListTile(
-                        title: const Text('精选'),
+                        title: Text('精选'),
                         value: _isFeatured,
                         onChanged: (value) {
                           setState(() {
@@ -913,7 +913,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                     ),
                     Expanded(
                       child: SwitchListTile(
-                        title: const Text('启用'),
+                        title: Text('启用'),
                         value: _isActive,
                         onChanged: (value) {
                           setState(() {
@@ -932,12 +932,12 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                   children: [
                     TextButton(
                       onPressed: widget.onCancel,
-                      child: const Text('取消'),
+                      child: Text('取消'),
                     ),
                     const SizedBox(width: 12),
                     ElevatedButton(
                       onPressed: _saveTemplate,
-                      child: const Text('保存'),
+                      child: Text('保存'),
                     ),
                   ],
                 ),

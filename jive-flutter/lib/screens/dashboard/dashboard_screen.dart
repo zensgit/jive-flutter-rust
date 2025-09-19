@@ -25,9 +25,9 @@ class DashboardScreen extends ConsumerWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('概览'),
+            Text('概览'),
             if (currentLedger != null)
-              const Text(
+              Text(
                 currentLedger.name,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
@@ -41,7 +41,7 @@ class DashboardScreen extends ConsumerWidget {
           ),
           // 通知按钮
           IconButton(
-            icon: const Icon(Icons.notifications_outlined),
+            icon: Icon(Icons.notifications_outlined),
             onPressed: () {},
           ),
         ],
@@ -117,13 +117,13 @@ class DashboardScreen extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   '净资产',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Colors.white70,
                       ),
                 ),
-                const Icon(
+                Icon(
                   Icons.trending_up,
                   color: Colors.white70,
                 ),
@@ -135,7 +135,7 @@ class DashboardScreen extends ConsumerWidget {
               final formatted = ref
                   .read(currencyProvider.notifier)
                   .formatCurrency(total, ref.read(baseCurrencyProvider).code);
-              return const Text(
+              return Text(
                 formatted,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Colors.white,
@@ -185,7 +185,7 @@ class DashboardScreen extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           label,
           style: TextStyle(
             color: Colors.white60,
@@ -204,7 +204,7 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: 8),
-            const Text(
+            Text(
               amount,
               style: const TextStyle(
                 color: Colors.white,
@@ -223,7 +223,7 @@ class DashboardScreen extends ConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
+        Text(
           title,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -232,7 +232,7 @@ class DashboardScreen extends ConsumerWidget {
         if (onTap != null)
           TextButton(
             onPressed: onTap,
-            child: const Text('查看全部'),
+            child: Text('查看全部'),
           ),
       ],
     );
@@ -278,7 +278,7 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 '切换账本',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -289,8 +289,8 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
                   Navigator.pop(context);
                   // TODO: 导航到账本管理页面
                 },
-                icon: const Icon(Icons.settings),
-                label: const Text('管理'),
+                icon: Icon(Icons.settings),
+                label: Text('管理'),
               ),
             ],
           ),
@@ -304,15 +304,15 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
                     backgroundColor: isSelected
                         ? Theme.of(context).primaryColor
                         : Colors.grey[300],
-                    child: const Icon(
+                    child: Icon(
                       _getLedgerconst Icon(ledger.type.value),
                       color: isSelected ? Colors.white : Colors.grey[600],
                     ),
                   ),
-                  title: const Text(ledger.name),
-                  subtitle: const Text(ledger.description ?? ''),
+                  title: Text(ledger.name),
+                  subtitle: Text(ledger.description ?? ''),
                   trailing: isSelected
-                      ? const Icon(
+                      ? Icon(
                           Icons.check_circle,
                           color: Theme.of(context).primaryColor,
                         )
@@ -327,7 +327,7 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
               }).toList(),
             ),
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, _) => Center(child: const Text('加载失败: $error')),
+            error: (error, _) => Center(child: Text('加载失败: $error')),
           ),
           const SizedBox(height: 16),
           const SizedBox(
@@ -337,8 +337,8 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
                 Navigator.pop(context);
                 // TODO: 导航到创建账本页面
               },
-              icon: const Icon(Icons.add),
-              label: const Text('创建新账本'),
+              icon: Icon(Icons.add),
+              label: Text('创建新账本'),
             ),
           ),
         ],

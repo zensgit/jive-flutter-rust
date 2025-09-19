@@ -44,8 +44,8 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
     final secondConfirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('⚠️ 最终确认'),
-        content: const Text(
+        title: Text('⚠️ 最终确认'),
+        content: Text(
           '您确定要删除 "${widget.family.name}" 吗？\n'
           '此操作不可恢复！\n\n'
           '将删除：\n'
@@ -56,14 +56,14 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('确认删除'),
+            child: Text('确认删除'),
           ),
         ],
       ),
@@ -98,7 +98,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('已删除 "${widget.family.name}"'),
+            content: Text('已删除 "${widget.family.name}"'),
             backgroundColor: Colors.green,
           ),
         );
@@ -124,12 +124,12 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
     return AlertDialog(
       title: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.warning_amber_rounded,
             color: theme.colorScheme.error,
           ),
           const SizedBox(width: 8),
-          const Text('删除Family'),
+          Text('删除Family'),
         ],
       ),
       content: SingleChildScrollView(
@@ -137,7 +137,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               '此操作将永久删除 "${widget.family.name}" 及其所有数据。',
               style: theme.textTheme.bodyMedium,
             ),
@@ -153,7 +153,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     '将被删除的数据：',
                     style: theme.textTheme.titleSmall,
                   ),
@@ -172,7 +172,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
             const SizedBox(height: 16),
 
             // 输入确认
-            const Text(
+            Text(
               '请输入Family名称以确认删除：',
               style: theme.textTheme.bodyMedium,
             ),
@@ -184,7 +184,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
                 border: const OutlineInputBorder(),
                 errorText: _error,
                 suffixIcon: _isNameValid
-                    ? const Icon(Icons.check_circle, color: Colors.green)
+                    ? Icon(Icons.check_circle, color: Colors.green)
                     : null,
               ),
               enabled: !_isDeleting,
@@ -195,7 +195,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
       actions: [
         TextButton(
           onPressed: _isDeleting ? null : () => Navigator.pop(context),
-          child: const Text('取消'),
+          child: Text('取消'),
         ),
         FilledButton(
           onPressed: _isNameValid && !_isDeleting ? _deleteFamily : null,
@@ -211,7 +211,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 )
-              : const Text('删除Family'),
+              : Text('删除Family'),
         ),
       ],
     );
@@ -224,8 +224,8 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
         children: [
           Icon(icon, size: 16, color: Colors.red),
           const SizedBox(width: 8),
-          const Text('$label: '),
-          const Text(
+          Text('$label: '),
+          Text(
             count.toString(),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),

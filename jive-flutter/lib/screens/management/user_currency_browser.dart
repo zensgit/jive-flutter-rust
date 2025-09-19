@@ -44,12 +44,12 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('币种管理（用户）'),
+        title: Text('币种管理（用户）'),
         actions: [
           IconButton(
             onPressed: () => setState(() => _showCrypto = !_showCrypto),
             icon:
-                const Icon(_showCrypto ? Icons.currency_bitcoin : Icons.attach_money),
+                Icon(_showCrypto ? Icons.currency_bitcoin : Icons.attach_money),
             tooltip: _showCrypto ? '仅看法币' : '包含加密币',
           )
         ],
@@ -62,7 +62,7 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
               onChanged: (v) => setState(() => _q = v.trim()),
               decoration: const InputDecoration(
                 hintText: '搜索（代码/名称/符号）',
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -73,19 +73,19 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
             child: Row(
               children: [
                 ChoiceChip(
-                  label: const Text('全部'),
+                  label: Text('全部'),
                   selected: _filter == 'all',
                   onSelected: (_) => setState(() => _filter = 'all'),
                 ),
                 const SizedBox(width: 8),
                 ChoiceChip(
-                  label: const Text('仅启用'),
+                  label: Text('仅启用'),
                   selected: _filter == 'enabled',
                   onSelected: (_) => setState(() => _filter = 'enabled'),
                 ),
                 const SizedBox(width: 8),
                 ChoiceChip(
-                  label: const Text('仅下线'),
+                  label: Text('仅下线'),
                   selected: _filter == 'down',
                   onSelected: (_) => setState(() => _filter = 'down'),
                 ),
@@ -123,7 +123,7 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
             border: Border.all(color: cs.outlineVariant),
           ),
           child: Center(
-              child: const Text(c.flag ?? c.symbol,
+              child: Text(c.flag ?? c.symbol,
                   style: const TextStyle(fontSize: 18))),
         ),
         title: Row(
@@ -136,20 +136,20 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
                     color: cs.tertiaryContainer,
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(color: cs.tertiary)),
-                child: const Text('基础',
+                child: Text('基础',
                     style: TextStyle(
                         color: cs.onTertiaryContainer,
                         fontSize: 11,
                         fontWeight: FontWeight.w700)),
               ),
-            const Text(c.code, style: const TextStyle(fontWeight: FontWeight.w700)),
+            Text(c.code, style: const TextStyle(fontWeight: FontWeight.w700)),
             const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
                   color: cs.surfaceVariant,
                   borderRadius: BorderRadius.circular(4)),
-              child: const Text(c.symbol,
+              child: Text(c.symbol,
                   style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12)),
             ),
             const SizedBox(width: 8),
@@ -160,12 +160,12 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
                   decoration: BoxDecoration(
                       color: cs.secondaryContainer,
                       borderRadius: BorderRadius.circular(4)),
-                  child: const Text('加密',
+                  child: Text('加密',
                       style: TextStyle(
                           color: cs.onSecondaryContainer, fontSize: 11)))
           ],
         ),
-        subtitle: const Text(
+        subtitle: Text(
             '${c.name} · ${c.nameZh} · 小数位: ${c.decimalPlaces}${c.isEnabled ? '' : ' · 已下线'}'),
         trailing: _trailingButtons(c, isSelected, base, cs),
       ),
@@ -179,7 +179,7 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
       children: [
         if (c.code != base)
           IconButton(
-            icon: const Icon(
+            icon: Icon(
                 isSelected
                     ? Icons.remove_circle_outline
                     : Icons.add_circle_outline,
@@ -191,13 +191,13 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
                 await notifier.removeSelectedCurrency(c.code);
                 if (mounted) {
                   ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: const Text('已移除 ${c.code}')));
+                      .showSnackBar(SnackBar(content: Text('已移除 ${c.code}')));
                 }
               } else {
                 await notifier.addSelectedCurrency(c.code);
                 if (mounted) {
                   ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: const Text('已启用 ${c.code}')));
+                      .showSnackBar(SnackBar(content: Text('已启用 ${c.code}')));
                 }
               }
             },
@@ -212,10 +212,10 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
                     await notifier.setBaseCurrency(c.code);
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: const Text('基础货币已设为 ${c.code}')));
+                          SnackBar(content: Text('基础货币已设为 ${c.code}')));
                     }
                   },
-            child: const Text('设为基础'),
+            child: Text('设为基础'),
           ),
       ],
     );

@@ -156,7 +156,7 @@ class _BudgetFormState extends State<BudgetForm> {
       items: [
         const DropdownMenuItem(
           value: null,
-          child: const Text('全部分类'),
+          child: Text('全部分类'),
         ),
         ...categories.map(
           (category) => DropdownMenuItem(
@@ -172,7 +172,7 @@ class _BudgetFormState extends State<BudgetForm> {
                     shape: BoxShape.circle,
                   ),
                 ),
-                const Text(category),
+                Text(category),
               ],
             ),
           ),
@@ -214,7 +214,7 @@ class _BudgetFormState extends State<BudgetForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '预算周期',
           style: theme.textTheme.titleSmall,
         ),
@@ -257,7 +257,7 @@ class _BudgetFormState extends State<BudgetForm> {
           borderRadius: BorderRadius.circular(AppConstants.smallBorderRadius),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: const Text(
+            child: Text(
               label,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: isSelected
@@ -287,9 +287,9 @@ class _BudgetFormState extends State<BudgetForm> {
                   borderRadius:
                       BorderRadius.circular(AppConstants.borderRadius),
                 ),
-                suffixIcon: const Icon(Icons.calendar_today),
+                suffixIcon: Icon(Icons.calendar_today),
               ),
-              child: const Text(
+              child: Text(
                 _formatDate(_startDate),
                 style: theme.textTheme.bodyLarge,
               ),
@@ -309,9 +309,9 @@ class _BudgetFormState extends State<BudgetForm> {
                     borderRadius:
                         BorderRadius.circular(AppConstants.borderRadius),
                   ),
-                  suffixIcon: const Icon(Icons.calendar_today),
+                  suffixIcon: Icon(Icons.calendar_today),
                 ),
-                child: const Text(
+                child: Text(
                   _endDate != null ? _formatDate(_endDate!) : '选择日期',
                   style: theme.textTheme.bodyLarge,
                 ),
@@ -327,7 +327,7 @@ class _BudgetFormState extends State<BudgetForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '高级选项',
           style: theme.textTheme.titleSmall,
         ),
@@ -335,16 +335,16 @@ class _BudgetFormState extends State<BudgetForm> {
 
         // 余额滚动
         SwitchListTile(
-          title: const Text('余额滚动'),
-          subtitle: const Text('未使用的预算滚动到下一周期'),
+          title: Text('余额滚动'),
+          subtitle: Text('未使用的预算滚动到下一周期'),
           value: _rollover,
           onChanged: (value) => setState(() => _rollover = value),
         ),
 
         // 通知设置
         SwitchListTile(
-          title: const Text('预算提醒'),
-          subtitle: const Text('接近预算上限时发送通知'),
+          title: Text('预算提醒'),
+          subtitle: Text('接近预算上限时发送通知'),
           value: _notifyOnThreshold,
           onChanged: (value) => setState(() => _notifyOnThreshold = value),
         ),
@@ -355,7 +355,7 @@ class _BudgetFormState extends State<BudgetForm> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                const Text('提醒阈值'),
+                Text('提醒阈值'),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Slider(
@@ -368,7 +368,7 @@ class _BudgetFormState extends State<BudgetForm> {
                         setState(() => _notificationThreshold = value),
                   ),
                 ),
-                const Text(
+                Text(
                   '${(_notificationThreshold * 100).toInt()}%',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,

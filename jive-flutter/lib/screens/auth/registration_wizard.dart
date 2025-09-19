@@ -175,7 +175,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('注册失败: $e'),
+            content: Text('注册失败: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -194,7 +194,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
     if (_currentPage == 0 && !_agreeToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: const Text('请先同意用户协议和隐私政策'),
+          content: Text('请先同意用户协议和隐私政策'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -281,7 +281,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           side: const BorderSide(color: Colors.grey),
                         ),
-                        child: const Text(
+                        child: Text(
                           '上一步',
                           style: TextStyle(color: Colors.white),
                         ),
@@ -305,7 +305,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                                     AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
-                          : const Text(
+                          : Text(
                               _currentPage < 2 ? '下一步' : '完成注册',
                               style: const TextStyle(fontSize: 16),
                             ),
@@ -328,7 +328,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               '创建您的账户',
               style: TextStyle(
                 fontSize: 28,
@@ -337,7 +337,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               '让我们开始设置您的 Jive Money 账户',
               style: TextStyle(
                 fontSize: 16,
@@ -353,7 +353,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               decoration: InputDecoration(
                 labelText: '用户名',
                 labelStyle: TextStyle(color: Colors.grey[400]),
-                prefixIcon: const Icon(Icons.person, color: Colors.grey[400]),
+                prefixIcon: Icon(Icons.person, color: Colors.grey[400]),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey[600]!),
                   borderRadius: BorderRadius.circular(8),
@@ -385,7 +385,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               decoration: InputDecoration(
                 labelText: '邮箱地址',
                 labelStyle: TextStyle(color: Colors.grey[400]),
-                prefixIcon: const Icon(Icons.email, color: Colors.grey[400]),
+                prefixIcon: Icon(Icons.email, color: Colors.grey[400]),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey[600]!),
                   borderRadius: BorderRadius.circular(8),
@@ -419,9 +419,9 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               decoration: InputDecoration(
                 labelText: '密码',
                 labelStyle: TextStyle(color: Colors.grey[400]),
-                prefixIcon: const Icon(Icons.lock, color: Colors.grey[400]),
+                prefixIcon: Icon(Icons.lock, color: Colors.grey[400]),
                 suffixIcon: IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     _isPasswordVisible
                         ? Icons.visibility
                         : Icons.visibility_off,
@@ -471,9 +471,9 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               decoration: InputDecoration(
                 labelText: '确认密码',
                 labelStyle: TextStyle(color: Colors.grey[400]),
-                prefixIcon: const Icon(Icons.lock_outline, color: Colors.grey[400]),
+                prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[400]),
                 suffixIcon: IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     _isConfirmPasswordVisible
                         ? Icons.visibility
                         : Icons.visibility_off,
@@ -532,7 +532,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                         _agreeToTerms = !_agreeToTerms;
                       });
                     },
-                    child: const Text(
+                    child: Text(
                       '我已阅读并同意用户协议和隐私政策',
                       style: TextStyle(color: Colors.grey[400], fontSize: 14),
                     ),
@@ -554,7 +554,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               "Let's set up your account",
               style: TextStyle(
                 fontSize: 28,
@@ -563,7 +563,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               "First things first, let's get your profile set up.",
               style: TextStyle(
                 fontSize: 16,
@@ -599,7 +599,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.add_a_photo_outlined,
                             size: 40,
                             color: Colors.grey[600],
@@ -613,8 +613,8 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
             // Upload button
             OutlinedButton.icon(
               onPressed: _pickImage,
-              icon: const Icon(Icons.camera_alt, color: Colors.white),
-              label: const Text(
+              icon: Icon(Icons.camera_alt, color: Colors.white),
+              label: Text(
                 'Upload photo (optional)',
                 style: TextStyle(color: Colors.grey[300]),
               ),
@@ -628,7 +628,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'JPG or PNG. 5MB max.',
               style: TextStyle(
                 fontSize: 12,
@@ -647,10 +647,10 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.info_outline, color: Colors.blue[400], size: 20),
+                  Icon(Icons.info_outline, color: Colors.blue[400], size: 20),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: const Text(
+                    child: Text(
                       '您可以随时在设置中更新您的个人资料照片',
                       style: TextStyle(
                         color: Colors.grey[400],
@@ -675,7 +675,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Configure your preferences',
               style: TextStyle(
                 fontSize: 28,
@@ -684,7 +684,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               "Let's configure your preferences.",
               style: TextStyle(
                 fontSize: 16,
@@ -704,7 +704,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Example account',
                     style: TextStyle(
                       color: Colors.grey[500],
@@ -712,7 +712,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     _getCurrencySymbol(_selectedCurrency) + '2,325.25',
                     style: const TextStyle(
                       color: Colors.white,
@@ -723,21 +723,21 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Text(
+                      Text(
                         '+${_getCurrencySymbol(_selectedCurrency)}78.90',
                         style: TextStyle(
                           color: Colors.green[400],
                           fontSize: 16,
                         ),
                       ),
-                      const Text(
+                      Text(
                         ' (+${_getCurrencySymbol(_selectedCurrency)}6.39)',
                         style: TextStyle(
                           color: Colors.green[400],
                           fontSize: 14,
                         ),
                       ),
-                      const Text(
+                      Text(
                         ' as of ${_formatDate(_selectedDateFormat)}',
                         style: TextStyle(
                           color: Colors.grey[500],
@@ -750,7 +750,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'Preview how data displays based on preferences.',
               style: TextStyle(
                 color: Colors.grey[500],
@@ -765,7 +765,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               decoration: InputDecoration(
                 labelText: '国家/地区',
                 labelStyle: TextStyle(color: Colors.grey[400]),
-                prefixIcon: const Icon(Icons.public, color: Colors.grey[400]),
+                prefixIcon: Icon(Icons.public, color: Colors.grey[400]),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey[600]!),
                   borderRadius: BorderRadius.circular(8),
@@ -796,7 +796,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               decoration: InputDecoration(
                 labelText: '货币',
                 labelStyle: TextStyle(color: Colors.grey[400]),
-                prefixIcon: const Icon(Icons.attach_money, color: Colors.grey[400]),
+                prefixIcon: Icon(Icons.attach_money, color: Colors.grey[400]),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey[600]!),
                   borderRadius: BorderRadius.circular(8),
@@ -825,7 +825,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               decoration: InputDecoration(
                 labelText: '语言',
                 labelStyle: TextStyle(color: Colors.grey[400]),
-                prefixIcon: const Icon(Icons.language, color: Colors.grey[400]),
+                prefixIcon: Icon(Icons.language, color: Colors.grey[400]),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey[600]!),
                   borderRadius: BorderRadius.circular(8),
@@ -854,7 +854,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               decoration: InputDecoration(
                 labelText: '时区',
                 labelStyle: TextStyle(color: Colors.grey[400]),
-                prefixIcon: const Icon(Icons.access_time, color: Colors.grey[400]),
+                prefixIcon: Icon(Icons.access_time, color: Colors.grey[400]),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey[600]!),
                   borderRadius: BorderRadius.circular(8),
@@ -884,7 +884,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
               decoration: InputDecoration(
                 labelText: '日期格式',
                 labelStyle: TextStyle(color: Colors.grey[400]),
-                prefixIcon: const Icon(Icons.calendar_today, color: Colors.grey[400]),
+                prefixIcon: Icon(Icons.calendar_today, color: Colors.grey[400]),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey[600]!),
                   borderRadius: BorderRadius.circular(8),
@@ -976,13 +976,13 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
   Widget _buildRequirement(String text, bool met) {
     return Row(
       children: [
-        const Icon(
+        Icon(
           met ? Icons.check_circle : Icons.radio_button_unchecked,
           size: 12,
           color: met ? Colors.green : Colors.grey[600],
         ),
         const SizedBox(width: 4),
-        const Text(
+        Text(
           text,
           style: TextStyle(
             fontSize: 11,
@@ -996,8 +996,8 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
   List<DropdownMenuItem<String>> _getCountryItems() {
     if (_localeData == null) {
       return [
-        const DropdownMenuItem(value: 'CN', child: const Text('中国')),
-        const DropdownMenuItem(value: 'US', child: const Text('美国')),
+        const DropdownMenuItem(value: 'CN', child: Text('中国')),
+        const DropdownMenuItem(value: 'US', child: Text('美国')),
       ];
     }
 
@@ -1005,7 +1005,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
     return countries.map((country) {
       return DropdownMenuItem<String>(
         value: country['code'],
-        child: const Text(country['name']),
+        child: Text(country['name']),
       );
     }).toList();
   }
@@ -1013,8 +1013,8 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
   List<DropdownMenuItem<String>> _getCurrencyItems() {
     if (_localeData == null) {
       return [
-        const DropdownMenuItem(value: 'CNY', child: const Text('人民币 (¥)')),
-        const DropdownMenuItem(value: 'USD', child: const Text('美元 (\$)')),
+        const DropdownMenuItem(value: 'CNY', child: Text('人民币 (¥)')),
+        const DropdownMenuItem(value: 'USD', child: Text('美元 (\$)')),
       ];
     }
 
@@ -1022,7 +1022,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
     return currencies.map((currency) {
       return DropdownMenuItem<String>(
         value: currency['code'],
-        child: const Text('${currency['name']} (${currency['symbol']})'),
+        child: Text('${currency['name']} (${currency['symbol']})'),
       );
     }).toList();
   }
@@ -1030,8 +1030,8 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
   List<DropdownMenuItem<String>> _getLanguageItems() {
     if (_localeData == null) {
       return [
-        const DropdownMenuItem(value: 'zh-CN', child: const Text('简体中文')),
-        const DropdownMenuItem(value: 'en-US', child: const Text('English')),
+        const DropdownMenuItem(value: 'zh-CN', child: Text('简体中文')),
+        const DropdownMenuItem(value: 'en-US', child: Text('English')),
       ];
     }
 
@@ -1039,7 +1039,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
     return languages.map((language) {
       return DropdownMenuItem<String>(
         value: language['code'],
-        child: const Text(language['name']),
+        child: Text(language['name']),
       );
     }).toList();
   }
@@ -1115,7 +1115,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
     return timezones.map((tz) {
       return DropdownMenuItem<String>(
         value: tz['value'] as String,
-        child: const Text(
+        child: Text(
           tz['display'] as String,
           overflow: TextOverflow.ellipsis,
         ),
@@ -1126,9 +1126,9 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
   List<DropdownMenuItem<String>> _getDateFormatItems() {
     if (_localeData == null) {
       return [
-        const DropdownMenuItem(value: 'YYYY-MM-DD', child: const Text('2024-12-31')),
-        const DropdownMenuItem(value: 'MM/DD/YYYY', child: const Text('12/31/2024')),
-        const DropdownMenuItem(value: 'DD/MM/YYYY', child: const Text('31/12/2024')),
+        const DropdownMenuItem(value: 'YYYY-MM-DD', child: Text('2024-12-31')),
+        const DropdownMenuItem(value: 'MM/DD/YYYY', child: Text('12/31/2024')),
+        const DropdownMenuItem(value: 'DD/MM/YYYY', child: Text('31/12/2024')),
       ];
     }
 
@@ -1136,7 +1136,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
     return formats.map((format) {
       return DropdownMenuItem<String>(
         value: format['format'],
-        child: const Text(format['example']),
+        child: Text(format['example']),
       );
     }).toList();
   }

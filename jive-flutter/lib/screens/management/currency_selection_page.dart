@@ -77,7 +77,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
   void _showSnackBar(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text(message),
+        content: Text(message),
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
@@ -158,7 +158,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                   color: isBaseCurrency ? cs.tertiary : cs.outlineVariant),
             ),
             child: Center(
-              child: const Text(currency.flag ?? currency.symbol,
+              child: Text(currency.flag ?? currency.symbol,
                   style: TextStyle(fontSize: 20, color: cs.onSurface)),
             ),
           ),
@@ -174,13 +174,13 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(color: cs.tertiary),
                   ),
-                  child: const Text('基础',
+                  child: Text('基础',
                       style: TextStyle(
                           fontSize: dense ? 10 : 11,
                           color: cs.onTertiaryContainer,
                           fontWeight: FontWeight.w700)),
                 ),
-              const Text(currency.code,
+              Text(currency.code,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 16)),
               const SizedBox(width: 8),
@@ -189,17 +189,17 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                 decoration: BoxDecoration(
                     color: cs.surfaceVariant,
                     borderRadius: BorderRadius.circular(4)),
-                child: const Text(currency.symbol,
+                child: Text(currency.symbol,
                     style: TextStyle(fontSize: dense ? 11 : 12)),
               ),
             ],
           ),
-          subtitle: const Text(currency.nameZh,
+          subtitle: Text(currency.nameZh,
               style: TextStyle(
                   fontSize: dense ? 12 : 13, color: cs.onSurfaceVariant)),
           trailing: isBaseCurrency
-              ? const Icon(Icons.check_circle, color: Colors.amber)
-              : const Icon(Icons.chevron_right),
+              ? Icon(Icons.check_circle, color: Colors.amber)
+              : Icon(Icons.chevron_right),
           onTap: () => Navigator.pop(context, currency),
         ),
       );
@@ -225,7 +225,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
             ),
           ),
           child: Center(
-            child: const Text(
+            child: Text(
               currency.flag ?? currency.symbol,
               style: TextStyle(fontSize: 20, color: cs.onSurface),
             ),
@@ -243,7 +243,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                   borderRadius: BorderRadius.circular(6),
                   border: Border.all(color: cs.tertiary),
                 ),
-                child: const Text(
+                child: Text(
                   '基础',
                   style: TextStyle(
                     fontSize: dense ? 10 : 11,
@@ -258,7 +258,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                 children: [
                   Row(
                     children: [
-                      const Text(
+                      Text(
                         currency.code,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
@@ -275,12 +275,12 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                           color: cs.surfaceVariant,
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: const Text(currency.symbol,
+                        child: Text(currency.symbol,
                             style: TextStyle(fontSize: dense ? 11 : 12)),
                       ),
                     ],
                   ),
-                  const Text(currency.nameZh,
+                  Text(currency.nameZh,
                       style: TextStyle(
                           fontSize: dense ? 12 : 13,
                           color: cs.onSurfaceVariant)),
@@ -292,7 +292,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                     Row(
                       children: [
                         Flexible(
-                          child: const Text(
+                          child: Text(
                               '1 ${ref.watch(baseCurrencyProvider).code} = ${displayRate.toStringAsFixed(4)} ${currency.code}',
                               style: TextStyle(
                                   fontSize: dense ? 11 : 12,
@@ -340,9 +340,9 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.trending_up, size: 16, color: cs.primary),
+                          Icon(Icons.trending_up, size: 16, color: cs.primary),
                           const SizedBox(width: 8),
-                          const Text(
+                          Text(
                             '汇率设置',
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
@@ -360,7 +360,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                                 color: cs.tertiaryContainer,
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              child: const Text(
+                              child: Text(
                                 '手动',
                                 style: TextStyle(
                                     fontSize: 11,
@@ -413,8 +413,8 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                                       .read(currencyProvider.notifier)
                                       .clearManualRate(currency.code);
                                 },
-                                icon: const Icon(Icons.refresh, size: 18),
-                                label: const Text('自动'),
+                                icon: Icon(Icons.refresh, size: 18),
+                                label: Text('自动'),
                                 style: TextButton.styleFrom(
                                     foregroundColor: cs.primary),
                               ),
@@ -479,8 +479,8 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                                     }
                                   }
                                 },
-                                icon: const Icon(Icons.save, size: 18),
-                                label: const Text('保存(含有效期)'),
+                                icon: Icon(Icons.save, size: 18),
+                                label: Text('保存(含有效期)'),
                                 style: TextButton.styleFrom(
                                     foregroundColor: cs.primary),
                               ),
@@ -493,10 +493,10 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Row(
                             children: [
-                              const Icon(Icons.schedule,
+                              Icon(Icons.schedule,
                                   size: dense ? 14 : 16, color: cs.tertiary),
                               const SizedBox(width: 6),
-                              const Text(
+                              Text(
                                 '手动汇率有效期: ${_manualExpiry[currency.code]!.toLocal().toString().split(" ").first} 00:00',
                                 style: TextStyle(
                                     fontSize: dense ? 11 : 12,
@@ -521,7 +521,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           widget.isSelectingBaseCurrency ? '选择基础货币' : '管理法定货币',
         ),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
@@ -547,7 +547,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                   }
                 } catch (_) {}
               },
-              icon: const Icon(_compact
+              icon: Icon(_compact
                   ? Icons.format_list_bulleted
                   : Icons.format_line_spacing),
               tooltip: _compact ? '切换舒适模式' : '切换紧凑模式',
@@ -561,7 +561,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Icon(Icons.refresh),
+                  : Icon(Icons.refresh),
               tooltip: '更新汇率',
             ),
         ],
@@ -581,10 +581,10 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
               },
               decoration: InputDecoration(
                 hintText: '搜索货币（代码、名称、符号）',
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: Icon(Icons.search),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear),
+                        icon: Icon(Icons.clear),
                         onPressed: () {
                           setState(() {
                             _searchController.clear();
@@ -610,12 +610,12 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                const Icon(Icons.info_outline,
+                Icon(Icons.info_outline,
                     size: 14,
                     color: Theme.of(context).colorScheme.onPrimaryContainer),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: const Text(
+                  child: Text(
                     widget.isSelectingBaseCurrency
                         ? '点击选择要设为基础货币的货币'
                         : '勾选要使用的货币，展开可设置汇率',
@@ -661,7 +661,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       '已选择 ${ref.watch(selectedCurrenciesProvider).length} 种货币',
                       style: TextStyle(
                           fontWeight: FontWeight.w500,
@@ -671,8 +671,8 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      icon: const Icon(Icons.check),
-                      label: const Text('完成'),
+                      icon: Icon(Icons.check),
+                      label: Text('完成'),
                     ),
                   ],
                 ),

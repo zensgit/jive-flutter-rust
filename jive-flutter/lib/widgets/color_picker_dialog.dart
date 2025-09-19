@@ -54,7 +54,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('选择颜色'),
+      title: Text('选择颜色'),
       content: const SizedBox(
         width: 300,
         child: Column(
@@ -99,7 +99,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
             const SizedBox(height: 16),
 
             // 预设颜色
-            const Text(
+            Text(
               '预设颜色',
               style: TextStyle(
                 fontSize: 16,
@@ -114,7 +114,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('取消'),
+          child: Text('取消'),
         ),
         ElevatedButton(
           onPressed: () {
@@ -125,7 +125,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
             backgroundColor: Colors.black,
             foregroundColor: Colors.white,
           ),
-          child: const Text('确定'),
+          child: Text('确定'),
         ),
       ],
     );
@@ -168,7 +168,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
         children: [
           const SizedBox(
             width: 16,
-            child: const Text(
+            child: Text(
               label,
               style: const TextStyle(fontWeight: FontWeight.w500),
             ),
@@ -193,7 +193,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
           const SizedBox(width: 8),
           const SizedBox(
             width: 32,
-            child: const Text(
+            child: Text(
               value.toInt().toString(),
               style: const TextStyle(fontSize: 12),
               textAlign: TextAlign.right,
@@ -225,7 +225,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
               ),
             ),
             child: isSelected
-                ? const Icon(
+                ? Icon(
                     Icons.check,
                     color: Colors.white,
                     size: 16,

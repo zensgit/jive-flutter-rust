@@ -20,12 +20,12 @@ class AccountOverview extends ConsumerWidget {
       return Center(
         child: Column(
           children: [
-            const Icon(Icons.error_outline, color: Colors.red),
+            Icon(Icons.error_outline, color: Colors.red),
             const SizedBox(height: 8),
-            const Text('加载失败: ${accountState.errorMessage}'),
+            Text('加载失败: ${accountState.errorMessage}'),
             TextButton(
               onPressed: () => ref.read(accountProvider.notifier).refresh(),
-              child: const Text('重试'),
+              child: Text('重试'),
             ),
           ],
         ),
@@ -66,7 +66,7 @@ class AccountOverview extends ConsumerWidget {
         if (accountList.length > 5)
           TextButton(
             onPressed: () => context.go(AppRoutes.accounts),
-            child: const Text('查看全部 ${accountList.length} 个账户'),
+            child: Text('查看全部 ${accountList.length} 个账户'),
           ),
       ],
     );
@@ -81,13 +81,13 @@ class AccountOverview extends ConsumerWidget {
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              const Icon(
+              Icon(
                 Icons.add_circle_outline,
                 size: 48,
                 color: Theme.of(context).primaryColor,
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 '添加您的第一个账户',
                 style: TextStyle(
                   fontSize: 16,
@@ -95,7 +95,7 @@ class AccountOverview extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 '开始记录您的财务状况',
                 style: TextStyle(
                   fontSize: 14,
@@ -166,7 +166,7 @@ class AccountOverview extends ConsumerWidget {
             children: [
               Icon(icon, size: 16, color: color),
               const SizedBox(width: 4),
-              const Text(
+              Text(
                 title,
                 style: TextStyle(
                   fontSize: 12,
@@ -177,7 +177,7 @@ class AccountOverview extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             '¥${amount.abs().toStringAsFixed(2)}',
             style: TextStyle(
               fontSize: 16,
@@ -201,17 +201,17 @@ class AccountOverview extends ConsumerWidget {
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: account.displayColor.withValues(alpha: 0.2),
-          child: const Icon(
+          child: Icon(
             account.icon,
             color: account.displayColor,
             size: 20,
           ),
         ),
-        title: const Text(
+        title: Text(
           account.name,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
-        subtitle: const Text(
+        subtitle: Text(
           account.type.label,
           style: TextStyle(fontSize: 12, color: Colors.grey[600]),
         ),
@@ -219,7 +219,7 @@ class AccountOverview extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            const Text(
+            Text(
               account.formattedBalance,
               style: TextStyle(
                 fontSize: 16,
@@ -228,7 +228,7 @@ class AccountOverview extends ConsumerWidget {
               ),
             ),
             if (account.lastTransactionDate != null)
-              const Text(
+              Text(
                 _formatLastUpdated(account.lastTransactionDate),
                 style: TextStyle(
                   fontSize: 10,

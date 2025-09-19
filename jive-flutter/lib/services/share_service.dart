@@ -92,7 +92,7 @@ Jive Money - 您的智能家庭财务管家
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   '$familyName - $period',
                   style: const TextStyle(
                     fontSize: 18,
@@ -103,7 +103,7 @@ Jive Money - 您的智能家庭财务管家
                 const SizedBox(height: 20),
                 chartWidget,
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   'Powered by Jive Money',
                   style: TextStyle(
                     fontSize: 12,
@@ -183,7 +183,7 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(message ?? '已复制到剪贴板'),
+            content: Text(message ?? '已复制到剪贴板'),
             duration: const Duration(seconds: 2),
           ),
         );
@@ -326,7 +326,7 @@ $data
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text(message),
+          content: Text(message),
           backgroundColor: Colors.red,
         ),
       );
@@ -381,7 +381,7 @@ class ShareDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               title,
               style: theme.textTheme.titleLarge,
             ),
@@ -394,7 +394,7 @@ class ShareDialog extends StatelessWidget {
                 color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Text(
+              child: Text(
                 content,
                 style: theme.textTheme.bodyMedium,
                 maxLines: 3,
@@ -413,17 +413,17 @@ class ShareDialog extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.link, size: 16),
+                    Icon(Icons.link, size: 16),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: const Text(
+                      child: Text(
                         url!,
                         style: theme.textTheme.bodySmall,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.copy, size: 16),
+                      icon: Icon(Icons.copy, size: 16),
                       onPressed: onCopy ??
                           () {
                             ShareService.copyToClipboard(
@@ -443,7 +443,7 @@ class ShareDialog extends StatelessWidget {
             const SizedBox(height: 24),
 
             // 分享平台
-            const Text(
+            Text(
               '分享到',
               style: theme.textTheme.titleSmall,
             ),
@@ -517,7 +517,7 @@ class ShareDialog extends StatelessWidget {
             // 取消按钮
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('取消'),
+              child: Text('取消'),
             ),
           ],
         ),
@@ -557,14 +557,14 @@ class _SharePlatformButton extends StatelessWidget {
                 color: color.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 icon,
                 color: color,
                 size: 24,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               label,
               style: TextStyle(
                 fontSize: 12,

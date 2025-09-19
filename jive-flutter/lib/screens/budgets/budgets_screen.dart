@@ -18,7 +18,7 @@ class BudgetsScreen extends ConsumerWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('预算管理'),
+          title: Text('预算管理'),
           bottom: const TabBar(
             tabs: [
               Tab(text: '本月预算'),
@@ -27,11 +27,11 @@ class BudgetsScreen extends ConsumerWidget {
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.calendar_today),
+              icon: Icon(Icons.calendar_today),
               onPressed: () => _selectMonth(context),
             ),
             IconButton(
-              icon: const Icon(Icons.analytics),
+              icon: Icon(Icons.analytics),
               onPressed: () => _navigateToAnalytics(context),
             ),
           ],
@@ -44,8 +44,8 @@ class BudgetsScreen extends ConsumerWidget {
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => context.go('${AppRoutes.budgets}/add'),
-          icon: const Icon(Icons.add),
-          label: const Text('新增预算'),
+          icon: Icon(Icons.add),
+          label: Text('新增预算'),
         ),
       ),
     );
@@ -62,14 +62,14 @@ class BudgetsScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            const Text('加载失败: ${budgetState.error}'),
+            Text('加载失败: ${budgetState.error}'),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () =>
                   ref.read(budgetControllerProvider.notifier).refresh(),
-              child: const Text('重试'),
+              child: Text('重试'),
             ),
           ],
         ),
@@ -112,14 +112,14 @@ class BudgetsScreen extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         '本月预算总览',
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 14,
                         ),
                       ),
-                      const Text(
+                      Text(
                         '${DateTime.now().month}月',
                         style: const TextStyle(
                           color: Colors.white70,
@@ -135,14 +135,14 @@ class BudgetsScreen extends ConsumerWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             '剩余预算',
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 12,
                             ),
                           ),
-                          const Text(
+                          Text(
                             ref.read(currencyProvider.notifier).formatCurrency(
                                 remaining, ref.read(baseCurrencyProvider).code),
                             style: const TextStyle(
@@ -184,7 +184,7 @@ class BudgetsScreen extends ConsumerWidget {
           const SizedBox(height: 20),
 
           // 分类预算列表
-          const Text(
+          Text(
             '分类预算',
             style: TextStyle(
               fontSize: 18,
@@ -204,13 +204,13 @@ class BudgetsScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.calendar_view_month,
             size: 80,
             color: Colors.grey[300],
           ),
           const SizedBox(height: 24),
-          const Text(
+          Text(
             '年度预算',
             style: TextStyle(
               fontSize: 20,
@@ -219,7 +219,7 @@ class BudgetsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             '查看和管理年度预算计划',
             style: TextStyle(
               fontSize: 14,
@@ -231,8 +231,8 @@ class BudgetsScreen extends ConsumerWidget {
             onPressed: () {
               // TODO: 创建年度预算
             },
-            icon: const Icon(Icons.add),
-            label: const Text('创建年度预算'),
+            icon: Icon(Icons.add),
+            label: Text('创建年度预算'),
           ),
         ],
       ),
@@ -244,13 +244,13 @@ class BudgetsScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.pie_chart_outline,
             size: 100,
             color: Colors.grey[300],
           ),
           const SizedBox(height: 24),
-          const Text(
+          Text(
             '还没有预算',
             style: TextStyle(
               fontSize: 20,
@@ -259,7 +259,7 @@ class BudgetsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             '创建预算来控制您的支出',
             style: TextStyle(
               fontSize: 14,
@@ -269,8 +269,8 @@ class BudgetsScreen extends ConsumerWidget {
           const SizedBox(height: 32),
           ElevatedButton.icon(
             onPressed: () => context.go('${AppRoutes.budgets}/add'),
-            icon: const Icon(Icons.add),
-            label: const Text('创建预算'),
+            icon: Icon(Icons.add),
+            label: Text('创建预算'),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
@@ -285,7 +285,7 @@ class BudgetsScreen extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           label,
           style: TextStyle(
             color: color.withValues(alpha: 0.7),
@@ -293,7 +293,7 @@ class BudgetsScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           label == '剩余天数'
               ? '${value.toInt()}天'
               : ref != null
@@ -340,7 +340,7 @@ class BudgetsScreen extends ConsumerWidget {
                               .withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           _getCategoryconst Icon(budget.category),
                           color: _getCategoryColor(budget.category),
                           size: 20,
@@ -350,14 +350,14 @@ class BudgetsScreen extends ConsumerWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             budget.name,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
                           ),
-                          const Text(
+                          Text(
                             budget.category,
                             style: TextStyle(
                               color: Colors.grey[600],
@@ -371,7 +371,7 @@ class BudgetsScreen extends ConsumerWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      const Text(
+                      Text(
                         isOverBudget ? '超支' : '剩余',
                         style: TextStyle(
                           color: isOverBudget ? Colors.red : Colors.green,
@@ -383,7 +383,7 @@ class BudgetsScreen extends ConsumerWidget {
                             .read(currencyProvider.notifier)
                             .formatCurrency(remaining.abs(),
                                 ref.read(baseCurrencyProvider).code);
-                        return const Text(
+                        return Text(
                           str,
                           style: TextStyle(
                             color: isOverBudget ? Colors.red : Colors.green,
@@ -421,7 +421,7 @@ class BudgetsScreen extends ConsumerWidget {
                         .read(currencyProvider.notifier)
                         .formatCurrency(
                             spent, ref.read(baseCurrencyProvider).code);
-                    return const Text(
+                    return Text(
                       '已用 ' + used,
                       style: TextStyle(
                         color: Colors.grey[600],
@@ -434,7 +434,7 @@ class BudgetsScreen extends ConsumerWidget {
                         .read(currencyProvider.notifier)
                         .formatCurrency(
                             amount, ref.read(baseCurrencyProvider).code);
-                    return const Text(
+                    return Text(
                       '预算 ' + totalStr,
                       style: TextStyle(
                         color: Colors.grey[600],

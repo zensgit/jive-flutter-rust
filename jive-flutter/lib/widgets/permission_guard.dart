@@ -86,13 +86,13 @@ class PermissionGuard extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.lock_outline,
             color: theme.colorScheme.error,
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: const Text(
+            child: Text(
               '您没有权限访问此内容',
               style: TextStyle(
                 color: theme.colorScheme.onErrorContainer,
@@ -206,14 +206,14 @@ class RoleBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             icon,
             size: 16,
             color: color,
           ),
           if (showLabel) ...[
             const SizedBox(width: 4),
-            const Text(
+            Text(
               label,
               style: TextStyle(
                 fontSize: 12,
@@ -293,14 +293,14 @@ class PermissionHint extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.info_outline,
             color: theme.colorScheme.onWarningContainer,
             size: 20,
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: const Text(
+            child: Text(
               customMessage ?? _getDefaultMessage(action),
               style: TextStyle(
                 fontSize: 14,

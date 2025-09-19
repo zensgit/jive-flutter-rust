@@ -55,7 +55,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('${_getTypeLabel(_selectedType)}创建成功'),
+            content: Text('${_getTypeLabel(_selectedType)}创建成功'),
             backgroundColor: Colors.green,
           ),
         );
@@ -64,7 +64,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('创建失败: ${e.toString()}'),
+            content: Text('创建失败: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -135,13 +135,13 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.add_home,
                     color: theme.primaryColor,
                     size: 28,
                   ),
                   const SizedBox(width: 12),
-                  const Text(
+                  Text(
                     '创建新家庭',
                     style: TextStyle(
                       fontSize: 20,
@@ -166,7 +166,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                       decoration: InputDecoration(
                         labelText: '名称',
                         hintText: '例如：我的家庭',
-                        prefixIcon: const Icon(Icons.home),
+                        prefixIcon: Icon(Icons.home),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -188,7 +188,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                       value: _selectedType,
                       decoration: InputDecoration(
                         labelText: '类型',
-                        prefixIcon: const Icon(_getTypeconst Icon(_selectedType)),
+                        prefixIcon: Icon(_getTypeconst Icon(_selectedType)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -198,9 +198,9 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                           value: type,
                           child: Row(
                             children: [
-                              const Icon(_getTypeconst Icon(type), size: 20),
+                              Icon(_getTypeconst Icon(type), size: 20),
                               const SizedBox(width: 8),
-                              const Text(_getTypeLabel(type)),
+                              Text(_getTypeLabel(type)),
                             ],
                           ),
                         );
@@ -218,7 +218,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                       value: _selectedCurrency,
                       decoration: InputDecoration(
                         labelText: '货币',
-                        prefixIcon: const Icon(Icons.attach_money),
+                        prefixIcon: Icon(Icons.attach_money),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -226,27 +226,27 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                       items: const [
                         DropdownMenuItem(
                           value: 'CNY',
-                          child: const Text('CNY - 人民币 ¥'),
+                          child: Text('CNY - 人民币 ¥'),
                         ),
                         DropdownMenuItem(
                           value: 'USD',
-                          child: const Text('USD - 美元 \$'),
+                          child: Text('USD - 美元 \$'),
                         ),
                         DropdownMenuItem(
                           value: 'EUR',
-                          child: const Text('EUR - 欧元 €'),
+                          child: Text('EUR - 欧元 €'),
                         ),
                         DropdownMenuItem(
                           value: 'GBP',
-                          child: const Text('GBP - 英镑 £'),
+                          child: Text('GBP - 英镑 £'),
                         ),
                         DropdownMenuItem(
                           value: 'JPY',
-                          child: const Text('JPY - 日元 ¥'),
+                          child: Text('JPY - 日元 ¥'),
                         ),
                         DropdownMenuItem(
                           value: 'HKD',
-                          child: const Text('HKD - 港币 HK\$'),
+                          child: Text('HKD - 港币 HK\$'),
                         ),
                       ],
                       onChanged: (value) {
@@ -263,7 +263,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                       decoration: InputDecoration(
                         labelText: '描述（可选）',
                         hintText: '简单描述这个账本的用途',
-                        prefixIcon: const Icon(Icons.description),
+                        prefixIcon: Icon(Icons.description),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -274,8 +274,8 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
 
                     // 设为默认
                     CheckboxListTile(
-                      title: const Text('设为默认'),
-                      subtitle: const Text('登录后自动选择此账本'),
+                      title: Text('设为默认'),
+                      subtitle: Text('登录后自动选择此账本'),
                       value: _isDefault,
                       onChanged: (value) {
                         setState(() => _isDefault = value ?? false);
@@ -298,14 +298,14 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.info_outline,
                             size: 16,
                             color: theme.primaryColor,
                           ),
                           const SizedBox(width: 8),
                           const Expanded(
-                            child: const Text(
+                            child: Text(
                               '您将成为此账本的所有者（Owner），拥有全部管理权限',
                               style: TextStyle(fontSize: 12),
                             ),
@@ -333,7 +333,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                   TextButton(
                     onPressed:
                         _isLoading ? null : () => Navigator.of(context).pop(),
-                    child: const Text('取消'),
+                    child: Text('取消'),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
@@ -355,7 +355,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                               strokeWidth: 2,
                             ),
                           )
-                        : const Text('创建'),
+                        : Text('创建'),
                   ),
                 ],
               ),

@@ -14,7 +14,7 @@ class CategoryListPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('分类管理'),
+        title: Text('分类管理'),
       ),
       body: categories.isEmpty
           ? _EmptyState(colorScheme: colorScheme)
@@ -27,11 +27,11 @@ class CategoryListPage extends ConsumerWidget {
                 return ListTile(
                   leading: CircleAvatar(
                     backgroundColor: _parseColor(c.color, colorScheme.primary),
-                    child: const Text(c.icon, style: const TextStyle(fontSize: 14)),
+                    child: Text(c.icon, style: const TextStyle(fontSize: 14)),
                   ),
-                  title: const Text(c.name),
+                  title: Text(c.name),
                   subtitle: c.parentId != null
-                      ? const Text('子分类', style: TextStyle(fontSize: 11))
+                      ? Text('子分类', style: TextStyle(fontSize: 11))
                       : null,
                   dense: true,
                   visualDensity: VisualDensity.compact,
@@ -42,10 +42,10 @@ class CategoryListPage extends ConsumerWidget {
         onPressed: () {
           // 占位：后续 PR 将实现创建分类对话框
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: const Text('创建分类功能后续 PR 提供')),
+            const SnackBar(content: Text('创建分类功能后续 PR 提供')),
           );
         },
-        child: const Icon(Icons.add),
+        child: Icon(Icons.add),
       ),
     );
   }
@@ -75,14 +75,14 @@ class _EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.category_outlined, size: 56, color: colorScheme.primary),
+            Icon(Icons.category_outlined, size: 56, color: colorScheme.primary),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               '暂无分类',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               '点击右下角 + 按钮创建你的第一个分类',
               textAlign: TextAlign.center,
               style: TextStyle(color: colorScheme.onSurface.withValues(alpha: .65)),

@@ -50,7 +50,7 @@ class ImageUtils {
         onBackgroundImageError: (exception, stackTrace) {
           debugPrint('Error loading avatar: $exception');
         },
-        child: const Text(
+        child: Text(
           initials,
           style: TextStyle(
             fontSize: radius * 0.8,
@@ -64,7 +64,7 @@ class ImageUtils {
     return CircleAvatar(
       radius: radius,
       backgroundColor: _getColorFromName(name),
-      child: const Text(
+      child: Text(
         initials,
         style: TextStyle(
           color: Colors.white,
@@ -95,7 +95,7 @@ class ImageUtils {
       width: width,
       height: height,
       color: Colors.grey[200],
-      child: const Icon(
+      child: Icon(
         Icons.broken_image,
         color: Colors.grey[400],
         size: (width ?? 40) * 0.5,

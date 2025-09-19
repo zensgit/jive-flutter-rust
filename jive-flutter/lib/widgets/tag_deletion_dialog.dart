@@ -16,15 +16,15 @@ class TagDeletionDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AlertDialog(
-      title: const Text('删除标签'),
+      title: Text('删除标签'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('确定要删除标签"${tag.name}"吗？'),
+          Text('确定要删除标签"${tag.name}"吗？'),
           if (tag.usageCount > 0) ...[
             const SizedBox(height: 8),
-            const Text(
+            Text(
               '该标签已被使用 ${tag.usageCount} 次。',
               style: TextStyle(color: Colors.orange[700]),
             ),
@@ -34,7 +34,7 @@ class TagDeletionDialog extends ConsumerWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('取消'),
+          child: Text('取消'),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -45,7 +45,7 @@ class TagDeletionDialog extends ConsumerWidget {
               Navigator.pop(context);
               onDeleted?.call();
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: const Text('标签"${tag.name}"已删除')),
+                SnackBar(content: Text('标签"${tag.name}"已删除')),
               );
             }
           },
@@ -53,7 +53,7 @@ class TagDeletionDialog extends ConsumerWidget {
             backgroundColor: Colors.red,
             foregroundColor: Colors.white,
           ),
-          child: const Text('删除'),
+          child: Text('删除'),
         ),
       ],
     );

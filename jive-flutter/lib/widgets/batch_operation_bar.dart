@@ -82,7 +82,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
               children: [
                 // 取消按钮
                 IconButton(
-                  icon: const Icon(Icons.close),
+                  icon: Icon(Icons.close),
                   onPressed: widget.onCancel,
                   tooltip: '取消批量操作',
                 ),
@@ -90,7 +90,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
                 // 选中数量
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: const Text(
+                  child: Text(
                     '已选择 ${widget.selectedIds.length} 项',
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: colorScheme.onPrimaryContainer,
@@ -101,10 +101,10 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
 
                 // 全选/取消全选
                 TextButton.icon(
-                  icon: const Icon(
+                  icon: Icon(
                     widget.isAllSelected ? Icons.deselect : Icons.select_all,
                   ),
-                  label: const Text(widget.isAllSelected ? '取消全选' : '全选'),
+                  label: Text(widget.isAllSelected ? '取消全选' : '全选'),
                   onPressed: widget.onSelectAll,
                 ),
 
@@ -175,7 +175,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
               children: [
                 Icon(icon, size: 18, color: color),
                 const SizedBox(width: 4),
-                const Text(
+                Text(
                   label,
                   style: TextStyle(
                     color: color,
@@ -218,12 +218,12 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('批量归档'),
-        content: const Text('确定要归档选中的 ${widget.selectedIds.length} 个项目吗？'),
+        title: Text('批量归档'),
+        content: Text('确定要归档选中的 ${widget.selectedIds.length} 个项目吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -232,11 +232,11 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
               widget.onCancel();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text('已归档 ${widget.selectedIds.length} 个项目'),
+                  content: Text('已归档 ${widget.selectedIds.length} 个项目'),
                 ),
               );
             },
-            child: const Text('归档'),
+            child: Text('归档'),
           ),
         ],
       ),
@@ -249,16 +249,16 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            const Icon(Icons.warning, color: Theme.of(context).colorScheme.error),
+            Icon(Icons.warning, color: Theme.of(context).colorScheme.error),
             const SizedBox(width: 8),
-            const Text('批量删除'),
+            Text('批量删除'),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('确定要删除选中的 ${widget.selectedIds.length} 个项目吗？'),
+            Text('确定要删除选中的 ${widget.selectedIds.length} 个项目吗？'),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(8),
@@ -268,14 +268,14 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.info_outline,
                     size: 16,
                     color: Theme.of(context).colorScheme.onErrorContainer,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: const Text(
+                    child: Text(
                       '此操作不可恢复！',
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onErrorContainer,
@@ -291,7 +291,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -304,7 +304,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
               widget.onCancel();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text('已删除 ${widget.selectedIds.length} 个项目'),
+                  content: Text('已删除 ${widget.selectedIds.length} 个项目'),
                   action: SnackBarAction(
                     label: '撤销',
                     onPressed: () {
@@ -314,7 +314,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
                 ),
               );
             },
-            child: const Text('删除'),
+            child: Text('删除'),
           ),
         ],
       ),
@@ -343,12 +343,12 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('批量移动分类'),
+      title: Text('批量移动分类'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('将 ${widget.selectedIds.length} 个分类移动到：'),
+          Text('将 ${widget.selectedIds.length} 个分类移动到：'),
           const SizedBox(height: 16),
           // TODO: 添加分类选择器
           DropdownButtonFormField<String>(
@@ -361,7 +361,7 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
             items: const [
               DropdownMenuItem(
                 value: null,
-                child: const Text('根目录'),
+                child: Text('根目录'),
               ),
               // TODO: 从provider获取分类列表
             ],
@@ -376,7 +376,7 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('取消'),
+          child: Text('取消'),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -389,11 +389,11 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
             widget.onConfirm();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text('已移动 ${widget.selectedIds.length} 个分类'),
+                content: Text('已移动 ${widget.selectedIds.length} 个分类'),
               ),
             );
           },
-          child: const Text('移动'),
+          child: Text('移动'),
         ),
       ],
     );
@@ -424,16 +424,16 @@ class _BatchConvertToTagDialogState
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('批量转换为标签'),
+      title: Text('批量转换为标签'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('将 ${widget.selectedIds.length} 个分类转换为标签'),
+          Text('将 ${widget.selectedIds.length} 个分类转换为标签'),
           const SizedBox(height: 16),
           CheckboxListTile(
-            title: const Text('应用到历史交易'),
-            subtitle: const Text('将分类下的交易添加对应标签'),
+            title: Text('应用到历史交易'),
+            subtitle: Text('将分类下的交易添加对应标签'),
             value: _applyToTransactions,
             onChanged: (value) {
               setState(() {
@@ -442,8 +442,8 @@ class _BatchConvertToTagDialogState
             },
           ),
           CheckboxListTile(
-            title: const Text('删除原分类'),
-            subtitle: const Text('转换后删除原分类'),
+            title: Text('删除原分类'),
+            subtitle: Text('转换后删除原分类'),
             value: _deleteCategories,
             onChanged: (value) {
               setState(() {
@@ -456,7 +456,7 @@ class _BatchConvertToTagDialogState
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('取消'),
+          child: Text('取消'),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -476,11 +476,11 @@ class _BatchConvertToTagDialogState
             widget.onConfirm();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text('已转换 ${widget.selectedIds.length} 个分类为标签'),
+                content: Text('已转换 ${widget.selectedIds.length} 个分类为标签'),
               ),
             );
           },
-          child: const Text('转换'),
+          child: Text('转换'),
         ),
       ],
     );

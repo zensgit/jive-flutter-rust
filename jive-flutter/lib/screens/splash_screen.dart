@@ -90,14 +90,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                     ),
                   ],
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.account_balance_wallet,
                   size: 60,
                   color: Color(0xFF6366F1),
                 ),
               ),
               const SizedBox(height: 32),
-              const Text(
+              Text(
                 'Jive Money',
                 style: TextStyle(
                   fontSize: 32,
@@ -107,7 +107,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 '智能财务管理',
                 style: TextStyle(
                   fontSize: 16,

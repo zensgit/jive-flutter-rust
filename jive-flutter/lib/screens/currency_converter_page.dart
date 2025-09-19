@@ -76,11 +76,11 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                 children: [
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.arrow_back),
+                    icon: Icon(Icons.arrow_back),
                     color: Colors.black,
                   ),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     '货币转换',
                     style: TextStyle(
                       fontSize: 18,
@@ -102,7 +102,7 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           '初始化...',
                           style: TextStyle(
                             fontSize: 12,
@@ -151,10 +151,10 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                             children: [
                               Row(
                                 children: [
-                                  const Icon(Icons.trending_up,
+                                  Icon(Icons.trending_up,
                                       color: Colors.green[700], size: 20),
                                   const SizedBox(width: 8),
-                                  const Text(
+                                  Text(
                                     '今日汇率',
                                     style: TextStyle(
                                       fontSize: 16,
@@ -190,17 +190,17 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                             color: Colors.blue[50],
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(Icons.settings, color: Colors.blue[700]),
+                          child: Icon(Icons.settings, color: Colors.blue[700]),
                         ),
-                        title: const Text('货币设置'),
-                        subtitle: const Text(
+                        title: Text('货币设置'),
+                        subtitle: Text(
                           '已选择 ${selectedCurrencies.length} 种货币 · ${currencyPrefs.multiCurrencyEnabled ? '多币种模式' : '单币种模式'}',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[600],
                           ),
                         ),
-                        trailing: const Icon(Icons.chevron_right),
+                        trailing: Icon(Icons.chevron_right),
                         onTap: () {
                           Navigator.pushNamed(context, '/settings/currency');
                         },
@@ -237,7 +237,7 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Center(
-                  child: const Text(
+                  child: Text(
                     currency.flag ?? currency.symbol,
                     style: const TextStyle(fontSize: 14),
                   ),
@@ -248,14 +248,14 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       currency.code,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const Text(
+                    Text(
                       currency.nameZh,
                       style: TextStyle(
                         fontSize: 11,
@@ -269,7 +269,7 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Text(
+                    Text(
                       currency.formatAmount(snapshot.data!),
                       style: const TextStyle(
                         fontSize: 14,
@@ -280,7 +280,7 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
+                        Text(
                           '1 ${baseCurrency.code}',
                           style: TextStyle(
                             fontSize: 11,
@@ -305,7 +305,7 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                   ),
                 )
               else
-                const Text(
+                Text(
                   '--',
                   style: TextStyle(color: Colors.grey[500]),
                 ),

@@ -59,7 +59,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
           // 标题栏
           Row(
             children: [
-              const Text(
+              Text(
                 '筛选交易',
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -69,7 +69,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
               if (widget.onReset != null)
                 TextButton(
                   onPressed: _handleReset,
-                  child: const Text('重置'),
+                  child: Text('重置'),
                 ),
             ],
           ),
@@ -82,7 +82,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
             decoration: InputDecoration(
               labelText: '搜索',
               hintText: '搜索描述、备注或收款方',
-              prefixIcon: const Icon(Icons.search),
+              prefixIcon: Icon(Icons.search),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppConstants.borderRadius),
               ),
@@ -133,7 +133,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '交易类型',
           style: theme.textTheme.titleSmall,
         ),
@@ -142,7 +142,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
           spacing: 8,
           children: [
             FilterChip(
-              label: const Text('全部'),
+              label: Text('全部'),
               selected: _filter.types.isEmpty,
               onSelected: (selected) {
                 setState(() {
@@ -153,7 +153,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
               },
             ),
             FilterChip(
-              label: const Text('支出'),
+              label: Text('支出'),
               selected: _filter.types.contains(TransactionType.expense),
               onSelected: (selected) {
                 setState(() {
@@ -168,7 +168,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
               },
             ),
             FilterChip(
-              label: const Text('收入'),
+              label: Text('收入'),
               selected: _filter.types.contains(TransactionType.income),
               onSelected: (selected) {
                 setState(() {
@@ -183,7 +183,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
               },
             ),
             FilterChip(
-              label: const Text('转账'),
+              label: Text('转账'),
               selected: _filter.types.contains(TransactionType.transfer),
               onSelected: (selected) {
                 setState(() {
@@ -207,7 +207,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '日期范围',
           style: theme.textTheme.titleSmall,
         ),
@@ -226,7 +226,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
                           BorderRadius.circular(AppConstants.borderRadius),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     _filter.startDate != null
                         ? _formatDate(_filter.startDate!)
                         : '选择日期',
@@ -247,7 +247,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
                           BorderRadius.circular(AppConstants.borderRadius),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     _filter.endDate != null
                         ? _formatDate(_filter.endDate!)
                         : '选择日期',
@@ -262,23 +262,23 @@ class _TransactionFilterState extends State<TransactionFilter> {
           spacing: 8,
           children: [
             ActionChip(
-              label: const Text('今天'),
+              label: Text('今天'),
               onPressed: () => _setDateRange(DateRange.today),
             ),
             ActionChip(
-              label: const Text('本周'),
+              label: Text('本周'),
               onPressed: () => _setDateRange(DateRange.thisWeek),
             ),
             ActionChip(
-              label: const Text('本月'),
+              label: Text('本月'),
               onPressed: () => _setDateRange(DateRange.thisMonth),
             ),
             ActionChip(
-              label: const Text('上月'),
+              label: Text('上月'),
               onPressed: () => _setDateRange(DateRange.lastMonth),
             ),
             ActionChip(
-              label: const Text('今年'),
+              label: Text('今年'),
               onPressed: () => _setDateRange(DateRange.thisYear),
             ),
           ],
@@ -291,7 +291,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '金额范围',
           style: theme.textTheme.titleSmall,
         ),
@@ -348,7 +348,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '账户',
           style: theme.textTheme.titleSmall,
         ),
@@ -358,7 +358,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
           children: accounts
               .map(
                 (account) => FilterChip(
-                  label: const Text(account),
+                  label: Text(account),
                   selected: _filter.accounts.contains(account),
                   onSelected: (selected) {
                     setState(() {
@@ -386,7 +386,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '分类',
           style: theme.textTheme.titleSmall,
         ),
@@ -396,7 +396,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
           children: categories
               .map(
                 (category) => FilterChip(
-                  label: const Text(category),
+                  label: Text(category),
                   selected: _filter.categories.contains(category),
                   onSelected: (selected) {
                     setState(() {
@@ -424,7 +424,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '标签',
           style: theme.textTheme.titleSmall,
         ),
@@ -434,7 +434,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
           children: tags
               .map(
                 (tag) => FilterChip(
-                  label: const Text(tag),
+                  label: Text(tag),
                   selected: _filter.tags.contains(tag),
                   onSelected: (selected) {
                     setState(() {
@@ -461,14 +461,14 @@ class _TransactionFilterState extends State<TransactionFilter> {
         Expanded(
           child: OutlinedButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
           child: ElevatedButton(
             onPressed: _handleApply,
-            child: const Text('应用筛选'),
+            child: Text('应用筛选'),
           ),
         ),
       ],

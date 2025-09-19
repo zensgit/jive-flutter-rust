@@ -44,7 +44,7 @@ class TransactionListItem extends ConsumerWidget {
                   color: _getIconColor().withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   _getconst Icon(),
                   color: _getIconColor(),
                   size: 24,
@@ -60,7 +60,7 @@ class TransactionListItem extends ConsumerWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: const Text(
+                          child: Text(
                             transaction.description ?? '未命名交易',
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
@@ -80,7 +80,7 @@ class TransactionListItem extends ConsumerWidget {
                               color: Colors.orange.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: const Text(
+                            child: Text(
                               '待确认',
                               style: TextStyle(
                                 fontSize: 10,
@@ -94,13 +94,13 @@ class TransactionListItem extends ConsumerWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.folder_outlined,
                           size: 14,
                           color: Colors.grey[600],
                         ),
                         const SizedBox(width: 4),
-                        const Text(
+                        Text(
                           transaction.category ?? '未分类',
                           style: TextStyle(
                             fontSize: 12,
@@ -109,13 +109,13 @@ class TransactionListItem extends ConsumerWidget {
                         ),
                         if (transaction.account != null) ...[
                           const SizedBox(width: 12),
-                          const Icon(
+                          Icon(
                             Icons.account_balance_wallet_outlined,
                             size: 14,
                             color: Colors.grey[600],
                           ),
                           const SizedBox(width: 4),
-                          const Text(
+                          Text(
                             transaction.account!,
                             style: TextStyle(
                               fontSize: 12,
@@ -133,7 +133,7 @@ class TransactionListItem extends ConsumerWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text(
+                  Text(
                     '${isExpense ? '-' : isIncome ? '+' : ''}$formatted',
                     style: TextStyle(
                       fontSize: 16,
@@ -146,7 +146,7 @@ class TransactionListItem extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     _formatDate(transaction.date),
                     style: TextStyle(
                       fontSize: 12,

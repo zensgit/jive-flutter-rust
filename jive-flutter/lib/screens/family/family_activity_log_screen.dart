@@ -102,7 +102,7 @@ class _FamilyActivityLogScreenState
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('加载活动日志失败: $e')),
+          SnackBar(content: Text('加载活动日志失败: $e')),
         );
       }
     }
@@ -145,8 +145,8 @@ class _FamilyActivityLogScreenState
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('活动日志'),
-            const Text(
+            Text('活动日志'),
+            Text(
               widget.familyName,
               style: theme.textTheme.bodySmall,
             ),
@@ -154,11 +154,11 @@ class _FamilyActivityLogScreenState
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.filter_list),
+            icon: Icon(Icons.filter_list),
             onPressed: _showFilterDialog,
           ),
           IconButton(
-            icon: const Icon(Icons.insights),
+            icon: Icon(Icons.insights),
             onPressed: _showStatisticsDialog,
           ),
         ],
@@ -173,10 +173,10 @@ class _FamilyActivityLogScreenState
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: '搜索活动内容...',
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: Icon(Icons.search),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear),
+                        icon: Icon(Icons.clear),
                         onPressed: () {
                           _searchController.clear();
                           _loadLogs();
@@ -243,7 +243,7 @@ class _FamilyActivityLogScreenState
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: FilterChip(
-        label: const Text(label),
+        label: Text(label),
         selected: isSelected,
         onSelected: (_) => onTap(),
         backgroundColor: theme.colorScheme.surfaceVariant,
@@ -257,18 +257,18 @@ class _FamilyActivityLogScreenState
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.history,
             size: 64,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             '暂无活动记录',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             '家庭成员的操作都会记录在这里',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -335,7 +335,7 @@ class _FamilyActivityLogScreenState
                   color: theme.colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Text(
+                child: Text(
                   dateLabel,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onPrimaryContainer,
@@ -344,7 +344,7 @@ class _FamilyActivityLogScreenState
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 '${logs.length} 条活动',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
@@ -383,7 +383,7 @@ class _FamilyActivityLogScreenState
             // 时间轴
             Column(
               children: [
-                const Text(
+                Text(
                   timeStr,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
@@ -397,7 +397,7 @@ class _FamilyActivityLogScreenState
                     color: _getActionColor(log.actionType).withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     _getActionconst Icon(log.actionType),
                     size: 20,
                     color: _getActionColor(log.actionType),
@@ -416,7 +416,7 @@ class _FamilyActivityLogScreenState
                   Row(
                     children: [
                       Expanded(
-                        child: const Text(
+                        child: Text(
                           log.userName ?? '未知用户',
                           style: theme.textTheme.titleSmall,
                         ),
@@ -425,13 +425,13 @@ class _FamilyActivityLogScreenState
                     ],
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     log.description,
                     style: theme.textTheme.bodyMedium,
                   ),
                   if (log.details != null && log.details!.isNotEmpty) ...[
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       log.details!,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
@@ -449,7 +449,7 @@ class _FamilyActivityLogScreenState
                         color: theme.colorScheme.surfaceVariant,
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      child: const Text(
+                      child: Text(
                         log.entityName!,
                         style: theme.textTheme.bodySmall,
                       ),
@@ -530,7 +530,7 @@ class _FamilyActivityLogScreenState
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: color, width: 0.5),
       ),
-      child: const Text(
+      child: Text(
         label,
         style: TextStyle(
           color: color,
@@ -659,7 +659,7 @@ class _ActivityDetailSheet extends StatelessWidget {
                   controller: scrollController,
                   padding: const EdgeInsets.all(16),
                   children: [
-                    const Text('活动详情', style: theme.textTheme.titleLarge),
+                    Text('活动详情', style: theme.textTheme.titleLarge),
                     const SizedBox(height: 16),
                     _buildDetailRow('操作者', log.userName ?? '未知用户'),
                     _buildDetailRow(
@@ -674,7 +674,7 @@ class _ActivityDetailSheet extends StatelessWidget {
                       _buildDetailRow('实体名称', log.entityName!),
                     if (log.details != null) ...[
                       const SizedBox(height: 16),
-                      const Text('详细信息', style: theme.textTheme.titleMedium),
+                      Text('详细信息', style: theme.textTheme.titleMedium),
                       const SizedBox(height: 8),
                       Container(
                         padding: const EdgeInsets.all(12),
@@ -682,12 +682,12 @@ class _ActivityDetailSheet extends StatelessWidget {
                           color: theme.colorScheme.surfaceVariant,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Text(log.details!),
+                        child: Text(log.details!),
                       ),
                     ],
                     if (log.ipAddress != null) ...[
                       const SizedBox(height: 16),
-                      const Text('技术信息', style: theme.textTheme.titleMedium),
+                      Text('技术信息', style: theme.textTheme.titleMedium),
                       const SizedBox(height: 8),
                       _buildDetailRow('IP地址', log.ipAddress!),
                       if (log.userAgent != null)
@@ -711,7 +711,7 @@ class _ActivityDetailSheet extends StatelessWidget {
         children: [
           const SizedBox(
             width: 100,
-            child: const Text(
+            child: Text(
               label,
               style: const TextStyle(
                 fontWeight: FontWeight.w500,
@@ -720,7 +720,7 @@ class _ActivityDetailSheet extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: const Text(value),
+            child: Text(value),
           ),
         ],
       ),
@@ -764,13 +764,13 @@ class _FilterDialogState extends State<_FilterDialog> {
     final theme = Theme.of(context);
 
     return AlertDialog(
-      title: const Text('筛选活动'),
+      title: Text('筛选活动'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 操作类型
-          const Text('操作类型', style: theme.textTheme.titleSmall),
+          Text('操作类型', style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),
           DropdownButtonFormField<AuditActionType?>(
             value: _actionType,
@@ -781,11 +781,11 @@ class _FilterDialogState extends State<_FilterDialog> {
             items: [
               const DropdownMenuItem(
                 value: null,
-                child: const Text('全部'),
+                child: Text('全部'),
               ),
               ...AuditActionType.values.map((type) => DropdownMenuItem(
                     value: type,
-                    child: const Text(type.toString().split('.').last),
+                    child: Text(type.toString().split('.').last),
                   )),
             ],
             onChanged: (value) => setState(() => _actionType = value),
@@ -794,7 +794,7 @@ class _FilterDialogState extends State<_FilterDialog> {
           const SizedBox(height: 16),
 
           // 日期范围
-          const Text('日期范围', style: theme.textTheme.titleSmall),
+          Text('日期范围', style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),
           InkWell(
             onTap: () async {
@@ -817,12 +817,12 @@ class _FilterDialogState extends State<_FilterDialog> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     _dateRange == null
                         ? '选择日期范围'
                         : '${DateFormat('MM/dd').format(_dateRange!.start)} - ${DateFormat('MM/dd').format(_dateRange!.end)}',
                   ),
-                  const Icon(Icons.calendar_today, size: 20),
+                  Icon(Icons.calendar_today, size: 20),
                 ],
               ),
             ),
@@ -838,18 +838,18 @@ class _FilterDialogState extends State<_FilterDialog> {
               _dateRange = null;
             });
           },
-          child: const Text('重置'),
+          child: Text('重置'),
         ),
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('取消'),
+          child: Text('取消'),
         ),
         ElevatedButton(
           onPressed: () {
             widget.onApply(_actionType, _memberId, _dateRange);
             Navigator.pop(context);
           },
-          child: const Text('应用'),
+          child: Text('应用'),
         ),
       ],
     );
@@ -867,7 +867,7 @@ class _StatisticsDialog extends StatelessWidget {
     final theme = Theme.of(context);
 
     return AlertDialog(
-      title: const Text('活动统计'),
+      title: Text('活动统计'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -885,7 +885,7 @@ class _StatisticsDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('关闭'),
+          child: Text('关闭'),
         ),
       ],
     );
@@ -897,8 +897,8 @@ class _StatisticsDialog extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(label),
-          const Text(
+          Text(label),
+          Text(
             value,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),

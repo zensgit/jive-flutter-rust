@@ -60,14 +60,14 @@ class _PendingInvitationsScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('接受邀请'),
+        title: Text('接受邀请'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('您确定要加入 "${invitation.family.name}" 吗？'),
+            Text('您确定要加入 "${invitation.family.name}" 吗？'),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               '角色: ${_getRoleDisplayName(invitation.invitation.role)}',
               style: Theme.of(context).textTheme.bodySmall,
             ),
@@ -76,11 +76,11 @@ class _PendingInvitationsScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('接受'),
+            child: Text('接受'),
           ),
         ],
       ),
@@ -98,7 +98,7 @@ class _PendingInvitationsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('已加入 ${invitation.family.name}'),
+            content: Text('已加入 ${invitation.family.name}'),
             backgroundColor: Colors.green,
           ),
         );
@@ -114,7 +114,7 @@ class _PendingInvitationsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('接受邀请失败: ${e.toString()}'),
+            content: Text('接受邀请失败: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -126,19 +126,19 @@ class _PendingInvitationsScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('拒绝邀请'),
-        content: const Text('您确定要拒绝来自 "${invitation.family.name}" 的邀请吗？'),
+        title: Text('拒绝邀请'),
+        content: Text('您确定要拒绝来自 "${invitation.family.name}" 的邀请吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('拒绝'),
+            child: Text('拒绝'),
           ),
         ],
       ),
@@ -154,7 +154,7 @@ class _PendingInvitationsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: const Text('已拒绝邀请'),
+            content: Text('已拒绝邀请'),
           ),
         );
       }
@@ -162,7 +162,7 @@ class _PendingInvitationsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('操作失败: ${e.toString()}'),
+            content: Text('操作失败: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -203,11 +203,11 @@ class _PendingInvitationsScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('待处理的邀请'),
+        title: Text('待处理的邀请'),
         actions: [
           // 筛选按钮
           PopupMenuButton<InvitationStatus?>(
-            icon: const Icon(Icons.filter_list),
+            icon: Icon(Icons.filter_list),
             tooltip: '筛选',
             onSelected: (status) {
               setState(() {
@@ -217,18 +217,18 @@ class _PendingInvitationsScreenState
             itemBuilder: (context) => [
               const PopupMenuItem(
                 value: null,
-                child: const Text('全部'),
+                child: Text('全部'),
               ),
               const PopupMenuDivider(),
               ...InvitationStatus.values.map((status) => PopupMenuItem(
                     value: status,
-                    child: const Text(status.label),
+                    child: Text(status.label),
                   )),
             ],
           ),
           // 排序按钮
           PopupMenuButton<String>(
-            icon: const Icon(Icons.sort),
+            icon: Icon(Icons.sort),
             tooltip: '排序',
             onSelected: (value) {
               setState(() {
@@ -238,15 +238,15 @@ class _PendingInvitationsScreenState
             itemBuilder: (context) => [
               const PopupMenuItem(
                 value: 'date',
-                child: const Text('按日期'),
+                child: Text('按日期'),
               ),
               const PopupMenuItem(
                 value: 'family',
-                child: const Text('按Family'),
+                child: Text('按Family'),
               ),
               const PopupMenuItem(
                 value: 'role',
-                child: const Text('按角色'),
+                child: Text('按角色'),
               ),
             ],
           ),
@@ -268,13 +268,13 @@ class _PendingInvitationsScreenState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            const Text(_error!),
+            Text(_error!),
             const SizedBox(height: 16),
             FilledButton(
               onPressed: _loadInvitations,
-              child: const Text('重试'),
+              child: Text('重试'),
             ),
           ],
         ),
@@ -288,13 +288,13 @@ class _PendingInvitationsScreenState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.mail_outline,
               size: 64,
               color: Colors.grey[400],
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               _filterStatus != null
                   ? '没有${_filterStatus!.label}的邀请'
                   : '暂无待处理的邀请',
@@ -308,7 +308,7 @@ class _PendingInvitationsScreenState
                     _filterStatus = null;
                   });
                 },
-                child: const Text('查看全部'),
+                child: Text('查看全部'),
               ),
             ],
           ],
@@ -351,7 +351,7 @@ class _PendingInvitationsScreenState
                   CircleAvatar(
                     radius: 24,
                     backgroundColor: theme.colorScheme.primaryContainer,
-                    child: const Text(
+                    child: Text(
                       StringUtils.safeInitial(invitation.family.name),
                       style: TextStyle(
                         color: theme.colorScheme.onPrimaryContainer,
@@ -365,14 +365,14 @@ class _PendingInvitationsScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           invitation.family.name,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 2),
-                        const Text(
+                        Text(
                           '邀请者: ${invitation.inviter.fullName}',
                           style: theme.textTheme.bodySmall,
                         ),
@@ -393,7 +393,7 @@ class _PendingInvitationsScreenState
                       .withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: const Text(
+                child: Text(
                   '角色: ${_getRoleDisplayName(invitation.invitation.role)}',
                   style: TextStyle(
                     color: _getRoleColor(invitation.invitation.role),
@@ -407,13 +407,13 @@ class _PendingInvitationsScreenState
               // 时间信息
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.access_time,
                     size: 16,
                     color: isExpired ? Colors.red : Colors.grey,
                   ),
                   const SizedBox(width: 4),
-                  const Text(
+                  Text(
                     invitation.invitation.remainingTimeDescription,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: isExpired ? Colors.red : null,
@@ -430,12 +430,12 @@ class _PendingInvitationsScreenState
                   children: [
                     TextButton(
                       onPressed: () => _declineInvitation(invitation),
-                      child: const Text('拒绝'),
+                      child: Text('拒绝'),
                     ),
                     const SizedBox(width: 8),
                     FilledButton(
                       onPressed: () => _acceptInvitation(invitation),
-                      child: const Text('接受'),
+                      child: Text('接受'),
                     ),
                   ],
                 ),
@@ -485,7 +485,7 @@ class _PendingInvitationsScreenState
         children: [
           Icon(icon, size: 14, color: color),
           const SizedBox(width: 4),
-          const Text(
+          Text(
             invitation.status.label,
             style: TextStyle(
               color: color,
@@ -526,7 +526,7 @@ class _PendingInvitationsScreenState
               ),
 
               // 标题
-              const Text(
+              Text(
                 '邀请详情',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
@@ -575,7 +575,7 @@ class _PendingInvitationsScreenState
                           Navigator.pop(context);
                           _declineInvitation(invitation);
                         },
-                        child: const Text('拒绝'),
+                        child: Text('拒绝'),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -585,7 +585,7 @@ class _PendingInvitationsScreenState
                           Navigator.pop(context);
                           _acceptInvitation(invitation);
                         },
-                        child: const Text('接受邀请'),
+                        child: Text('接受邀请'),
                       ),
                     ),
                   ],
@@ -602,7 +602,7 @@ class _PendingInvitationsScreenState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -622,13 +622,13 @@ class _PendingInvitationsScreenState
         children: [
           const SizedBox(
             width: 100,
-            child: const Text(
+            child: Text(
               label,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
           Expanded(
-            child: const Text(
+            child: Text(
               value,
               style: Theme.of(context).textTheme.bodyMedium,
             ),

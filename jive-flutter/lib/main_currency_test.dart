@@ -38,7 +38,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('货币管理测试'),
+        title: Text('货币管理测试'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Center(
@@ -66,8 +66,8 @@ class HomePage extends StatelessWidget {
                     ),
                   );
                 },
-                icon: const Icon(Icons.settings),
-                label: const Text('货币管理设置'),
+                icon: Icon(Icons.settings),
+                label: Text('货币管理设置'),
                 style: ElevatedButton.styleFrom(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -85,8 +85,8 @@ class HomePage extends StatelessWidget {
                     ),
                   );
                 },
-                icon: const Icon(Icons.calculate),
-                label: const Text('货币转换器页面'),
+                icon: Icon(Icons.calculate),
+                label: Text('货币转换器页面'),
                 style: ElevatedButton.styleFrom(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

@@ -199,7 +199,7 @@ class _TransactionFormState extends State<TransactionForm> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 icon,
                 size: 20,
                 color: isSelected
@@ -207,7 +207,7 @@ class _TransactionFormState extends State<TransactionForm> {
                     : theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 label,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: isSelected
@@ -287,9 +287,9 @@ class _TransactionFormState extends State<TransactionForm> {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
           ),
-          suffixIcon: const Icon(Icons.calendar_today),
+          suffixIcon: Icon(Icons.calendar_today),
         ),
-        child: const Text(
+        child: Text(
           _formatDate(_selectedDate),
           style: theme.textTheme.bodyLarge,
         ),
@@ -313,7 +313,7 @@ class _TransactionFormState extends State<TransactionForm> {
           .map(
             (account) => DropdownMenuItem(
               value: account,
-              child: const Text(account),
+              child: Text(account),
             ),
           )
           .toList(),
@@ -356,7 +356,7 @@ class _TransactionFormState extends State<TransactionForm> {
                       shape: BoxShape.circle,
                     ),
                   ),
-                  const Text(category),
+                  Text(category),
                 ],
               ),
             ),
@@ -375,7 +375,7 @@ class _TransactionFormState extends State<TransactionForm> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         ),
-        suffixIcon: const Icon(Icons.person_outline),
+        suffixIcon: Icon(Icons.person_outline),
       ),
     );
   }
@@ -390,10 +390,10 @@ class _TransactionFormState extends State<TransactionForm> {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
           ),
-          suffixIcon: const Icon(Icons.label_outline),
+          suffixIcon: Icon(Icons.label_outline),
         ),
         child: _selectedTags.isEmpty
-            ? const Text(
+            ? Text(
                 '选择标签',
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
@@ -404,7 +404,7 @@ class _TransactionFormState extends State<TransactionForm> {
                 children: _selectedTags
                     .map(
                       (tag) => Chip(
-                        label: const Text(tag),
+                        label: Text(tag),
                         onDeleted: () =>
                             setState(() => _selectedTags.remove(tag)),
                         deleteIconColor:
@@ -561,14 +561,14 @@ class _TagSelectionDialogState extends State<_TagSelectionDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('选择标签'),
+      title: Text('选择标签'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: widget.availableTags
               .map(
                 (tag) => CheckboxListTile(
-                  title: const Text(tag),
+                  title: Text(tag),
                   value: _selected.contains(tag),
                   onChanged: (checked) {
                     setState(() {
@@ -587,11 +587,11 @@ class _TagSelectionDialogState extends State<_TagSelectionDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('取消'),
+          child: Text('取消'),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(_selected),
-          child: const Text('确定'),
+          child: Text('确定'),
         ),
       ],
     );

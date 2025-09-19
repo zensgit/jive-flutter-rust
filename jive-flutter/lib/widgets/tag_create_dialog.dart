@@ -117,7 +117,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                 // 标题
                 Row(
                   children: [
-                    const Text(
+                    Text(
                       '创建标签',
                       style: TextStyle(
                         fontSize: 20,
@@ -127,7 +127,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                     const Spacer(),
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close),
+                      icon: Icon(Icons.close),
                     ),
                   ],
                 ),
@@ -153,7 +153,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                 const SizedBox(height: 16),
 
                 // 选择颜色
-                const Text('选择颜色',
+                Text('选择颜色',
                     style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 Wrap(
@@ -174,7 +174,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                               : null,
                         ),
                         child: isSelected
-                            ? const Icon(Icons.check, color: Colors.white)
+                            ? Icon(Icons.check, color: Colors.white)
                             : null,
                       ),
                     );
@@ -183,7 +183,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                 const SizedBox(height: 16),
 
                 // 选择图标
-                const Text('选择图标 (可选)',
+                Text('选择图标 (可选)',
                     style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 Container(
@@ -208,7 +208,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                               ),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(Icons.cancel, color: Colors.grey),
+                            child: Icon(Icons.cancel, color: Colors.grey),
                           ),
                         ),
                         // 图标选项
@@ -230,7 +230,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                                 ),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Icon(entry.value, color: Colors.grey[700]),
+                              child: Icon(entry.value, color: Colors.grey[700]),
                             ),
                           );
                         }).toList(),
@@ -241,7 +241,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                 const SizedBox(height: 16),
 
                 // 分组选择 - 增强版
-                const Text('选择分组 (可选)',
+                Text('选择分组 (可选)',
                     style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 _buildGroupSelector(tagGroups),
@@ -249,7 +249,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
 
                 // 预览
                 if (_nameController.text.isNotEmpty) ...[
-                  const Text('预览',
+                  Text('预览',
                       style: TextStyle(fontWeight: FontWeight.w500)),
                   const SizedBox(height: 8),
                   Container(
@@ -270,7 +270,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (_selectedIcon != null) ...[
-                          const Icon(
+                          Icon(
                             _availableIcons[_selectedIcon!],
                             size: 16,
                             color: Color(int.parse((_selectedColor ?? '#6471eb')
@@ -278,7 +278,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                           ),
                           const SizedBox(width: 6),
                         ],
-                        const Text(
+                        Text(
                           _nameController.text,
                           style: TextStyle(
                             color: Color(int.parse((_selectedColor ?? '#6471eb')
@@ -299,7 +299,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('取消'),
+                      child: Text('取消'),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
@@ -310,7 +310,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                               height: 16,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text('创建'),
+                          : Text('创建'),
                     ),
                   ],
                 ),
@@ -343,7 +343,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
               children: [
                 if (_groupController.text.isNotEmpty)
                   IconButton(
-                    icon: const Icon(Icons.clear, size: 18),
+                    icon: Icon(Icons.clear, size: 18),
                     onPressed: () {
                       _groupController.clear();
                       setState(() {
@@ -354,7 +354,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                     },
                   ),
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     _showGroupSuggestions
                         ? Icons.expand_less
                         : Icons.expand_more,
@@ -370,7 +370,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                 ),
                 if (_canCreateNewGroup())
                   IconButton(
-                    icon: const Icon(Icons.add, size: 18, color: Colors.green),
+                    icon: Icon(Icons.add, size: 18, color: Colors.green),
                     tooltip: '创建新分组',
                     onPressed: _createQuickGroup,
                   ),
@@ -429,7 +429,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                       ? [
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: const Text(
+                            child: Text(
                               '选择现有分组:',
                               style: TextStyle(
                                 fontSize: 12,
@@ -447,18 +447,18 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                                         (group.color ?? '#6471eb')
                                             .replaceFirst('#', '0xff')))
                                     .withValues(alpha: 0.2),
-                                child: const Icon(
+                                child: Icon(
                                   _getGroupconst Icon(group.icon),
                                   size: 16,
                                   color: Color(int.parse((group.color ?? '#6471eb')
                                       .replaceFirst('#', '0xff'))),
                                 ),
                               ),
-                              title: const Text(
+                              title: Text(
                                 group.name,
                                 style: const TextStyle(fontSize: 14),
                               ),
-                              subtitle: const Text(
+                              subtitle: Text(
                                 '${_getGroupTagCount(group.id!)} 个标签',
                                 style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                               ),
@@ -481,18 +481,18 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                                   (group.color ?? '#6471eb')
                                       .replaceFirst('#', '0xff')))
                               .withValues(alpha: 0.2),
-                          child: const Icon(
+                          child: Icon(
                             _getGroupconst Icon(group.icon),
                             size: 16,
                             color: Color(int.parse((group.color ?? '#6471eb')
                                 .replaceFirst('#', '0xff'))),
                           ),
                         ),
-                        title: const Text(
+                        title: Text(
                           group.name,
                           style: const TextStyle(fontSize: 14),
                         ),
-                        subtitle: const Text(
+                        subtitle: Text(
                           '${_getGroupTagCount(group.id!)} 个标签',
                           style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                         ),
@@ -509,9 +509,9 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                     leading: const CircleAvatar(
                       radius: 12,
                       backgroundColor: Colors.green,
-                      child: const Icon(Icons.add, size: 16, color: Colors.white),
+                      child: Icon(Icons.add, size: 16, color: Colors.white),
                     ),
-                    title: const Text(
+                    title: Text(
                       '创建新分组 "${_groupController.text.trim()}"',
                       style: const TextStyle(fontSize: 14, color: Colors.green),
                     ),
@@ -524,7 +524,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                     _groupController.text.trim().isNotEmpty)
                   const Padding(
                     padding: EdgeInsets.all(16.0),
-                    child: const Text(
+                    child: Text(
                       '没有匹配的分组',
                       style: TextStyle(
                         fontSize: 14,
@@ -597,7 +597,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('⚠️ 分组"$groupName"已存在！请使用其他名称'),
+            content: Text('⚠️ 分组"$groupName"已存在！请使用其他名称'),
             backgroundColor: Colors.orange,
             duration: const Duration(seconds: 3),
             action: SnackBarAction(
@@ -634,13 +634,13 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('分组"$groupName"创建成功')),
+          SnackBar(content: Text('分组"$groupName"创建成功')),
         );
       }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('创建分组失败: $error')),
+          SnackBar(content: Text('创建分组失败: $error')),
         );
       }
     }
@@ -719,13 +719,13 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
         Navigator.pop(context);
         widget.onCreated?.call();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('标签"$name"创建成功')),
+          SnackBar(content: Text('标签"$name"创建成功')),
         );
       }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('创建失败: $error')),
+          SnackBar(content: Text('创建失败: $error')),
         );
       }
     } finally {

@@ -49,7 +49,7 @@ class SelectableTextWidget extends StatelessWidget {
                 editableTextState.copySelection(SelectionChangedCause.toolbar);
                 editableTextState.hideToolbar();
               },
-              child: const Text('复制'),
+              child: Text('复制'),
             ),
             // 全选按钮
             TextSelectionToolbarTextButton(
@@ -57,7 +57,7 @@ class SelectableTextWidget extends StatelessWidget {
               onPressed: () {
                 editableTextState.selectAll(SelectionChangedCause.toolbar);
               },
-              child: const Text('全选'),
+              child: Text('全选'),
             ),
           ],
         );
@@ -132,9 +132,9 @@ class SelectableContainer extends StatelessWidget {
         PopupMenuItem(
           child: const Row(
             children: [
-              const Icon(Icons.copy, size: 20),
+              Icon(Icons.copy, size: 20),
               const SizedBox(width: 8),
-              const Text('复制'),
+              Text('复制'),
             ],
           ),
           onTap: () {
@@ -142,7 +142,7 @@ class SelectableContainer extends StatelessWidget {
               Clipboard.setData(ClipboardData(text: textToCopy!));
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: const Text('已复制到剪贴板'),
+                  content: Text('已复制到剪贴板'),
                   duration: Duration(seconds: 2),
                 ),
               );

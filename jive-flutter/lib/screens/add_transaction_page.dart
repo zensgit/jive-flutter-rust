@@ -46,7 +46,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     if (_amountController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: const Text('请输入金额'),
+          content: Text('请输入金额'),
           backgroundColor: Colors.red,
         ),
       );
@@ -58,7 +58,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     if (amount == null || amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: const Text('请输入有效的金额'),
+          content: Text('请输入有效的金额'),
           backgroundColor: Colors.red,
         ),
       );
@@ -68,7 +68,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     // 模拟保存成功
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text(
+        content: Text(
           '${_transactionType == 'expense' ? '支出' : '收入'}记录已保存：¥${amount.toStringAsFixed(2)}',
         ),
         backgroundColor: Colors.green,
@@ -101,11 +101,11 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                 children: [
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close),
+                    icon: Icon(Icons.close),
                     color: Colors.black,
                   ),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     '记账',
                     style: TextStyle(
                       fontSize: 18,
@@ -116,7 +116,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   const Spacer(),
                   TextButton(
                     onPressed: _saveTransaction,
-                    child: const Text(
+                    child: Text(
                       '保存',
                       style: TextStyle(
                         fontSize: 16,
@@ -163,7 +163,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                                     bottomLeft: Radius.circular(12),
                                   ),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   '支出',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
@@ -197,7 +197,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                                     bottomRight: Radius.circular(12),
                                   ),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   '收入',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
@@ -226,7 +226,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             '金额',
                             style: TextStyle(
                               fontSize: 16,
@@ -258,7 +258,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                     const SizedBox(height: 24),
 
                     // 分类选择
-                    const Text(
+                    Text(
                       '分类',
                       style: TextStyle(
                         fontSize: 16,
@@ -305,13 +305,13 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(
+                                Icon(
                                   category['icon'],
                                   color: category['color'],
                                   size: 24,
                                 ),
                                 const SizedBox(height: 4),
-                                const Text(
+                                Text(
                                   category['name'],
                                   style: TextStyle(
                                     fontSize: 12,
@@ -339,7 +339,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             '备注',
                             style: TextStyle(
                               fontSize: 16,
@@ -371,9 +371,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.calendar_today, color: Colors.grey),
+                          Icon(Icons.calendar_today, color: Colors.grey),
                           const SizedBox(width: 12),
-                          const Text(
+                          Text(
                             '${_selectedDate.year}年${_selectedDate.month}月${_selectedDate.day}日',
                             style: const TextStyle(fontSize: 16),
                           ),
@@ -392,7 +392,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                                 });
                               }
                             },
-                            child: const Text('修改'),
+                            child: Text('修改'),
                           ),
                         ],
                       ),

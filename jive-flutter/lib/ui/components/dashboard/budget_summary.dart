@@ -58,7 +58,7 @@ class BudgetSummary extends ConsumerWidget {
             if (budgetList.length > 3)
               TextButton(
                 onPressed: () => context.go(AppRoutes.budgets),
-                child: const Text('查看全部 ${budgetList.length} 个预算'),
+                child: Text('查看全部 ${budgetList.length} 个预算'),
               ),
           ],
         );
@@ -69,12 +69,12 @@ class BudgetSummary extends ConsumerWidget {
       error: (error, _) => Center(
         child: Column(
           children: [
-            const Icon(Icons.error_outline, color: Colors.red),
+            Icon(Icons.error_outline, color: Colors.red),
             const SizedBox(height: 8),
-            const Text('加载失败: $error'),
+            Text('加载失败: $error'),
             TextButton(
               onPressed: () => ref.invalidate(currentMonthBudgetsProvider),
-              child: const Text('重试'),
+              child: Text('重试'),
             ),
           ],
         ),
@@ -91,13 +91,13 @@ class BudgetSummary extends ConsumerWidget {
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              const Icon(
+              Icon(
                 Icons.pie_chart_outline,
                 size: 48,
                 color: Theme.of(context).primaryColor,
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 '设置您的第一个预算',
                 style: TextStyle(
                   fontSize: 16,
@@ -105,7 +105,7 @@ class BudgetSummary extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 '控制支出，实现财务目标',
                 style: TextStyle(
                   fontSize: 14,
@@ -154,7 +154,7 @@ class BudgetSummary extends ConsumerWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       '本月预算',
                       style: TextStyle(
                         fontSize: 14,
@@ -162,7 +162,7 @@ class BudgetSummary extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       '¥${totalBudget.toStringAsFixed(2)}',
                       style: const TextStyle(
                         fontSize: 24,
@@ -187,7 +187,7 @@ class BudgetSummary extends ConsumerWidget {
                     ),
                     Column(
                       children: [
-                        const Text(
+                        Text(
                           '${(spentPercentage * 100).toStringAsFixed(0)}%',
                           style: TextStyle(
                             fontSize: 18,
@@ -195,7 +195,7 @@ class BudgetSummary extends ConsumerWidget {
                             color: warningLevel.color,
                           ),
                         ),
-                        const Text(
+                        Text(
                           '已用',
                           style: TextStyle(
                             fontSize: 12,
@@ -219,14 +219,14 @@ class BudgetSummary extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     warningLevel.icon,
                     color: warningLevel.color,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: const Text(
+                    child: Text(
                       warningLevel.message,
                       style: TextStyle(
                         color: warningLevel.color,
@@ -260,7 +260,7 @@ class BudgetSummary extends ConsumerWidget {
       {String suffix = ''}) {
     return Column(
       children: [
-        const Text(
+        Text(
           label,
           style: TextStyle(
             fontSize: 12,
@@ -268,7 +268,7 @@ class BudgetSummary extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           suffix.isEmpty
               ? '¥${value.toStringAsFixed(2)}'
               : '${value.toInt()}$suffix',
@@ -308,7 +308,7 @@ class BudgetSummary extends ConsumerWidget {
                           _getCategoryColor(budget.category).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       _getCategoryconst Icon(budget.category),
                       color: _getCategoryColor(budget.category),
                       size: 20,
@@ -319,13 +319,13 @@ class BudgetSummary extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           budget.name ?? budget.category ?? '未分类',
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const Text(
+                        Text(
                           '¥${spent.toStringAsFixed(2)} / ¥${amount.toStringAsFixed(2)}',
                           style: TextStyle(
                             fontSize: 12,
@@ -338,14 +338,14 @@ class BudgetSummary extends ConsumerWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      const Text(
+                      Text(
                         isOverBudget ? '超支' : '剩余',
                         style: TextStyle(
                           fontSize: 12,
                           color: isOverBudget ? Colors.red : Colors.green,
                         ),
                       ),
-                      const Text(
+                      Text(
                         '¥${remaining.abs().toStringAsFixed(2)}',
                         style: TextStyle(
                           fontSize: 14,

@@ -52,11 +52,11 @@ class _CurrencyManagementPageV2State
         ),
         child: Row(
           children: [
-            const Icon(Icons.schedule,
+            Icon(Icons.schedule,
                 size: 14,
                 color: manualActive ? Colors.orange[700] : Colors.grey[600]),
             const SizedBox(width: 6),
-            const Text(
+            Text(
               '手动汇率有效至: ${_formatDate(manualExpiry.toLocal())}${manualActive ? '' : ' (已过期)'}',
               style: TextStyle(
                 fontSize: 12,
@@ -70,8 +70,8 @@ class _CurrencyManagementPageV2State
                 if (!mounted) return;
                 _showSnackBar('已清除手动汇率', Colors.green);
               },
-              icon: const Icon(Icons.clear, size: 16),
-              label: const Text('清除'),
+              icon: Icon(Icons.clear, size: 16),
+              label: Text('清除'),
             ),
           ],
         ),
@@ -150,7 +150,7 @@ class _CurrencyManagementPageV2State
     return showDialog<double>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('设置汇率: 1 $baseCurrency = ? $toCurrency'),
+        title: Text('设置汇率: 1 $baseCurrency = ? $toCurrency'),
         content: TextField(
           controller: controller,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -158,13 +158,13 @@ class _CurrencyManagementPageV2State
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context), child: const Text('跳过')),
+              onPressed: () => Navigator.pop(context), child: Text('跳过')),
           ElevatedButton(
             onPressed: () {
               final v = double.tryParse(controller.text.trim());
               Navigator.pop(context, v);
             },
-            child: const Text('确定'),
+            child: Text('确定'),
           ),
         ],
       ),
@@ -177,16 +177,16 @@ class _CurrencyManagementPageV2State
       builder: (context) => AlertDialog(
         title: const Row(
           children: [
-            const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 28),
+            Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 28),
             const SizedBox(width: 12),
-            const Text('更换基础货币'),
+            Text('更换基础货币'),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               '您确定要将基础货币从 ${ref.read(baseCurrencyProvider).code} 更换为 ${newCurrency.code} 吗？',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
@@ -201,7 +201,7 @@ class _CurrencyManagementPageV2State
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     '请注意：',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
@@ -217,14 +217,14 @@ class _CurrencyManagementPageV2State
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
             ),
-            child: const Text('确认更换'),
+            child: Text('确认更换'),
           ),
         ],
       ),
@@ -244,10 +244,10 @@ class _CurrencyManagementPageV2State
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.info_outline, size: 16, color: Colors.orange),
+          Icon(Icons.info_outline, size: 16, color: Colors.orange),
           const SizedBox(width: 8),
           Expanded(
-            child: const Text(
+            child: Text(
               text,
               style: const TextStyle(fontSize: 13),
             ),
@@ -260,7 +260,7 @@ class _CurrencyManagementPageV2State
   void _showSnackBar(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text(message),
+        content: Text(message),
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
@@ -304,17 +304,17 @@ class _CurrencyManagementPageV2State
       ),
       child: Row(
         children: [
-          const Icon(Icons.warning_amber_rounded, color: cs.error),
+          Icon(Icons.warning_amber_rounded, color: cs.error),
           const SizedBox(width: 8),
           Expanded(
-            child: const Text(
+            child: Text(
               '以下币种已下线：${deprecated.map((e) => e.code).join(', ')}，建议替换为可用币种。',
               style: TextStyle(color: cs.onErrorContainer, fontSize: 12),
             ),
           ),
           TextButton(
             onPressed: () => _openReplacementDialog(deprecated),
-            child: const Text('一键替换'),
+            child: Text('一键替换'),
           )
         ],
       ),
@@ -331,7 +331,7 @@ class _CurrencyManagementPageV2State
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('替换下线币种'),
+          title: Text('替换下线币种'),
           content: const SizedBox(
             width: 480,
             child: Column(
@@ -341,7 +341,7 @@ class _CurrencyManagementPageV2State
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   child: Row(
                     children: [
-                      Expanded(child: const Text(d.code)),
+                      Expanded(child: Text(d.code)),
                       const SizedBox(width: 12),
                       Expanded(
                         child: DropdownButtonFormField<String>(
@@ -349,7 +349,7 @@ class _CurrencyManagementPageV2State
                           items: available
                               .map((c) => DropdownMenuItem(
                                   value: c.code,
-                                  child: const Text('${c.code} · ${c.nameZh}')))
+                                  child: Text('${c.code} · ${c.nameZh}')))
                               .toList(),
                           onChanged: (v) => selectedMap[d.code] = v ?? d.code,
                           decoration: const InputDecoration(
@@ -365,7 +365,7 @@ class _CurrencyManagementPageV2State
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('取消')),
+                child: Text('取消')),
             ElevatedButton(
               onPressed: () async {
                 // 应用替换：移除旧币种，加入新币种
@@ -379,7 +379,7 @@ class _CurrencyManagementPageV2State
                 }
                 if (context.mounted) Navigator.pop(context);
               },
-              child: const Text('应用'),
+              child: Text('应用'),
             )
           ],
         );
@@ -400,7 +400,7 @@ class _CurrencyManagementPageV2State
     return Scaffold(
       backgroundColor: cs.surface,
       appBar: AppBar(
-        title: const Text('多币种设置'),
+        title: Text('多币种设置'),
         backgroundColor: theme.appBarTheme.backgroundColor,
         foregroundColor: theme.appBarTheme.foregroundColor,
         elevation: 0.5,
@@ -432,9 +432,9 @@ class _CurrencyManagementPageV2State
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.star, color: cs.tertiary, size: 20),
+                        Icon(Icons.star, color: cs.tertiary, size: 20),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           '基础货币',
                           style: TextStyle(
                             fontSize: 16,
@@ -449,7 +449,7 @@ class _CurrencyManagementPageV2State
                             color: cs.tertiaryContainer,
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: const Text(
+                          child: Text(
                             '重要',
                             style: TextStyle(
                               fontSize: 11,
@@ -497,7 +497,7 @@ class _CurrencyManagementPageV2State
                                 border: Border.all(color: cs.tertiary),
                               ),
                               child: Center(
-                                child: const Text(
+                                child: Text(
                                   baseCurrency.flag ?? baseCurrency.symbol,
                                   style: TextStyle(
                                       fontSize: 24, color: cs.onSurface),
@@ -511,7 +511,7 @@ class _CurrencyManagementPageV2State
                                 children: [
                                   Row(
                                     children: [
-                                      const Text(
+                                      Text(
                                         baseCurrency.code,
                                         style: const TextStyle(
                                           fontSize: 16,
@@ -529,7 +529,7 @@ class _CurrencyManagementPageV2State
                                           borderRadius:
                                               BorderRadius.circular(4),
                                         ),
-                                        child: const Text(
+                                        child: Text(
                                           baseCurrency.symbol,
                                           style: TextStyle(
                                               fontSize: 12,
@@ -539,7 +539,7 @@ class _CurrencyManagementPageV2State
                                     ],
                                   ),
                                   const SizedBox(height: 2),
-                                  const Text(
+                                  Text(
                                     baseCurrency.nameZh,
                                     style: TextStyle(
                                       fontSize: 13,
@@ -549,7 +549,7 @@ class _CurrencyManagementPageV2State
                                 ],
                               ),
                             ),
-                            const Icon(Icons.chevron_right, color: Colors.amber[700]),
+                            Icon(Icons.chevron_right, color: Colors.amber[700]),
                           ],
                         ),
                       ),
@@ -567,9 +567,9 @@ class _CurrencyManagementPageV2State
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.language, color: cs.primary, size: 20),
+                        Icon(Icons.language, color: cs.primary, size: 20),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           '启用多币种',
                           style: TextStyle(
                             fontSize: 16,
@@ -599,13 +599,13 @@ class _CurrencyManagementPageV2State
                           ),
                           child: Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.currency_bitcoin,
                                 color: cs.secondary,
                                 size: 20,
                               ),
                               const SizedBox(width: 8),
-                              const Text(
+                              Text(
                                 '启用加密货币',
                                 style: TextStyle(
                                   fontSize: 14,
@@ -633,9 +633,9 @@ class _CurrencyManagementPageV2State
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.block, color: cs.error, size: 20),
+                              Icon(Icons.block, color: cs.error, size: 20),
                               const SizedBox(width: 8),
-                              const Text(
+                              Text(
                                 '加密货币在您的地区不可用',
                                 style: TextStyle(
                                     fontSize: 14, color: cs.onErrorContainer),
@@ -663,10 +663,10 @@ class _CurrencyManagementPageV2State
                         padding: const EdgeInsets.all(16),
                         child: Row(
                           children: [
-                            const Icon(Icons.account_balance_wallet,
+                            Icon(Icons.account_balance_wallet,
                                 color: cs.secondary, size: 20),
                             const SizedBox(width: 8),
-                            const Text(
+                            Text(
                               '已选货币',
                               style: TextStyle(
                                 fontSize: 16,
@@ -683,7 +683,7 @@ class _CurrencyManagementPageV2State
                                 color: cs.secondaryContainer,
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: const Text(
+                              child: Text(
                                 '${selectedCurrencies.length}',
                                 style: TextStyle(
                                   fontSize: 12,
@@ -697,14 +697,14 @@ class _CurrencyManagementPageV2State
                       ),
                       // 管理按钮
                       ListTile(
-                        leading: const Icon(Icons.edit, color: cs.primary),
-                        title: const Text('管理法定货币'),
-                        subtitle: const Text(
+                        leading: Icon(Icons.edit, color: cs.primary),
+                        title: Text('管理法定货币'),
+                        subtitle: Text(
                           '选择并管理汇率',
                           style:
                               TextStyle(fontSize: 12, color: Colors.grey[600]),
                         ),
-                        trailing: const Icon(Icons.chevron_right),
+                        trailing: Icon(Icons.chevron_right),
                         onTap: () {
                           final compact =
                               ref.read(settingsProvider).listDensity ==
@@ -721,14 +721,14 @@ class _CurrencyManagementPageV2State
                       if (currencyPrefs.cryptoEnabled)
                         ListTile(
                           leading:
-                              const Icon(Icons.currency_bitcoin, color: cs.secondary),
-                          title: const Text('管理加密货币'),
-                          subtitle: const Text(
+                              Icon(Icons.currency_bitcoin, color: cs.secondary),
+                          title: Text('管理加密货币'),
+                          subtitle: Text(
                             '选择并管理加密货币',
                             style: TextStyle(
                                 fontSize: 12, color: Colors.grey[600]),
                           ),
-                          trailing: const Icon(Icons.chevron_right),
+                          trailing: Icon(Icons.chevron_right),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -753,9 +753,9 @@ class _CurrencyManagementPageV2State
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.visibility, color: cs.primary, size: 20),
+                        Icon(Icons.visibility, color: cs.primary, size: 20),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           '显示设置',
                           style: TextStyle(
                             fontSize: 16,
@@ -766,8 +766,8 @@ class _CurrencyManagementPageV2State
                     ),
                     const SizedBox(height: 12),
                     CheckboxListTile(
-                      title: const Text('显示货币符号'),
-                      subtitle: const Text(
+                      title: Text('显示货币符号'),
+                      subtitle: Text(
                         '在金额前显示货币符号',
                         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
@@ -786,8 +786,8 @@ class _CurrencyManagementPageV2State
                       contentPadding: EdgeInsets.zero,
                     ),
                     CheckboxListTile(
-                      title: const Text('显示货币代码'),
-                      subtitle: const Text(
+                      title: Text('显示货币代码'),
+                      subtitle: Text(
                         '在金额后显示货币代码',
                         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
@@ -814,10 +814,10 @@ class _CurrencyManagementPageV2State
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.info_outline,
+                          Icon(Icons.info_outline,
                               size: 16, color: cs.onPrimaryContainer),
                           const SizedBox(width: 8),
-                          const Text(
+                          Text(
                             _getDisplayExample(),
                             style: TextStyle(
                               fontSize: 13,
@@ -849,7 +849,7 @@ class _CurrencyManagementPageV2State
                     child: Row(
                       children: [
                         Expanded(
-                          child: const Text(
+                          child: Text(
                             text,
                             style: TextStyle(
                                 fontSize: 12, color: cs.onSurfaceVariant),
@@ -859,8 +859,8 @@ class _CurrencyManagementPageV2State
                         const SizedBox(width: 8),
                         TextButton.icon(
                           onPressed: () => showDataSourceInfoSheet(context),
-                          icon: const Icon(Icons.info_outline, size: 16),
-                          label: const Text('来源说明'),
+                          icon: Icon(Icons.info_outline, size: 16),
+                          label: Text('来源说明'),
                         ),
                       ],
                     ),
@@ -879,9 +879,9 @@ class _CurrencyManagementPageV2State
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.sync, color: Colors.indigo[700], size: 20),
+                          Icon(Icons.sync, color: Colors.indigo[700], size: 20),
                           const SizedBox(width: 8),
-                          const Text(
+                          Text(
                             '汇率管理',
                             style: TextStyle(
                               fontSize: 16,
@@ -899,8 +899,8 @@ class _CurrencyManagementPageV2State
                               onPressed: _isLoadingRates
                                   ? null
                                   : _autoFetchExchangeRates,
-                              icon: const Icon(Icons.refresh, size: 18),
-                              label: const Text('自动更新'),
+                              icon: Icon(Icons.refresh, size: 18),
+                              label: Text('自动更新'),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.indigo,
                               ),
@@ -910,8 +910,8 @@ class _CurrencyManagementPageV2State
                           Expanded(
                             child: OutlinedButton.icon(
                               onPressed: _manualUpdateRates,
-                              icon: const Icon(Icons.edit, size: 18),
-                              label: const Text('手动设置'),
+                              icon: Icon(Icons.edit, size: 18),
+                              label: Text('手动设置'),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.orange,
                               ),
@@ -938,11 +938,11 @@ class _CurrencyManagementPageV2State
                           padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
                           child: Row(
                             children: [
-                              const Icon(Icons.info_outline,
+                              Icon(Icons.info_outline,
                                   size: 14, color: Colors.grey),
                               const SizedBox(width: 6),
                               Expanded(
-                                child: const Text(
+                                child: Text(
                                   sourceText,
                                   style: const TextStyle(
                                       fontSize: 12, color: Colors.grey),
@@ -979,7 +979,7 @@ class _CurrencyManagementPageV2State
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('设置汇率与有效期: 1 $baseCurrency = ? $toCurrency'),
+          title: Text('设置汇率与有效期: 1 $baseCurrency = ? $toCurrency'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -993,10 +993,10 @@ class _CurrencyManagementPageV2State
               const SizedBox(height: 12),
               Row(
                 children: [
-                  const Icon(Icons.schedule, size: 18, color: Colors.blueGrey),
+                  Icon(Icons.schedule, size: 18, color: Colors.blueGrey),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: const Text(
+                    child: Text(
                       '有效期至: ${_formatDate(expiryUtc.toLocal())}',
                       style: const TextStyle(fontSize: 12),
                     ),
@@ -1016,20 +1016,20 @@ class _CurrencyManagementPageV2State
                         });
                       }
                     },
-                    icon: const Icon(Icons.calendar_today,
+                    icon: Icon(Icons.calendar_today,
                         color: Colors.blueGrey),
                   ),
                 ],
               ),
               const SizedBox(height: 4),
-              const Text('提示：有效期内将优先使用手动汇率',
+              Text('提示：有效期内将优先使用手动汇率',
                   style: TextStyle(fontSize: 11, color: Colors.grey)),
             ],
           ),
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('跳过')),
+                child: Text('跳过')),
             ElevatedButton(
               onPressed: () {
                 final v = double.tryParse(controller.text.trim());
@@ -1039,7 +1039,7 @@ class _CurrencyManagementPageV2State
                 }
                 Navigator.pop(context, _RateWithExpiry(v, expiryUtc));
               },
-              child: const Text('确定'),
+              child: Text('确定'),
             ),
           ],
         ),
@@ -1085,12 +1085,12 @@ class _ManualRateDialogState extends State<_ManualRateDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('手动设置汇率'),
+      title: Text('手动设置汇率'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             '设置手动汇率有效期',
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
@@ -1103,17 +1103,17 @@ class _ManualRateDialogState extends State<_ManualRateDialog> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.schedule, color: Colors.blue, size: 20),
+                Icon(Icons.schedule, color: Colors.blue, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         '有效期至',
                         style: TextStyle(fontSize: 12),
                       ),
-                      const Text(
+                      Text(
                         '${_selectedExpiry.year}-${_selectedExpiry.month.toString().padLeft(2, '0')}-${_selectedExpiry.day.toString().padLeft(2, '0')} 00:00 UTC',
                         style: const TextStyle(
                           fontSize: 14,
@@ -1145,13 +1145,13 @@ class _ManualRateDialogState extends State<_ManualRateDialog> {
                       });
                     }
                   },
-                  icon: const Icon(Icons.calendar_today, color: Colors.blue),
+                  icon: Icon(Icons.calendar_today, color: Colors.blue),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             '提示：手动设置的汇率将在有效期内优先使用',
             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
           ),
@@ -1160,7 +1160,7 @@ class _ManualRateDialogState extends State<_ManualRateDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('取消'),
+          child: Text('取消'),
         ),
         ElevatedButton(
           onPressed: () {
@@ -1168,7 +1168,7 @@ class _ManualRateDialogState extends State<_ManualRateDialog> {
               'expiry': _selectedExpiry,
             });
           },
-          child: const Text('确定'),
+          child: Text('确定'),
         ),
       ],
     );

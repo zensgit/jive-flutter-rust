@@ -25,10 +25,10 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
     final asyncList = ref.watch(currencyAdminProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('币种管理'),
+        title: Text('币种管理'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: Icon(Icons.add),
             onPressed: () => _openEditDialog(context),
             tooltip: '新增币种',
           )
@@ -41,7 +41,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
             child: TextField(
               decoration: const InputDecoration(
                 hintText: '搜索（代码/名称/符号）',
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
               onChanged: (v) => setState(() => _query = v.trim().toLowerCase()),
@@ -71,14 +71,14 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                               if (mounted) {
                                 ref.invalidate(currencyAdminProvider);
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: const Text('已触发目录刷新')));
+                                    const SnackBar(content: Text('已触发目录刷新')));
                               }
                             },
-                            icon: const Icon(Icons.refresh),
-                            label: const Text('刷新目录'),
+                            icon: Icon(Icons.refresh),
+                            label: Text('刷新目录'),
                           ),
                           const SizedBox(width: 12),
-                          const Text('来源/更新时间显示如下：'),
+                          Text('来源/更新时间显示如下：'),
                         ],
                       ),
                     ),
@@ -92,7 +92,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, st) => Center(child: const Text('加载失败：$e')),
+              error: (e, st) => Center(child: Text('加载失败：$e')),
             ),
           )
         ],
@@ -115,12 +115,12 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
           ),
           child: Center(
             child:
-                const Text(c.flag ?? c.symbol, style: const TextStyle(fontSize: 18)),
+                Text(c.flag ?? c.symbol, style: const TextStyle(fontSize: 18)),
           ),
         ),
         title: Row(
           children: [
-            const Text(c.code, style: const TextStyle(fontWeight: FontWeight.w700)),
+            Text(c.code, style: const TextStyle(fontWeight: FontWeight.w700)),
             const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -128,7 +128,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                 color: cs.surfaceVariant,
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Text(c.symbol,
+              child: Text(c.symbol,
                   style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12)),
             ),
             const SizedBox(width: 8),
@@ -139,7 +139,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                   color: cs.secondaryContainer,
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: const Text('加密',
+                child: Text('加密',
                     style: TextStyle(
                         color: cs.onSecondaryContainer, fontSize: 11)),
               )
@@ -148,7 +148,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('${c.name} · ${c.nameZh} · 小数位: ${c.decimalPlaces}'),
+            Text('${c.name} · ${c.nameZh} · 小数位: ${c.decimalPlaces}'),
             const SizedBox(height: 4),
             Row(
               children: [
@@ -156,26 +156,26 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: Chip(
-                        label: const Text('CoinGecko: ${c.coingeckoId}'),
+                        label: Text('CoinGecko: ${c.coingeckoId}'),
                         visualDensity: VisualDensity.compact),
                   ),
                 if (c.coincapSymbol != null && c.coincapSymbol!.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: Chip(
-                        label: const Text('CoinCap: ${c.coincapSymbol}'),
+                        label: Text('CoinCap: ${c.coincapSymbol}'),
                         visualDensity: VisualDensity.compact),
                   ),
                 if (c.binanceSymbol != null && c.binanceSymbol!.isNotEmpty)
                   Chip(
-                      label: const Text('Binance: ${c.binanceSymbol}'),
+                      label: Text('Binance: ${c.binanceSymbol}'),
                       visualDensity: VisualDensity.compact),
               ],
             ),
             if (c.updatedAt != null || c.lastRefreshedAt != null)
               Padding(
                 padding: const EdgeInsets.only(top: 4.0),
-                child: const Text(
+                child: Text(
                   '更新: ${c.updatedAt?.toLocal().toString().split(".").first ?? '-'} · 抓取: ${c.lastRefreshedAt?.toLocal().toString().split(".").first ?? '-'}',
                   style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
@@ -198,11 +198,11 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                 PopupMenuItem(
                     value: 'edit',
                     child:
-                        ListTile(leading: const Icon(Icons.edit), title: const Text('编辑'))),
+                        ListTile(leading: Icon(Icons.edit), title: Text('编辑'))),
                 PopupMenuItem(
                     value: 'alias',
                     child: ListTile(
-                        leading: const Icon(Icons.merge_type), title: const Text('改码/合并'))),
+                        leading: Icon(Icons.merge_type), title: Text('改码/合并'))),
               ],
             ),
           ],
@@ -224,7 +224,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('改码 / 合并'),
+        title: Text('改码 / 合并'),
         content: const SizedBox(
           width: 420,
           child: Column(
@@ -248,7 +248,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
               Row(
                 children: [
                   Expanded(
-                      child: const Text(validUntil == null
+                      child: Text(validUntil == null
                           ? '有效期（可选）'
                           : '有效期：${validUntil!.toString().split(' ').first}')),
                   TextButton(
@@ -266,7 +266,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                         (context as Element).markNeedsBuild();
                       }
                     },
-                    child: const Text('选择日期'),
+                    child: Text('选择日期'),
                   )
                 ],
               ),
@@ -276,7 +276,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                 builder: (context, v, _) => CheckboxListTile(
                   value: v,
                   onChanged: (nv) => deactivateOld.value = nv ?? true,
-                  title: const Text('创建别名后将旧代码设为停用'),
+                  title: Text('创建别名后将旧代码设为停用'),
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
               ),
@@ -286,10 +286,10 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('取消')),
+              child: Text('取消')),
           ElevatedButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('保存')),
+              child: Text('保存')),
         ],
       ),
     );
@@ -304,7 +304,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
       if (mounted) {
         ref.invalidate(currencyAdminProvider);
         ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: const Text('已创建别名并保存')));
+            .showSnackBar(const SnackBar(content: Text('已创建别名并保存')));
       }
     }
   }
@@ -365,7 +365,7 @@ class _EditCurrencyDialogState extends State<_EditCurrencyDialog> {
   Widget build(BuildContext context) {
     final isEdit = widget.target != null;
     return AlertDialog(
-      title: const Text(isEdit ? '编辑币种' : '新增币种'),
+      title: Text(isEdit ? '编辑币种' : '新增币种'),
       content: const SizedBox(
         width: 520,
         child: Form(
@@ -400,7 +400,7 @@ class _EditCurrencyDialogState extends State<_EditCurrencyDialog> {
                 SwitchListTile(
                   value: _isCrypto,
                   onChanged: (v) => setState(() => _isCrypto = v),
-                  title: const Text('加密货币'),
+                  title: Text('加密货币'),
                 ),
                 if (_isCrypto) ...[
                   _text(_coingeckoId, 'CoinGecko ID (推荐)'),
@@ -414,7 +414,7 @@ class _EditCurrencyDialogState extends State<_EditCurrencyDialog> {
                 SwitchListTile(
                   value: _isActive,
                   onChanged: (v) => setState(() => _isActive = v),
-                  title: const Text('启用'),
+                  title: Text('启用'),
                 ),
               ],
             ),
@@ -423,8 +423,8 @@ class _EditCurrencyDialogState extends State<_EditCurrencyDialog> {
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.pop(context), child: const Text('取消')),
-        ElevatedButton(onPressed: _submit, child: const Text('保存')),
+            onPressed: () => Navigator.pop(context), child: Text('取消')),
+        ElevatedButton(onPressed: _submit, child: Text('保存')),
       ],
     );
   }

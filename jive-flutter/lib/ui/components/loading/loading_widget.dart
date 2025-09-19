@@ -35,7 +35,7 @@ class LoadingWidget extends StatelessWidget {
         ),
         if (showMessage && message != null) ...[
           const SizedBox(height: 16),
-          const Text(
+          Text(
             message!,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
@@ -288,7 +288,7 @@ class EmptyWidget extends StatelessWidget {
                 color: theme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(40),
               ),
-              child: const Icon(
+              child: Icon(
                 icon,
                 size: 40,
                 color: theme.primaryColor,
@@ -298,7 +298,7 @@ class EmptyWidget extends StatelessWidget {
           const SizedBox(height: 24),
 
           // 标题
-          const Text(
+          Text(
             title,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
@@ -309,7 +309,7 @@ class EmptyWidget extends StatelessWidget {
           // 副标题
           if (subtitle != null) ...[
             const SizedBox(height: 8),
-            const Text(
+            Text(
               subtitle!,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
@@ -335,7 +335,7 @@ class EmptyWidget extends StatelessWidget {
                       BorderRadius.circular(AppConstants.borderRadius),
                 ),
               ),
-              child: const Text(actionText!),
+              child: Text(actionText!),
             ),
           ],
         ],

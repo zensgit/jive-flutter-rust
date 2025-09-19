@@ -38,7 +38,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('初始化微信SDK失败: $e')),
+          SnackBar(content: Text('初始化微信SDK失败: $e')),
         );
       }
     } finally {
@@ -74,7 +74,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text(result.message ?? '微信账户绑定成功'),
+              content: Text(result.message ?? '微信账户绑定成功'),
               backgroundColor: Colors.green,
             ),
           );
@@ -83,7 +83,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text(result.message ?? '绑定失败'),
+              content: Text(result.message ?? '绑定失败'),
               backgroundColor: Colors.red,
             ),
           );
@@ -93,7 +93,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('绑定过程中发生错误: $e'),
+            content: Text('绑定过程中发生错误: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -110,17 +110,17 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
     bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('确认解绑'),
-        content: const Text('解绑后将无法使用微信快速登录，确定要解绑吗？'),
+        title: Text('确认解绑'),
+        content: Text('解绑后将无法使用微信快速登录，确定要解绑吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('解绑'),
+            child: Text('解绑'),
           ),
         ],
       ),
@@ -143,7 +143,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text(result.message ?? '微信账户解绑成功'),
+              content: Text(result.message ?? '微信账户解绑成功'),
               backgroundColor: Colors.green,
             ),
           );
@@ -152,7 +152,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text(result.message ?? '解绑失败'),
+              content: Text(result.message ?? '解绑失败'),
               backgroundColor: Colors.red,
             ),
           );
@@ -162,7 +162,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('解绑过程中发生错误: $e'),
+            content: Text('解绑过程中发生错误: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -178,7 +178,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('微信绑定'),
+        title: Text('微信绑定'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
@@ -199,9 +199,9 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                         children: [
                           Row(
                             children: [
-                              const Icon(Icons.info, color: Colors.blue[700]),
+                              Icon(Icons.info, color: Colors.blue[700]),
                               const SizedBox(width: 8),
-                              const Text(
+                              Text(
                                 '关于微信绑定',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -211,7 +211,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                             ],
                           ),
                           const SizedBox(height: 8),
-                          const Text(
+                          Text(
                             '• 绑定微信后可使用微信快速登录\n'
                             '• 支持微信扫码和微信内授权登录\n'
                             '• 绑定信息仅用于身份验证\n'
@@ -236,10 +236,10 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.wechat,
+                                Icon(Icons.wechat,
                                     color: Color(0xFF07C160)),
                                 const SizedBox(width: 8),
-                                const Text(
+                                Text(
                                   '已绑定微信账户',
                                   style: TextStyle(
                                     fontSize: 16,
@@ -258,7 +258,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                                       ? NetworkImage(_weChatInfo!.headImgUrl)
                                       : null,
                                   child: _weChatInfo!.headImgUrl.isEmpty
-                                      ? const Icon(Icons.person, size: 30)
+                                      ? Icon(Icons.person, size: 30)
                                       : null,
                                 ),
                                 const SizedBox(width: 16),
@@ -267,7 +267,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const Text(
+                                      Text(
                                         _weChatInfo!.nickname,
                                         style: const TextStyle(
                                           fontSize: 18,
@@ -275,14 +275,14 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                                         ),
                                       ),
                                       const SizedBox(height: 4),
-                                      const Text(
+                                      Text(
                                         '性别: ${_weChatInfo!.sexText}',
                                         style: const TextStyle(
                                           fontSize: 14,
                                           color: Colors.grey,
                                         ),
                                       ),
-                                      const Text(
+                                      Text(
                                         '地区: ${_weChatInfo!.country} ${_weChatInfo!.province} ${_weChatInfo!.city}',
                                         style: const TextStyle(
                                           fontSize: 14,
@@ -314,7 +314,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                                                   Colors.red),
                                         ),
                                       )
-                                    : const Text('解绑微信账户'),
+                                    : Text('解绑微信账户'),
                               ),
                             ),
                           ],
@@ -331,10 +331,10 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.wechat_outlined,
+                                Icon(Icons.wechat_outlined,
                                     color: Color(0xFF07C160)),
                                 const SizedBox(width: 8),
-                                const Text(
+                                Text(
                                   '绑定微信账户',
                                   style: TextStyle(
                                     fontSize: 16,
@@ -344,7 +344,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                               ],
                             ),
                             const SizedBox(height: 12),
-                            const Text(
+                            Text(
                               '绑定微信账户后，您可以使用微信快速登录，让使用更加便捷。',
                               style: TextStyle(
                                 fontSize: 14,
@@ -358,7 +358,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                               onSuccess: _handleBind,
                               onError: (error) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: const Text('绑定失败: $error')),
+                                  SnackBar(content: Text('绑定失败: $error')),
                                 );
                               },
                             ),
@@ -380,9 +380,9 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                         children: [
                           Row(
                             children: [
-                              const Icon(Icons.security, color: Colors.orange[700]),
+                              Icon(Icons.security, color: Colors.orange[700]),
                               const SizedBox(width: 8),
-                              const Text(
+                              Text(
                                 '安全提示',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -392,7 +392,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                             ],
                           ),
                           const SizedBox(height: 8),
-                          const Text(
+                          Text(
                             '• 请确保在安全的网络环境下进行绑定操作\n'
                             '• 如发现异常登录，请及时解绑并修改密码\n'
                             '• 建议同时开启多因素认证增强安全性',

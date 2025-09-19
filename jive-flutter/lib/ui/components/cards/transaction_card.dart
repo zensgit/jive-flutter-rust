@@ -123,7 +123,7 @@ class TransactionCard extends ConsumerWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: const Text(
+                          child: Text(
                             cardTitle,
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
@@ -132,7 +132,7 @@ class TransactionCard extends ConsumerWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        const Text(
+                        Text(
                           DateFormat('MM/dd HH:mm').format(cardDate),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
@@ -159,7 +159,7 @@ class TransactionCard extends ConsumerWidget {
                                 .withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Text(
+                          child: Text(
                             cardCategory,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: transaction?.type.color ??
@@ -172,7 +172,7 @@ class TransactionCard extends ConsumerWidget {
 
                         if (cardPayee != null) ...[
                           const SizedBox(width: 8),
-                          const Text(
+                          Text(
                             '• $cardPayee',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color:
@@ -189,7 +189,7 @@ class TransactionCard extends ConsumerWidget {
                     if (cardDescription != null &&
                         cardDescription.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      const Text(
+                      Text(
                         cardDescription,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
@@ -216,7 +216,7 @@ class TransactionCard extends ConsumerWidget {
                                   theme.colorScheme.secondary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Text(
+                            child: Text(
                               tag,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.secondary,
@@ -237,7 +237,7 @@ class TransactionCard extends ConsumerWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text(
+                  Text(
                     '${cardIsIncome ? '+' : '-'}${formatter.formatCurrency(cardAmount.abs(), ref.read(baseCurrencyProvider).code)}',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -257,7 +257,7 @@ class TransactionCard extends ConsumerWidget {
                         color: theme.primaryColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      child: const Text(
+                      child: Text(
                         '今天',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.primaryColor,
@@ -288,7 +288,7 @@ class TransactionCard extends ConsumerWidget {
         color: iconColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: const Icon(
+      child: Icon(
         iconData,
         color: iconColor,
         size: 20,

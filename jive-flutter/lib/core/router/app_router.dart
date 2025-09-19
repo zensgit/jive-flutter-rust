@@ -196,14 +196,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: 'security',
                 builder: (context, state) => const Scaffold(
                     body: Center(
-                        child: const Text(
+                        child: Text(
                             'Security Settings'))), // TODO: Create SecurityScreen
               ),
               GoRoute(
                 path: 'preferences',
                 builder: (context, state) => const Scaffold(
                     body: Center(
-                        child: const Text(
+                        child: Text(
                             'Preferences'))), // TODO: Create PreferencesScreen
               ),
               GoRoute(
@@ -249,7 +249,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           // 获取当前选中的账本
           final currentLedger = ref.read(currentLedgerProvider);
           if (currentLedger == null) {
-            return Scaffold(body: Center(child: const Text('错误: 未选择家庭')));
+            return Scaffold(body: Center(child: Text('错误: 未选择家庭')));
           }
           return FamilyMembersScreen(ledger: currentLedger);
         },
@@ -259,7 +259,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final currentLedger = ref.read(currentLedgerProvider);
           if (currentLedger == null) {
-            return Scaffold(body: Center(child: const Text('错误: 未选择家庭')));
+            return Scaffold(body: Center(child: Text('错误: 未选择家庭')));
           }
           return FamilySettingsScreen(ledger: currentLedger);
         },
@@ -269,7 +269,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final currentLedger = ref.read(currentLedgerProvider);
           if (currentLedger == null) {
-            return Scaffold(body: Center(child: const Text('错误: 未选择家庭')));
+            return Scaffold(body: Center(child: Text('错误: 未选择家庭')));
           }
           return FamilyDashboardScreen(ledger: currentLedger);
         },
@@ -301,18 +301,18 @@ class ErrorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('错误')),
+      appBar: AppBar(title: Text('错误')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.error_outline,
               size: 64,
               color: Colors.red,
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               '页面加载失败',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -325,7 +325,7 @@ class ErrorPage extends StatelessWidget {
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () => context.go(AppRoutes.dashboard),
-              child: const Text('返回首页'),
+              child: Text('返回首页'),
             ),
           ],
         ),

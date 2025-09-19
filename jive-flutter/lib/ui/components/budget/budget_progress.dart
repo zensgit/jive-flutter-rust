@@ -60,7 +60,7 @@ class BudgetProgress extends StatelessWidget {
                       color: (color ?? progressColor).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       icon,
                       size: 20,
                       color: color ?? progressColor,
@@ -72,7 +72,7 @@ class BudgetProgress extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         category,
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w600,
@@ -80,7 +80,7 @@ class BudgetProgress extends StatelessWidget {
                       ),
                       if (showAmount) ...[
                         const SizedBox(height: 2),
-                        const Text(
+                        Text(
                           '${ref.read(currencyProvider.notifier).formatCurrency(spent, ref.read(baseCurrencyProvider).code)} / ${ref.read(currencyProvider.notifier).formatCurrency(budgeted, ref.read(baseCurrencyProvider).code)}',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
@@ -94,14 +94,14 @@ class BudgetProgress extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     if (showPercentage)
-                      const Text(
+                      Text(
                         '${percentage.toStringAsFixed(0)}%',
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: progressColor,
                         ),
                       ),
-                    const Text(
+                    Text(
                       isOverBudget
                           ? '超支 ${ref.read(currencyProvider.notifier).formatCurrency(-remaining, ref.read(baseCurrencyProvider).code)}'
                           : '剩余 ${ref.read(currencyProvider.notifier).formatCurrency(remaining, ref.read(baseCurrencyProvider).code)}',
@@ -141,13 +141,13 @@ class BudgetProgress extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.warning,
                       size: 14,
                       color: AppConstants.errorColor,
                     ),
                     const SizedBox(width: 4),
-                    const Text(
+                    Text(
                       '已超出预算 ${(percentage - 100).toStringAsFixed(0)}%',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: AppConstants.errorColor,
@@ -209,7 +209,7 @@ class CompactBudgetProgress extends StatelessWidget {
           children: [
             Expanded(
               flex: 2,
-              child: const Text(
+              child: Text(
                 category,
                 style: theme.textTheme.bodyMedium,
                 overflow: TextOverflow.ellipsis,
@@ -232,7 +232,7 @@ class CompactBudgetProgress extends StatelessWidget {
             ),
             const SizedBox(
               width: 45,
-              child: const Text(
+              child: Text(
                 '${percentage.toStringAsFixed(0)}%',
                 style: theme.textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.w600,
@@ -313,13 +313,13 @@ class BudgetProgressList extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.pie_chart_outline,
             size: 48,
             color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             '暂无预算',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.5),

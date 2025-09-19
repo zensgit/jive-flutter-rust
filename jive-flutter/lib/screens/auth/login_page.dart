@@ -63,7 +63,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // 标题
-                const Text(
+                Text(
                   'Jive Money',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
@@ -72,7 +72,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   '个人财务管理系统',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -88,7 +88,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   decoration: const InputDecoration(
                     labelText: '邮箱',
                     hintText: '请输入您的邮箱地址',
-                    prefixIcon: const Icon(Icons.email_outlined),
+                    prefixIcon: Icon(Icons.email_outlined),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -109,7 +109,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   decoration: const InputDecoration(
                     labelText: '密码',
                     hintText: '请输入您的密码',
-                    prefixIcon: const Icon(Icons.lock_outlined),
+                    prefixIcon: Icon(Icons.lock_outlined),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -135,7 +135,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('登录'),
+                      : Text('登录'),
                 ),
                 const SizedBox(height: 16),
 
@@ -151,7 +151,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: const Text('演示模式（跳过登录）'),
+                  child: Text('演示模式（跳过登录）'),
                 ),
               ],
             ),

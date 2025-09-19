@@ -30,7 +30,7 @@ class _DevQuickActionsState extends State<DevQuickActions> {
             FloatingActionButton.small(
               heroTag: 'dev_fab',
               onPressed: () => setState(() => _open = !_open),
-              child: const Icon(_open ? Icons.close : Icons.build, size: 18),
+              child: Icon(_open ? Icons.close : Icons.build, size: 18),
             ),
             if (_open)
               Material(
@@ -70,12 +70,12 @@ class _DevQuickActionsState extends State<DevQuickActions> {
         child: InkWell(
           onTap: onTap,
           child: Row(children: [
-            const Icon(Icons.chevron_right, size: 14, color: Colors.white70),
+            Icon(Icons.chevron_right, size: 14, color: Colors.white70),
             const SizedBox(width: 4),
-            Expanded(child: const Text(label)),
+            Expanded(child: Text(label)),
           ]),
         ),
       );
   void _reload() => html.window.location.reload();
-  void _toast(String msg) { if (!mounted) return; WidgetsBinding.instance.addPostFrameCallback((_) { if(!mounted) return; ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text(msg), duration: const Duration(seconds: 1), behavior: SnackBarBehavior.floating));}); }
+  void _toast(String msg) { if (!mounted) return; WidgetsBinding.instance.addPostFrameCallback((_) { if(!mounted) return; ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), duration: const Duration(seconds: 1), behavior: SnackBarBehavior.floating));}); }
 }

@@ -42,7 +42,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: const Text('该邮箱已添加'),
+            content: Text('该邮箱已添加'),
             backgroundColor: Colors.orange,
           ),
         );
@@ -65,7 +65,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
     if (_emailList.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: const Text('请至少添加一个邮箱'),
+          content: Text('请至少添加一个邮箱'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -89,7 +89,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('成功邀请 ${_emailList.length} 位成员'),
+            content: Text('成功邀请 ${_emailList.length} 位成员'),
             backgroundColor: Colors.green,
           ),
         );
@@ -98,7 +98,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('邀请失败: ${e.toString()}'),
+            content: Text('邀请失败: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -135,7 +135,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.person_add,
                     color: theme.primaryColor,
                     size: 28,
@@ -144,7 +144,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         '邀请成员',
                         style: TextStyle(
                           fontSize: 20,
@@ -152,7 +152,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
+                      Text(
                         '邀请加入: ${widget.ledger.name}',
                         style: TextStyle(
                           fontSize: 14,
@@ -183,7 +183,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                               decoration: InputDecoration(
                                 labelText: '邮箱地址',
                                 hintText: '输入邮箱地址',
-                                prefixIcon: const Icon(Icons.email),
+                                prefixIcon: Icon(Icons.email),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -207,7 +207,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                                 _addEmail();
                               }
                             },
-                            icon: const Icon(Icons.add),
+                            icon: Icon(Icons.add),
                           ),
                         ],
                       ),
@@ -215,7 +215,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
 
                       // 已添加的邮箱列表
                       if (_emailList.isNotEmpty) ...[
-                        const Text(
+                        Text(
                           '待邀请成员 (${_emailList.length})',
                           style: TextStyle(
                             fontSize: 14,
@@ -241,7 +241,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                                   radius: 16,
                                   backgroundColor:
                                       theme.primaryColor.withValues(alpha: 0.1),
-                                  child: const Text(
+                                  child: Text(
                                     StringUtils.safeInitial(email),
                                     style: TextStyle(
                                       fontSize: 14,
@@ -249,9 +249,9 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                                     ),
                                   ),
                                 ),
-                                title: const Text(email),
+                                title: Text(email),
                                 trailing: IconButton(
-                                  icon: const Icon(Icons.close, size: 18),
+                                  icon: Icon(Icons.close, size: 18),
                                   onPressed: () => _removeEmail(email),
                                 ),
                               );
@@ -266,7 +266,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                         value: _selectedRole,
                         decoration: InputDecoration(
                           labelText: '成员角色',
-                          prefixIcon: const Icon(Icons.security),
+                          prefixIcon: Icon(Icons.security),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -278,8 +278,8 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Text('观察者 (Viewer)'),
-                                const Text(
+                                Text('观察者 (Viewer)'),
+                                Text(
                                   '只能查看，不能修改',
                                   style: TextStyle(
                                       fontSize: 12, color: Colors.grey),
@@ -293,8 +293,8 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Text('编辑者 (Editor)'),
-                                const Text(
+                                Text('编辑者 (Editor)'),
+                                Text(
                                   '可以记账和编辑',
                                   style: TextStyle(
                                       fontSize: 12, color: Colors.grey),
@@ -308,8 +308,8 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Text('管理员 (Admin)'),
-                                const Text(
+                                Text('管理员 (Admin)'),
+                                Text(
                                   '可以管理成员和设置',
                                   style: TextStyle(
                                       fontSize: 12, color: Colors.grey),
@@ -341,13 +341,13 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                           children: [
                             Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.info_outline,
                                   size: 16,
                                   color: Colors.blue[700],
                                 ),
                                 const SizedBox(width: 8),
-                                const Text(
+                                Text(
                                   '角色权限说明',
                                   style: TextStyle(
                                     fontSize: 14,
@@ -392,7 +392,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                   TextButton(
                     onPressed:
                         _isLoading ? null : () => Navigator.of(context).pop(),
-                    child: const Text('取消'),
+                    child: Text('取消'),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton.icon(
@@ -406,8 +406,8 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                               color: Colors.white,
                             ),
                           )
-                        : const Icon(Icons.send),
-                    label: const Text(_isLoading ? '发送中...' : '发送邀请'),
+                        : Icon(Icons.send),
+                    label: Text(_isLoading ? '发送中...' : '发送邀请'),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20,
@@ -434,7 +434,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
         children: [
           const SizedBox(
             width: 80,
-            child: const Text(
+            child: Text(
               permission,
               style: const TextStyle(fontSize: 12),
             ),
@@ -447,7 +447,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
             final hasPermission = roles[entry.key];
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: const Icon(
+              child: Icon(
                 hasPermission ? Icons.check_circle : Icons.cancel,
                 size: 14,
                 color: hasPermission ? Colors.green : Colors.grey[400],

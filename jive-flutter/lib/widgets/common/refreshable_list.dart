@@ -163,7 +163,7 @@ class _RefreshableListState<T> extends State<RefreshableList<T>> {
     if (!widget.hasMore) {
       return const Padding(
         padding: EdgeInsets.all(16.0),
-        child: const Text(
+        child: Text(
           '没有更多内容了',
           textAlign: TextAlign.center,
           style: TextStyle(
@@ -360,10 +360,10 @@ class _SearchableRefreshableListState<T>
             controller: _searchController,
             decoration: InputDecoration(
               hintText: widget.searchHint ?? '搜索...',
-              prefixIcon: const Icon(Icons.search),
+              prefixIcon: Icon(Icons.search),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
-                      icon: const Icon(Icons.clear),
+                      icon: Icon(Icons.clear),
                       onPressed: () {
                         _searchController.clear();
                       },

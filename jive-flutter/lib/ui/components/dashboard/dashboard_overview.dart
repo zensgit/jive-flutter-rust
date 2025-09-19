@@ -82,7 +82,7 @@ class DashboardOverview extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Text(
+                Text(
                   '余额趋势',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
@@ -132,7 +132,7 @@ class DashboardOverview extends StatelessWidget {
         color: isSelected ? AppConstants.primaryColor : Colors.transparent,
         borderRadius: BorderRadius.circular(6),
       ),
-      child: const Text(
+      child: Text(
         label,
         style: TextStyle(
           fontSize: 12,
@@ -156,7 +156,7 @@ class DashboardOverview extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Text(
+                Text(
                   '账户概览',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
@@ -165,7 +165,7 @@ class DashboardOverview extends StatelessWidget {
                 const Spacer(),
                 TextButton(
                   onPressed: data.onViewAllAccounts,
-                  child: const Text('查看全部'),
+                  child: Text('查看全部'),
                 ),
               ],
             ),
@@ -191,7 +191,7 @@ class DashboardOverview extends StatelessWidget {
               color: account.color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(
+            child: Icon(
               account.icon,
               color: account.color,
               size: 20,
@@ -202,13 +202,13 @@ class DashboardOverview extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   account.name,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
                 ),
-                const Text(
+                Text(
                   account.type,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.grey[600],
@@ -217,7 +217,7 @@ class DashboardOverview extends StatelessWidget {
               ],
             ),
           ),
-          const Text(
+          Text(
             account.balance,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -244,7 +244,7 @@ class DashboardOverview extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Text(
+                Text(
                   '预算概览',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
@@ -253,7 +253,7 @@ class DashboardOverview extends StatelessWidget {
                 const Spacer(),
                 TextButton(
                   onPressed: data.onViewAllBudgets,
-                  child: const Text('查看全部'),
+                  child: Text('查看全部'),
                 ),
               ],
             ),
@@ -275,14 +275,14 @@ class DashboardOverview extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text(
+              Text(
                 budget.category,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
               ),
               const Spacer(),
-              const Text(
+              Text(
                 '${budget.spent} / ${budget.budget}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),

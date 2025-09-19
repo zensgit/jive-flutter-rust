@@ -57,7 +57,7 @@ class ThemePreviewCard extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: const Text(
+                          child: Text(
                             theme.name,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
@@ -77,7 +77,7 @@ class ThemePreviewCard extends StatelessWidget {
                               color: theme.primaryColor,
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: const Text(
+                            child: Text(
                               '当前',
                               style: TextStyle(
                                 color: Colors.white,
@@ -90,7 +90,7 @@ class ThemePreviewCard extends StatelessWidget {
                     ),
                     if (theme.author.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      const Text(
+                      Text(
                         '作者: ${theme.author}',
                         style: TextStyle(
                           color: Colors.grey[600],
@@ -102,7 +102,7 @@ class ThemePreviewCard extends StatelessWidget {
                     ],
                     if (theme.description.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      const Text(
+                      Text(
                         theme.description,
                         style: TextStyle(
                           color: Colors.grey[600],
@@ -117,7 +117,7 @@ class ThemePreviewCard extends StatelessWidget {
                       Row(
                         children: [
                           ...List.generate(5, (index) {
-                            return const Icon(
+                            return Icon(
                               index < theme.rating.floor()
                                   ? Icons.star
                                   : Icons.star_border,
@@ -126,7 +126,7 @@ class ThemePreviewCard extends StatelessWidget {
                             );
                           }),
                           const SizedBox(width: 4),
-                          const Text(
+                          Text(
                             '${theme.downloads}',
                             style: TextStyle(
                               color: Colors.grey[600],
@@ -416,7 +416,7 @@ class CompactThemePreviewCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       theme.name,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
@@ -427,7 +427,7 @@ class CompactThemePreviewCard extends StatelessWidget {
                     ),
                     if (theme.author.isNotEmpty) ...[
                       const SizedBox(height: 2),
-                      const Text(
+                      Text(
                         theme.author,
                         style: TextStyle(
                           color: Colors.grey[600],
@@ -452,7 +452,7 @@ class CompactThemePreviewCard extends StatelessWidget {
                     color: theme.primaryColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Text(
+                  child: Text(
                     '当前',
                     style: TextStyle(
                       color: Colors.white,

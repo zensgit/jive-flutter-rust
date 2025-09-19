@@ -128,7 +128,7 @@ class _ExchangeRateConverterPageState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           label,
           style: TextStyle(
             fontSize: 12,
@@ -165,7 +165,7 @@ class _ExchangeRateConverterPageState
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Center(
-                          child: const Text(
+                          child: Text(
                             selected.flag ?? selected.symbol,
                             style: const TextStyle(fontSize: 20),
                           ),
@@ -176,14 +176,14 @@ class _ExchangeRateConverterPageState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               selected.code,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
                               ),
                             ),
-                            const Text(
+                            Text(
                               selected.nameZh,
                               style: TextStyle(
                                 fontSize: 12,
@@ -193,14 +193,14 @@ class _ExchangeRateConverterPageState
                           ],
                         ),
                       ),
-                      const Icon(Icons.arrow_drop_down, color: Colors.grey[600]),
+                      Icon(Icons.arrow_drop_down, color: Colors.grey[600]),
                     ],
                   )
                 : Row(
                     children: [
-                      const Icon(Icons.add_circle_outline, color: Colors.grey[400]),
+                      Icon(Icons.add_circle_outline, color: Colors.grey[400]),
                       const SizedBox(width: 12),
-                      const Text(
+                      Text(
                         '选择货币',
                         style: TextStyle(
                           color: Colors.grey[600],
@@ -233,7 +233,7 @@ class _ExchangeRateConverterPageState
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text('汇率转换器'),
+        title: Text('汇率转换器'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0.5,
@@ -299,7 +299,7 @@ class _ExchangeRateConverterPageState
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     child: IconButton(
                       onPressed: _swapCurrencies,
-                      icon: const Icon(Icons.swap_vert, size: 28),
+                      icon: Icon(Icons.swap_vert, size: 28),
                       style: IconButton.styleFrom(
                         backgroundColor: Colors.blue[50],
                         foregroundColor: Colors.blue,
@@ -332,7 +332,7 @@ class _ExchangeRateConverterPageState
                       ),
                       child: Column(
                         children: [
-                          const Text(
+                          Text(
                             '${_toCurrency!.symbol}${_convertedAmount.toStringAsFixed(_toCurrency!.decimalPlaces)}',
                             style: const TextStyle(
                               fontSize: 28,
@@ -341,7 +341,7 @@ class _ExchangeRateConverterPageState
                             ),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
+                          Text(
                             '1 ${_fromCurrency!.code} = ${(_convertedAmount / (double.tryParse(_amountController.text) ?? 1)).toStringAsFixed(4)} ${_toCurrency!.code}',
                             style: TextStyle(
                               fontSize: 12,
@@ -361,9 +361,9 @@ class _ExchangeRateConverterPageState
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
-                    const Icon(Icons.history, size: 20, color: Colors.grey[600]),
+                    Icon(Icons.history, size: 20, color: Colors.grey[600]),
                     const SizedBox(width: 8),
-                    const Text(
+                    Text(
                       '转换历史',
                       style: TextStyle(
                         fontSize: 16,
@@ -405,14 +405,14 @@ class _ExchangeRateConverterPageState
               children: [
                 Row(
                   children: [
-                    const Text(
+                    Text(
                       ref
                           .read(currencyProvider.notifier)
                           .formatCurrency(history.amount, history.from.code),
                       style: const TextStyle(fontWeight: FontWeight.w500),
                     ),
-                    const Icon(Icons.arrow_forward, size: 16),
-                    const Text(
+                    Icon(Icons.arrow_forward, size: 16),
+                    Text(
                       ref
                           .read(currencyProvider.notifier)
                           .formatCurrency(history.result, history.to.code),
@@ -421,7 +421,7 @@ class _ExchangeRateConverterPageState
                   ],
                 ),
                 const SizedBox(height: 2),
-                const Text(
+                Text(
                   '${history.from.code} → ${history.to.code} | 汇率: ${history.rate.toStringAsFixed(4)}',
                   style: TextStyle(
                     fontSize: 11,
@@ -431,7 +431,7 @@ class _ExchangeRateConverterPageState
               ],
             ),
           ),
-          const Text(
+          Text(
             _formatTime(history.timestamp),
             style: TextStyle(
               fontSize: 11,
@@ -552,7 +552,7 @@ class _CurrencyPickerSheetState extends ConsumerState<_CurrencyPickerSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                const Text(
+                Text(
                   '选择货币',
                   style: TextStyle(
                     fontSize: 18,
@@ -562,7 +562,7 @@ class _CurrencyPickerSheetState extends ConsumerState<_CurrencyPickerSheet> {
                 const Spacer(),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
+                  icon: Icon(Icons.close),
                 ),
               ],
             ),
@@ -580,7 +580,7 @@ class _CurrencyPickerSheetState extends ConsumerState<_CurrencyPickerSheet> {
               },
               decoration: InputDecoration(
                 hintText: '搜索货币',
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -612,22 +612,22 @@ class _CurrencyPickerSheetState extends ConsumerState<_CurrencyPickerSheet> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
-                      child: const Text(
+                      child: Text(
                         currency.flag ?? currency.symbol,
                         style: const TextStyle(fontSize: 18),
                       ),
                     ),
                   ),
-                  title: const Text(
+                  title: Text(
                     '${currency.code} (${currency.symbol})',
                     style: TextStyle(
                       fontWeight:
                           isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
-                  subtitle: const Text(currency.nameZh),
+                  subtitle: Text(currency.nameZh),
                   trailing: isSelected
-                      ? const Icon(Icons.check_circle, color: Colors.green)
+                      ? Icon(Icons.check_circle, color: Colors.green)
                       : null,
                   onTap: () {
                     Navigator.pop(context, currency);

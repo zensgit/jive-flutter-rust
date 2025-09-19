@@ -39,21 +39,21 @@ class ImportDetailsSheet {
               children: [
                 Row(
                   children: [
-                    const Text('导入详情', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    Text('导入详情', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                     const Spacer(),
                     TextButton.icon(
                       onPressed: () async {
                         await Clipboard.setData(ClipboardData(text: jsonPayload));
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: const Text('已复制 JSON 到剪贴板')));
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('已复制 JSON 到剪贴板')));
                         }
                       },
-                      icon: const Icon(Icons.copy, size: 18),
-                      label: const Text('复制JSON'),
+                      icon: Icon(Icons.copy, size: 18),
+                      label: Text('复制JSON'),
                     ),
                   ],
                 ),
-                const Text('新增: ${result.imported}  跳过: ${result.skipped}  失败: ${result.failed}',
+                Text('新增: ${result.imported}  跳过: ${result.skipped}  失败: ${result.failed}',
                     style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface.withValues(alpha: .8))),
                 const SizedBox(height: 8),
                 Expanded(
@@ -64,12 +64,12 @@ class ImportDetailsSheet {
                       final items = e.value;
                       final color = (action == 'failed' || action == 'skipped') ? Colors.orange : Colors.green;
                       return ExpansionTile(
-                        title: const Text('$action (${items.length})', style: TextStyle(color: color, fontWeight: FontWeight.w600)),
+                        title: Text('$action (${items.length})', style: TextStyle(color: color, fontWeight: FontWeight.w600)),
                         children: items.map((d) => ListTile(
                               dense: true,
-                              title: const Text(d.predictedName ?? d.finalName ?? d.originalName),
-                              subtitle: const Text(d.reason != null ? d.reason! : ''),
-                              trailing: const Icon(
+                              title: Text(d.predictedName ?? d.finalName ?? d.originalName),
+                              subtitle: Text(d.reason != null ? d.reason! : ''),
+                              trailing: Icon(
                                 action == 'failed'
                                     ? Icons.error
                                     : (action == 'skipped' ? Icons.warning_amber : Icons.check_circle),

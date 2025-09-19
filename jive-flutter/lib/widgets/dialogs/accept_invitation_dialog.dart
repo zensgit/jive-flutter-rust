@@ -92,7 +92,7 @@ class _AcceptInvitationDialogState
     final currentUser = ref.watch(authStateProvider).value;
 
     return AlertDialog(
-      title: const Text(_showConfirmation ? '确认加入' : '邀请详情'),
+      title: Text(_showConfirmation ? '确认加入' : '邀请详情'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -117,7 +117,7 @@ class _AcceptInvitationDialogState
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Center(
-                            child: const Text(
+                            child: Text(
                               family.name.substring(0, 1).toUpperCase(),
                               style: TextStyle(
                                 fontSize: 20,
@@ -132,14 +132,14 @@ class _AcceptInvitationDialogState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 family.name,
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               if (family.description?.isNotEmpty ?? false)
-                                const Text(
+                                Text(
                                   family.description!,
                                   style: theme.textTheme.bodySmall,
                                   maxLines: 2,
@@ -219,7 +219,7 @@ class _AcceptInvitationDialogState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       '${_getRoleDisplay(invitation.role)}权限',
                       style: theme.textTheme.labelLarge?.copyWith(
                         color: theme.colorScheme.primary,
@@ -232,14 +232,14 @@ class _AcceptInvitationDialogState
                         padding: const EdgeInsets.only(top: 4),
                         child: Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.check_circle_outline,
                               size: 16,
                               color: theme.colorScheme.primary,
                             ),
                             const SizedBox(width: 8),
                             Expanded(
-                              child: const Text(
+                              child: Text(
                                 permission,
                                 style: theme.textTheme.bodySmall,
                               ),
@@ -264,13 +264,13 @@ class _AcceptInvitationDialogState
                 ),
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.info_outline,
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: const Text(
+                      child: Text(
                         '加入后，您将可以访问该家庭的所有共享数据',
                         style: theme.textTheme.bodySmall,
                       ),
@@ -287,7 +287,7 @@ class _AcceptInvitationDialogState
                   labelText: '备注（可选）',
                   hintText: '添加一条消息给邀请人',
                   border: const OutlineInputBorder(),
-                  prefixIcon: const Icon(Icons.message_outlined),
+                  prefixIcon: Icon(Icons.message_outlined),
                 ),
                 maxLines: 2,
                 onChanged: (value) {
@@ -312,7 +312,7 @@ class _AcceptInvitationDialogState
                     Navigator.of(context).pop(false);
                   }
                 },
-          child: const Text(_showConfirmation ? '返回' : '取消'),
+          child: Text(_showConfirmation ? '返回' : '取消'),
         ),
         FilledButton(
           onPressed: _isLoading ? null : _acceptInvitation,
@@ -322,7 +322,7 @@ class _AcceptInvitationDialogState
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text(_showConfirmation ? '确认加入' : '接受邀请'),
+              : Text(_showConfirmation ? '确认加入' : '接受邀请'),
         ),
       ],
     );
@@ -340,13 +340,13 @@ class _AcceptInvitationDialogState
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             icon,
             size: 20,
             color: theme.colorScheme.onSurfaceVariant,
           ),
           const SizedBox(width: 12),
-          const Text(
+          Text(
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
@@ -354,7 +354,7 @@ class _AcceptInvitationDialogState
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: const Text(
+            child: Text(
               value,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w500,
@@ -377,19 +377,19 @@ class _AcceptInvitationDialogState
 
     return Column(
       children: [
-        const Icon(
+        Icon(
           icon,
           size: 20,
           color: theme.colorScheme.primary,
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           value,
           style: theme.textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
-        const Text(
+        Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,

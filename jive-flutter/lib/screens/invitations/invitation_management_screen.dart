@@ -84,16 +84,16 @@ class _InvitationManagementScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('取消邀请'),
-        content: const Text('确定要取消发送给 ${invitation.email} 的邀请吗？'),
+        title: Text('取消邀请'),
+        content: Text('确定要取消发送给 ${invitation.email} 的邀请吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('确定'),
+            child: Text('确定'),
           ),
         ],
       ),
@@ -133,36 +133,36 @@ class _InvitationManagementScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('邀请管理'),
+        title: Text('邀请管理'),
         bottom: TabBar(
           controller: _tabController,
           tabs: [
             Tab(
               text: '待处理',
               icon: Badge(
-                label: const Text(_pendingInvitations.length.toString()),
-                child: const Icon(Icons.pending),
+                label: Text(_pendingInvitations.length.toString()),
+                child: Icon(Icons.pending),
               ),
             ),
             Tab(
               text: '已接受',
               icon: Badge(
-                label: const Text(_acceptedInvitations.length.toString()),
-                child: const Icon(Icons.check_circle),
+                label: Text(_acceptedInvitations.length.toString()),
+                child: Icon(Icons.check_circle),
               ),
             ),
             Tab(
               text: '已过期',
               icon: Badge(
-                label: const Text(_expiredInvitations.length.toString()),
-                child: const Icon(Icons.schedule),
+                label: Text(_expiredInvitations.length.toString()),
+                child: Icon(Icons.schedule),
               ),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: Icon(Icons.refresh),
             onPressed: _loadInvitations,
           ),
         ],
@@ -246,8 +246,8 @@ class _InvitationManagementScreenState
             ),
           );
         },
-        icon: const Icon(Icons.add),
-        label: const Text('新建邀请'),
+        icon: Icon(Icons.add),
+        label: Text('新建邀请'),
       ),
     );
   }
@@ -258,13 +258,13 @@ class _InvitationManagementScreenState
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Icon(
+        Icon(
           icon,
           color: theme.colorScheme.onPrimaryContainer,
           size: 24,
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           value,
           style: TextStyle(
             fontSize: 20,
@@ -272,7 +272,7 @@ class _InvitationManagementScreenState
             color: theme.colorScheme.onPrimaryContainer,
           ),
         ),
-        const Text(
+        Text(
           label,
           style: TextStyle(
             fontSize: 12,
@@ -295,13 +295,13 @@ class _InvitationManagementScreenState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.inbox,
               size: 64,
               color: Colors.grey[400],
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               emptyMessage,
               style: TextStyle(
                 fontSize: 16,
@@ -325,26 +325,26 @@ class _InvitationManagementScreenState
             leading: CircleAvatar(
               backgroundColor:
                   _getStatusColor(invitation.status).withValues(alpha: 0.2),
-              child: const Icon(
+              child: Icon(
                 _getStatusconst Icon(invitation.status),
                 color: _getStatusColor(invitation.status),
               ),
             ),
-            title: const Text(invitation.email),
+            title: Text(invitation.email),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   '角色: ${_getRoleDisplay(invitation.role)}',
                   style: const TextStyle(fontSize: 12),
                 ),
                 if (showAcceptedInfo && invitation.acceptedAt != null)
-                  const Text(
+                  Text(
                     '接受时间: ${_formatDateTime(invitation.acceptedAt!)}',
                     style: const TextStyle(fontSize: 12),
                   )
                 else if (!invitation.isExpired)
-                  const Text(
+                  Text(
                     invitation.remainingTimeDescription,
                     style: TextStyle(
                       fontSize: 12,
@@ -359,19 +359,19 @@ class _InvitationManagementScreenState
               children: [
                 if (showActions) ...[
                   IconButton(
-                    icon: const Icon(Icons.send),
+                    icon: Icon(Icons.send),
                     onPressed: () => _resendInvitation(invitation),
                     tooltip: '重新发送',
                   ),
                   IconButton(
-                    icon: const Icon(Icons.cancel),
+                    icon: Icon(Icons.cancel),
                     onPressed: () => _cancelInvitation(invitation),
                     tooltip: '取消邀请',
                   ),
                 ] else if (showResend)
                   TextButton(
                     onPressed: () => _resendInvitation(invitation),
-                    child: const Text('重新邀请'),
+                    child: Text('重新邀请'),
                   ),
               ],
             ),

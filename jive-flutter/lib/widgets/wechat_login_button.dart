@@ -99,8 +99,8 @@ class _WeChatLoginButtonState extends State<WeChatLoginButton> {
                   valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF07C160)),
                 ),
               )
-            : const Icon(Icons.wechat_outlined, size: 24),
-        label: const Text(
+            : Icon(Icons.wechat_outlined, size: 24),
+        label: Text(
           widget.buttonText,
           style: const TextStyle(
             fontSize: 16,
@@ -137,9 +137,9 @@ class WeChatBindingCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.wechat, color: Color(0xFF07C160)),
+                Icon(Icons.wechat, color: Color(0xFF07C160)),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   '微信账户',
                   style: TextStyle(
                     fontSize: 16,
@@ -159,7 +159,7 @@ class WeChatBindingCard extends StatelessWidget {
                         ? NetworkImage(weChatInfo!.headImgUrl)
                         : null,
                     child: weChatInfo!.headImgUrl.isEmpty
-                        ? const Icon(Icons.person)
+                        ? Icon(Icons.person)
                         : null,
                   ),
                   const SizedBox(width: 12),
@@ -167,11 +167,11 @@ class WeChatBindingCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           weChatInfo!.nickname,
                           style: const TextStyle(fontWeight: FontWeight.w500),
                         ),
-                        const Text(
+                        Text(
                           '${weChatInfo!.country} ${weChatInfo!.province} ${weChatInfo!.city}',
                           style: const TextStyle(
                             fontSize: 12,
@@ -203,14 +203,14 @@ class WeChatBindingCard extends StatelessWidget {
                                     AlwaysStoppedAnimation<Color>(Colors.red),
                               ),
                             )
-                          : const Text('解绑'),
+                          : Text('解绑'),
                     ),
                   ),
                 ],
               ),
             ] else ...[
               // 未绑定状态
-              const Text(
+              Text(
                 '绑定微信账户后，您可以使用微信快速登录',
                 style: TextStyle(
                   fontSize: 14,
@@ -228,7 +228,7 @@ class WeChatBindingCard extends StatelessWidget {
                 onError: (error) {
                   // 处理绑定失败
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: const Text('绑定失败: $error')),
+                    SnackBar(content: Text('绑定失败: $error')),
                   );
                 },
               ),

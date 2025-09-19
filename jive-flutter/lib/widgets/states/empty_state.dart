@@ -36,14 +36,14 @@ class EmptyState extends StatelessWidget {
             if (image != null)
               image!
             else if (icon != null)
-              const Icon(
+              Icon(
                 icon,
                 size: 80,
                 color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               ),
             if (title != null) ...[
               const SizedBox(height: 24),
-              const Text(
+              Text(
                 title!,
                 style: theme.textTheme.titleLarge?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
@@ -53,7 +53,7 @@ class EmptyState extends StatelessWidget {
             ],
             if (message != null) ...[
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 message!,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
@@ -65,7 +65,7 @@ class EmptyState extends StatelessWidget {
               const SizedBox(height: 24),
               FilledButton.tonal(
                 onPressed: onAction,
-                child: const Text(actionLabel!),
+                child: Text(actionLabel!),
               ),
             ],
           ],

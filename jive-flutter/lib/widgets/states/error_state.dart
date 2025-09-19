@@ -30,13 +30,13 @@ class ErrorState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.error_outline,
               size: 64,
               color: theme.colorScheme.error,
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               title ?? '出错了',
               style: theme.textTheme.titleLarge?.copyWith(
                 color: theme.colorScheme.onSurface,
@@ -44,7 +44,7 @@ class ErrorState extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               message ?? errorMessage,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
@@ -59,7 +59,7 @@ class ErrorState extends StatelessWidget {
                   color: theme.colorScheme.errorContainer.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text(
+                child: Text(
                   error.toString(),
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontFamily: 'monospace',
@@ -72,7 +72,7 @@ class ErrorState extends StatelessWidget {
               const SizedBox(height: 24),
               FilledButton.tonal(
                 onPressed: onRetry,
-                child: const Text('重试'),
+                child: Text('重试'),
               ),
             ],
           ],
@@ -188,7 +188,7 @@ class ErrorSnackBar {
   }) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text(message),
+        content: Text(message),
         duration: duration,
         backgroundColor: Theme.of(context).colorScheme.error,
         action: actionLabel != null && onAction != null
@@ -241,17 +241,17 @@ class ErrorDialog extends StatelessWidget {
     final theme = Theme.of(context);
 
     return AlertDialog(
-      icon: const Icon(
+      icon: Icon(
         Icons.error_outline,
         color: theme.colorScheme.error,
         size: 48,
       ),
-      title: const Text(title),
+      title: Text(title),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(message),
+          Text(message),
           if (showDetails && error != null) ...[
             const SizedBox(height: 16),
             Container(
@@ -261,7 +261,7 @@ class ErrorDialog extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: SingleChildScrollView(
-                child: const Text(
+                child: Text(
                   error.toString(),
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontFamily: 'monospace',
@@ -275,7 +275,7 @@ class ErrorDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('确定'),
+          child: Text('确定'),
         ),
       ],
     );

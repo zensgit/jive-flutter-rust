@@ -12,14 +12,14 @@ class ThemeSettingsScreen extends ConsumerWidget {
     final themeMode = ref.watch(core.themeModeProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('主题设置')),
+      appBar: AppBar(title: Text('主题设置')),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 24),
         children: [
           // 主题模式
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: const Text('主题模式', style: Theme.of(context).textTheme.titleMedium),
+            child: Text('主题模式', style: Theme.of(context).textTheme.titleMedium),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -27,8 +27,8 @@ class ThemeSettingsScreen extends ConsumerWidget {
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    icon: const Icon(Icons.phone_iphone, size: 18),
-                    label: const Text('跟随系统'),
+                    icon: Icon(Icons.phone_iphone, size: 18),
+                    label: Text('跟随系统'),
                     onPressed: () => ref
                         .read(core.themeModeProvider.notifier)
                         .setThemeMode(ThemeMode.system),
@@ -43,8 +43,8 @@ class ThemeSettingsScreen extends ConsumerWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: OutlinedButton.icon(
-                    icon: const Icon(Icons.wb_sunny_outlined, size: 18),
-                    label: const Text('浅色'),
+                    icon: Icon(Icons.wb_sunny_outlined, size: 18),
+                    label: Text('浅色'),
                     onPressed: () => ref
                         .read(core.themeModeProvider.notifier)
                         .setThemeMode(ThemeMode.light),
@@ -59,8 +59,8 @@ class ThemeSettingsScreen extends ConsumerWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: OutlinedButton.icon(
-                    icon: const Icon(Icons.nightlight_round, size: 18),
-                    label: const Text('深色'),
+                    icon: Icon(Icons.nightlight_round, size: 18),
+                    label: Text('深色'),
                     onPressed: () => ref
                         .read(core.themeModeProvider.notifier)
                         .setThemeMode(ThemeMode.dark),

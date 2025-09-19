@@ -94,7 +94,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (widget.label != null) ...[
-          const Text(
+          Text(
             widget.label!,
             style: theme.textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w500,

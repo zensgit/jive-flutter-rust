@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onDestinationSelected: (index) => _onItemTapped(index, context),
         destinations: _navItems
             .map((item) => NavigationDestination(
-                  icon: const Icon(item.icon),
+                  icon: Icon(item.icon),
                   label: item.label,
                 ))
             .toList(),
@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_selectedIndex == 0 || _selectedIndex == 1) {
       return FloatingActionButton(
         onPressed: () => _showQuickAddDialog(context),
-        child: const Icon(Icons.add),
+        child: Icon(Icons.add),
         tooltip: '快速添加',
       );
     }
@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               '快速操作',
               style: TextStyle(
                 fontSize: 20,
@@ -203,14 +203,14 @@ class _QuickActionButton extends StatelessWidget {
                 color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: const Icon(
+              child: Icon(
                 icon,
                 color: color,
                 size: 28,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               label,
               style: TextStyle(
                 color: color,

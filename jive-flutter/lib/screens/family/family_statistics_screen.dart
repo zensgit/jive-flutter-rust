@@ -68,7 +68,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('加载统计数据失败: $e')),
+          SnackBar(content: Text('加载统计数据失败: $e')),
         );
       }
     }
@@ -83,8 +83,8 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('统计分析'),
-            const Text(
+            Text('统计分析'),
+            Text(
               widget.familyName,
               style: theme.textTheme.bodySmall,
             ),
@@ -101,17 +101,17 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
             itemBuilder: (context) => _periodOptions.entries
                 .map((e) => PopupMenuItem(
                       value: e.key,
-                      child: const Text(e.value),
+                      child: Text(e.value),
                     ))
                 .toList(),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  const Icon(Icons.date_range, size: 20),
+                  Icon(Icons.date_range, size: 20),
                   const SizedBox(width: 4),
-                  const Text(_periodOptions[_selectedPeriod]!),
-                  const Icon(Icons.arrow_drop_down),
+                  Text(_periodOptions[_selectedPeriod]!),
+                  Icon(Icons.arrow_drop_down),
                 ],
               ),
             ),
@@ -206,7 +206,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
 
           // 预算执行情况
           if (stats.budgets.isNotEmpty) ...[
-            const Text('预算执行', style: theme.textTheme.titleMedium),
+            Text('预算执行', style: theme.textTheme.titleMedium),
             const SizedBox(height: 12),
             ...stats.budgets
                 .map((budget) => _BudgetProgressCard(budget: budget)),
@@ -224,8 +224,8 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('储蓄率', style: theme.textTheme.titleMedium),
-                      const Text(
+                      Text('储蓄率', style: theme.textTheme.titleMedium),
+                      Text(
                         '${stats.savingsRate.toStringAsFixed(1)}%',
                         style: theme.textTheme.headlineSmall?.copyWith(
                           color: _getSavingsRateColor(stats.savingsRate),
@@ -241,7 +241,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                     minHeight: 8,
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     _getSavingsRateMessage(stats.savingsRate),
                     style: theme.textTheme.bodySmall,
                   ),
@@ -272,7 +272,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('收支趋势', style: theme.textTheme.titleMedium),
+                  Text('收支趋势', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 16),
                   const SizedBox(
                     height: 250,
@@ -289,7 +289,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                               showTitles: true,
                               reservedSize: 40,
                               getTitlesWidget: (value, meta) {
-                                return const Text(
+                                return Text(
                                   '${(value / 1000).toStringAsFixed(0)}k',
                                   style: const TextStyle(fontSize: 10),
                                 );
@@ -303,13 +303,13 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                                 final index = value.toInt();
                                 if (index >= 0 &&
                                     index < stats.dailyData.length) {
-                                  return const Text(
+                                  return Text(
                                     DateFormat('MM/dd')
                                         .format(stats.dailyData[index].date),
                                     style: const TextStyle(fontSize: 10),
                                   );
                                 }
-                                return const Text('');
+                                return Text('');
                               },
                             ),
                           ),
@@ -380,7 +380,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('月度对比', style: theme.textTheme.titleMedium),
+                  Text('月度对比', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 16),
                   const SizedBox(
                     height: 200,
@@ -418,12 +418,12 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                                 final index = value.toInt();
                                 if (index >= 0 &&
                                     index < stats.monthlyData.length) {
-                                  return const Text(
+                                  return Text(
                                     stats.monthlyData[index].month,
                                     style: const TextStyle(fontSize: 10),
                                   );
                                 }
-                                return const Text('');
+                                return Text('');
                               },
                             ),
                           ),
@@ -469,7 +469,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('支出分类', style: theme.textTheme.titleMedium),
+                  Text('支出分类', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 16),
                   const SizedBox(
                     height: 250,
@@ -515,7 +515,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('收入分类', style: theme.textTheme.titleMedium),
+                    Text('收入分类', style: theme.textTheme.titleMedium),
                     const SizedBox(height: 16),
                     ...stats.categoryData
                         .where((c) => c.type == 'income')
@@ -548,7 +548,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('成员贡献', style: theme.textTheme.titleMedium),
+                  Text('成员贡献', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 16),
                   ...stats.memberData.map((member) => Padding(
                         padding: const EdgeInsets.only(bottom: 12),
@@ -564,7 +564,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                                       radius: 20,
                                       backgroundColor:
                                           theme.colorScheme.primaryContainer,
-                                      child: const Text(
+                                      child: Text(
                                         member.name.substring(0, 1),
                                         style: TextStyle(
                                           color: theme
@@ -577,11 +577,11 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        const Text(
+                                        Text(
                                           member.name,
                                           style: theme.textTheme.titleSmall,
                                         ),
-                                        const Text(
+                                        Text(
                                           '${member.transactionCount} 笔交易',
                                           style: theme.textTheme.bodySmall,
                                         ),
@@ -592,11 +592,11 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    const Text(
+                                    Text(
                                       formatter.format(member.totalAmount),
                                       style: theme.textTheme.titleSmall,
                                     ),
-                                    const Text(
+                                    Text(
                                       '${member.percentage.toStringAsFixed(1)}%',
                                       style:
                                           theme.textTheme.bodySmall?.copyWith(
@@ -630,7 +630,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('活跃度排名', style: theme.textTheme.titleMedium),
+                  Text('活跃度排名', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 16),
                   ...stats.memberData.toList()
                     ..sort((a, b) => b.activityScore.compareTo(a.activityScore))
@@ -640,7 +640,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                               leading: CircleAvatar(
                                 radius: 16,
                                 backgroundColor: _getRankColor(e.key),
-                                child: const Text(
+                                child: Text(
                                   '${e.key + 1}',
                                   style: const TextStyle(
                                     color: Colors.white,
@@ -648,8 +648,8 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                                   ),
                                 ),
                               ),
-                              title: const Text(e.value.name),
-                              subtitle: const Text('活跃度: ${e.value.activityScore}'),
+                              title: Text(e.value.name),
+                              subtitle: Text('活跃度: ${e.value.activityScore}'),
                               trailing:
                                   _getActivityBadge(e.value.activityScore),
                             )),
@@ -671,7 +671,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
           color: color,
         ),
         const SizedBox(width: 4),
-        const Text(label, style: const TextStyle(fontSize: 12)),
+        Text(label, style: const TextStyle(fontSize: 12)),
       ],
     );
   }
@@ -728,7 +728,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color),
       ),
-      child: const Text(
+      child: Text(
         label,
         style: TextStyle(color: color, fontSize: 12),
       ),
@@ -768,7 +768,7 @@ class _StatCard extends StatelessWidget {
               children: [
                 Icon(icon, color: color, size: 20),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   title,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
@@ -777,7 +777,7 @@ class _StatCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               value,
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -787,13 +787,13 @@ class _StatCard extends StatelessWidget {
               const SizedBox(height: 4),
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     trend! >= 0 ? Icons.trending_up : Icons.trending_down,
                     size: 16,
                     color: trend! >= 0 ? Colors.green : Colors.red,
                   ),
                   const SizedBox(width: 4),
-                  const Text(
+                  Text(
                     '${trend! >= 0 ? '+' : ''}${trend!.toStringAsFixed(1)}%',
                     style: TextStyle(
                       fontSize: 12,
@@ -805,7 +805,7 @@ class _StatCard extends StatelessWidget {
             ],
             if (subtitle != null) ...[
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 subtitle!,
                 style: theme.textTheme.bodySmall,
               ),
@@ -840,11 +840,11 @@ class _BudgetProgressCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   budget.categoryName,
                   style: theme.textTheme.titleSmall,
                 ),
-                const Text(
+                Text(
                   '${percentage.toStringAsFixed(0)}%',
                   style: TextStyle(
                     color:
@@ -865,11 +865,11 @@ class _BudgetProgressCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   '已花费: ${formatter.format(budget.spent)}',
                   style: theme.textTheme.bodySmall,
                 ),
-                const Text(
+                Text(
                   '预算: ${formatter.format(budget.amount)}',
                   style: theme.textTheme.bodySmall,
                 ),
@@ -907,14 +907,14 @@ class _CategoryListItem extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: const Text(category.name),
+            child: Text(category.name),
           ),
-          const Text(
+          Text(
             formatter.format(category.amount),
             style: theme.textTheme.bodyMedium,
           ),
           const SizedBox(width: 8),
-          const Text(
+          Text(
             '${category.percentage.toStringAsFixed(1)}%',
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,

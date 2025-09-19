@@ -51,7 +51,7 @@ class ConfirmDialog extends StatelessWidget {
                         .withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(32),
               ),
-              child: const Icon(
+              child: Icon(
                 icon,
                 size: 32,
                 color:
@@ -62,7 +62,7 @@ class ConfirmDialog extends StatelessWidget {
           ],
 
           // 标题
-          const Text(
+          Text(
             title,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
@@ -73,7 +73,7 @@ class ConfirmDialog extends StatelessWidget {
           const SizedBox(height: 12),
 
           // 消息
-          const Text(
+          Text(
             message,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.7),

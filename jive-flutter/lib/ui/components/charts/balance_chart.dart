@@ -45,7 +45,7 @@ class BalanceChart extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (title.isNotEmpty) ...[
-            const Text(
+            Text(
               title,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -193,13 +193,13 @@ class BalanceChart extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.show_chart,
             size: 48,
             color: theme.disabledColor,
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             '暂无数据',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.disabledColor,
@@ -243,7 +243,7 @@ class BalanceChart extends ConsumerWidget {
       final point = data[index];
       return SideTitleWidget(
         axisSide: meta.axisSide,
-        child: const Text(
+        child: Text(
           point.formattedDate,
           style: const TextStyle(
             fontSize: 10,
@@ -274,7 +274,7 @@ class BalanceChart extends ConsumerWidget {
     }
     return SideTitleWidget(
       axisSide: meta.axisSide,
-      child: const Text(
+      child: Text(
         label,
         style: const TextStyle(
           fontSize: 10,

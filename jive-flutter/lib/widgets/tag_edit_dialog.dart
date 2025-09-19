@@ -116,7 +116,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                 // 标题
                 Row(
                   children: [
-                    const Text(
+                    Text(
                       '编辑标签',
                       style: TextStyle(
                         fontSize: 20,
@@ -126,7 +126,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                     const Spacer(),
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close),
+                      icon: Icon(Icons.close),
                     ),
                   ],
                 ),
@@ -152,7 +152,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                 const SizedBox(height: 16),
 
                 // 选择颜色
-                const Text('选择颜色',
+                Text('选择颜色',
                     style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 Wrap(
@@ -173,7 +173,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                               : null,
                         ),
                         child: isSelected
-                            ? const Icon(Icons.check, color: Colors.white)
+                            ? Icon(Icons.check, color: Colors.white)
                             : null,
                       ),
                     );
@@ -182,7 +182,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                 const SizedBox(height: 16),
 
                 // 选择图标
-                const Text('选择图标 (可选)',
+                Text('选择图标 (可选)',
                     style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 Container(
@@ -207,7 +207,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                               ),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(Icons.cancel, color: Colors.grey),
+                            child: Icon(Icons.cancel, color: Colors.grey),
                           ),
                         ),
                         // 图标选项
@@ -229,7 +229,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                                 ),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Icon(entry.value, color: Colors.grey[700]),
+                              child: Icon(entry.value, color: Colors.grey[700]),
                             ),
                           );
                         }).toList(),
@@ -240,7 +240,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                 const SizedBox(height: 16),
 
                 // 分组选择
-                const Text('选择分组 (可选)',
+                Text('选择分组 (可选)',
                     style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 _buildGroupSelector(tagGroups),
@@ -248,7 +248,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
 
                 // 预览
                 if (_nameController.text.isNotEmpty) ...[
-                  const Text('预览',
+                  Text('预览',
                       style: TextStyle(fontWeight: FontWeight.w500)),
                   const SizedBox(height: 8),
                   Container(
@@ -269,7 +269,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (_selectedIcon != null) ...[
-                          const Icon(
+                          Icon(
                             _availableIcons[_selectedIcon!],
                             size: 16,
                             color: Color(int.parse((_selectedColor ?? '#6471eb')
@@ -277,7 +277,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                           ),
                           const SizedBox(width: 6),
                         ],
-                        const Text(
+                        Text(
                           _nameController.text,
                           style: TextStyle(
                             color: Color(int.parse((_selectedColor ?? '#6471eb')
@@ -298,7 +298,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('取消'),
+                      child: Text('取消'),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
@@ -309,7 +309,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                               height: 16,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text('保存'),
+                          : Text('保存'),
                     ),
                   ],
                 ),
@@ -340,7 +340,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
               children: [
                 if (_groupController.text.isNotEmpty)
                   IconButton(
-                    icon: const Icon(Icons.clear, size: 18),
+                    icon: Icon(Icons.clear, size: 18),
                     onPressed: () {
                       _groupController.clear();
                       setState(() {
@@ -351,7 +351,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                     },
                   ),
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     _showGroupSuggestions
                         ? Icons.expand_less
                         : Icons.expand_more,
@@ -417,18 +417,18 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                     backgroundColor: Color(int.parse((group.color ?? '#6471eb')
                             .replaceFirst('#', '0xff')))
                         .withValues(alpha: 0.2),
-                    child: const Icon(
+                    child: Icon(
                       _getGroupconst Icon(group.icon),
                       size: 16,
                       color: Color(int.parse((group.color ?? '#6471eb')
                           .replaceFirst('#', '0xff'))),
                     ),
                   ),
-                  title: const Text(
+                  title: Text(
                     group.name,
                     style: const TextStyle(fontSize: 14),
                   ),
-                  subtitle: const Text(
+                  subtitle: Text(
                     '${_getGroupTagCount(group.id!)} 个标签',
                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
@@ -569,13 +569,13 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
         Navigator.pop(context);
         widget.onUpdated?.call();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('标签"$name"更新成功')),
+          SnackBar(content: Text('标签"$name"更新成功')),
         );
       }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('更新失败: $error')),
+          SnackBar(content: Text('更新失败: $error')),
         );
       }
     } finally {

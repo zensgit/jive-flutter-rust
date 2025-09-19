@@ -87,7 +87,7 @@ class _NavigationBarItem extends StatelessWidget {
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     isSelected ? item.selectedIcon : item.icon,
                     color: isSelected
                         ? theme.primaryColor
@@ -106,7 +106,7 @@ class _NavigationBarItem extends StatelessWidget {
                         isSelected ? FontWeight.w600 : FontWeight.normal,
                     fontSize: 12,
                   ),
-                  child: const Text(
+                  child: Text(
                     item.label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -126,7 +126,7 @@ class _NavigationBarItem extends StatelessWidget {
                         minWidth: 16,
                         minHeight: 16,
                       ),
-                      child: const Text(
+                      child: Text(
                         item.badge!,
                         style: const TextStyle(
                           color: Colors.white,

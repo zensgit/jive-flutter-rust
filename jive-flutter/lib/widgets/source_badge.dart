@@ -24,7 +24,7 @@ class SourceBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: color.withValues(alpha: 0.35)),
       ),
-      child: const Text(
+      child: Text(
         label,
         style: TextStyle(
           fontSize: fontSize,

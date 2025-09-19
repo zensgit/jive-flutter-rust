@@ -38,7 +38,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('交易记录'),
+        title: Text('交易记录'),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -50,11 +50,11 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.filter_list),
+            icon: Icon(Icons.filter_list),
             onPressed: _showFilterDialog,
           ),
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: Icon(Icons.search),
             onPressed: _showSearchDialog,
           ),
         ],
@@ -70,8 +70,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddTransactionDialog(context),
-        icon: const Icon(Icons.add),
-        label: const Text('新增交易'),
+        icon: Icon(Icons.add),
+        label: Text('新增交易'),
       ),
     );
   }
@@ -90,7 +90,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
             Selectableconst Text('加载失败: $errorText'),
             const SizedBox(height: 16),
@@ -101,16 +101,16 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                   onPressed: () => ref
                       .read(transactionControllerProvider.notifier)
                       .refresh(),
-                  child: const Text('重试'),
+                  child: Text('重试'),
                 ),
                 OutlinedButton.icon(
-                  icon: const Icon(Icons.copy, size: 18),
-                  label: const Text('复制错误信息'),
+                  icon: Icon(Icons.copy, size: 18),
+                  label: Text('复制错误信息'),
                   onPressed: () async {
                     await Clipboard.setData(ClipboardData(text: errorText));
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: const Text('已复制错误信息')),
+                        const SnackBar(content: Text('已复制错误信息')),
                       );
                     }
                   },
@@ -173,13 +173,13 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             icon,
             size: 80,
             color: Colors.grey[300],
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             message,
             style: TextStyle(
               fontSize: 16,
@@ -189,8 +189,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () => _showAddTransactionDialog(context),
-            icon: const Icon(Icons.add),
-            label: const Text('添加${_getTypeLabel(type)}'),
+            icon: Icon(Icons.add),
+            label: Text('添加${_getTypeLabel(type)}'),
           ),
         ],
       ),
@@ -232,14 +232,14 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('筛选交易'),
+        title: Text('筛选交易'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // 日期范围选择
             ListTile(
-              leading: const Icon(Icons.date_range),
-              title: const Text(_dateRange == null
+              leading: Icon(Icons.date_range),
+              title: Text(_dateRange == null
                   ? '选择日期范围'
                   : '${_dateRange!.start.toString().split(' ')[0]} - ${_dateRange!.end.toString().split(' ')[0]}'),
               onTap: () async {
@@ -258,16 +258,16 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
             ),
             // 账户选择
             ListTile(
-              leading: const Icon(Icons.account_balance),
-              title: const Text('选择账户'),
+              leading: Icon(Icons.account_balance),
+              title: Text('选择账户'),
               onTap: () {
                 // TODO: 显示账户选择对话框
               },
             ),
             // 分类选择
             ListTile(
-              leading: const Icon(Icons.category),
-              title: const Text('选择分类'),
+              leading: Icon(Icons.category),
+              title: Text('选择分类'),
               onTap: () {
                 // TODO: 显示分类选择对话框
               },
@@ -283,14 +283,14 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
               });
               Navigator.pop(context);
             },
-            child: const Text('重置'),
+            child: Text('重置'),
           ),
           ElevatedButton(
             onPressed: () {
               // TODO: 应用筛选
               Navigator.pop(context);
             },
-            child: const Text('应用'),
+            child: Text('应用'),
           ),
         ],
       ),
@@ -321,7 +321,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 '选择交易类型',
                 style: TextStyle(
                   fontSize: 20,
@@ -336,10 +336,10 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                     color: Colors.red.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.remove, color: Colors.red),
+                  child: Icon(Icons.remove, color: Colors.red),
                 ),
-                title: const Text('支出'),
-                subtitle: const Text('记录日常开支'),
+                title: Text('支出'),
+                subtitle: Text('记录日常开支'),
                 onTap: () {
                   Navigator.pop(context);
                   context.go('${AppRoutes.transactions}/add?type=expense');
@@ -352,10 +352,10 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                     color: Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.add, color: Colors.green),
+                  child: Icon(Icons.add, color: Colors.green),
                 ),
-                title: const Text('收入'),
-                subtitle: const Text('记录收入来源'),
+                title: Text('收入'),
+                subtitle: Text('记录收入来源'),
                 onTap: () {
                   Navigator.pop(context);
                   context.go('${AppRoutes.transactions}/add?type=income');
@@ -368,10 +368,10 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                     color: Colors.blue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.swap_horiz, color: Colors.blue),
+                  child: Icon(Icons.swap_horiz, color: Colors.blue),
                 ),
-                title: const Text('转账'),
-                subtitle: const Text('账户间转移资金'),
+                title: Text('转账'),
+                subtitle: Text('账户间转移资金'),
                 onTap: () {
                   Navigator.pop(context);
                   context.go('${AppRoutes.transactions}/add?type=transfer');
@@ -395,7 +395,7 @@ class TransactionSearchDelegate extends SearchDelegate {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: const Icon(Icons.clear),
+        icon: Icon(Icons.clear),
         onPressed: () {
           query = '';
         },
@@ -406,7 +406,7 @@ class TransactionSearchDelegate extends SearchDelegate {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.arrow_back),
+      icon: Icon(Icons.arrow_back),
       onPressed: () {
         close(context, null);
       },
@@ -417,7 +417,7 @@ class TransactionSearchDelegate extends SearchDelegate {
   Widget buildResults(BuildContext context) {
     // TODO: 实现搜索结果
     return Center(
-      child: const Text('搜索: $query'),
+      child: Text('搜索: $query'),
     );
   }
 
@@ -425,7 +425,7 @@ class TransactionSearchDelegate extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     // TODO: 实现搜索建议
     return const Center(
-      child: const Text('输入关键词搜索交易'),
+      child: Text('输入关键词搜索交易'),
     );
   }
 }

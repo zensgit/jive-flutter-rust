@@ -63,7 +63,7 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               widget.group != null ? '编辑分组' : '创建分组',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -85,7 +85,7 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
               }),
             ),
             const SizedBox(height: 16),
-            const Text('选择颜色', style: TextStyle(fontWeight: FontWeight.w500)),
+            Text('选择颜色', style: TextStyle(fontWeight: FontWeight.w500)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -104,7 +104,7 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
                           : null,
                     ),
                     child: isSelected
-                        ? const Icon(Icons.check, color: Colors.white)
+                        ? Icon(Icons.check, color: Colors.white)
                         : null,
                   ),
                 );
@@ -116,7 +116,7 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
               children: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('取消'),
+                  child: Text('取消'),
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
@@ -127,7 +127,7 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
                           height: 16,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text(widget.group != null ? '保存' : '创建'),
+                      : Text(widget.group != null ? '保存' : '创建'),
                 ),
               ],
             ),
@@ -199,14 +199,14 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content:
-                const Text(widget.group != null ? '分组"$name"更新成功' : '分组"$name"创建成功'),
+                Text(widget.group != null ? '分组"$name"更新成功' : '分组"$name"创建成功'),
           ),
         );
       }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('操作失败: $error')),
+          SnackBar(content: Text('操作失败: $error')),
         );
       }
     } finally {

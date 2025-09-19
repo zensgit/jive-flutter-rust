@@ -95,8 +95,8 @@ class _FamilyPermissionsAuditScreenState
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('权限审计'),
-              const Text(
+              Text('权限审计'),
+              Text(
                 widget.familyName,
                 style: theme.textTheme.bodySmall,
               ),
@@ -104,17 +104,17 @@ class _FamilyPermissionsAuditScreenState
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.filter_list),
+              icon: Icon(Icons.filter_list),
               onPressed: _showFilterDialog,
               tooltip: '筛选',
             ),
             IconButton(
-              icon: const Icon(Icons.refresh),
+              icon: Icon(Icons.refresh),
               onPressed: _loadAuditData,
               tooltip: '刷新',
             ),
             PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert),
+              icon: Icon(Icons.more_vert),
               onSelected: (value) {
                 switch (value) {
                   case 'export':
@@ -132,24 +132,24 @@ class _FamilyPermissionsAuditScreenState
                 const PopupMenuItem(
                   value: 'export',
                   child: ListTile(
-                    leading: const Icon(Icons.download),
-                    title: const Text('导出报告'),
+                    leading: Icon(Icons.download),
+                    title: Text('导出报告'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
                 const PopupMenuItem(
                   value: 'schedule',
                   child: ListTile(
-                    leading: const Icon(Icons.schedule),
-                    title: const Text('定时审计'),
+                    leading: Icon(Icons.schedule),
+                    title: Text('定时审计'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
                 const PopupMenuItem(
                   value: 'settings',
                   child: ListTile(
-                    leading: const Icon(Icons.settings),
-                    title: const Text('审计设置'),
+                    leading: Icon(Icons.settings),
+                    title: Text('审计设置'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -185,7 +185,7 @@ class _FamilyPermissionsAuditScreenState
 
     if (filteredLogs.isEmpty) {
       return const Center(
-        child: const Text('暂无权限变更记录'),
+        child: Text('暂无权限变更记录'),
       );
     }
 
@@ -208,32 +208,32 @@ class _FamilyPermissionsAuditScreenState
       child: ExpansionTile(
         leading: CircleAvatar(
           backgroundColor: _getEventColor(log.eventType).withValues(alpha: 0.2),
-          child: const Icon(
+          child: Icon(
             _getEventconst Icon(log.eventType),
             color: _getEventColor(log.eventType),
             size: 20,
           ),
         ),
-        title: const Text(log.description),
+        title: Text(log.description),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
             Row(
               children: [
-                const Icon(Icons.person_outline,
+                Icon(Icons.person_outline,
                     size: 14, color: theme.colorScheme.outline),
                 const SizedBox(width: 4),
-                const Text(
+                Text(
                   log.performedBy,
                   style:
                       TextStyle(fontSize: 12, color: theme.colorScheme.outline),
                 ),
                 const SizedBox(width: 16),
-                const Icon(Icons.access_time,
+                Icon(Icons.access_time,
                     size: 14, color: theme.colorScheme.outline),
                 const SizedBox(width: 4),
-                const Text(
+                Text(
                   DateFormat('MM-dd HH:mm').format(log.timestamp),
                   style:
                       TextStyle(fontSize: 12, color: theme.colorScheme.outline),
@@ -273,14 +273,14 @@ class _FamilyPermissionsAuditScreenState
                   const SizedBox(height: 8),
                 ],
                 if (log.metadata != null && log.metadata!.isNotEmpty) ...[
-                  const Text(
+                  Text(
                     '其他信息：',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                   const SizedBox(height: 4),
                   ...log.metadata!.entries.map((e) => Padding(
                         padding: const EdgeInsets.only(left: 16, top: 4),
-                        child: const Text(
+                        child: Text(
                           '${e.key}: ${e.value}',
                           style: const TextStyle(fontSize: 12),
                         ),
@@ -298,7 +298,7 @@ class _FamilyPermissionsAuditScreenState
   Widget _buildUsageAnalysis() {
     if (_usageStats.isEmpty) {
       return const Center(
-        child: const Text('暂无使用统计数据'),
+        child: Text('暂无使用统计数据'),
       );
     }
 
@@ -314,7 +314,7 @@ class _FamilyPermissionsAuditScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     '权限使用频率',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
@@ -336,7 +336,7 @@ class _FamilyPermissionsAuditScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     '用户活跃度',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
@@ -355,7 +355,7 @@ class _FamilyPermissionsAuditScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     '权限使用趋势',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
@@ -380,18 +380,18 @@ class _FamilyPermissionsAuditScreenState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.check_circle,
               size: 64,
               color: Colors.green.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               '未检测到异常行为',
               style: TextStyle(fontSize: 18, color: Colors.green),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               '权限使用正常',
               style: TextStyle(color: Colors.grey),
             ),
@@ -420,22 +420,22 @@ class _FamilyPermissionsAuditScreenState
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: severityColor.withValues(alpha: 0.2),
-          child: const Icon(
+          child: Icon(
             _getSeverityconst Icon(anomaly.severity),
             color: severityColor,
           ),
         ),
-        title: const Text(anomaly.title),
+        title: Text(anomaly.title),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
-            const Text(anomaly.description),
+            Text(anomaly.description),
             const SizedBox(height: 8),
             Row(
               children: [
                 Chip(
-                  label: const Text(
+                  label: Text(
                     anomaly.type.toString().split('.').last,
                     style: const TextStyle(fontSize: 10),
                   ),
@@ -443,7 +443,7 @@ class _FamilyPermissionsAuditScreenState
                   visualDensity: VisualDensity.compact,
                 ),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   DateFormat('MM-dd HH:mm').format(anomaly.detectedAt),
                   style:
                       TextStyle(fontSize: 12, color: theme.colorScheme.outline),
@@ -452,19 +452,19 @@ class _FamilyPermissionsAuditScreenState
             ),
             if (anomaly.recommendations.isNotEmpty) ...[
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 '建议措施：',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
               ),
               ...anomaly.recommendations.map((r) => Padding(
                     padding: const EdgeInsets.only(left: 16, top: 4),
-                    child: const Text('• $r', style: const TextStyle(fontSize: 12)),
+                    child: Text('• $r', style: const TextStyle(fontSize: 12)),
                   )),
             ],
           ],
         ),
         trailing: IconButton(
-          icon: const Icon(Icons.arrow_forward),
+          icon: Icon(Icons.arrow_forward),
           onPressed: () => _showAnomalyDetails(anomaly),
         ),
       ),
@@ -493,7 +493,7 @@ class _FamilyPermissionsAuditScreenState
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  const Text(
+                  Text(
                     '合规评分',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
@@ -515,7 +515,7 @@ class _FamilyPermissionsAuditScreenState
                       ),
                       Column(
                         children: [
-                          const Text(
+                          Text(
                             '${report.score}',
                             style: TextStyle(
                               fontSize: 48,
@@ -523,7 +523,7 @@ class _FamilyPermissionsAuditScreenState
                               color: _getScoreColor(report.score),
                             ),
                           ),
-                          const Text(
+                          Text(
                             _getScoreLabel(report.score),
                             style: TextStyle(
                               color: theme.colorScheme.outline,
@@ -534,7 +534,7 @@ class _FamilyPermissionsAuditScreenState
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     '生成时间：${DateFormat('yyyy-MM-dd HH:mm').format(report.generatedAt)}',
                     style: TextStyle(
                         fontSize: 12, color: theme.colorScheme.outline),
@@ -552,7 +552,7 @@ class _FamilyPermissionsAuditScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     '合规项检查',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
@@ -573,7 +573,7 @@ class _FamilyPermissionsAuditScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       '发现的问题',
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -627,7 +627,7 @@ class _FamilyPermissionsAuditScreenState
                 final permission = topStats[value.toInt()].key;
                 return Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child: const Text(
+                  child: Text(
                     permission.split('.').last,
                     style: const TextStyle(fontSize: 10),
                   ),
@@ -640,7 +640,7 @@ class _FamilyPermissionsAuditScreenState
               showTitles: true,
               reservedSize: 40,
               getTitlesWidget: (value, meta) {
-                return const Text(
+                return Text(
                   value.toInt().toString(),
                   style: const TextStyle(fontSize: 12),
                 );
@@ -675,7 +675,7 @@ class _FamilyPermissionsAuditScreenState
               showTitles: true,
               reservedSize: 40,
               getTitlesWidget: (value, meta) {
-                return const Text(
+                return Text(
                   value.toInt().toString(),
                   style: const TextStyle(fontSize: 12),
                 );
@@ -690,7 +690,7 @@ class _FamilyPermissionsAuditScreenState
                     DateTime.now().subtract(Duration(days: 6 - value.toInt()));
                 return Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child: const Text(
+                  child: Text(
                     DateFormat('MM/dd').format(date),
                     style: const TextStyle(fontSize: 10),
                   ),
@@ -735,15 +735,15 @@ class _FamilyPermissionsAuditScreenState
       return ListTile(
         leading: CircleAvatar(
           backgroundColor: user.$3 ? Colors.green : Colors.orange,
-          child: const Text(
+          child: Text(
             StringUtils.safeInitial(user.$1),
             style: const TextStyle(color: Colors.white),
           ),
         ),
-        title: const Text(user.$1),
-        subtitle: const Text('${user.$2} 次操作'),
+        title: Text(user.$1),
+        subtitle: Text('${user.$2} 次操作'),
         trailing: Chip(
-          label: const Text(
+          label: Text(
             user.$3 ? '活跃' : '不活跃',
             style: const TextStyle(fontSize: 10),
           ),
@@ -763,13 +763,13 @@ class _FamilyPermissionsAuditScreenState
     final color = passed ? Colors.green : Colors.red;
 
     return ListTile(
-      leading: const Icon(
+      leading: Icon(
         passed ? Icons.check_circle : Icons.cancel,
         color: color,
       ),
-      title: const Text(item.name),
-      subtitle: const Text(item.description),
-      trailing: const Text(
+      title: Text(item.name),
+      subtitle: Text(item.description),
+      trailing: Text(
         passed ? '通过' : '未通过',
         style: TextStyle(
           color: color,
@@ -784,19 +784,19 @@ class _FamilyPermissionsAuditScreenState
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
-        leading: const Icon(
+        leading: Icon(
           Icons.warning,
           color: _getSeverityColor(issue.severity),
         ),
-        title: const Text(issue.title),
+        title: Text(issue.title),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
-            const Text(issue.description),
+            Text(issue.description),
             if (issue.recommendation != null) ...[
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 '建议：${issue.recommendation}',
                 style:
                     const TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
@@ -815,13 +815,13 @@ class _FamilyPermissionsAuditScreenState
       children: [
         const SizedBox(
           width: 80,
-          child: const Text(
+          child: Text(
             '$label：',
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
           ),
         ),
         Expanded(
-          child: const Text(
+          child: Text(
             value,
             style: const TextStyle(fontSize: 12),
           ),
@@ -876,13 +876,13 @@ class _FamilyPermissionsAuditScreenState
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text(anomaly.title),
+        title: Text(anomaly.title),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(anomaly.description),
+              Text(anomaly.description),
               const SizedBox(height: 16),
               _buildDetailRow('类型', anomaly.type.toString().split('.').last),
               const SizedBox(height: 8),
@@ -893,24 +893,24 @@ class _FamilyPermissionsAuditScreenState
                   DateFormat('yyyy-MM-dd HH:mm').format(anomaly.detectedAt)),
               if (anomaly.affectedUsers.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   '影响用户：',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 ...anomaly.affectedUsers.map((user) => Padding(
                       padding: const EdgeInsets.only(left: 16, top: 4),
-                      child: const Text('• $user'),
+                      child: Text('• $user'),
                     )),
               ],
               if (anomaly.recommendations.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   '建议措施：',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 ...anomaly.recommendations.map((r) => Padding(
                       padding: const EdgeInsets.only(left: 16, top: 4),
-                      child: const Text('• $r'),
+                      child: Text('• $r'),
                     )),
               ],
             ],
@@ -919,14 +919,14 @@ class _FamilyPermissionsAuditScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('关闭'),
+            child: Text('关闭'),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               _handleAnomaly(anomaly);
             },
-            child: const Text('处理'),
+            child: Text('处理'),
           ),
         ],
       ),
@@ -1042,14 +1042,14 @@ class _FamilyPermissionsAuditScreenState
 
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: const Text(message)),
+      SnackBar(content: Text(message)),
     );
   }
 
   void _showError(String error) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text(error),
+        content: Text(error),
         backgroundColor: Colors.red,
       ),
     );
@@ -1249,16 +1249,16 @@ class _FilterDialogState extends State<_FilterDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('筛选条件'),
+      title: Text('筛选条件'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // 日期范围选择
             ListTile(
-              title: const Text('开始日期'),
-              subtitle: const Text(DateFormat('yyyy-MM-dd').format(_startDate)),
-              trailing: const Icon(Icons.calendar_today),
+              title: Text('开始日期'),
+              subtitle: Text(DateFormat('yyyy-MM-dd').format(_startDate)),
+              trailing: Icon(Icons.calendar_today),
               onTap: () async {
                 final date = await showDatePicker(
                   context: context,
@@ -1272,9 +1272,9 @@ class _FilterDialogState extends State<_FilterDialog> {
               },
             ),
             ListTile(
-              title: const Text('结束日期'),
-              subtitle: const Text(DateFormat('yyyy-MM-dd').format(_endDate)),
-              trailing: const Icon(Icons.calendar_today),
+              title: Text('结束日期'),
+              subtitle: Text(DateFormat('yyyy-MM-dd').format(_endDate)),
+              trailing: Icon(Icons.calendar_today),
               onTap: () async {
                 final date = await showDatePicker(
                   context: context,
@@ -1304,11 +1304,11 @@ class _FilterDialogState extends State<_FilterDialog> {
               _selectedEventType = null;
             });
           },
-          child: const Text('重置'),
+          child: Text('重置'),
         ),
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('取消'),
+          child: Text('取消'),
         ),
         ElevatedButton(
           onPressed: () {
@@ -1321,7 +1321,7 @@ class _FilterDialogState extends State<_FilterDialog> {
               _selectedEventType,
             );
           },
-          child: const Text('应用'),
+          child: Text('应用'),
         ),
       ],
     );

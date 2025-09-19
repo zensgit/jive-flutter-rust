@@ -37,10 +37,10 @@ class NetworkTestScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Network Category Test'),
+        title: Text('Network Category Test'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: Icon(Icons.refresh),
             onPressed: () {
               ref
                   .read(systemTemplatesProvider.notifier)
@@ -57,14 +57,14 @@ class NetworkTestScreen extends ConsumerWidget {
                 ? Colors.green[100]
                 : Colors.orange[100],
             child: ListTile(
-              leading: const Icon(
+              leading: Icon(
                 networkStatus.hasNetworkData
                     ? Icons.cloud_done
                     : Icons.cloud_off,
                 color:
                     networkStatus.hasNetworkData ? Colors.green : Colors.orange,
               ),
-              title: const Text(
+              title: Text(
                 networkStatus.hasNetworkData
                     ? 'Network Data Available'
                     : 'Using Local Data',
@@ -72,11 +72,11 @@ class NetworkTestScreen extends ConsumerWidget {
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Loading: ${networkStatus.isLoading}'),
+                  Text('Loading: ${networkStatus.isLoading}'),
                   if (networkStatus.lastSync != null)
-                    const Text('Last Sync: ${networkStatus.lastSync!.toLocal()}'),
+                    Text('Last Sync: ${networkStatus.lastSync!.toLocal()}'),
                   if (networkStatus.error != null)
-                    const Text('Error: ${networkStatus.error}',
+                    Text('Error: ${networkStatus.error}',
                         style: const TextStyle(color: Colors.red)),
                 ],
               ),
@@ -94,7 +94,7 @@ class NetworkTestScreen extends ConsumerWidget {
                   children: [
                     CircularProgressIndicator(),
                     const SizedBox(height: 16),
-                    const Text('Loading templates...'),
+                    Text('Loading templates...'),
                   ],
                 ),
               ),
@@ -102,10 +102,10 @@ class NetworkTestScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline,
+                    Icon(Icons.error_outline,
                         size: 64, color: Colors.red),
                     const SizedBox(height: 16),
-                    const Text('Error: $error'),
+                    Text('Error: $error'),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
@@ -113,7 +113,7 @@ class NetworkTestScreen extends ConsumerWidget {
                             .read(systemTemplatesProvider.notifier)
                             .refresh(forceRefresh: true);
                       },
-                      child: const Text('Retry'),
+                      child: Text('Retry'),
                     ),
                   ],
                 ),
@@ -133,8 +133,8 @@ class NetworkTestScreen extends ConsumerWidget {
         onPressed: () {
           _testNetworkCall(ref);
         },
-        label: const Text('Test Network'),
-        icon: const Icon(Icons.network_check),
+        label: Text('Test Network'),
+        icon: Icon(Icons.network_check),
       ),
     );
   }
@@ -176,25 +176,25 @@ class TemplateCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
           child: Center(
-            child: const Text(
+            child: Text(
               template.icon ?? '📁',
               style: const TextStyle(fontSize: 20),
             ),
           ),
         ),
-        title: const Text(template.name),
+        title: Text(template.name),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(template.nameEn ?? ''),
-            const Text(template.classification.name.toUpperCase()),
+            Text(template.nameEn ?? ''),
+            Text(template.classification.name.toUpperCase()),
             if (template.tags.isNotEmpty)
               Wrap(
                 spacing: 4,
                 children: template.tags
                     .map((tag) => Chip(
                           label:
-                              const Text(tag, style: const TextStyle(fontSize: 10)),
+                              Text(tag, style: const TextStyle(fontSize: 10)),
                           materialTapTargetSize:
                               MaterialTapTargetSize.shrinkWrap,
                         ))
@@ -206,8 +206,8 @@ class TemplateCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (template.isFeatured)
-              const Icon(Icons.star, color: Colors.amber, size: 16),
-            const Text('${template.globalUsageCount}'),
+              Icon(Icons.star, color: Colors.amber, size: 16),
+            Text('${template.globalUsageCount}'),
           ],
         ),
       ),

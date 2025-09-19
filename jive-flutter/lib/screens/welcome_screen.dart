@@ -24,7 +24,7 @@ class WelcomeScreen extends StatelessWidget {
                     height: 120,
                   ),
                   const SizedBox(height: 24),
-                  const Text(
+                  Text(
                     'Jive Money',
                     style: TextStyle(
                       fontSize: 36,
@@ -32,7 +32,7 @@ class WelcomeScreen extends StatelessWidget {
                       color: Colors.blue,
                     ),
                   ),
-                  const Text(
+                  Text(
                     '集腋记账',
                     style: TextStyle(
                       fontSize: 20,
@@ -41,7 +41,7 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     '集腋成裘，细水长流',
                     style: TextStyle(
                       fontSize: 16,
@@ -94,7 +94,7 @@ class WelcomeScreen extends StatelessWidget {
                         backgroundColor: Colors.black,
                         foregroundColor: Colors.white,
                       ),
-                      child: const Text(
+                      child: Text(
                         '登录',
                         style: TextStyle(fontSize: 16),
                       ),
@@ -115,7 +115,7 @@ class WelcomeScreen extends StatelessWidget {
                         foregroundColor: Colors.black,
                         side: const BorderSide(color: Colors.black),
                       ),
-                      child: const Text(
+                      child: Text(
                         '注册新账户',
                         style: TextStyle(fontSize: 16),
                       ),
@@ -129,7 +129,7 @@ class WelcomeScreen extends StatelessWidget {
                     onPressed: () {
                       context.go(AppRoutes.dashboard);
                     },
-                    child: const Text(
+                    child: Text(
                       '先体验一下',
                       style: TextStyle(
                         color: Colors.grey,
@@ -149,7 +149,7 @@ class WelcomeScreen extends StatelessWidget {
   Widget _buildFeatureRow(IconData icon, String title, String subtitle) {
     return Row(
       children: [
-        const Icon(
+        Icon(
           icon,
           color: Colors.blue,
           size: 24,
@@ -158,14 +158,14 @@ class WelcomeScreen extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               title,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
             ),
-            const Text(
+            Text(
               subtitle,
               style: const TextStyle(
                 color: Colors.grey,

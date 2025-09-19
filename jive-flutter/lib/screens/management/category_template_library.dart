@@ -178,16 +178,16 @@ class _CategoryTemplateLibraryPageState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('导入分类模板'),
-        content: const Text('确定要导入 ${_selectedTemplateIds.length} 个分类模板吗？'),
+        title: Text('导入分类模板'),
+        content: Text('确定要导入 ${_selectedTemplateIds.length} 个分类模板吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('导入'),
+            child: Text('导入'),
           ),
         ],
       ),
@@ -203,7 +203,7 @@ class _CategoryTemplateLibraryPageState
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('成功导入 ${_selectedTemplateIds.length} 个分类'),
+            content: Text('成功导入 ${_selectedTemplateIds.length} 个分类'),
             backgroundColor: Colors.green,
           ),
         );
@@ -214,7 +214,7 @@ class _CategoryTemplateLibraryPageState
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('导入失败: $e'),
+            content: Text('导入失败: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -226,12 +226,12 @@ class _CategoryTemplateLibraryPageState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('导入分类'),
+        title: Text('导入分类'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('确定要导入"${template.name}"作为分类吗？'),
+            Text('确定要导入"${template.name}"作为分类吗？'),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -245,10 +245,10 @@ class _CategoryTemplateLibraryPageState
                   ),
                 ),
                 const SizedBox(width: 8),
-                const Text(template.icon ?? ''),
+                Text(template.icon ?? ''),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: const Text(
+                  child: Text(
                     template.name,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
@@ -260,11 +260,11 @@ class _CategoryTemplateLibraryPageState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
+            child: Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('导入'),
+            child: Text('导入'),
           ),
         ],
       ),
@@ -276,14 +276,14 @@ class _CategoryTemplateLibraryPageState
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: const Text('分类导入成功'),
+            content: Text('分类导入成功'),
             backgroundColor: Colors.green,
           ),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('导入失败: $e'),
+            content: Text('导入失败: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -295,7 +295,7 @@ class _CategoryTemplateLibraryPageState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('分类模板库'),
+        title: Text('分类模板库'),
         bottom: TabBar(
           controller: _tabController,
           onTap: (_) => _filterTemplates(),
@@ -308,17 +308,17 @@ class _CategoryTemplateLibraryPageState
         actions: [
           if (_isSelectionMode) ...[
             IconButton(
-              icon: const Icon(Icons.select_all),
+              icon: Icon(Icons.select_all),
               onPressed: _selectAll,
               tooltip: '全选',
             ),
             IconButton(
-              icon: const Icon(Icons.clear),
+              icon: Icon(Icons.clear),
               onPressed: _clearSelection,
               tooltip: '清除选择',
             ),
             IconButton(
-              icon: const Icon(Icons.download),
+              icon: Icon(Icons.download),
               onPressed: _selectedTemplateIds.isNotEmpty
                   ? _importSelectedTemplates
                   : null,
@@ -326,12 +326,12 @@ class _CategoryTemplateLibraryPageState
             ),
           ],
           IconButton(
-            icon: const Icon(_isSelectionMode ? Icons.close : Icons.checklist),
+            icon: Icon(_isSelectionMode ? Icons.close : Icons.checklist),
             onPressed: _toggleSelectionMode,
             tooltip: _isSelectionMode ? '退出选择' : '批量选择',
           ),
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: Icon(Icons.refresh),
             onPressed: _loadTemplates,
             tooltip: '刷新',
           ),
@@ -384,10 +384,10 @@ class _CategoryTemplateLibraryPageState
           TextField(
             decoration: InputDecoration(
               hintText: '搜索模板...',
-              prefixIcon: const Icon(Icons.search),
+              prefixIcon: Icon(Icons.search),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
-                      icon: const Icon(Icons.clear),
+                      icon: Icon(Icons.clear),
                       onPressed: () {
                         setState(() {
                           _searchQuery = '';
@@ -428,15 +428,15 @@ class _CategoryTemplateLibraryPageState
                   items: [
                     const DropdownMenuItem<CategoryGroup?>(
                       value: null,
-                      child: const Text('全部分组'),
+                      child: Text('全部分组'),
                     ),
                     ..._groups.map((group) => DropdownMenuItem(
                           value: group,
                           child: Row(
                             children: [
-                              const Text(group.icon),
+                              Text(group.icon),
                               const SizedBox(width: 8),
-                              const Text(group.displayName),
+                              Text(group.displayName),
                             ],
                           ),
                         )),
@@ -454,7 +454,7 @@ class _CategoryTemplateLibraryPageState
               // 精选开关
               Row(
                 children: [
-                  const Text('仅显示精选'),
+                  Text('仅显示精选'),
                   Switch(
                     value: _showOnlyFeatured,
                     onChanged: (value) {
@@ -478,7 +478,7 @@ class _CategoryTemplateLibraryPageState
                 color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Text(
+              child: Text(
                 '已选择 ${_selectedTemplateIds.length} / ${_filteredTemplates.length} 个模板',
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
@@ -502,13 +502,13 @@ class _CategoryTemplateLibraryPageState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.category_outlined,
               size: 64,
               color: Colors.grey[400],
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               _searchQuery.isNotEmpty ? '没有找到匹配的模板' : '暂无模板',
               style: TextStyle(
                 fontSize: 16,
@@ -543,12 +543,12 @@ class _CategoryTemplateLibraryPageState
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Row(
                 children: [
-                  const Text(
+                  Text(
                     group.icon,
                     style: const TextStyle(fontSize: 24),
                   ),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     group.displayName,
                     style: const TextStyle(
                       fontSize: 18,
@@ -563,7 +563,7 @@ class _CategoryTemplateLibraryPageState
                       color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Text(
+                    child: Text(
                       '${groupTemplates.length}',
                       style: const TextStyle(fontSize: 12),
                     ),
@@ -644,7 +644,7 @@ class _CategoryTemplateLibraryPageState
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
-                  child: const Text(
+                  child: Text(
                     template.icon ?? '📂',
                     style: const TextStyle(fontSize: 20),
                   ),
@@ -661,7 +661,7 @@ class _CategoryTemplateLibraryPageState
                     Row(
                       children: [
                         Expanded(
-                          child: const Text(
+                          child: Text(
                             template.name,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
@@ -680,7 +680,7 @@ class _CategoryTemplateLibraryPageState
                               color: Colors.orange[100],
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: const Text(
+                            child: Text(
                               '精选',
                               style: TextStyle(
                                 fontSize: 10,
@@ -703,7 +703,7 @@ class _CategoryTemplateLibraryPageState
                                   color: Colors.grey[200],
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   tag,
                                   style: const TextStyle(fontSize: 10),
                                 ),
@@ -723,7 +723,7 @@ class _CategoryTemplateLibraryPageState
                 )
               else
                 IconButton(
-                  icon: const Icon(Icons.add_circle_outline),
+                  icon: Icon(Icons.add_circle_outline),
                   onPressed: () => _importSingleTemplate(template),
                   color: color,
                   tooltip: '导入',
@@ -765,7 +765,7 @@ class _CategoryTemplateLibraryPageState
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(
-                      child: const Text(
+                      child: Text(
                         template.icon ?? '📂',
                         style: const TextStyle(fontSize: 24),
                       ),
@@ -776,7 +776,7 @@ class _CategoryTemplateLibraryPageState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           template.name,
                           style: const TextStyle(
                             fontSize: 20,
@@ -784,7 +784,7 @@ class _CategoryTemplateLibraryPageState
                           ),
                         ),
                         if (template.nameEn != null)
-                          const Text(
+                          Text(
                             template.nameEn!,
                             style: TextStyle(
                               fontSize: 14,
@@ -807,7 +807,7 @@ class _CategoryTemplateLibraryPageState
 
               if (template.description != null) ...[
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   '描述',
                   style: TextStyle(
                     fontSize: 14,
@@ -815,7 +815,7 @@ class _CategoryTemplateLibraryPageState
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
+                Text(
                   template.description!,
                   style: const TextStyle(fontSize: 16),
                 ),
@@ -829,7 +829,7 @@ class _CategoryTemplateLibraryPageState
                   runSpacing: 8,
                   children: template.tags
                       .map((tag) => Chip(
-                            label: const Text(tag),
+                            label: Text(tag),
                             backgroundColor: Colors.grey[200],
                           ))
                       .toList(),
@@ -847,9 +847,9 @@ class _CategoryTemplateLibraryPageState
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.people, color: Colors.blue[700]),
+                      Icon(Icons.people, color: Colors.blue[700]),
                       const SizedBox(width: 8),
-                      const Text(
+                      Text(
                         '${template.globalUsageCount} 人使用',
                         style: TextStyle(color: Colors.blue[700]),
                       ),
@@ -866,7 +866,7 @@ class _CategoryTemplateLibraryPageState
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('关闭'),
+                      child: Text('关闭'),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -876,8 +876,8 @@ class _CategoryTemplateLibraryPageState
                         Navigator.pop(context);
                         _importSingleTemplate(template);
                       },
-                      icon: const Icon(Icons.add),
-                      label: const Text('导入分类'),
+                      icon: Icon(Icons.add),
+                      label: Text('导入分类'),
                     ),
                   ),
                 ],
@@ -897,7 +897,7 @@ class _CategoryTemplateLibraryPageState
         children: [
           const SizedBox(
             width: 80,
-            child: const Text(
+            child: Text(
               label,
               style: TextStyle(
                 fontSize: 14,
@@ -916,7 +916,7 @@ class _CategoryTemplateLibraryPageState
             ),
             const SizedBox(width: 8),
           ],
-          const Text(
+          Text(
             value,
             style: const TextStyle(
               fontSize: 16,

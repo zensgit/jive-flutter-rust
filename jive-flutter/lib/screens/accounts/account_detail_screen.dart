@@ -12,10 +12,10 @@ class AccountDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('账户详情'),
+        title: Text('账户详情'),
       ),
       body: Center(
-        child: const Text('Account Detail: $accountId'),
+        child: Text('Account Detail: $accountId'),
       ),
     );
   }
