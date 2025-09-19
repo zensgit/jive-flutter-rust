@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 pub mod template_handler;
 pub mod accounts;
 pub mod transactions;
@@ -12,6 +10,8 @@ pub mod member_handler;
 pub mod invitation_handler;
 pub mod audit_handler;
 pub mod ledgers;
+// Demo endpoints are optional
+#[cfg(feature = "demo_endpoints")]
 pub mod placeholder;
 pub mod enhanced_profile;
 pub mod currency_handler;

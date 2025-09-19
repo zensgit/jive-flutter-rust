@@ -42,6 +42,7 @@ use handlers::ledgers::{list_ledgers, create_ledger, get_current_ledger, get_led
                          update_ledger, delete_ledger, get_ledger_statistics, get_ledger_members};
 use handlers::family_handler::{list_families, create_family, get_family, update_family, delete_family, join_family, leave_family, request_verification_code, get_family_statistics, get_family_actions, get_role_descriptions, transfer_ownership};
 use handlers::member_handler::{get_family_members, add_member, remove_member, update_member_role, update_member_permissions};
+#[cfg(feature = "demo_endpoints")]
 use handlers::placeholder::{export_data, activity_logs, advanced_settings, family_settings};
 
 // 使用库中的 AppState
@@ -360,17 +361,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/categories/import-template", post(category_handler::import_template))
         .route("/api/v1/categories/import", post(category_handler::batch_import_templates))
 
-        // 占位符 API - 功能开发中
+        // 静态文件
+        .route("/static/icons/*path", get(serve_icon));
+
+    // 可选 Demo 占位符接口（按特性开关）
+    #[cfg(feature = "demo_endpoints")]
+    let app = app
         .route("/api/v1/families/:id/export", get(export_data))
         .route("/api/v1/families/:id/activity-logs", get(activity_logs))
         .route("/api/v1/families/:id/settings", get(family_settings))
         .route("/api/v1/families/:id/advanced-settings", get(advanced_settings))
         .route("/api/v1/export/data", post(export_data))
         .route("/api/v1/activity/logs", get(activity_logs))
-        
-        // 静态文件
-        .route("/static/icons/*path", get(serve_icon))
-        
+        // 简化演示入口
+        .route("/api/v1/export", get(export_data))
+        .route("/api/v1/activity-logs", get(activity_logs))
+        .route("/api/v1/advanced-settings", get(advanced_settings))
+        .route("/api/v1/family-settings", get(family_settings));
+
+    let app = app
         .layer(
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())

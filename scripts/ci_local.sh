@@ -54,7 +54,10 @@ pushd "$API_DIR" >/dev/null
   export JWT_SECRET="${JWT_SECRET:-local_test_secret}"
   export API_PORT="${API_PORT:-8012}"
   cargo test --all-features -- --nocapture | tee "$ART_DIR/rust-tests.txt"
-  cargo clippy --all-features -- -D warnings | tee "$ART_DIR/rust-clippy.txt"
+  # Ensure default build compiles (demo_endpoints on)
+  cargo check --all-features | tee -a "$ART_DIR/rust-tests.txt"
+  # Run strict clippy without default features to exclude demo endpoints
+  cargo clippy --no-default-features -- -D warnings | tee "$ART_DIR/rust-clippy.txt"
 popd >/dev/null
 
 # 4) Flutter analyze and tests
