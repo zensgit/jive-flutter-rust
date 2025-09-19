@@ -169,6 +169,7 @@ class CategoryService {
     required String ledgerId,
     required List<Map<String, dynamic>> items,
     String onConflict = 'skip', // skip|rename|update
+    bool dryRun = false,
   }) async {
     try {
       final response = await _client.post(
@@ -177,6 +178,7 @@ class CategoryService {
           'ledger_id': ledgerId,
           'items': items,
           'on_conflict': onConflict,
+          'dry_run': dryRun,
         },
       );
 
@@ -278,12 +280,14 @@ class ImportResult {
   final int skipped;
   final int failed;
   final List<Category> categories;
+  final List<ImportActionDetail> details;
 
   ImportResult({
     required this.imported,
     required this.skipped,
     required this.failed,
     required this.categories,
+    required this.details,
   });
 
   factory ImportResult.fromJson(Map<String, dynamic> json) {
@@ -295,6 +299,39 @@ class ImportResult {
               ?.map((e) => Category.fromJson(e))
               .toList() ??
           [],
+      details: (json['details'] as List?)
+              ?.map((e) => ImportActionDetail.fromJson(e))
+              .toList() ??
+          [],
+    );
+  }
+}
+
+class ImportActionDetail {
+  final String templateId;
+  final String action; // imported|updated|renamed|skipped|failed
+  final String originalName;
+  final String? finalName;
+  final String? categoryId;
+  final String? reason;
+
+  ImportActionDetail({
+    required this.templateId,
+    required this.action,
+    required this.originalName,
+    this.finalName,
+    this.categoryId,
+    this.reason,
+  });
+
+  factory ImportActionDetail.fromJson(Map<String, dynamic> json) {
+    return ImportActionDetail(
+      templateId: json['template_id']?.toString() ?? '',
+      action: json['action']?.toString() ?? 'unknown',
+      originalName: json['original_name']?.toString() ?? '',
+      finalName: json['final_name']?.toString(),
+      categoryId: json['category_id']?.toString(),
+      reason: json['reason']?.toString(),
     );
   }
 }
