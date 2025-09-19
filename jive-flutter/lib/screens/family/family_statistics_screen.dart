@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../models/family.dart' as family_model;
-import '../../providers/family_provider.dart';
 import '../../services/api/family_service.dart';
 import 'package:intl/intl.dart';
 

@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import '../models/family.dart' as family_model;
 import 'api/family_service.dart';
 
 /// 家庭设置服务 - 负责设置的持久化和同步

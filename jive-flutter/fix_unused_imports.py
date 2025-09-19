@@ -18,6 +18,8 @@ UNUSED_IMPORT_PATTERNS = [
     re.compile(r"^(?P<file>[^:]+):(?P<line>\d+):(?P<col>\d+)\s+•\s+Unused import: '(?P<import>[^']+)'\s+•\s+unused_import\b"),
     # Format: Unused import: 'package:foo/bar.dart' • lib/file.dart:10:1 • unused_import
     re.compile(r"^Unused import: '(?P<import>[^']+)'\s+•\s+(?P<file>[^:]+):(?P<line>\d+):(?P<col>\d+)\s+•\s+unused_import\b"),
+    # Format: warning • Unused import: 'package:foo/bar.dart' • lib/file.dart:10:1 • unused_import
+    re.compile(r"^warning\s+•\s+Unused import: '(?P<import>[^']+)'\s+•\s+(?P<file>[^:]+):(?P<line>\d+):(?P<col>\d+)\s+•\s+unused_import\b"),
 ]
 
 

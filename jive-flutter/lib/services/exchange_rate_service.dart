@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import '../models/exchange_rate.dart';
-import '../utils/constants.dart';
 import '../core/network/http_client.dart';
 import '../core/network/api_readiness.dart';
 import '../core/storage/token_storage.dart';

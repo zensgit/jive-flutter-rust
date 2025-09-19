@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:uni_links/uni_links.dart';
 import 'dart:async';
 import '../screens/invitations/accept_invitation_screen.dart';
-import '../screens/auth/login_screen.dart';
 import '../screens/family/family_dashboard_screen.dart';
 import '../models/ledger.dart';
 

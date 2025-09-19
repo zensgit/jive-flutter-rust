@@ -1,7 +1,6 @@
 /// 邀请系统模型
 /// 用于管理Family成员邀请流程
 
-import 'package:flutter/foundation.dart';
 import 'family.dart';
 import 'user.dart';
 

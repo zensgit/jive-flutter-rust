@@ -317,7 +317,7 @@ class ErrorPage extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               error?.toString() ?? '未知错误',
               style: const TextStyle(color: Colors.grey),
               textAlign: TextAlign.center,
@@ -339,7 +339,7 @@ class TransactionAddScreen extends StatelessWidget {
   const TransactionAddScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: const Text('添加交易')));
+    return const Scaffold(body: Center(child: Text('添加交易')));
   }
 }
 
@@ -348,7 +348,7 @@ class TransactionDetailScreen extends StatelessWidget {
   const TransactionDetailScreen({super.key, required this.transactionId});
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: const Text('交易详情: $transactionId')));
+    return Scaffold(body: Center(child: Text('交易详情: $transactionId')));
   }
 }
 
@@ -356,7 +356,7 @@ class AccountAddScreen extends StatelessWidget {
   const AccountAddScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: const Text('添加账户')));
+    return const Scaffold(body: Center(child: Text('添加账户')));
   }
 }
 
@@ -365,7 +365,7 @@ class AccountDetailScreen extends StatelessWidget {
   const AccountDetailScreen({super.key, required this.accountId});
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: const Text('账户详情: $accountId')));
+    return Scaffold(body: Center(child: Text('账户详情: $accountId')));
   }
 }
 
@@ -373,7 +373,7 @@ class BudgetAddScreen extends StatelessWidget {
   const BudgetAddScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: const Text('添加预算')));
+    return const Scaffold(body: Center(child: Text('添加预算')));
   }
 }
 
@@ -382,7 +382,7 @@ class BudgetDetailScreen extends StatelessWidget {
   const BudgetDetailScreen({super.key, required this.budgetId});
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: const Text('预算详情: $budgetId')));
+    return Scaffold(body: Center(child: Text('预算详情: $budgetId')));
   }
 }
 
@@ -390,7 +390,7 @@ class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: const Text('个人资料')));
+    return const Scaffold(body: Center(child: Text('个人资料')));
   }
 }
 
@@ -398,7 +398,7 @@ class SecurityScreen extends StatelessWidget {
   const SecurityScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: const Text('安全设置')));
+    return const Scaffold(body: Center(child: Text('安全设置')));
   }
 }
 
@@ -406,6 +406,6 @@ class PreferencesScreen extends StatelessWidget {
   const PreferencesScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: const Text('偏好设置')));
+    return const Scaffold(body: Center(child: Text('偏好设置')));
   }
 }

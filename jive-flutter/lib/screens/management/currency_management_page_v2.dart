@@ -6,7 +6,6 @@ import '../../providers/currency_provider.dart';
 import '../../providers/settings_provider.dart';
 import 'currency_selection_page.dart';
 import 'crypto_selection_page.dart';
-import 'exchange_rate_converter_page.dart';
 import '../../widgets/data_source_info.dart';
 
 /// 优化后的货币管理页面 V2

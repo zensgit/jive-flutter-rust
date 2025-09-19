@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/family.dart' as family_model;
-import '../models/user.dart';
 import '../services/api/family_service.dart';
 import 'auth_provider.dart';
 

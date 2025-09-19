@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/category.dart';
 import '../../models/category_template.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/ledger_provider.dart';

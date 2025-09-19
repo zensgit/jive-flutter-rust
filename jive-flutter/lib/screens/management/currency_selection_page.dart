@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/currency.dart' as model;
 import '../../providers/currency_provider.dart';
-import '../../models/exchange_rate.dart';
 import '../../widgets/source_badge.dart';
 import '../../providers/settings_provider.dart';
 
