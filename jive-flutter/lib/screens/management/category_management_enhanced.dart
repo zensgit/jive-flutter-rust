@@ -5,7 +5,6 @@ import '../../models/category_template.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/ledger_provider.dart';
 import '../../services/api/category_service.dart';
-import '../../services/api/category_service_integrated.dart';
 import '../../widgets/bottom_sheets/import_details_sheet.dart';
 
 class CategoryManagementEnhancedPage extends ConsumerStatefulWidget {
@@ -50,7 +49,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
     setState(() { _busy = true; });
     List<SystemCategoryTemplate> templates = [];
     try {
-      templates = await CategoryServiceIntegrated().getAllTemplates(forceRefresh: true);
+      templates = await CategoryService().getAllTemplates(forceRefresh: true);
     } catch (_) {}
     if (!mounted) return;
     setState(() { _busy = false; });
