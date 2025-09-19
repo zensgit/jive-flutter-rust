@@ -396,7 +396,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                               },
                             ),
                           ),
-                          const SizedBox(width: dense ? 8 : 12),
+                          SizedBox(width: dense ? 8 : 12),
                           Column(
                             children: [
                               TextButton.icon(

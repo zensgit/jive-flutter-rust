@@ -227,7 +227,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                           fontSize: 16,
                         ),
                       ),
-                      const SizedBox(width: _compact ? 6 : 8),
+                      SizedBox(width: _compact ? 6 : 8),
                       Container(
                         padding: EdgeInsets.symmetric(
                             horizontal: _compact ? 4 : 6, vertical: 2),
@@ -364,7 +364,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                               },
                             ),
                           ),
-                          const SizedBox(width: _compact ? 8 : 12),
+                          SizedBox(width: _compact ? 8 : 12),
                           Column(
                             children: [
                               TextButton.icon(

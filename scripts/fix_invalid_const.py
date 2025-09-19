@@ -14,12 +14,12 @@ def extract_errors_from_analyzer(analyzer_log):
     errors = []
 
     # Pattern for invalid_constant errors
-    # Example: lib/path/file.dart:123:45 • Invalid constant value. • invalid_constant
-    pattern1 = r'^(?P<file>[^:]+):(?P<line>\d+):(?P<col>\d+)\s+•\s+Invalid constant value\.\s+•\s+invalid_constant$'
+    # Example: error • Invalid constant value • jive-flutter/lib/path/file.dart:123:45 • invalid_constant
+    pattern1 = r'error\s+•\s+Invalid constant value\s+•\s+(?P<file>[^:]+):(?P<line>\d+):(?P<col>\d+)\s+•\s+invalid_constant'
 
     # Pattern for const_with_non_const errors
-    # Example: lib/path/file.dart:123:45 • The constructor being called isn't a const constructor. • const_with_non_const
-    pattern2 = r'^(?P<file>[^:]+):(?P<line>\d+):(?P<col>\d+)\s+•\s+The constructor being called isn\'t a const constructor\.\s+•\s+const_with_non_const$'
+    # Example: error • The constructor being called isn't a const constructor • jive-flutter/lib/path/file.dart:123:45 • const_with_non_const
+    pattern2 = r'error\s+•\s+The constructor being called isn\'t a const constructor\s+•\s+(?P<file>[^:]+):(?P<line>\d+):(?P<col>\d+)\s+•\s+const_with_non_const'
 
     for line in analyzer_log.split('\n'):
         line = line.strip()
@@ -93,11 +93,15 @@ def remove_const_at_position(file_path, line_num, col_num):
         return False
 
 def main():
-    # Read analyzer output from artifacts
-    analyzer_file = 'artifacts/analyzer_output.txt'
+    # Read analyzer output from artifacts or temp file
+    analyzer_file = '/tmp/analyzer_output.txt'
+
+    # Fall back to artifacts if temp file doesn't exist
+    if not os.path.exists(analyzer_file):
+        analyzer_file = 'artifacts/analyzer_output.txt'
 
     if not os.path.exists(analyzer_file):
-        print(f"Error: {analyzer_file} not found. Run scripts/ci_local.sh first.")
+        print(f"Error: No analyzer output found. Run 'flutter analyze > /tmp/analyzer_output.txt' first.")
         sys.exit(1)
 
     with open(analyzer_file, 'r') as f:
@@ -106,8 +110,18 @@ def main():
     # Extract errors
     errors = extract_errors_from_analyzer(analyzer_output)
 
-    # Filter for jive-flutter directory only
-    errors = [e for e in errors if e['file'].startswith('lib/')]
+    # Filter for jive-flutter directory only (files may have jive-flutter/ prefix)
+    filtered_errors = []
+    for e in errors:
+        file_path = e['file']
+        # Remove jive-flutter/ prefix if present
+        if file_path.startswith('jive-flutter/'):
+            file_path = file_path[len('jive-flutter/'):]
+        # Only keep lib/ files
+        if file_path.startswith('lib/'):
+            e['file'] = file_path
+            filtered_errors.append(e)
+    errors = filtered_errors
 
     if not errors:
         print("No invalid const errors found.")
@@ -129,10 +143,13 @@ def main():
     # Process each file
     fixed_count = 0
     for file_path, file_errors in errors_by_file.items():
-        full_path = f"jive-flutter/{file_path}"
+        # Try both with and without jive-flutter prefix
+        full_path = file_path
+        if not os.path.exists(full_path):
+            full_path = f"jive-flutter/{file_path}"
 
         if not os.path.exists(full_path):
-            print(f"Warning: File not found: {full_path}")
+            print(f"Warning: File not found: {file_path}")
             continue
 
         print(f"Processing {file_path} ({len(file_errors)} errors)...")
