@@ -17,6 +17,22 @@ class CategoryManagementEnhancedPage extends ConsumerStatefulWidget {
 class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagementEnhancedPage> {
   bool _busy = false;
 
+  String _renderDryRunSubtitle(ImportActionDetail d) {
+    switch (d.action) {
+      case 'renamed':
+        return '将重命名' + (d.predictedName != null ? ' → ${d.predictedName}' : '');
+      case 'updated':
+        return '将覆盖同名分类';
+      case 'skipped':
+        return '将跳过' + (d.reason != null ? '（${d.reason}）' : '');
+      case 'failed':
+        return '预检失败' + (d.reason != null ? '（${d.reason}）' : '');
+      case 'imported':
+      default:
+        return '将创建';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -183,8 +199,8 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                           final color = (d.action == 'failed' || d.action == 'skipped') ? Colors.orange : Colors.green;
                           return ListTile(
                             dense: true,
-                            title: Text(d.finalName ?? d.originalName),
-                            subtitle: Text(d.action + (d.reason!=null ? ' (${d.reason})' : '')),
+                            title: Text(d.predictedName ?? d.finalName ?? d.originalName),
+                            subtitle: Text(_renderDryRunSubtitle(d)),
                             trailing: Icon(
                               d.action == 'failed' ? Icons.error : (d.action=='skipped'? Icons.warning_amber : Icons.check_circle),
                               color: color,
@@ -239,8 +255,8 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                 child: const Text('确认导入'),
               ),
             ],
-          ),
-        );
+          );
+        });
       },
     );
   }
