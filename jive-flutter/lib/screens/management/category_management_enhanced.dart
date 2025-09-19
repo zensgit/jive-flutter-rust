@@ -1,60 +1,184 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../models/category.dart';
+import '../../models/category_template.dart';
+import '../../providers/category_provider.dart';
+import '../../providers/ledger_provider.dart';
+import '../../services/api/category_service.dart';
+import '../../services/api/category_service_integrated.dart';
+import '../../widgets/bottom_sheets/import_details_sheet.dart';
 
-// 占位版：增强分类管理页面暂时下线以稳定测试。
-// 后续 PR 将恢复原完整交互（模板导入 / 拖拽排序 / 批量操作 / 转标签 / 统计等）。
-class CategoryManagementEnhancedPage extends StatelessWidget {
+class CategoryManagementEnhancedPage extends ConsumerStatefulWidget {
   const CategoryManagementEnhancedPage({super.key});
 
   @override
+  ConsumerState<CategoryManagementEnhancedPage> createState() => _CategoryManagementEnhancedPageState();
+}
+
+class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagementEnhancedPage> {
+  bool _busy = false;
+
+  @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('分类管理 (占位)')),
+      appBar: AppBar(
+        title: const Text('分类管理'),
+        actions: [
+          IconButton(
+            tooltip: '从模板库导入',
+            icon: const Icon(Icons.library_add),
+            onPressed: _busy ? null : _showTemplateLibrary,
+          ),
+        ],
+      ),
       body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 440),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.category_outlined, size: 72, color: cs.primary),
-              const SizedBox(height: 16),
-              const Text(
-                '增强版分类管理暂时下线',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                '为稳定当前 PR 的测试环境，复杂分类增强功能已暂时移除。',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: cs.onSurface.withOpacity(.72)),
-              ),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: () => showDialog(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    title: const Text('提示'),
-                    content: const Text('完整功能将于后续 PR 恢复'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('关闭'),
-                      )
+        child: _busy
+            ? const CircularProgressIndicator()
+            : const Text('分类管理（最小版）：点击右上角导入模板')
+      ),
+    );
+  }
+
+  Future<void> _showTemplateLibrary() async {
+    final ledgerId = ref.read(currentLedgerProvider)?.id;
+    if (ledgerId == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('无当前账本，无法导入模板')));
+      return;
+    }
+
+    setState(() { _busy = true; });
+    List<SystemCategoryTemplate> templates = [];
+    try {
+      templates = await CategoryServiceIntegrated().getAllTemplates(forceRefresh: true);
+    } catch (_) {}
+    if (!mounted) return;
+    setState(() { _busy = false; });
+
+    final selected = <SystemCategoryTemplate>{};
+    String conflict = 'skip'; // skip|rename|update
+    ImportResult? preview;
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setLocal) => AlertDialog(
+            title: const Text('从模板库导入'),
+            content: SizedBox(
+              width: 480,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      const Text('冲突策略: '),
+                      const SizedBox(width: 8),
+                      DropdownButton<String>(
+                        value: conflict,
+                        items: const [
+                          DropdownMenuItem(value: 'skip', child: Text('跳过')),
+                          DropdownMenuItem(value: 'rename', child: Text('重命名')),
+                          DropdownMenuItem(value: 'update', child: Text('覆盖')),
+                        ],
+                        onChanged: (v) { if (v!=null) setLocal((){ conflict = v; }); },
+                      ),
                     ],
                   ),
-                ),
-                child: const Text('占位'),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 320,
+                    child: ListView.builder(
+                      itemCount: templates.length,
+                      itemBuilder: (_, i) {
+                        final t = templates[i];
+                        final checked = selected.contains(t);
+                        return CheckboxListTile(
+                          value: checked,
+                          onChanged: (_) => setLocal((){
+                            if (checked) { selected.remove(t); } else { selected.add(t); }
+                          }),
+                          dense: true,
+                          title: Text(t.name),
+                          subtitle: Text(t.classification.name),
+                        );
+                      },
+                    ),
+                  ),
+                  if (preview != null) ...[
+                    const Divider(),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('预览（服务端 dry-run ）', style: Theme.of(context).textTheme.titleSmall),
+                    ),
+                    SizedBox(
+                      height: 160,
+                      child: ListView.builder(
+                        itemCount: preview!.details.length,
+                        itemBuilder: (_, i) {
+                          final d = preview!.details[i];
+                          final color = (d.action == 'failed' || d.action == 'skipped') ? Colors.orange : Colors.green;
+                          return ListTile(
+                            dense: true,
+                            title: Text(d.finalName ?? d.originalName),
+                            subtitle: Text(d.action + (d.reason!=null ? ' (${d.reason})' : '')),
+                            trailing: Icon(
+                              d.action == 'failed' ? Icons.error : (d.action=='skipped'? Icons.warning_amber : Icons.check_circle),
+                              color: color,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ],
               ),
-              const SizedBox(height: 12),
-              const Text(
-                'TODO: 模板导入 / 拖拽排序 / 批量操作 / 统计 重新引入',
-                style: TextStyle(fontSize: 11, color: Colors.grey),
-                textAlign: TextAlign.center,
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+              TextButton(
+                onPressed: selected.isEmpty ? null : () async {
+                  try {
+                    final items = selected.map((t) => { 'template_id': t.id }).toList();
+                    final res = await CategoryService().importTemplatesAdvanced(
+                      ledgerId: ledgerId,
+                      items: items,
+                      onConflict: conflict,
+                      dryRun: true,
+                    );
+                    setLocal((){ preview = res; });
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('预览失败: $e')));
+                    }
+                  }
+                },
+                child: const Text('预览'),
+              ),
+              FilledButton(
+                onPressed: (selected.isEmpty) ? null : () async {
+                  Navigator.pop(ctx);
+                  try {
+                    final items = selected.map((t) => { 'template_id': t.id }).toList();
+                    final result = await CategoryService().importTemplatesAdvanced(
+                      ledgerId: ledgerId,
+                      items: items,
+                      onConflict: conflict,
+                    );
+                    if (!mounted) return;
+                    await ref.read(userCategoriesProvider.notifier).refreshFromBackend(ledgerId: ledgerId);
+                    await ImportDetailsSheet.show(context, result);
+                  } catch (e) {
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('导入失败: $e')));
+                  }
+                },
+                child: const Text('确认导入'),
               ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
