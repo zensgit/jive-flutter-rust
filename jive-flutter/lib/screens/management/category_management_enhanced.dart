@@ -62,13 +62,56 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
       context: context,
       builder: (ctx) {
         return StatefulBuilder(
-          builder: (ctx, setLocal) => AlertDialog(
-            title: const Text('从模板库导入'),
-            content: SizedBox(
-              width: 480,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
+          builder: (ctx, setLocal) {
+            // ETag + pagination local state
+            List<SystemCategoryTemplate> list = List<SystemCategoryTemplate>.from(templates);
+            String? etag;
+            int page = 1;
+            const int perPage = 50;
+            int total = list.length;
+            bool fetching = false;
+            bool initialized = false;
+
+            Future<void> fetch({bool reset = false, bool next = false}) async {
+              if (fetching) return;
+              fetching = true; setLocal((){});
+              try {
+                if (reset) page = 1; else if (next) page += 1;
+                final res = await CategoryService().getTemplatesWithEtag(
+                  etag: etag,
+                  page: page,
+                  perPage: perPage,
+                );
+                if (!res.notModified) {
+                  if (page == 1) {
+                    list = List<SystemCategoryTemplate>.from(res.items);
+                  } else {
+                    list = List<SystemCategoryTemplate>.from(list)..addAll(res.items);
+                  }
+                  etag = res.etag ?? etag;
+                  total = res.total;
+                }
+              } catch (_) {
+                // ignore errors, keep current list
+              } finally {
+                fetching = false; setLocal((){});
+              }
+            }
+
+            if (!initialized) {
+              initialized = true;
+              // Kick off a fresh fetch to get total/etag even if we had a warmup list
+              // ignore: discarded_futures
+              fetch(reset: true);
+            }
+
+            return AlertDialog(
+              title: const Text('从模板库导入'),
+              content: SizedBox(
+                width: 480,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                   Row(
                     children: [
                       const Text('冲突策略: '),
@@ -87,21 +130,42 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                   const SizedBox(height: 8),
                   SizedBox(
                     height: 320,
-                    child: ListView.builder(
-                      itemCount: templates.length,
-                      itemBuilder: (_, i) {
-                        final t = templates[i];
-                        final checked = selected.contains(t);
-                        return CheckboxListTile(
-                          value: checked,
-                          onChanged: (_) => setLocal((){
-                            if (checked) { selected.remove(t); } else { selected.add(t); }
-                          }),
-                          dense: true,
-                          title: Text(t.name),
-                          subtitle: Text(t.classification.name),
-                        );
-                      },
+                    child: Column(
+                      children: [
+                        if (fetching) const LinearProgressIndicator(minHeight: 2),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: list.length,
+                            itemBuilder: (_, i) {
+                              final t = list[i];
+                              final checked = selected.contains(t);
+                              return CheckboxListTile(
+                                value: checked,
+                                onChanged: (_) => setLocal((){
+                                  if (checked) { selected.remove(t); } else { selected.add(t); }
+                                }),
+                                dense: true,
+                                title: Text(t.name),
+                                subtitle: Text(t.classification.name),
+                              );
+                            },
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('共 $total 项，当前 ${list.length}', style: Theme.of(context).textTheme.bodySmall),
+                              OutlinedButton.icon(
+                                onPressed: (!fetching && list.length < total) ? () => fetch(next: true) : null,
+                                icon: const Icon(Icons.more_horiz),
+                                label: const Text('加载更多'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   if (preview != null) ...[
