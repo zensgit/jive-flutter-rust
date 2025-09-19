@@ -7,7 +7,7 @@ use axum::{
     response::Json,
 };
 use serde::{Deserialize, Serialize};
-use sqlx::PgPool;
+use sqlx::{PgPool, Row};
 use uuid::Uuid;
 use std::collections::HashMap;
 
@@ -20,6 +20,10 @@ pub struct TemplateQuery {
     pub group: Option<String>,
     pub featured: Option<bool>,
     pub since: Option<String>, // ISO8601 timestamp for incremental sync
+    pub page: Option<i64>,
+    pub per_page: Option<i64>,
+    // Lightweight ETag support via query param (clients may also mirror this to If-None-Match if desired)
+    pub etag: Option<String>,
 }
 
 /// 模板响应
@@ -119,14 +123,14 @@ pub async fn get_templates(
         _ => "name",
     };
     
-    let query_str = format!(
-        "SELECT id, {} as name, name_en, name_zh, description, classification, color, icon, 
-         category_group, is_featured, is_active, global_usage_count, tags, version, 
+    let base_select = format!(
+        "SELECT id, {} as name, name_en, name_zh, description, classification, color, icon, \
+         category_group, is_featured, is_active, global_usage_count, tags, version, \
          created_at, updated_at FROM system_category_templates WHERE is_active = true",
         name_field
     );
     
-    let mut query = sqlx::QueryBuilder::new(query_str);
+    let mut query = sqlx::QueryBuilder::new(base_select.clone());
     
     // 添加过滤条件
     if let Some(classification) = &params.r#type {
@@ -151,9 +155,54 @@ pub async fn get_templates(
         query.push(" AND updated_at > ");
         query.push_bind(since);
     }
-    
+
+    // Stats for ETag and total (duplicate the same filters)
+    let mut stats_q = sqlx::QueryBuilder::new(
+        "SELECT COALESCE(MAX(updated_at), to_timestamp(0)) AS max_updated, COUNT(*) AS total FROM system_category_templates WHERE is_active = true"
+    );
+    if let Some(classification) = &params.r#type {
+        let classification = classification.to_lowercase();
+        if classification != "all" {
+            stats_q.push(" AND classification = ");
+            stats_q.push_bind(classification);
+        }
+    }
+    if let Some(group) = &params.group {
+        stats_q.push(" AND category_group = ");
+        stats_q.push_bind(group);
+    }
+    if let Some(featured) = params.featured {
+        stats_q.push(" AND is_featured = ");
+        stats_q.push_bind(featured);
+    }
+    if let Some(since) = &params.since {
+        stats_q.push(" AND updated_at > ");
+        stats_q.push_bind(since);
+    }
+    let stats_row = stats_q
+        .build()
+        .fetch_one(&pool)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let max_updated: chrono::DateTime<chrono::Utc> = stats_row.try_get("max_updated").unwrap_or(chrono::DateTime::<chrono::Utc>::from_timestamp(0, 0).unwrap());
+    let total_count: i64 = stats_row.try_get("total").unwrap_or(0);
+
+    // Compute a simple ETag and return 304 if matches
+    let computed_etag = format!("W/\"{}:{}\"", max_updated.timestamp(), total_count);
+    if let Some(client_etag) = &params.etag {
+        if *client_etag == computed_etag {
+            return Err(StatusCode::NOT_MODIFIED);
+        }
+    }
+
+    // Pagination
+    let per_page = params.per_page.unwrap_or(50).clamp(1, 100);
+    let page = params.page.unwrap_or(1).max(1);
+    let offset = (page - 1) * per_page;
+
     query.push(" ORDER BY is_featured DESC, global_usage_count DESC, name");
-    
+    query.push(" LIMIT ").push_bind(per_page).push(" OFFSET ").push_bind(offset);
+
     let templates = query
         .build_query_as::<SystemTemplate>()
         .fetch_all(&pool)
@@ -162,18 +211,12 @@ pub async fn get_templates(
             eprintln!("Database query error: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR
         })?;
-    
-    // 获取总数
-    let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM system_category_templates WHERE is_active = true")
-        .fetch_one(&pool)
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+    // 使用前面统计的 total_count 和 max_updated
     let response = TemplateResponse {
         templates,
         version: "1.0.0".to_string(),
-        last_updated: chrono::Utc::now().to_rfc3339(),
-        total: total.0,
+        last_updated: max_updated.to_rfc3339(),
+        total: total_count,
     };
     
     Ok(Json(response))

@@ -2,19 +2,14 @@
 //! 
 //! 测试版本，不连接数据库，返回模拟数据
 
-use axum::{
-    http::{header, Method},
-    response::Json,
-    routing::get,
-    Router,
-};
+use axum::{response::Json, routing::get, Router};
 use serde_json::json;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
 use jive_money_api::middleware::cors::create_cors_layer;
 use tracing::info;
-use tracing_subscriber;
-use chrono;
+// tracing_subscriber is used via fully-qualified path below
+// chrono is referenced via fully-qualified path below
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

@@ -1,60 +1,263 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../models/category.dart';
+import '../../models/category_template.dart';
+import '../../providers/category_provider.dart';
+import '../../providers/ledger_provider.dart';
+import '../../services/api/category_service.dart';
+import '../../widgets/bottom_sheets/import_details_sheet.dart';
 
-// 占位版：增强分类管理页面暂时下线以稳定测试。
-// 后续 PR 将恢复原完整交互（模板导入 / 拖拽排序 / 批量操作 / 转标签 / 统计等）。
-class CategoryManagementEnhancedPage extends StatelessWidget {
+class CategoryManagementEnhancedPage extends ConsumerStatefulWidget {
   const CategoryManagementEnhancedPage({super.key});
 
   @override
+  ConsumerState<CategoryManagementEnhancedPage> createState() => _CategoryManagementEnhancedPageState();
+}
+
+class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagementEnhancedPage> {
+  bool _busy = false;
+
+  String _renderDryRunSubtitle(ImportActionDetail d) {
+    switch (d.action) {
+      case 'renamed':
+        return '将重命名' + (d.predictedName != null ? ' → ${d.predictedName}' : '');
+      case 'updated':
+        return '将覆盖同名分类';
+      case 'skipped':
+        return '将跳过' + (d.reason != null ? '（${d.reason}）' : '');
+      case 'failed':
+        return '预检失败' + (d.reason != null ? '（${d.reason}）' : '');
+      case 'imported':
+      default:
+        return '将创建';
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('分类管理 (占位)')),
+      appBar: AppBar(
+        title: const Text('分类管理'),
+        actions: [
+          IconButton(
+            tooltip: '从模板库导入',
+            icon: const Icon(Icons.library_add),
+            onPressed: _busy ? null : _showTemplateLibrary,
+          ),
+        ],
+      ),
       body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 440),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.category_outlined, size: 72, color: cs.primary),
-              const SizedBox(height: 16),
-              const Text(
-                '增强版分类管理暂时下线',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                '为稳定当前 PR 的测试环境，复杂分类增强功能已暂时移除。',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: cs.onSurface.withOpacity(.72)),
-              ),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: () => showDialog(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    title: const Text('提示'),
-                    content: const Text('完整功能将于后续 PR 恢复'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('关闭'),
-                      )
+        child: _busy
+            ? const CircularProgressIndicator()
+            : const Text('分类管理（最小版）：点击右上角导入模板')
+      ),
+    );
+  }
+
+  Future<void> _showTemplateLibrary() async {
+    final ledgerId = ref.read(currentLedgerProvider)?.id;
+    if (ledgerId == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('无当前账本，无法导入模板')));
+      return;
+    }
+
+    setState(() { _busy = true; });
+    List<SystemCategoryTemplate> templates = [];
+    try {
+      templates = await CategoryService().getAllTemplates(forceRefresh: true);
+    } catch (_) {}
+    if (!mounted) return;
+    setState(() { _busy = false; });
+
+    final selected = <SystemCategoryTemplate>{};
+    String conflict = 'skip'; // skip|rename|update
+    ImportResult? preview;
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setLocal) {
+            // ETag + pagination local state
+            List<SystemCategoryTemplate> list = List<SystemCategoryTemplate>.from(templates);
+            String? etag;
+            int page = 1;
+            const int perPage = 50;
+            int total = list.length;
+            bool fetching = false;
+            bool initialized = false;
+
+            Future<void> fetch({bool reset = false, bool next = false}) async {
+              if (fetching) return;
+              fetching = true; setLocal((){});
+              try {
+                if (reset) page = 1; else if (next) page += 1;
+                final res = await CategoryService().getTemplatesWithEtag(
+                  etag: etag,
+                  page: page,
+                  perPage: perPage,
+                );
+                if (!res.notModified) {
+                  if (page == 1) {
+                    list = List<SystemCategoryTemplate>.from(res.items);
+                  } else {
+                    list = List<SystemCategoryTemplate>.from(list)..addAll(res.items);
+                  }
+                  etag = res.etag ?? etag;
+                  total = res.total;
+                }
+              } catch (_) {
+                // ignore errors, keep current list
+              } finally {
+                fetching = false; setLocal((){});
+              }
+            }
+
+            if (!initialized) {
+              initialized = true;
+              // Kick off a fresh fetch to get total/etag even if we had a warmup list
+              // ignore: discarded_futures
+              fetch(reset: true);
+            }
+
+            return AlertDialog(
+              title: const Text('从模板库导入'),
+              content: SizedBox(
+                width: 480,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                  Row(
+                    children: [
+                      const Text('冲突策略: '),
+                      const SizedBox(width: 8),
+                      DropdownButton<String>(
+                        value: conflict,
+                        items: const [
+                          DropdownMenuItem(value: 'skip', child: Text('跳过')),
+                          DropdownMenuItem(value: 'rename', child: Text('重命名')),
+                          DropdownMenuItem(value: 'update', child: Text('覆盖')),
+                        ],
+                        onChanged: (v) { if (v!=null) setLocal((){ conflict = v; }); },
+                      ),
                     ],
                   ),
-                ),
-                child: const Text('占位'),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 320,
+                    child: Column(
+                      children: [
+                        if (fetching) const LinearProgressIndicator(minHeight: 2),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: list.length,
+                            itemBuilder: (_, i) {
+                              final t = list[i];
+                              final checked = selected.contains(t);
+                              return CheckboxListTile(
+                                value: checked,
+                                onChanged: (_) => setLocal((){
+                                  if (checked) { selected.remove(t); } else { selected.add(t); }
+                                }),
+                                dense: true,
+                                title: Text(t.name),
+                                subtitle: Text(t.classification.name),
+                              );
+                            },
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('共 $total 项，当前 ${list.length}', style: Theme.of(context).textTheme.bodySmall),
+                              OutlinedButton.icon(
+                                onPressed: (!fetching && list.length < total) ? () => fetch(next: true) : null,
+                                icon: const Icon(Icons.more_horiz),
+                                label: const Text('加载更多'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (preview != null) ...[
+                    const Divider(),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('预览（服务端 dry-run ）', style: Theme.of(context).textTheme.titleSmall),
+                    ),
+                    SizedBox(
+                      height: 160,
+                      child: ListView.builder(
+                        itemCount: preview!.details.length,
+                        itemBuilder: (_, i) {
+                          final d = preview!.details[i];
+                          final color = (d.action == 'failed' || d.action == 'skipped') ? Colors.orange : Colors.green;
+                          return ListTile(
+                            dense: true,
+                            title: Text(d.predictedName ?? d.finalName ?? d.originalName),
+                            subtitle: Text(_renderDryRunSubtitle(d)),
+                            trailing: Icon(
+                              d.action == 'failed' ? Icons.error : (d.action=='skipped'? Icons.warning_amber : Icons.check_circle),
+                              color: color,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ],
               ),
-              const SizedBox(height: 12),
-              const Text(
-                'TODO: 模板导入 / 拖拽排序 / 批量操作 / 统计 重新引入',
-                style: TextStyle(fontSize: 11, color: Colors.grey),
-                textAlign: TextAlign.center,
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+              TextButton(
+                onPressed: selected.isEmpty ? null : () async {
+                  try {
+                    final items = selected.map((t) => { 'template_id': t.id }).toList();
+                    final res = await CategoryService().importTemplatesAdvanced(
+                      ledgerId: ledgerId,
+                      items: items,
+                      onConflict: conflict,
+                      dryRun: true,
+                    );
+                    setLocal((){ preview = res; });
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('预览失败: $e')));
+                    }
+                  }
+                },
+                child: const Text('预览'),
+              ),
+              FilledButton(
+                onPressed: (selected.isEmpty) ? null : () async {
+                  Navigator.pop(ctx);
+                  try {
+                    final items = selected.map((t) => { 'template_id': t.id }).toList();
+                    final result = await CategoryService().importTemplatesAdvanced(
+                      ledgerId: ledgerId,
+                      items: items,
+                      onConflict: conflict,
+                    );
+                    if (!mounted) return;
+                    await ref.read(userCategoriesProvider.notifier).refreshFromBackend(ledgerId: ledgerId);
+                    await ImportDetailsSheet.show(context, result);
+                  } catch (e) {
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('导入失败: $e')));
+                  }
+                },
+                child: const Text('确认导入'),
               ),
             ],
-          ),
-        ),
-      ),
+          );
+        });
+      },
     );
   }
 }

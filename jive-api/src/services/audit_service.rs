@@ -254,7 +254,7 @@ impl AuditService {
                 "{},{},{},{},{},{},{},{}\n",
                 log.created_at.format("%Y-%m-%d %H:%M:%S"),
                 log.user_id,
-                log.action.to_string(),
+                log.action,
                 log.entity_type,
                 log.entity_id.map(|id| id.to_string()).unwrap_or_default(),
                 log.old_values.map(|v| v.to_string()).unwrap_or_default(),

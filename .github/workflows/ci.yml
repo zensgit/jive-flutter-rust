@@ -192,7 +192,7 @@ jobs:
         SQLX_OFFLINE: 'true'
       run: |
         cargo check --all-features
-        cargo clippy --all-features -- -D warnings || true
+        cargo clippy --all-features -- -D warnings
 
     - name: Generate schema report
       if: always()

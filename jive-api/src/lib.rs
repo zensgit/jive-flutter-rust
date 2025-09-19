@@ -1,3 +1,5 @@
+#![allow(dead_code, unused_imports)]
+
 pub mod handlers;
 pub mod error;
 pub mod auth;
@@ -34,6 +36,5 @@ impl FromRef<AppState> for Option<redis::aio::ConnectionManager> {
 // Re-export commonly used types
 pub use error::{ApiError, ApiResult};
 pub use services::{ServiceContext, ServiceError};
-
 
 

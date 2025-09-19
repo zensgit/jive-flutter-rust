@@ -21,12 +21,14 @@ impl TransactionService {
 
         // 生成交易ID
         let transaction_id = Uuid::new_v4();
+        // 克隆一份数据快照，避免后续字段 move 影响对 &data 的借用
+        let data_snapshot = data.clone();
         
         // 获取账户当前余额
         let current_balance: Option<(f64,)> = sqlx::query_as(
             "SELECT current_balance FROM accounts WHERE id = $1 FOR UPDATE"
         )
-        .bind(&data.account_id)
+        .bind(data.account_id)
         .fetch_optional(&mut *tx)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -55,17 +57,17 @@ impl TransactionService {
             RETURNING *
             "#
         )
-        .bind(&transaction_id)
-        .bind(&data.ledger_id)
-        .bind(&data.account_id)
-        .bind(&data.transaction_date)
-        .bind(&data.amount)
-        .bind(&data.transaction_type)
-        .bind(&data.category_id)
-        .bind(&data.category_name)
-        .bind(&data.payee)
-        .bind(&data.notes)
-        .bind(&data.status)
+        .bind(transaction_id)
+        .bind(data.ledger_id)
+        .bind(data.account_id)
+        .bind(data.transaction_date)
+        .bind(data.amount)
+        .bind(data.transaction_type.clone())
+        .bind(data.category_id)
+        .bind(data.category_name)
+        .bind(data.payee)
+        .bind(data.notes)
+        .bind(data.status.clone())
         .fetch_one(&mut *tx)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -74,8 +76,8 @@ impl TransactionService {
         sqlx::query(
             "UPDATE accounts SET current_balance = $1, updated_at = NOW() WHERE id = $2"
         )
-        .bind(&new_balance)
-        .bind(&data.account_id)
+        .bind(new_balance)
+        .bind(data.account_id)
         .execute(&mut *tx)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -87,10 +89,10 @@ impl TransactionService {
             VALUES ($1, $2, $3, $4, NOW())
             "#
         )
-        .bind(&Uuid::new_v4())
-        .bind(&data.account_id)
-        .bind(&new_balance)
-        .bind(&data.transaction_date)
+        .bind(Uuid::new_v4())
+        .bind(data.account_id)
+        .bind(new_balance)
+        .bind(data.transaction_date)
         .execute(&mut *tx)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -98,7 +100,7 @@ impl TransactionService {
         // 如果是转账，创建对应的转入交易
         if data.transaction_type == TransactionType::Transfer {
             if let Some(target_account_id) = data.target_account_id {
-                self.create_transfer_target(&mut tx, &transaction_id, &data, target_account_id).await?;
+                self.create_transfer_target(&mut tx, &transaction_id, &data_snapshot, target_account_id).await?;
             }
         }
 
@@ -121,7 +123,7 @@ impl TransactionService {
         let target_balance: Option<(f64,)> = sqlx::query_as(
             "SELECT current_balance FROM accounts WHERE id = $1 FOR UPDATE"
         )
-        .bind(&target_account_id)
+        .bind(target_account_id)
         .fetch_optional(&mut **tx)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -144,14 +146,14 @@ impl TransactionService {
             )
             "#
         )
-        .bind(&Uuid::new_v4())
-        .bind(&data.ledger_id)
-        .bind(&target_account_id)
-        .bind(&data.transaction_date)
-        .bind(&data.amount)
-        .bind(&format!("从账户转入: {}", data.notes.as_deref().unwrap_or("")))
-        .bind(&data.status)
-        .bind(&source_transaction_id)
+        .bind(Uuid::new_v4())
+        .bind(data.ledger_id)
+        .bind(target_account_id)
+        .bind(data.transaction_date)
+        .bind(data.amount)
+        .bind(format!("从账户转入: {}", data.notes.as_deref().unwrap_or("")))
+        .bind(data.status.clone())
+        .bind(source_transaction_id)
         .execute(&mut **tx)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -160,8 +162,8 @@ impl TransactionService {
         sqlx::query(
             "UPDATE accounts SET current_balance = $1, updated_at = NOW() WHERE id = $2"
         )
-        .bind(&new_target_balance)
-        .bind(&target_account_id)
+        .bind(new_target_balance)
+        .bind(target_account_id)
         .execute(&mut **tx)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -179,17 +181,17 @@ impl TransactionService {
 
         // 预加载所有相关账户的余额
         for trans in &transactions {
-            if !account_balances.contains_key(&trans.account_id) {
+            if let std::collections::hash_map::Entry::Vacant(e) = account_balances.entry(trans.account_id) {
                 let balance: Option<(f64,)> = sqlx::query_as(
                     "SELECT current_balance FROM accounts WHERE id = $1"
                 )
-                .bind(&trans.account_id)
+                .bind(trans.account_id)
                 .fetch_optional(&mut *tx)
                 .await
                 .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
                 if let Some(balance) = balance {
-                    account_balances.insert(trans.account_id, balance.0);
+                    e.insert(balance.0);
                 }
             }
         }
@@ -223,17 +225,17 @@ impl TransactionService {
                 RETURNING *
                 "#
             )
-            .bind(&Uuid::new_v4())
-            .bind(&trans_data.ledger_id)
-            .bind(&trans_data.account_id)
-            .bind(&trans_data.transaction_date)
-            .bind(&trans_data.amount)
-            .bind(&trans_data.transaction_type)
-            .bind(&trans_data.category_id)
-            .bind(&trans_data.category_name)
-            .bind(&trans_data.payee)
-            .bind(&trans_data.notes)
-            .bind(&trans_data.status)
+            .bind(Uuid::new_v4())
+            .bind(trans_data.ledger_id)
+            .bind(trans_data.account_id)
+            .bind(trans_data.transaction_date)
+            .bind(trans_data.amount)
+            .bind(trans_data.transaction_type)
+            .bind(trans_data.category_id)
+            .bind(trans_data.category_name)
+            .bind(trans_data.payee)
+            .bind(trans_data.notes)
+            .bind(trans_data.status)
             .fetch_one(&mut *tx)
             .await
             .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -246,8 +248,8 @@ impl TransactionService {
             sqlx::query(
                 "UPDATE accounts SET current_balance = $1, updated_at = NOW() WHERE id = $2"
             )
-            .bind(&new_balance)
-            .bind(&account_id)
+            .bind(new_balance)
+            .bind(account_id)
             .execute(&mut *tx)
             .await
             .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -265,7 +267,7 @@ impl TransactionService {
         let transaction: Option<(String, Option<String>, f64)> = sqlx::query_as(
             "SELECT payee, notes, amount FROM transactions WHERE id = $1"
         )
-        .bind(&transaction_id)
+        .bind(transaction_id)
         .fetch_optional(&self.pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -289,9 +291,9 @@ impl TransactionService {
             LIMIT 1
             "#
         )
-        .bind(&payee)
-        .bind(&notes.unwrap_or_else(|| String::new()))
-        .bind(&amount)
+        .bind(payee)
+        .bind(notes.unwrap_or_else(String::new))
+        .bind(amount)
         .fetch_optional(&self.pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -301,8 +303,8 @@ impl TransactionService {
             sqlx::query(
                 "UPDATE transactions SET category_id = $1, updated_at = NOW() WHERE id = $2"
             )
-            .bind(&category_id)
-            .bind(&transaction_id)
+            .bind(category_id)
+            .bind(transaction_id)
             .execute(&self.pool)
             .await
             .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -314,9 +316,9 @@ impl TransactionService {
                 VALUES ($1, $2, $3, NOW())
                 "#
             )
-            .bind(&Uuid::new_v4())
-            .bind(&rule_id)
-            .bind(&transaction_id)
+            .bind(Uuid::new_v4())
+            .bind(rule_id)
+            .bind(transaction_id)
             .execute(&self.pool)
             .await
             .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -350,9 +352,9 @@ impl TransactionService {
             AND status = 'cleared'
             "#
         )
-        .bind(&ledger_id)
-        .bind(&start_date)
-        .bind(&end_date)
+        .bind(ledger_id)
+        .bind(start_date)
+        .bind(end_date)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;

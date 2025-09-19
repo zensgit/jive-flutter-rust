@@ -1,12 +1,7 @@
 //! 简化的主程序，用于测试基础功能
 //! 不包含WebSocket，仅包含核心API
 
-use axum::{
-    http::{header, Method, StatusCode},
-    response::Json,
-    routing::{get, post, put, delete},
-    Router,
-};
+use axum::{http::StatusCode, response::Json, routing::{get, post, put, delete}, Router};
 use serde_json::json;
 use sqlx::postgres::PgPoolOptions;
 use std::net::SocketAddr;

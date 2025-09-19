@@ -18,7 +18,7 @@ pub fn create_cors_layer() -> CorsLayer {
         .unwrap_or(true);
     
     // 在开发环境中，允许特定的源
-    let allowed_origins = vec![
+    const ALLOWED_ORIGINS: [&str; 8] = [
         "http://localhost:3021",
         "http://localhost:3000", 
         "http://localhost:8080",
@@ -31,7 +31,7 @@ pub fn create_cors_layer() -> CorsLayer {
     
     if dev_mode {
         // Development: allow a set of common local origins (not wildcard) so that credentials are valid
-        let origin_values = allowed_origins
+        let origin_values = ALLOWED_ORIGINS
             .iter()
             .map(|o| o.parse::<axum::http::HeaderValue>().unwrap())
             .collect::<Vec<_>>();
@@ -68,7 +68,7 @@ pub fn create_cors_layer() -> CorsLayer {
 
     let cors = CorsLayer::new()
         .allow_origin(
-            allowed_origins
+            ALLOWED_ORIGINS
                 .iter()
                 .map(|origin| origin.parse::<axum::http::HeaderValue>().unwrap())
                 .collect::<Vec<_>>()

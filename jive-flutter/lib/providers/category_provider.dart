@@ -33,6 +33,11 @@ class SystemTemplatesNotifier extends StateNotifier<AsyncValue<List<SystemCatego
       state = AsyncValue.error(e, stack);
     }
   }
+
+  /// 刷新模板 (简化实现)
+  Future<void> refresh({bool forceRefresh = false}) async {
+    return loadAllTemplates(forceRefresh: forceRefresh);
+  }
 }
 
 /// 用户分类管理器 (简化版本)
@@ -51,6 +56,12 @@ class UserCategoriesNotifier extends StateNotifier<List<category_model.Category>
     state = [...state, category];
   }
 
+  /// 创建分类 (简化实现)
+  Future<void> createCategory(category_model.Category category) async {
+    // 简化：与addCategory相同的逻辑
+    return addCategory(category);
+  }
+
   /// 更新分类 (简化实现)
   Future<void> updateCategory(category_model.Category category) async {
     // 简化：更新本地状态
@@ -64,6 +75,12 @@ class UserCategoriesNotifier extends StateNotifier<List<category_model.Category>
   Future<void> deleteCategory(String categoryId) async {
     // 简化：从本地状态移除
     state = state.where((item) => item.id != categoryId).toList();
+  }
+
+  /// 从后端刷新分类数据
+  Future<void> refreshFromBackend({required String ledgerId}) async {
+    // TODO: 实现从后端加载分类的逻辑
+    // 目前简化实现，保持当前状态
   }
 }
 
@@ -99,3 +116,20 @@ class TemplateNetworkState {
     required this.lastSync,
   });
 }
+
+/// 网络状态提供器（用于向后兼容）
+final networkStatusProvider = Provider<TemplateNetworkState>((ref) {
+  return const TemplateNetworkState(
+    isLoading: false,
+    hasLocalData: true,
+    hasNetworkData: false,
+    error: null,
+    lastSync: null,
+  );
+});
+
+/// 分类服务提供器（用于向后兼容）
+final categoryServiceProvider = Provider((ref) {
+  // 返回一个简化的服务实例，避免网络依赖
+  return null; // 或者返回一个mock service
+});

@@ -20,7 +20,6 @@ pub async fn require_permission(
     required: Permission,
 ) -> impl Fn(Request, Next) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Response, StatusCode>> + Send>> + Clone {
     move |request: Request, next: Next| {
-        let required = required.clone();
         Box::pin(async move {
             // 从request extensions获取ServiceContext
             let context = request
@@ -43,7 +42,7 @@ pub async fn require_any_permission(
     permissions: Vec<Permission>,
 ) -> impl Fn(Request, Next) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Response, StatusCode>> + Send>> + Clone {
     move |request: Request, next: Next| {
-        let permissions = permissions.clone();
+        let value = permissions.clone();
         Box::pin(async move {
             let context = request
                 .extensions()
@@ -51,7 +50,7 @@ pub async fn require_any_permission(
                 .ok_or(StatusCode::UNAUTHORIZED)?;
             
             // 检查是否有任一权限
-            let has_permission = permissions.iter().any(|p| context.can_perform(*p));
+            let has_permission = value.iter().any(|p| context.can_perform(*p));
             
             if !has_permission {
                 return Err(StatusCode::FORBIDDEN);
@@ -67,7 +66,7 @@ pub async fn require_all_permissions(
     permissions: Vec<Permission>,
 ) -> impl Fn(Request, Next) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Response, StatusCode>> + Send>> + Clone {
     move |request: Request, next: Next| {
-        let permissions = permissions.clone();
+        let value = permissions.clone();
         Box::pin(async move {
             let context = request
                 .extensions()
@@ -75,7 +74,7 @@ pub async fn require_all_permissions(
                 .ok_or(StatusCode::UNAUTHORIZED)?;
             
             // 检查是否有所有权限
-            let has_all_permissions = permissions.iter().all(|p| context.can_perform(*p));
+            let has_all_permissions = value.iter().all(|p| context.can_perform(*p));
             
             if !has_all_permissions {
                 return Err(StatusCode::FORBIDDEN);
@@ -91,7 +90,6 @@ pub async fn require_minimum_role(
     minimum_role: MemberRole,
 ) -> impl Fn(Request, Next) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Response, StatusCode>> + Send>> + Clone {
     move |request: Request, next: Next| {
-        let minimum_role = minimum_role.clone();
         Box::pin(async move {
             let context = request
                 .extensions()
@@ -157,8 +155,11 @@ pub async fn require_admin_or_owner(
 }
 
 /// 权限缓存
+type PermissionKey = (Uuid, Uuid);
+type PermissionValue = (Vec<Permission>, Instant);
+
 pub struct PermissionCache {
-    cache: Arc<RwLock<HashMap<(Uuid, Uuid), (Vec<Permission>, Instant)>>>,
+    cache: Arc<RwLock<HashMap<PermissionKey, PermissionValue>>>,
     ttl: Duration,
 }
 

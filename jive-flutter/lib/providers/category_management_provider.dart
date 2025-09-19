@@ -99,7 +99,7 @@ class CategoryProvider extends ChangeNotifier {
       // 记录撤销操作
       _addToHistory(DuplicateCategoryAction(
         originalId: categoryId,
-        duplicateId: newCategory.id,
+        duplicateId: newCategory.id ?? '',
       ));
 
       notifyListeners();

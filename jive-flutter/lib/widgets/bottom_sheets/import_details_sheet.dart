@@ -67,7 +67,7 @@ class ImportDetailsSheet {
                         title: Text('$action (${items.length})', style: TextStyle(color: color, fontWeight: FontWeight.w600)),
                         children: items.map((d) => ListTile(
                               dense: true,
-                              title: Text(d.finalName ?? d.originalName),
+                              title: Text(d.predictedName ?? d.finalName ?? d.originalName),
                               subtitle: Text(d.reason != null ? d.reason! : ''),
                               trailing: Icon(
                                 action == 'failed'

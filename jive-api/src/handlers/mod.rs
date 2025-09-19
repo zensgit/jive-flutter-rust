@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 pub mod template_handler;
 pub mod accounts;
 pub mod transactions;

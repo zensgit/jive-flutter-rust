@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'providers/category_provider_simple.dart';
+import 'providers/category_provider.dart';
 import 'models/category_template.dart';
 
 void main() {

@@ -35,6 +35,7 @@ pub struct CreateAccountRequest {
     pub currency: Option<String>,
     pub initial_balance: Option<Decimal>,
     pub color: Option<String>,
+    #[allow(dead_code)]
     pub icon: Option<String>,
     pub notes: Option<String>,
 }
@@ -192,7 +193,7 @@ pub async fn get_account(
         account_number: account.account_number,
         institution_name: account.institution_name,
         currency: account.currency.unwrap_or_else(|| "CNY".to_string()),
-        current_balance: account.current_balance.unwrap_or_else(|| Decimal::ZERO),
+        current_balance: account.current_balance.unwrap_or(Decimal::ZERO),
         available_balance: account.available_balance,
         credit_limit: account.credit_limit,
         status: account.status.unwrap_or_else(|| "active".to_string()),
@@ -200,8 +201,8 @@ pub async fn get_account(
         color: account.color,
         icon: None,
         notes: account.notes,
-        created_at: account.created_at.unwrap_or_else(|| chrono::Utc::now()),
-        updated_at: account.updated_at.unwrap_or_else(|| chrono::Utc::now()),
+        created_at: account.created_at.unwrap_or_else(chrono::Utc::now),
+        updated_at: account.updated_at.unwrap_or_else(chrono::Utc::now),
     };
     
     Ok(Json(response))
@@ -268,7 +269,7 @@ pub async fn create_account(
         account_number: account.account_number,
         institution_name: account.institution_name,
         currency: account.currency.unwrap_or_else(|| "CNY".to_string()),
-        current_balance: account.current_balance.unwrap_or_else(|| Decimal::ZERO),
+        current_balance: account.current_balance.unwrap_or(Decimal::ZERO),
         available_balance: account.available_balance,
         credit_limit: account.credit_limit,
         status: account.status.unwrap_or_else(|| "active".to_string()),
@@ -276,8 +277,8 @@ pub async fn create_account(
         color: account.color,
         icon: None,
         notes: account.notes,
-        created_at: account.created_at.unwrap_or_else(|| chrono::Utc::now()),
-        updated_at: account.updated_at.unwrap_or_else(|| chrono::Utc::now()),
+        created_at: account.created_at.unwrap_or_else(chrono::Utc::now),
+        updated_at: account.updated_at.unwrap_or_else(chrono::Utc::now),
     };
     
     Ok(Json(response))

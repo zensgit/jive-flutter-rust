@@ -400,7 +400,7 @@ pub async fn execute_rules(
         
         // 检查每个交易是否匹配规则
         for tx in &transactions {
-            if check_rule_match(&tx, &conditions) {
+            if check_rule_match(tx, &conditions) {
                 let tx_id: Uuid = tx.get("id");
                 matched_transactions.push(tx_id);
                 
@@ -631,4 +631,3 @@ async fn execute_rule_on_existing(
     
     Ok(())
 }
-

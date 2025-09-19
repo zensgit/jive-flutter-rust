@@ -44,6 +44,10 @@ impl WsConnectionManager {
     }
 }
 
+impl Default for WsConnectionManager {
+    fn default() -> Self { Self::new() }
+}
+
 /// WebSocket查询参数
 #[derive(Debug, Deserialize)]
 pub struct WsQuery {
