@@ -86,7 +86,7 @@ impl CurrencyService {
         let currencies = rows.into_iter().map(|row| Currency {
             code: row.code,
             name: row.name,
-            symbol: row.symbol,
+            symbol: row.symbol.unwrap_or_else(|| "".to_string()),
             decimal_places: row.decimal_places.unwrap_or(2),
             is_active: row.is_active.unwrap_or(true),
         }).collect();
@@ -345,7 +345,7 @@ impl CurrencyService {
             INSERT INTO exchange_rates
             (id, from_currency, to_currency, rate, source, effective_date)
             VALUES ($1, $2, $3, $4, $5, $6)
-            ON CONFLICT (from_currency, to_currency, effective_date)
+            ON CONFLICT (id)
             DO UPDATE SET 
                 rate = $4,
                 source = $5,
@@ -373,8 +373,8 @@ impl CurrencyService {
             to_currency: row.to_currency,
             rate: row.rate,
             source: row.source.unwrap_or_else(|| "manual".to_string()),
-            effective_date: effective,
-            created_at: created_at.unwrap_or_else(|| Utc::now()),
+            effective_date: effective.unwrap_or_else(|| chrono::Utc::now().date_naive()),
+            created_at: created_at,
         })
     }
     
@@ -427,8 +427,8 @@ impl CurrencyService {
             to_currency: row.to_currency,
             rate: row.rate,
             source: row.source.unwrap_or_else(|| "manual".to_string()),
-            effective_date: row.effective_date,
-            created_at: row.created_at.unwrap_or_else(|| Utc::now()),
+            effective_date: row.effective_date.unwrap_or_else(|| chrono::Utc::now().date_naive()),
+            created_at: row.created_at,
         }).collect())
     }
     
