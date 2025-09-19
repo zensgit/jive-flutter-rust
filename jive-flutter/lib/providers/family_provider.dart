@@ -334,3 +334,9 @@ final canWriteInFamilyProvider = Provider<bool>((ref) {
   final familyState = ref.watch(familyControllerProvider);
   return familyState.canWrite;
 });
+
+/// Family Provider - 为了兼容性
+final familyProvider = Provider<family_model.Family?>((ref) {
+  final familyState = ref.watch(familyControllerProvider);
+  return familyState.currentFamily;
+});

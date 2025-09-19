@@ -292,3 +292,15 @@ final isAuthenticatedProvider = Provider<bool>((ref) {
 
 /// 为了兼容性，创建authProvider别名
 final authProvider = authControllerProvider;
+
+/// AuthState Provider - 为了兼容性
+final authStateProvider = Provider<AsyncValue<User?>>((ref) {
+  final authState = ref.watch(authControllerProvider);
+  if (authState.status == AuthStatus.loading) {
+    return const AsyncValue.loading();
+  } else if (authState.status == AuthStatus.error) {
+    return AsyncValue.error(authState.errorMessage ?? 'Unknown error', StackTrace.current);
+  } else {
+    return AsyncValue.data(authState.user);
+  }
+});

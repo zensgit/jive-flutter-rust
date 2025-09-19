@@ -81,7 +81,7 @@ class BudgetProgress extends StatelessWidget {
                       if (showAmount) ...[
                         const SizedBox(height: 2),
                         Text(
-                          '${ref.read(currencyProvider.notifier).formatCurrency(spent, ref.read(baseCurrencyProvider).code)} / ${ref.read(currencyProvider.notifier).formatCurrency(budgeted, ref.read(baseCurrencyProvider).code)}',
+                          '¥${spent.toStringAsFixed(2)} / ¥${budgeted.toStringAsFixed(2)}',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                           ),

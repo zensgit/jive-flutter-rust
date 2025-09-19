@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../utils/string_utils.dart';
 import '../../services/api_service.dart';
 import '../../models/payee.dart';
+import '../../providers/currency_provider.dart';
 
 /// 交易对方管理页面 - API版本
 class PayeeManagementPageV2 extends StatefulWidget {

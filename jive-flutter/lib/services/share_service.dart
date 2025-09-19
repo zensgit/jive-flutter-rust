@@ -9,6 +9,21 @@ import '../models/transaction.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/currency_provider.dart';
 
+// Stub for Share class to resolve undefined_identifier errors
+class Share {
+  static Future<void> share(String text, {String? subject}) async {
+    // TODO: Implement actual share functionality
+    debugPrint('Share text: $text');
+    debugPrint('Share subject: $subject');
+  }
+
+  static Future<void> shareXFiles(List<XFile> files, {String? text}) async {
+    // TODO: Implement actual share functionality
+    debugPrint('Share files: ${files.length} files');
+    debugPrint('Share text: $text');
+  }
+}
+
 /// 分享服务
 class ShareService {
   static final ScreenshotController _screenshotController =
