@@ -47,6 +47,30 @@ enum CategoryGroup {
   final String key;
   final String displayName;
 
+  /// 获取分类组的默认图标
+  String get icon {
+    switch (this) {
+      case CategoryGroup.income:
+        return '💰';
+      case CategoryGroup.dailyExpense:
+        return '🛒';
+      case CategoryGroup.transportation:
+        return '🚗';
+      case CategoryGroup.housing:
+        return '🏠';
+      case CategoryGroup.medical:
+        return '🏥';
+      case CategoryGroup.entertainmentSocial:
+        return '🎯';
+      case CategoryGroup.education:
+        return '📚';
+      case CategoryGroup.finance:
+        return '💳';
+      case CategoryGroup.other:
+        return '📦';
+    }
+  }
+
   static CategoryGroup? fromString(String key) {
     for (final group in CategoryGroup.values) {
       if (group.key == key) {

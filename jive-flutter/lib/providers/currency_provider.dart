@@ -750,6 +750,18 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
 
   bool get hasPendingPreferences => _prefsBox.containsKey(_kPendingPrefsKey);
 
+  /// 检查汇率是否需要更新
+  bool get ratesNeedUpdate {
+    // 简单实现：检查汇率是否过期（如果有上次更新时间）
+    if (_lastRateUpdate == null) return true;
+
+    final now = DateTime.now();
+    final timeSinceUpdate = now.difference(_lastRateUpdate!);
+
+    // 如果超过1小时未更新，认为需要更新
+    return timeSinceUpdate.inHours >= 1;
+  }
+
   void _schedulePreferencePush() {
     _prefsDebounce?.cancel();
     _prefsDebounce = Timer(const Duration(milliseconds: 500), () {

@@ -142,15 +142,10 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
                 try {
                   await _apiService.createPayee(Payee(
                     id: '', // API会生成
-                    ledgerId: _ledgerId,
                     name: nameController.text,
-                    notes: notesController.text.isNotEmpty
-                        ? notesController.text
-                        : null,
-                    isVendor: isVendor,
-                    isCustomer: !isVendor,
-                    isActive: true,
-                    transactionCount: 0,
+                    payeeType: isVendor ? PayeeType.providerPayee : PayeeType.familyPayee,
+                    source: PayeeSource.manual,
+                    transactionsCount: 0,
                     createdAt: DateTime.now(),
                     updatedAt: DateTime.now(),
                   ));
@@ -176,8 +171,8 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
 
   @override
   Widget build(BuildContext context) {
-    final vendors = _filteredPayees.where((p) => p.isVendor).toList();
-    final customers = _filteredPayees.where((p) => p.isCustomer).toList();
+    final vendors = _filteredPayees.where((p) => p.payeeType == PayeeType.providerPayee).toList();
+    final customers = _filteredPayees.where((p) => p.payeeType == PayeeType.familyPayee).toList();
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -302,17 +297,10 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (payee.categoryName != null)
-                  Text('分类: ${payee.categoryName}'),
-                Text('交易次数: ${payee.transactionCount}'),
-                if (payee.totalAmount != null)
-                  Consumer(builder: (context, ref, _) {
-                    final base = ref.watch(baseCurrencyProvider).code;
-                    final str = ref
-                        .read(currencyProvider.notifier)
-                        .formatCurrency(payee.totalAmount ?? 0, base);
-                    return Text('总金额: $str');
-                  }),
+                if (payee.primaryCategoryId != null)
+                  Text('分类: ${payee.primaryCategoryId}'),
+                Text('交易次数: ${payee.transactionsCount}'),
+                Text('类型: ${payee.payeeType == PayeeType.providerPayee ? '供应商' : '客户'}'),
               ],
             ),
             trailing: PopupMenuButton<String>(

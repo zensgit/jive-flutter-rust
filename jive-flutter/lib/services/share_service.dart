@@ -169,7 +169,7 @@ $icon $typeText记录
 
 📝 ${transaction.description}
 💵 金额：$amountStr
-📂 分类：${transaction.categoryName}
+📂 分类：${transaction.category ?? '未分类'}
 📅 日期：${_formatDate(transaction.date)}
 🏠 账本：$familyName
 

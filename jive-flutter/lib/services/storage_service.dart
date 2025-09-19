@@ -444,6 +444,9 @@ class UserData {
     };
   }
 
+  /// 是否是超级管理员
+  bool get isSuperAdmin => role == 'SuperAdmin' || role == 'Owner';
+
   UserData copyWith({
     String? id,
     String? username,
