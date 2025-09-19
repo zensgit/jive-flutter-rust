@@ -351,6 +351,16 @@ class CategoryService {
     // Stub implementation
     return Future.value();
   }
+
+  // Import template as category - stub implementation
+  Future<dynamic> importTemplateAsCategory(String templateId) async {
+    // TODO: Implement actual import logic
+    return Future.value({
+      'id': 'imported-$templateId',
+      'status': 'imported',
+      'message': 'Template imported successfully'
+    });
+  }
 }
 
 /// 模板目录结果（含 ETag）

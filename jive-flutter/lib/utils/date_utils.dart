@@ -36,5 +36,15 @@ class DateUtils {
       return 'just now';
     }
   }
+
+  static bool isToday(DateTime dt) {
+    final now = DateTime.now();
+    return dt.year == now.year && dt.month == now.month && dt.day == now.day;
+  }
+
+  static bool isYesterday(DateTime dt) {
+    final yesterday = DateTime.now().subtract(const Duration(days: 1));
+    return dt.year == yesterday.year && dt.month == yesterday.month && dt.day == yesterday.day;
+  }
 }
 
