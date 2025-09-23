@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jive_money/models/category.dart';
 import 'package:jive_money/models/category_template.dart';
 import 'package:jive_money/providers/category_provider.dart';
 import 'package:jive_money/providers/ledger_provider.dart';
@@ -15,22 +16,6 @@ class CategoryManagementEnhancedPage extends ConsumerStatefulWidget {
 
 class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagementEnhancedPage> {
   bool _busy = false;
-
-  String _renderDryRunSubtitle(ImportActionDetail d) {
-    switch (d.action) {
-      case 'renamed':
-        return '将重命名${d.predictedName != null ? ' → ${d.predictedName}' : ''}';
-      case 'updated':
-        return '将覆盖同名分类';
-      case 'skipped':
-        return '将跳过${d.reason != null ? '（${d.reason}）' : ''}';
-      case 'failed':
-        return '预检失败${d.reason != null ? '（${d.reason}）' : ''}';
-      case 'imported':
-      default:
-        return '将创建';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,9 +76,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
               if (fetching) return;
               fetching = true; setLocal((){});
               try {
-                if (reset) {
-                  page = 1;
-                } else if (next) page += 1;
+                if (reset) page = 1; else if (next) page += 1;
                 final res = await CategoryService().getTemplatesWithEtag(
                   etag: etag,
                   page: page,
@@ -131,11 +114,11 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                   children: [
                   Row(
                     children: [
-                      Text('冲突策略: '),
-                      SizedBox(width: 8),
+                      const Text('冲突策略: '),
+                      const SizedBox(width: 8),
                       DropdownButton<String>(
                         value: conflict,
-                        items: [
+                        items: const [
                           DropdownMenuItem(value: 'skip', child: Text('跳过')),
                           DropdownMenuItem(value: 'rename', child: Text('重命名')),
                           DropdownMenuItem(value: 'update', child: Text('覆盖')),
@@ -144,12 +127,12 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                       ),
                     ],
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   SizedBox(
                     height: 320,
                     child: Column(
                       children: [
-                        if (fetching) LinearProgressIndicator(minHeight: 2),
+                        if (fetching) const LinearProgressIndicator(minHeight: 2),
                         Expanded(
                           child: ListView.builder(
                             itemCount: list.length,
@@ -176,8 +159,8 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                               Text('共 $total 项，当前 ${list.length}', style: Theme.of(context).textTheme.bodySmall),
                               OutlinedButton.icon(
                                 onPressed: (!fetching && list.length < total) ? () => fetch(next: true) : null,
-                                icon: Icon(Icons.more_horiz),
-                                label: Text('加载更多'),
+                                icon: const Icon(Icons.more_horiz),
+                                label: const Text('加载更多'),
                               ),
                             ],
                           ),
@@ -186,7 +169,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                     ),
                   ),
                   if (preview != null) ...[
-                    Divider(),
+                    const Divider(),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text('预览（服务端 dry-run ）', style: Theme.of(context).textTheme.titleSmall),
@@ -200,8 +183,8 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                           final color = (d.action == 'failed' || d.action == 'skipped') ? Colors.orange : Colors.green;
                           return ListTile(
                             dense: true,
-                            title: Text(d.predictedName ?? d.finalName ?? d.originalName),
-                            subtitle: Text(_renderDryRunSubtitle(d)),
+                            title: Text(d.finalName ?? d.originalName),
+                            subtitle: Text(d.action + (d.reason!=null ? ' (${d.reason})' : '')),
                             trailing: Icon(
                               d.action == 'failed' ? Icons.error : (d.action=='skipped'? Icons.warning_amber : Icons.check_circle),
                               color: color,
@@ -226,7 +209,6 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                       onConflict: conflict,
                       dryRun: true,
                     );
-                    if (!context.mounted) return;
                     setLocal((){ preview = res; });
                   } catch (e) {
                     if (context.mounted) {
@@ -248,7 +230,6 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                     );
                     if (!mounted) return;
                     await ref.read(userCategoriesProvider.notifier).refreshFromBackend(ledgerId: ledgerId);
-                    if (!context.mounted) return;
                     await ImportDetailsSheet.show(context, result);
                   } catch (e) {
                     if (!mounted) return;
@@ -258,8 +239,8 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                 child: const Text('确认导入'),
               ),
             ],
-          );
-        });
+          ),
+        );
       },
     );
   }
