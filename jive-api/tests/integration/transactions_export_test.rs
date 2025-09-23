@@ -459,6 +459,158 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn export_csv_escape_newlines_and_crlf() {
+        use axum::routing::get;
+        use jive_money_api::handlers::transactions::export_transactions_csv_stream;
+
+        let pool = create_test_pool().await;
+        let user = create_test_user(&pool).await;
+        let family = create_test_family(&pool, user.id).await;
+        let token = bearer_for_user_family(&pool, user.id, family.id).await;
+
+        let ledger_id: Uuid = sqlx::query_scalar(
+            "SELECT id FROM ledgers WHERE family_id = $1 AND is_default = true LIMIT 1"
+        )
+        .bind(family.id)
+        .fetch_one(&pool)
+        .await
+        .expect("fetch default ledger");
+
+        // Seed an account and a transaction with CRLF and LF in description
+        let account_id = Uuid::new_v4();
+        sqlx::query(r#"
+            INSERT INTO accounts (id, ledger_id, name, account_type, current_balance, created_at, updated_at)
+            VALUES ($1, $2, 'Newlines', 'checking', 0, NOW(), NOW())
+        "#)
+        .bind(account_id)
+        .bind(ledger_id)
+        .execute(&pool)
+        .await
+        .expect("seed account");
+
+        let desc = "Line1\nLine2\r\nLine3"; // contains LF and CRLF
+        sqlx::query(r#"
+            INSERT INTO transactions (
+                id, account_id, ledger_id, amount, transaction_type, transaction_date,
+                description, status, is_recurring, created_at, updated_at
+            ) VALUES ($1,$2,$3,$4,'expense',$5,$6,'cleared',false,NOW(),NOW())
+        "#)
+        .bind(Uuid::new_v4())
+        .bind(account_id)
+        .bind(ledger_id)
+        .bind(Decimal::new(123, 2))
+        .bind(NaiveDate::from_ymd_opt(2024, 9, 2).unwrap())
+        .bind(desc)
+        .execute(&pool)
+        .await
+        .expect("seed txn with newlines");
+
+        let app = Router::new()
+            .route("/api/v1/transactions/export.csv", get(export_transactions_csv_stream))
+            .with_state(pool.clone());
+
+        let req = Request::builder()
+            .method("GET")
+            .uri("/api/v1/transactions/export.csv")
+            .header(header::AUTHORIZATION, token)
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.clone().oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), http::StatusCode::OK);
+        let csv_text = String::from_utf8(hyper::body::to_bytes(resp.into_body()).await.unwrap().to_vec()).unwrap();
+
+        // Find the data line that contains our description start
+        let mut found = false;
+        for line in csv_text.lines().skip(1) { // skip header
+            if line.contains("Line1") {
+                found = true;
+                // Entire description field should be quoted due to newline
+                assert!(line.contains("\"Line1"), "description not quoted: {}", line);
+                // Internal quotes escaping is not applicable here, but newline should not break CSV structure
+                // Sanity: the line should still have 6 delimiters (7 fields)
+                assert_eq!(line.chars().filter(|&c| c == ',').count(), 6, "unexpected field count: {}", line);
+                break;
+            }
+        }
+        assert!(found, "newline-containing row not found in CSV output");
+    }
+
+    #[tokio::test]
+    async fn export_csv_empty_optional_fields() {
+        use axum::routing::get;
+        use jive_money_api::handlers::transactions::export_transactions_csv_stream;
+
+        let pool = create_test_pool().await;
+        let user = create_test_user(&pool).await;
+        let family = create_test_family(&pool, user.id).await;
+        let token = bearer_for_user_family(&pool, user.id, family.id).await;
+
+        let ledger_id: Uuid = sqlx::query_scalar(
+            "SELECT id FROM ledgers WHERE family_id = $1 AND is_default = true LIMIT 1"
+        )
+        .bind(family.id)
+        .fetch_one(&pool)
+        .await
+        .expect("fetch default ledger");
+
+        let account_id = Uuid::new_v4();
+        sqlx::query(r#"
+            INSERT INTO accounts (id, ledger_id, name, account_type, current_balance, created_at, updated_at)
+            VALUES ($1, $2, 'EmptyOpt', 'checking', 0, NOW(), NOW())
+        "#)
+        .bind(account_id)
+        .bind(ledger_id)
+        .execute(&pool)
+        .await
+        .expect("seed account");
+
+        // Prepare category None and payee empty string
+        sqlx::query(r#"
+            INSERT INTO transactions (
+                id, account_id, ledger_id, amount, transaction_type, transaction_date,
+                category_id, payee, description, status, is_recurring, created_at, updated_at
+            ) VALUES ($1,$2,$3,$4,'expense',$5,NULL,'', 'Simple', 'cleared', false, NOW(), NOW())
+        "#)
+        .bind(Uuid::new_v4())
+        .bind(account_id)
+        .bind(ledger_id)
+        .bind(Decimal::new(10, 0))
+        .bind(NaiveDate::from_ymd_opt(2024, 9, 3).unwrap())
+        .execute(&pool)
+        .await
+        .expect("seed txn with empty optional fields");
+
+        let app = Router::new()
+            .route("/api/v1/transactions/export.csv", get(export_transactions_csv_stream))
+            .with_state(pool.clone());
+
+        let req = Request::builder()
+            .method("GET")
+            .uri("/api/v1/transactions/export.csv")
+            .header(header::AUTHORIZATION, token)
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.clone().oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), http::StatusCode::OK);
+        let csv_text = String::from_utf8(hyper::body::to_bytes(resp.into_body()).await.unwrap().to_vec()).unwrap();
+
+        // Find our data line by description 'Simple' and split (no quotes in this test line)
+        let mut checked = false;
+        for line in csv_text.lines().skip(1) {
+            if line.contains(",Simple,") {
+                checked = true;
+                let parts: Vec<&str> = line.split(',').collect();
+                assert_eq!(parts.len(), 7, "unexpected number of fields: {}", line);
+                // Indexes: 0 Date, 1 Desc, 2 Amount, 3 Category(empty), 4 Account, 5 Payee(empty), 6 Type
+                assert_eq!(parts[3], "", "category should be empty field");
+                assert_eq!(parts[5], "", "payee should be empty field");
+                break;
+            }
+        }
+        assert!(checked, "did not locate the row with empty optional fields");
+    }
+
+    #[tokio::test]
     async fn export_requires_permission() {
         let pool = create_test_pool().await;
         // Create owner and family (owner has ExportData by default)
