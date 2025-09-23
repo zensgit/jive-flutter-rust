@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/router/app_router.dart';
-import '../../providers/account_provider.dart';
-import '../../models/account.dart';
-import '../../providers/currency_provider.dart';
+import 'package:jive_money/core/router/app_router.dart';
+import 'package:jive_money/providers/account_provider.dart';
+import 'package:jive_money/models/account.dart';
+import 'package:jive_money/providers/currency_provider.dart';
 
 class AccountsScreen extends ConsumerStatefulWidget {
   const AccountsScreen({super.key});
@@ -15,7 +15,7 @@ class AccountsScreen extends ConsumerStatefulWidget {
 
 class _AccountsScreenState extends ConsumerState<AccountsScreen> {
   String _viewMode = 'list'; // list, group
-  String _selectedGroupId = 'all';
+  final String _selectedGroupId = 'all';
 
   @override
   Widget build(BuildContext context) {
@@ -222,7 +222,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
       children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          color: Theme.of(context).primaryColor.withOpacity(0.05),
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -274,7 +274,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
 
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+        backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
         child: Icon(
           account.type.icon,
           color: Theme.of(context).primaryColor,
@@ -372,7 +372,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.2),
+                        color: Colors.orange.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: const Text(

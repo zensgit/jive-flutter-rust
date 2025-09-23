@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../services/auth_service.dart';
-import '../../widgets/wechat_login_button.dart';
+import 'package:jive_money/services/auth_service.dart';
+import 'package:jive_money/widgets/wechat_login_button.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -403,17 +403,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 20),
 
                     // 家庭邀请说明
-                    Card(
+                    const Card(
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: EdgeInsets.all(16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
                                 Icon(Icons.family_restroom, color: Colors.blue),
-                                const SizedBox(width: 8),
-                                const Text(
+                                SizedBox(width: 8),
+                                Text(
                                   '家庭协作',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
@@ -422,8 +422,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 8),
-                            const Text(
+                            SizedBox(height: 8),
+                            Text(
                               '• 注册后自动成为家庭管理员（Owner）\n'
                               '• 可邀请家庭成员加入财务管理\n'
                               '• 支持多角色权限管理\n'

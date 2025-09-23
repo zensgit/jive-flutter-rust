@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 //! 认证相关API处理器
 //! 提供用户注册、登录、令牌刷新等功能
 
@@ -613,7 +614,7 @@ pub async fn delete_account(
             Ok(Json(ApiResponse::success(())))
             }
             Ok(false) => {
-                return Ok(Json(ApiResponse::<()> {
+                Ok(Json(ApiResponse::<()> {
                     success: false,
                     data: None,
                     error: Some(FamilyApiError {
@@ -622,10 +623,10 @@ pub async fn delete_account(
                         details: None,
                     }),
                     timestamp: chrono::Utc::now(),
-                }));
+                }))
             }
             Err(_) => {
-                return Ok(Json(ApiResponse::<()> {
+                Ok(Json(ApiResponse::<()> {
                     success: false,
                     data: None,
                     error: Some(FamilyApiError {
@@ -634,7 +635,7 @@ pub async fn delete_account(
                         details: None,
                     }),
                     timestamp: chrono::Utc::now(),
-                }));
+                }))
             }
         }
     } else {

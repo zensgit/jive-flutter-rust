@@ -7,7 +7,7 @@ use axum::{
     response::Json,
 };
 use serde::{Deserialize, Serialize};
-use sqlx::PgPool;
+use sqlx::{PgPool, Row};
 use uuid::Uuid;
 use std::collections::HashMap;
 
@@ -196,8 +196,8 @@ pub async fn get_templates(
     }
 
     // Pagination
-    let per_page = params.per_page.unwrap_or(50).clamp(1, 100) as i64;
-    let page = params.page.unwrap_or(1).max(1) as i64;
+    let per_page = params.per_page.unwrap_or(50).clamp(1, 100);
+    let page = params.page.unwrap_or(1).max(1);
     let offset = (page - 1) * per_page;
 
     query.push(" ORDER BY is_featured DESC, global_usage_count DESC, name");

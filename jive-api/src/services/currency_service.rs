@@ -1,13 +1,14 @@
 use chrono::{DateTime, NaiveDate, Utc};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
-use sqlx::PgPool;
+use sqlx::{PgPool, Row};
 use uuid::Uuid;
 use std::collections::HashMap;
 use std::future::Future;
 use std::pin::Pin;
 
 use super::ServiceError;
+// remove duplicate import of NaiveDate
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Currency {
@@ -59,6 +60,23 @@ pub struct AddExchangeRateRequest {
     pub to_currency: String,
     pub rate: Decimal,
     pub source: Option<String>,
+    /// Optional manual rate expiry (RFC3339). When provided, marks this rate as manual
+    /// and sets its expiry time; otherwise manual without expiry.
+    pub manual_rate_expiry: Option<chrono::DateTime<chrono::Utc>>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ClearManualRateRequest {
+    pub from_currency: String,
+    pub to_currency: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ClearManualRatesBatchRequest {
+    pub from_currency: String,
+    pub to_currencies: Option<Vec<String>>, // if None -> all target currencies
+    pub before_date: Option<NaiveDate>,     // if None -> CURRENT_DATE
+    pub only_expired: Option<bool>,         // if true -> only clear expired manual
 }
 
 pub struct CurrencyService {
@@ -86,7 +104,7 @@ impl CurrencyService {
         let currencies = rows.into_iter().map(|row| Currency {
             code: row.code,
             name: row.name,
-            symbol: row.symbol.unwrap_or_else(|| "".to_string()),
+            symbol: row.symbol.unwrap_or_default(),
             decimal_places: row.decimal_places.unwrap_or(2),
             is_active: row.is_active.unwrap_or(true),
         }).collect();
@@ -181,7 +199,8 @@ impl CurrencyService {
             
             Ok(FamilyCurrencySettings {
                 family_id,
-                base_currency: settings.base_currency,
+                // base_currency 可能为可空；兜底为 CNY
+                base_currency: settings.base_currency.unwrap_or_else(|| "CNY".to_string()),
                 allow_multi_currency: settings.allow_multi_currency.unwrap_or(false),
                 auto_convert: settings.auto_convert.unwrap_or(false),
                 supported_currencies: supported,
@@ -339,42 +358,50 @@ impl CurrencyService {
     ) -> Result<ExchangeRate, ServiceError> {
         let id = Uuid::new_v4();
         let effective_date = Utc::now().date_naive();
+        // Align with DB schema: UNIQUE(from_currency, to_currency, date)
+        // Use business date == effective_date for upsert key
+        let business_date = effective_date;
         
-        let row = sqlx::query!(
+        let rec = sqlx::query(
             r#"
             INSERT INTO exchange_rates
-            (id, from_currency, to_currency, rate, source, effective_date)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            ON CONFLICT (id)
+            (id, from_currency, to_currency, rate, source, date, effective_date, is_manual, manual_rate_expiry)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, true, $8)
+            ON CONFLICT (from_currency, to_currency, date)
             DO UPDATE SET 
-                rate = $4,
-                source = $5,
-                effective_date = $6,
+                rate = EXCLUDED.rate,
+                source = EXCLUDED.source,
+                effective_date = EXCLUDED.effective_date,
                 updated_at = CURRENT_TIMESTAMP
             RETURNING id, from_currency, to_currency, rate, source, 
                       effective_date, created_at
-            "#,
-            id,
-            request.from_currency,
-            request.to_currency,
-            request.rate,
-            request.source.unwrap_or_else(|| "manual".to_string()),
-            effective_date
+            "#
         )
+        .bind(id)
+        .bind(&request.from_currency)
+        .bind(&request.to_currency)
+        .bind(request.rate)
+        .bind(request.source.clone().unwrap_or_else(|| "manual".to_string()))
+        .bind(business_date)
+        .bind(effective_date)
+        .bind(request.manual_rate_expiry)
         .fetch_one(&self.pool)
         .await?;
 
-        let effective = row.effective_date;
-        let created_at = row.created_at;
-
         Ok(ExchangeRate {
-            id: row.id,
-            from_currency: row.from_currency,
-            to_currency: row.to_currency,
-            rate: row.rate,
-            source: row.source.unwrap_or_else(|| "manual".to_string()),
-            effective_date: effective.unwrap_or_else(|| chrono::Utc::now().date_naive()),
-            created_at: created_at,
+            id: rec.get("id"),
+            from_currency: rec.get("from_currency"),
+            to_currency: rec.get("to_currency"),
+            rate: rec.get("rate"),
+            source: rec
+                .get::<Option<String>, _>("source")
+                .unwrap_or_else(|| "manual".to_string()),
+            effective_date: rec
+                .get::<Option<NaiveDate>, _>("effective_date")
+                .unwrap_or_else(|| chrono::Utc::now().date_naive()),
+            created_at: rec
+                .get::<Option<DateTime<Utc>>, _>("created_at")
+                .unwrap_or_else(chrono::Utc::now),
         })
     }
     
@@ -427,8 +454,10 @@ impl CurrencyService {
             to_currency: row.to_currency,
             rate: row.rate,
             source: row.source.unwrap_or_else(|| "manual".to_string()),
-            effective_date: row.effective_date.unwrap_or_else(|| chrono::Utc::now().date_naive()),
-            created_at: row.created_at,
+            // effective_date 为非空（schema 约束）；直接使用
+            effective_date: row.effective_date,
+            // created_at 在 schema 中可能可空；兜底当前时间
+            created_at: row.created_at.unwrap_or_else(Utc::now),
         }).collect())
     }
     
@@ -453,7 +482,7 @@ impl CurrencyService {
         
         let currencies: Vec<String> = currencies
             .into_iter()
-            .filter_map(|c| c)
+            .flatten()
             .collect();
         
         if currencies.is_empty() {
@@ -488,6 +517,7 @@ impl CurrencyService {
 
         // 批量更新到数据库
         let effective_date = Utc::now().date_naive();
+        let business_date = effective_date;
         
         for (target_currency, rate) in rates.iter() {
             if target_currency != base_currency {
@@ -497,25 +527,26 @@ impl CurrencyService {
                 let id = Uuid::new_v4();
                 
                 // 插入或更新汇率
-                let res = sqlx::query!(
+                let res = sqlx::query(
                     r#"
                     INSERT INTO exchange_rates
-                    (id, from_currency, to_currency, rate, source, effective_date)
-                    VALUES ($1, $2, $3, $4, $5, $6)
-                    ON CONFLICT (from_currency, to_currency, effective_date)
+                    (id, from_currency, to_currency, rate, source, date, effective_date, is_manual, manual_rate_expiry)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, false, NULL)
+                    ON CONFLICT (from_currency, to_currency, date)
                     DO UPDATE SET 
-                        rate = $4,
-                        source = $5,
-                        effective_date = $6,
+                        rate = EXCLUDED.rate,
+                        source = EXCLUDED.source,
+                        effective_date = EXCLUDED.effective_date,
                         updated_at = CURRENT_TIMESTAMP
-                    "#,
-                    id,
-                    base_currency,
-                    target_currency.as_str(),
-                    rate,
-                    "api",
-                    effective_date
+                    "#
                 )
+                .bind(id)
+                .bind(base_currency)
+                .bind(target_currency.as_str())
+                .bind(rate)
+                .bind("api")
+                .bind(business_date)
+                .bind(effective_date)
                 .execute(&self.pool)
                 .await;
                 if let Err(err) = res {
@@ -574,6 +605,106 @@ impl CurrencyService {
         
         tracing::info!("Successfully updated {} crypto prices in {}", prices.len(), fiat_currency);
         Ok(())
+    }
+
+    /// Clear manual flag/expiry for today's business date for a given pair
+    pub async fn clear_manual_rate(&self, from_currency: &str, to_currency: &str) -> Result<(), ServiceError> {
+        let _ = sqlx::query(
+            r#"
+            UPDATE exchange_rates
+            SET is_manual = false,
+                manual_rate_expiry = NULL,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE from_currency = $1 AND to_currency = $2 AND date = CURRENT_DATE
+            "#
+        )
+        .bind(from_currency)
+        .bind(to_currency)
+        .execute(&self.pool)
+        .await?;
+        Ok(())
+    }
+
+    /// Batch clear manual flags/expiry by filters
+    pub async fn clear_manual_rates_batch(&self, req: ClearManualRatesBatchRequest) -> Result<u64, ServiceError> {
+        let target_date = req.before_date.unwrap_or_else(|| chrono::Utc::now().date_naive());
+        let only_expired = req.only_expired.unwrap_or(false);
+
+        let mut total: u64 = 0;
+        if let Some(list) = req.to_currencies.as_ref() {
+            if only_expired {
+                let res = sqlx::query(
+                    r#"
+                    UPDATE exchange_rates
+                    SET is_manual = false,
+                        manual_rate_expiry = NULL,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE from_currency = $1
+                      AND to_currency = ANY($2)
+                      AND date <= $3
+                      AND manual_rate_expiry IS NOT NULL AND manual_rate_expiry <= NOW()
+                    "#
+                )
+                .bind(&req.from_currency)
+                .bind(list)
+                .bind(target_date)
+                .execute(&self.pool)
+                .await?;
+                total += res.rows_affected();
+            } else {
+                let res = sqlx::query(
+                    r#"
+                    UPDATE exchange_rates
+                    SET is_manual = false,
+                        manual_rate_expiry = NULL,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE from_currency = $1
+                      AND to_currency = ANY($2)
+                      AND date <= $3
+                    "#
+                )
+                .bind(&req.from_currency)
+                .bind(list)
+                .bind(target_date)
+                .execute(&self.pool)
+                .await?;
+                total += res.rows_affected();
+            }
+        } else if only_expired {
+            let res = sqlx::query(
+                r#"
+                UPDATE exchange_rates
+                SET is_manual = false,
+                    manual_rate_expiry = NULL,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE from_currency = $1
+                  AND date <= $2
+                  AND manual_rate_expiry IS NOT NULL AND manual_rate_expiry <= NOW()
+                "#
+            )
+            .bind(&req.from_currency)
+            .bind(target_date)
+            .execute(&self.pool)
+            .await?;
+            total += res.rows_affected();
+        } else {
+            let res = sqlx::query(
+                r#"
+                UPDATE exchange_rates
+                SET is_manual = false,
+                    manual_rate_expiry = NULL,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE from_currency = $1
+                  AND date <= $2
+                "#
+            )
+            .bind(&req.from_currency)
+            .bind(target_date)
+            .execute(&self.pool)
+            .await?;
+            total += res.rows_affected();
+        }
+        Ok(total)
     }
 }
 

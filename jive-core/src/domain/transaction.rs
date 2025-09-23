@@ -47,7 +47,7 @@ pub struct Transaction {
 }
 
 #[cfg(feature = "wasm")]
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 impl Transaction {
     #[wasm_bindgen(constructor)]
     pub fn new(
@@ -105,17 +105,17 @@ impl Transaction {
     }
 
     // Getters
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn id(&self) -> String {
         self.id.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn account_id(&self) -> String {
         self.account_id.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn ledger_id(&self) -> String {
         self.ledger_id.clone()
     }
@@ -200,13 +200,13 @@ impl Transaction {
         self.created_by_rule
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn confidence_score(&self) -> Option<f32> {
         self.confidence_score
     }
 
     // Setters
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_name(&mut self, name: String) -> Result<()> {
         let trimmed = name.trim();
         if trimmed.is_empty() {
@@ -219,7 +219,7 @@ impl Transaction {
         Ok(())
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_description(&mut self, description: Option<String>) -> Result<()> {
         if let Some(ref desc) = description {
             crate::utils::Validator::validate_description(desc)?;
@@ -229,7 +229,7 @@ impl Transaction {
         Ok(())
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_amount(&mut self, amount: String) -> Result<()> {
         crate::utils::Validator::validate_transaction_amount(&amount)?;
         self.amount = amount;
@@ -237,7 +237,7 @@ impl Transaction {
         Ok(())
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_date(&mut self, date: String) -> Result<()> {
         let parsed_date = NaiveDate::parse_from_str(&date, "%Y-%m-%d")
             .map_err(|_| JiveError::InvalidDate { date })?;
@@ -246,31 +246,31 @@ impl Transaction {
         Ok(())
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_category_id(&mut self, category_id: Option<String>) {
         self.category_id = category_id;
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_payee_id(&mut self, payee_id: Option<String>) {
         self.payee_id = payee_id;
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_status(&mut self, status: TransactionStatus) {
         self.status = status;
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_reference(&mut self, reference: Option<String>) {
         self.reference = reference;
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_notes(&mut self, notes: Option<String>) -> Result<()> {
         if let Some(ref n) = notes {
             crate::utils::Validator::validate_description(n)?;
@@ -280,14 +280,14 @@ impl Transaction {
         Ok(())
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_confidence_score(&mut self, score: Option<f32>) {
         self.confidence_score = score;
         self.updated_at = Utc::now();
     }
 
     // 业务方法
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn add_tag(&mut self, tag: String) -> Result<()> {
         let cleaned_tag = crate::utils::StringUtils::clean_text(&tag);
         if cleaned_tag.is_empty() {
@@ -303,7 +303,7 @@ impl Transaction {
         Ok(())
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn remove_tag(&mut self, tag: String) {
         if let Some(pos) = self.tags.iter().position(|t| t == &tag) {
             self.tags.remove(pos);
@@ -311,12 +311,12 @@ impl Transaction {
         }
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn has_tag(&self, tag: String) -> bool {
         self.tags.contains(&tag)
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn clear_tags(&mut self) {
         if !self.tags.is_empty() {
             self.tags.clear();
@@ -498,21 +498,10 @@ impl Entity for Transaction {
 }
 
 impl SoftDeletable for Transaction {
-    fn is_deleted(&self) -> bool {
-        self.deleted_at.is_some()
-    }
-
-    fn deleted_at(&self) -> Option<DateTime<Utc>> {
-        self.deleted_at
-    }
-
-    fn soft_delete(&mut self) {
-        self.soft_delete();
-    }
-
-    fn restore(&mut self) {
-        self.restore();
-    }
+    fn is_deleted(&self) -> bool { self.deleted_at.is_some() }
+    fn deleted_at(&self) -> Option<DateTime<Utc>> { self.deleted_at }
+    fn soft_delete(&mut self) { self.deleted_at = Some(Utc::now()); }
+    fn restore(&mut self) { self.deleted_at = None; }
 }
 
 /// 交易构建器

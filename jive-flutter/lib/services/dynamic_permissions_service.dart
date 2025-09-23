@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'dart:async';
-import '../models/family.dart' as family_model;
-import 'api/family_service.dart';
+import 'package:jive_money/models/family.dart' as family_model;
+import 'package:jive_money/services/api/family_service.dart';
 
 /// 动态权限服务 - 实时权限管理
 class DynamicPermissionsService extends ChangeNotifier {
@@ -354,7 +354,8 @@ class DynamicPermissionsService extends ChangeNotifier {
 
     // 通知服务器
     try {
-      await _familyService.revokeDelegation(toUserId, familyId);
+      // fromUserId isn't tracked here in stub; pass empty for compatibility
+      await _familyService.revokeDelegation('', toUserId, familyId);
     } catch (e) {
       debugPrint('Failed to revoke delegation: $e');
     }

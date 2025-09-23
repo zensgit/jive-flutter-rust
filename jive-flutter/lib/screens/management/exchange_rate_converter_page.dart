@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/currency.dart' as model;
-import '../../providers/currency_provider.dart';
+import 'package:jive_money/models/currency.dart' as model;
+import 'package:jive_money/providers/currency_provider.dart';
 
 /// 汇率转换器页面
 class ExchangeRateConverterPage extends ConsumerStatefulWidget {
@@ -250,7 +250,7 @@ class _ExchangeRateConverterPageState
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),

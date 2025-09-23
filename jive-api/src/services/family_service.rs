@@ -405,7 +405,7 @@ impl FamilyService {
             "ledger_count": ledger_count,
             "account_count": account_count,
             "transaction_count": transaction_count,
-            "total_balance": total_balance.unwrap_or_else(|| rust_decimal::Decimal::ZERO),
+            "total_balance": total_balance.unwrap_or(rust_decimal::Decimal::ZERO),
         }))
     }
     
@@ -449,9 +449,9 @@ impl FamilyService {
         match role.as_deref() {
             Some("owner") => {
                 // Owner cannot leave, must transfer ownership or delete family
-                return Err(ServiceError::BusinessRuleViolation(
+                Err(ServiceError::BusinessRuleViolation(
                     "家庭所有者不能退出家庭，请先转让所有权或删除家庭".to_string()
-                ));
+                ))
             }
             Some(_) => {
                 // Remove member from family

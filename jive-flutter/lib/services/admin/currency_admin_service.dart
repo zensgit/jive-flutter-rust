@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
-import '../../core/network/http_client.dart';
-import '../../core/network/api_readiness.dart';
-import '../../models/admin_currency.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jive_money/core/network/http_client.dart';
+import 'package:jive_money/core/network/api_readiness.dart';
+import 'package:jive_money/models/admin_currency.dart';
 
 class CurrencyAdminService {
   final Dio _dio = HttpClient.instance.dio;
-  bool _warned = false;
+  final bool _warned = false;
 
   bool _isAdmin(Ref? ref) {
     // Optional guard hook if we had a Ref here; since service is simple, we keep a lightweight safeguard

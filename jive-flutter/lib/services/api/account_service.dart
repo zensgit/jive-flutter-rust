@@ -1,6 +1,6 @@
-import '../../core/network/http_client.dart';
-import '../../core/config/api_config.dart';
-import '../../models/account.dart';
+import 'package:jive_money/core/network/http_client.dart';
+import 'package:jive_money/core/config/api_config.dart';
+import 'package:jive_money/models/account.dart';
 
 /// 账户API服务
 class AccountService {

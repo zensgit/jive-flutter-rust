@@ -58,6 +58,51 @@ impl AuditService {
         
         Ok(())
     }
+
+    /// Same as log_action but returns the created audit log id for correlation
+    pub async fn log_action_returning_id(
+        &self,
+        family_id: Uuid,
+        user_id: Uuid,
+        request: CreateAuditLogRequest,
+        ip_address: Option<String>,
+        user_agent: Option<String>,
+    ) -> Result<Uuid, ServiceError> {
+        let log = AuditLog::new(
+            family_id,
+            user_id,
+            request.action,
+            request.entity_type,
+            request.entity_id,
+        )
+        .with_values(request.old_values, request.new_values)
+        .with_request_info(ip_address, user_agent);
+
+        sqlx::query(
+            r#"
+            INSERT INTO family_audit_logs (
+                id, family_id, user_id, action, entity_type, entity_id,
+                old_values, new_values, ip_address, user_agent, created_at
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            "#
+        )
+        .bind(log.id)
+        .bind(log.family_id)
+        .bind(log.user_id)
+        .bind(log.action.to_string())
+        .bind(log.entity_type)
+        .bind(log.entity_id)
+        .bind(log.old_values)
+        .bind(log.new_values)
+        .bind(log.ip_address)
+        .bind(log.user_agent)
+        .bind(log.created_at)
+        .execute(&self.pool)
+        .await?;
+
+        Ok(log.id)
+    }
     
     pub async fn get_audit_logs(
         &self,
@@ -254,7 +299,7 @@ impl AuditService {
                 "{},{},{},{},{},{},{},{}\n",
                 log.created_at.format("%Y-%m-%d %H:%M:%S"),
                 log.user_id,
-                log.action.to_string(),
+                log.action,
                 log.entity_type,
                 log.entity_id.map(|id| id.to_string()).unwrap_or_default(),
                 log.old_values.map(|v| v.to_string()).unwrap_or_default(),

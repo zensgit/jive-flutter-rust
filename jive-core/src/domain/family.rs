@@ -135,9 +135,9 @@ pub enum FamilyRole {
 }
 
 #[cfg(feature = "wasm")]
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 impl FamilyRole {
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn as_string(&self) -> String {
         match self {
             FamilyRole::Owner => "owner".to_string(),
@@ -147,7 +147,7 @@ impl FamilyRole {
         }
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn from_string(s: &str) -> Option<FamilyRole> {
         match s {
             "owner" => Some(FamilyRole::Owner),
@@ -350,20 +350,9 @@ impl FamilyInvitation {
         }
     }
 
-    /// 生成安全的邀请 token
+    /// 生成安全的邀请 token（使用 UUID v4 简化依赖）
     fn generate_token() -> String {
-        use rand::Rng;
-        const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
-                                abcdefghijklmnopqrstuvwxyz\
-                                0123456789";
-        let mut rng = rand::thread_rng();
-        
-        (0..32)
-            .map(|_| {
-                let idx = rng.gen_range(0..CHARSET.len());
-                CHARSET[idx] as char
-            })
-            .collect()
+        uuid::Uuid::new_v4().to_string().replace('-', "")
     }
 
     /// 检查邀请是否有效
@@ -374,7 +363,7 @@ impl FamilyInvitation {
     /// 接受邀请
     pub fn accept(&mut self) -> Result<()> {
         if !self.is_valid() {
-            return Err(JiveError::BadRequest("Invalid or expired invitation".into()));
+            return Err(JiveError::ValidationError { message: "Invalid or expired invitation".into() });
         }
         
         self.status = InvitationStatus::Accepted;
@@ -473,31 +462,18 @@ impl Family {
 }
 
 impl Entity for Family {
-    fn id(&self) -> &str {
-        &self.id
-    }
+    type Id = String;
 
-    fn created_at(&self) -> DateTime<Utc> {
-        self.created_at
-    }
-
-    fn updated_at(&self) -> DateTime<Utc> {
-        self.updated_at
-    }
+    fn id(&self) -> &Self::Id { &self.id }
+    fn created_at(&self) -> DateTime<Utc> { self.created_at }
+    fn updated_at(&self) -> DateTime<Utc> { self.updated_at }
 }
 
 impl SoftDeletable for Family {
-    fn deleted_at(&self) -> Option<DateTime<Utc>> {
-        self.deleted_at
-    }
-
-    fn soft_delete(&mut self) {
-        self.deleted_at = Some(Utc::now());
-    }
-
-    fn restore(&mut self) {
-        self.deleted_at = None;
-    }
+    fn is_deleted(&self) -> bool { self.deleted_at.is_some() }
+    fn deleted_at(&self) -> Option<DateTime<Utc>> { self.deleted_at }
+    fn soft_delete(&mut self) { self.deleted_at = Some(Utc::now()); }
+    fn restore(&mut self) { self.deleted_at = None; }
 }
 
 #[cfg(test)]

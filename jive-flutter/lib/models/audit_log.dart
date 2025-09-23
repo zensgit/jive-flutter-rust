@@ -1,5 +1,6 @@
 /// 审计日志模型
 /// 用于记录系统中的所有重要操作
+library;
 
 /// 审计日志操作类型
 enum AuditActionType {
@@ -70,6 +71,18 @@ enum AuditActionType {
       orElse: () => AuditActionType.userLogin,
     );
   }
+
+  // Aliases for common simple names used in the codebase
+  static const create = transactionCreate;
+  static const update = transactionUpdate;
+  static const delete = transactionDelete;
+  static const login = userLogin;
+  static const logout = userLogout;
+  static const invite = memberInvite;
+  static const join = memberAccept;
+  static const leave = memberLeave;
+  static const permission_grant = permissionGrant;
+  static const permission_revoke = permissionRevoke;
 }
 
 /// 审计日志严重级别
@@ -266,6 +279,13 @@ class AuditLog {
       isSystemGenerated: isSystemGenerated ?? this.isSystemGenerated,
     );
   }
+
+  // Additional getters for compatibility with screens
+  String get description => actionDescription;
+  Map<String, dynamic>? get details => metadata;
+  String? get entityName => targetName;
+  String? get entityType => targetType;
+  String? get entityId => targetId;
 }
 
 /// 审计日志统计
@@ -410,14 +430,16 @@ class AuditLogFilter {
   AuditLogFilter({
     this.familyId,
     this.userId,
-    this.actionTypes,
+    List<AuditActionType>? actionTypes,
     this.severities,
     this.startDate,
     this.endDate,
     this.searchQuery,
     this.targetType,
     this.systemGenerated,
-  });
+    // Additional compatibility parameter
+    AuditActionType? actionType,
+  }) : actionTypes = actionTypes ?? (actionType != null ? [actionType] : null);
 
   /// 转换为查询参数
   Map<String, dynamic> toQueryParams() {

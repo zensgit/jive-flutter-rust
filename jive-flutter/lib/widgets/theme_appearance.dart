@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/settings_provider.dart';
+import 'package:jive_money/providers/settings_provider.dart';
 
 /// 可复用的“主题外观”组件：密度 + 圆角
 class ThemeAppearance extends ConsumerWidget {
@@ -46,7 +46,7 @@ class ThemeAppearance extends ConsumerWidget {
             title: const Text('紧凑密度'),
             subtitle: const Text('减少垂直留白，显示更多列表项'),
             contentPadding: EdgeInsets.zero,
-            activeColor: cs.primary,
+            activeThumbColor: cs.primary,
           ),
 
           // 圆角
@@ -76,7 +76,7 @@ class ThemeAppearance extends ConsumerWidget {
             margin: const EdgeInsets.only(top: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: cs.primaryContainer.withOpacity(0.35),
+              color: cs.primaryContainer.withValues(alpha: 0.35),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(

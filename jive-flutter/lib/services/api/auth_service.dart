@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import '../../core/network/http_client.dart';
-import '../../core/config/api_config.dart';
-import '../../core/storage/token_storage.dart';
-import '../../models/user.dart';
+import 'package:jive_money/core/network/http_client.dart';
+import 'package:jive_money/core/config/api_config.dart';
+import 'package:jive_money/core/storage/token_storage.dart';
+import 'package:jive_money/models/user.dart';
 
 /// 认证服务
 class AuthService {
@@ -55,11 +55,11 @@ class AuthService {
 
       debugPrint('DEBUG AuthService: Creating AuthResponse from JSON');
       final authResponse = AuthResponse.fromJson(
-        Map<String, dynamic>.from(responseData as Map),
+        Map<String, dynamic>.from(responseData),
       );
       debugPrint('DEBUG AuthService: AuthResponse user = ${authResponse.user}');
       debugPrint(
-          'DEBUG AuthService: AuthResponse token = ${authResponse.accessToken?.substring(0, 20) ?? 'null'}...');
+          'DEBUG AuthService: AuthResponse token = ${authResponse.accessToken.substring(0, 20)}...');
 
       // 保存令牌
       await TokenStorage.saveTokens(

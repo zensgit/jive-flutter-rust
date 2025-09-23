@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/router/app_router.dart';
-import '../../../providers/budget_provider.dart';
+import 'package:jive_money/core/router/app_router.dart';
+import 'package:jive_money/providers/budget_provider.dart';
 
 class BudgetSummary extends ConsumerWidget {
   const BudgetSummary({super.key});
@@ -137,8 +137,8 @@ class BudgetSummary extends ConsumerWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              warningLevel.color.withOpacity(0.1),
-              warningLevel.color.withOpacity(0.05),
+              warningLevel.color.withValues(alpha: 0.1),
+              warningLevel.color.withValues(alpha: 0.05),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -214,7 +214,7 @@ class BudgetSummary extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: warningLevel.color.withOpacity(0.1),
+                color: warningLevel.color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -305,7 +305,7 @@ class BudgetSummary extends ConsumerWidget {
                     height: 36,
                     decoration: BoxDecoration(
                       color:
-                          _getCategoryColor(budget.category).withOpacity(0.1),
+                          _getCategoryColor(budget.category).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(

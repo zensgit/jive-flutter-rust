@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../models/theme_models.dart' as models;
-import '../services/theme_service.dart';
+import 'package:jive_money/models/theme_models.dart' as models;
+import 'package:jive_money/services/theme_service.dart';
 
 /// 主题分享对话框
 class ThemeShareDialog extends StatefulWidget {
@@ -43,9 +43,9 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,9 +143,9 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: Colors.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                  border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,9 +188,9 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green.withOpacity(0.3)),
+                  border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,9 +234,9 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.1),
+                  color: Colors.orange.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.orange.withOpacity(0.2)),
+                  border: Border.all(color: Colors.orange.withValues(alpha: 0.2)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -294,6 +294,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
 
     try {
       final shareCode = await _themeService.shareTheme(widget.theme.id);
+      if (!context.mounted) return;
       setState(() {
         _shareCode = shareCode;
         _shareUrl = 'https://jivemoney.com/theme/import/$shareCode';
@@ -323,6 +324,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
   Future<void> _copyToClipboard() async {
     try {
       await _themeService.copyThemeToClipboard(widget.theme.id);
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('主题数据已复制到剪贴板'),
@@ -341,6 +343,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
 
   Future<void> _copyText(String text) async {
     await Clipboard.setData(ClipboardData(text: text));
+    if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('已复制到剪贴板'),

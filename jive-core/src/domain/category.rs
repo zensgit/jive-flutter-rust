@@ -32,10 +32,9 @@ pub struct Category {
     deleted_at: Option<DateTime<Utc>>,
 }
 
-#[cfg(feature = "wasm")]
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 impl Category {
-    #[wasm_bindgen(constructor)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(constructor))]
     pub fn new(
         ledger_id: String,
         name: String,
@@ -84,83 +83,83 @@ impl Category {
     }
 
     // Getters
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn id(&self) -> String {
         self.id.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn ledger_id(&self) -> String {
         self.ledger_id.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn parent_id(&self) -> Option<String> {
         self.parent_id.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn name(&self) -> String {
         self.name.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn description(&self) -> Option<String> {
         self.description.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn classification(&self) -> AccountClassification {
         self.classification.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn color(&self) -> String {
         self.color.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn icon(&self) -> Option<String> {
         self.icon.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn is_active(&self) -> bool {
         self.is_active
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn is_system(&self) -> bool {
         self.is_system
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn position(&self) -> u32 {
         self.position
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn transaction_count(&self) -> u32 {
         self.transaction_count
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn created_at(&self) -> String {
         self.created_at.to_rfc3339()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn updated_at(&self) -> String {
         self.updated_at.to_rfc3339()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn is_deleted(&self) -> bool {
         self.deleted_at.is_some()
     }
 
     // Setters
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_name(&mut self, name: String) -> Result<()> {
         let trimmed = name.trim();
         if trimmed.is_empty() {
@@ -178,7 +177,7 @@ impl Category {
         Ok(())
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_description(&mut self, description: Option<String>) -> Result<()> {
         if let Some(ref desc) = description {
             crate::utils::Validator::validate_description(desc)?;
@@ -188,13 +187,13 @@ impl Category {
         Ok(())
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_parent_id(&mut self, parent_id: Option<String>) {
         self.parent_id = parent_id;
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_color(&mut self, color: String) -> Result<()> {
         if !color.starts_with('#') || color.len() != 7 {
             return Err(JiveError::ValidationError {
@@ -206,32 +205,32 @@ impl Category {
         Ok(())
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_icon(&mut self, icon: Option<String>) {
         self.icon = icon;
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_is_active(&mut self, is_active: bool) {
         self.is_active = is_active;
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_position(&mut self, position: u32) {
         self.position = position;
         self.updated_at = Utc::now();
     }
 
     // 业务方法
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn increment_transaction_count(&mut self) {
         self.transaction_count += 1;
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn decrement_transaction_count(&mut self) {
         if self.transaction_count > 0 {
             self.transaction_count -= 1;
@@ -239,32 +238,32 @@ impl Category {
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn is_income_category(&self) -> bool {
         matches!(self.classification, AccountClassification::Income)
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn is_expense_category(&self) -> bool {
         matches!(self.classification, AccountClassification::Expense)
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn is_parent_category(&self) -> bool {
         self.parent_id.is_none()
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn is_child_category(&self) -> bool {
         self.parent_id.is_some()
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn can_be_deleted(&self) -> bool {
         !self.is_system && self.transaction_count == 0
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn soft_delete(&mut self) -> Result<()> {
         if self.is_system {
             return Err(JiveError::ValidationError {
@@ -282,14 +281,14 @@ impl Category {
         Ok(())
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn restore(&mut self) {
         self.deleted_at = None;
         self.is_active = true;
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn get_display_name(&self) -> String {
         if self.is_system {
             format!("{} (系统)", self.name)
@@ -298,7 +297,7 @@ impl Category {
         }
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn get_classification_display_name(&self) -> String {
         match self.classification {
             AccountClassification::Income => "收入".to_string(),
@@ -418,21 +417,10 @@ impl Entity for Category {
 }
 
 impl SoftDeletable for Category {
-    fn is_deleted(&self) -> bool {
-        self.deleted_at.is_some()
-    }
-
-    fn deleted_at(&self) -> Option<DateTime<Utc>> {
-        self.deleted_at
-    }
-
-    fn soft_delete(&mut self) {
-        let _ = self.soft_delete();
-    }
-
-    fn restore(&mut self) {
-        self.restore();
-    }
+    fn is_deleted(&self) -> bool { self.deleted_at.is_some() }
+    fn deleted_at(&self) -> Option<DateTime<Utc>> { self.deleted_at }
+    fn soft_delete(&mut self) { self.deleted_at = Some(Utc::now()); }
+    fn restore(&mut self) { self.deleted_at = None; }
 }
 
 /// 分类构建器

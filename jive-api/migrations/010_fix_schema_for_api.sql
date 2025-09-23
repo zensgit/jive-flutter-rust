@@ -81,8 +81,16 @@ BEGIN
     END IF;
 END $$;
 
--- 3. Update ledgers table - make family_id nullable for personal ledgers
-ALTER TABLE ledgers ALTER COLUMN family_id DROP NOT NULL;
+-- 3. Update ledgers table - make family_id nullable for personal ledgers (guarded)
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'ledgers' AND column_name = 'family_id'
+    ) THEN
+        ALTER TABLE ledgers ALTER COLUMN family_id DROP NOT NULL;
+    END IF;
+END $$;
 
 -- 4. Create default ledger for admin user if not exists
 DO $$
@@ -109,29 +117,65 @@ BEGIN
 END $$;
 
 -- 5. Update existing accounts to link with default ledger if ledger_id is null
-UPDATE accounts a
-SET ledger_id = (
-    SELECT l.id FROM ledgers l 
-    WHERE l.family_id = a.family_id OR (l.family_id IS NULL AND a.family_id IS NULL)
-    ORDER BY l.is_default DESC, l.created_at ASC
-    LIMIT 1
-)
-WHERE a.ledger_id IS NULL;
+-- 5. Backfill accounts.ledger_id using family_id when column exists (guarded)
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'accounts' AND column_name = 'family_id'
+    ) THEN
+        UPDATE accounts a
+        SET ledger_id = (
+            SELECT l.id FROM ledgers l
+            WHERE l.family_id = a.family_id OR (l.family_id IS NULL AND a.family_id IS NULL)
+            ORDER BY l.is_default DESC, l.created_at ASC
+            LIMIT 1
+        )
+        WHERE a.ledger_id IS NULL;
+    END IF;
+END $$;
 
 -- 6. Set default values for new columns based on existing data
-UPDATE accounts 
-SET account_type = CASE 
-    WHEN subtype LIKE '%credit%' THEN 'credit_card'
-    WHEN subtype LIKE '%saving%' THEN 'savings'
-    WHEN subtype LIKE '%invest%' THEN 'investment'
-    ELSE 'checking'
-END
-WHERE account_type IS NULL;
+-- 6a. Backfill account_type when source column exists (guarded)
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'accounts' AND column_name = 'subtype'
+    ) THEN
+        UPDATE accounts
+        SET account_type = CASE
+            WHEN subtype LIKE '%credit%' THEN 'credit_card'
+            WHEN subtype LIKE '%saving%' THEN 'savings'
+            WHEN subtype LIKE '%invest%' THEN 'investment'
+            ELSE 'checking'
+        END
+        WHERE account_type IS NULL;
+    END IF;
+END $$;
 
-UPDATE accounts 
-SET current_balance = COALESCE(balance, 0)
-WHERE current_balance IS NULL;
+-- 6b. Backfill current_balance from legacy balance when column exists (guarded)
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'accounts' AND column_name = 'balance'
+    ) THEN
+        UPDATE accounts
+        SET current_balance = COALESCE(balance, 0)
+        WHERE current_balance IS NULL;
+    END IF;
+END $$;
 
-UPDATE accounts 
-SET available_balance = COALESCE(cash_balance, current_balance, 0)
-WHERE available_balance IS NULL;
+-- 6c. Backfill available_balance from legacy cash_balance when column exists (guarded)
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'accounts' AND column_name = 'cash_balance'
+    ) THEN
+        UPDATE accounts
+        SET available_balance = COALESCE(cash_balance, current_balance, 0)
+        WHERE available_balance IS NULL;
+    END IF;
+END $$;

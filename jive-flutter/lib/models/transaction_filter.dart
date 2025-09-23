@@ -1,4 +1,4 @@
-import 'transaction.dart';
+import 'package:jive_money/models/transaction.dart';
 
 /// 交易筛选数据
 class TransactionFilterData {

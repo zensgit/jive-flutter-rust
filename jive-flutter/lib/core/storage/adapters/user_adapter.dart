@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
-import '../../../models/user.dart';
-import '../hive_config.dart';
+import 'package:jive_money/models/user.dart';
+import 'package:jive_money/core/storage/hive_config.dart';
 
 class UserAdapter extends TypeAdapter<User> {
   @override

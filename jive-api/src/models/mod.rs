@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 pub mod audit;
 pub mod family;
 pub mod invitation;
@@ -5,20 +7,26 @@ pub mod membership;
 pub mod permission;
 pub mod transaction;
 
+#[allow(unused_imports)]
 pub use audit::{AuditAction, AuditLog, AuditLogFilter, CreateAuditLogRequest};
+#[allow(unused_imports)]
 pub use family::{CreateFamilyRequest, Family, FamilySettings, UpdateFamilyRequest};
+#[allow(unused_imports)]
 pub use invitation::{
     AcceptInvitationRequest, CreateInvitationRequest, Invitation, InvitationResponse,
     InvitationStatus,
 };
+#[allow(unused_imports)]
 pub use membership::{
     CreateMemberRequest, FamilyMember, MemberWithUserInfo, UpdateMemberRequest,
 };
+#[allow(unused_imports)]
 pub use permission::{MemberRole, Permission};
 
 use thiserror::Error;
 
 #[derive(Error, Debug)]
+#[allow(dead_code)]
 pub enum DomainError {
     #[error("Permission denied")]
     PermissionDenied,

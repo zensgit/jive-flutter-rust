@@ -3,17 +3,514 @@
 
 use axum::{
     extract::{Path, Query, State},
-    http::StatusCode,
-    response::Json,
+    http::{StatusCode, header, HeaderMap},
+    response::{Json, IntoResponse},
 };
+use axum::body::Body;
+use bytes::Bytes;
+use futures_util::{StreamExt, stream};
+use std::convert::Infallible;
+use std::pin::Pin;
 use serde::{Deserialize, Serialize};
-use sqlx::{PgPool, Row, QueryBuilder};
+use sqlx::{PgPool, Row, QueryBuilder, Executor};
 use uuid::Uuid;
 use rust_decimal::Decimal;
 use rust_decimal::prelude::ToPrimitive;
 use chrono::{DateTime, Utc, NaiveDate};
 
-use crate::error::{ApiError, ApiResult};
+use crate::{auth::Claims, error::{ApiError, ApiResult}};
+use base64::Engine; // enable .encode on base64::engine
+// Use core export when feature is enabled; otherwise fallback to local CSV writer
+#[cfg(feature = "core_export")]
+use jive_core::application::export_service::{ExportService as CoreExportService, CsvExportConfig, SimpleTransactionExport};
+
+#[cfg(not(feature = "core_export"))]
+#[derive(Clone)]
+struct CsvExportConfig {
+    delimiter: char,
+    include_header: bool,
+}
+
+#[cfg(not(feature = "core_export"))]
+impl Default for CsvExportConfig {
+    fn default() -> Self {
+        Self { delimiter: ',', include_header: true }
+    }
+}
+
+#[cfg(not(feature = "core_export"))]
+fn csv_escape_cell(mut s: String, delimiter: char) -> String {
+    // Basic CSV injection mitigation: prefix with ' if starts with = + - @
+    if let Some(first) = s.chars().next() {
+        if matches!(first, '=' | '+' | '-' | '@') {
+            s.insert(0, '\'');
+        }
+    }
+    let must_quote = s.contains(delimiter) || s.contains('"') || s.contains('\n') || s.contains('\r');
+    let s = if s.contains('"') { s.replace('"', "\"\"") } else { s };
+    if must_quote {
+        format!("\"{}\"", s)
+    } else {
+        s
+    }
+}
+use crate::services::{AuthService, AuditService};
+use crate::models::permission::Permission;
+use crate::services::context::ServiceContext;
+
+/// 导出交易请求
+#[derive(Debug, Deserialize)]
+pub struct ExportTransactionsRequest {
+    pub format: Option<String>, // csv, excel, pdf, json
+    pub account_id: Option<Uuid>,
+    pub ledger_id: Option<Uuid>,
+    pub category_id: Option<Uuid>,
+    pub start_date: Option<NaiveDate>,
+    pub end_date: Option<NaiveDate>,
+    // Whether to include header row in CSV output (default: true)
+    pub include_header: Option<bool>,
+}
+
+/// 导出交易（返回 data:URL 形式的下载链接，避免服务器存储文件）
+pub async fn export_transactions(
+    State(pool): State<PgPool>,
+    claims: Claims,
+    headers: HeaderMap,
+    Json(req): Json<ExportTransactionsRequest>,
+) -> ApiResult<impl IntoResponse> {
+    let user_id = claims.user_id()?; // 验证 JWT，提取用户ID
+    let family_id = claims.family_id.ok_or(ApiError::BadRequest("缺少 family_id 上下文".to_string()))?;
+    // 依据真实 membership 构造上下文并校验权限
+    let auth_service = AuthService::new(pool.clone());
+    let ctx = auth_service
+        .validate_family_access(user_id, family_id)
+        .await
+        .map_err(|_| ApiError::Forbidden)?;
+    ctx.require_permission(Permission::ExportData)
+        .map_err(|_| ApiError::Forbidden)?;
+    // 仅实现 CSV/JSON，其他格式返回错误提示
+    let fmt = req.format.as_deref().unwrap_or("csv").to_lowercase();
+    if fmt != "csv" && fmt != "json" {
+        return Err(ApiError::BadRequest(format!("不支持的导出格式: {} (仅支持 csv/json)", fmt)));
+    }
+
+    // 复用列表查询的过滤条件（限定在当前家庭）
+    let mut query = QueryBuilder::new(
+        "SELECT t.id, t.account_id, t.ledger_id, t.amount, t.transaction_type, t.transaction_date, \
+         t.category_id, c.name as category_name, t.payee_id, p.name as payee_name, \
+         t.description, t.notes \
+         FROM transactions t \
+         JOIN ledgers l ON t.ledger_id = l.id \
+         LEFT JOIN categories c ON t.category_id = c.id \
+         LEFT JOIN payees p ON t.payee_id = p.id \
+         WHERE t.deleted_at IS NULL AND l.family_id = "
+    );
+    query.push_bind(ctx.family_id);
+
+    if let Some(account_id) = req.account_id { query.push(" AND t.account_id = "); query.push_bind(account_id); }
+    if let Some(ledger_id) = req.ledger_id { query.push(" AND t.ledger_id = "); query.push_bind(ledger_id); }
+    if let Some(category_id) = req.category_id { query.push(" AND t.category_id = "); query.push_bind(category_id); }
+    if let Some(start_date) = req.start_date { query.push(" AND t.transaction_date >= "); query.push_bind(start_date); }
+    if let Some(end_date) = req.end_date { query.push(" AND t.transaction_date <= "); query.push_bind(end_date); }
+
+    query.push(" ORDER BY t.transaction_date DESC, t.id DESC");
+
+    let rows = query
+        .build()
+        .fetch_all(&pool)
+        .await
+        .map_err(|e| ApiError::DatabaseError(format!("查询交易失败: {}", e)))?;
+
+    let file_name = format!(
+        "transactions_export_{}.{}",
+        Utc::now().format("%Y%m%d%H%M%S"),
+        if fmt == "csv" { "csv" } else { "json" }
+    );
+
+    if fmt == "json" {
+        let mut items = Vec::with_capacity(rows.len());
+        for row in rows {
+            items.push(serde_json::json!({
+                "id": row.get::<Uuid,_>("id"),
+                "account_id": row.get::<Uuid,_>("account_id"),
+                "ledger_id": row.get::<Uuid,_>("ledger_id"),
+                "amount": row.get::<Decimal,_>("amount"),
+                "transaction_type": row.get::<String,_>("transaction_type"),
+                "transaction_date": row.get::<NaiveDate,_>("transaction_date"),
+                "category_id": row.try_get::<Uuid,_>("category_id").ok(),
+                "category_name": row.try_get::<String,_>("category_name").ok(),
+                "payee_id": row.try_get::<Uuid,_>("payee_id").ok(),
+                "payee_name": row.try_get::<String,_>("payee_name").ok(),
+                "description": row.try_get::<String,_>("description").ok(),
+                "notes": row.try_get::<String,_>("notes").ok(),
+            }));
+        }
+        let bytes = serde_json::to_vec_pretty(&items)
+            .map_err(|_e| ApiError::InternalServerError)?;
+        let encoded = base64::engine::general_purpose::STANDARD.encode(&bytes);
+        let url = format!("data:application/json;base64,{}", encoded);
+
+        // Audit log (best-effort)
+        let ua = headers
+            .get(header::USER_AGENT)
+            .and_then(|v| v.to_str().ok())
+            .map(|s| s.to_string());
+        let ip = headers
+            .get("x-forwarded-for")
+            .or_else(|| headers.get("x-real-ip"))
+            .and_then(|v| v.to_str().ok())
+            .map(|s| s.split(',').next().unwrap_or(s).trim().to_string());
+        let audit_id = AuditService::new(pool.clone()).log_action_returning_id(
+            ctx.family_id,
+            ctx.user_id,
+            crate::models::audit::CreateAuditLogRequest {
+                action: crate::models::audit::AuditAction::Export,
+                entity_type: "transactions".to_string(),
+                entity_id: None,
+                old_values: None,
+                new_values: Some(serde_json::json!({
+                    "count": items.len(),
+                    "format": "json",
+                    "filters": {
+                        "account_id": req.account_id,
+                        "ledger_id": req.ledger_id,
+                        "category_id": req.category_id,
+                        "start_date": req.start_date,
+                        "end_date": req.end_date,
+                    }
+                })),
+            },
+            ip,
+            ua,
+        ).await.ok();
+        // Also mirror audit id in header-like field for client convenience
+        // Build response with optional X-Audit-Id header
+        let mut resp_headers = HeaderMap::new();
+        if let Some(aid) = audit_id {
+            resp_headers.insert("x-audit-id", aid.to_string().parse().unwrap());
+        }
+
+        return Ok((resp_headers, Json(serde_json::json!({
+            "success": true,
+            "file_name": file_name,
+            "mime_type": "application/json",
+            "download_url": url,
+            "size": bytes.len(),
+            "audit_id": audit_id,
+        }))));
+    }
+
+    // 生成 CSV（core_export 启用时委托核心导出；否则使用本地安全 CSV 生成）
+    #[cfg(feature = "core_export")]
+    let (bytes, count_for_audit) = {
+        let include_header = req.include_header.unwrap_or(true);
+        let mapped: Vec<SimpleTransactionExport> = rows
+            .into_iter()
+            .map(|row| {
+                let date: NaiveDate = row.get("transaction_date");
+                let desc: String = row.try_get::<String, _>("description").unwrap_or_default();
+                let amount: Decimal = row.get("amount");
+                let category: Option<String> = row
+                    .try_get::<String, _>("category_name")
+                    .ok()
+                    .and_then(|s| if s.is_empty() { None } else { Some(s) });
+                let account_id: Uuid = row.get("account_id");
+                let payee: Option<String> = row
+                    .try_get::<String, _>("payee_name")
+                    .ok()
+                    .and_then(|s| if s.is_empty() { None } else { Some(s) });
+                let ttype: String = row.get("transaction_type");
+
+                SimpleTransactionExport {
+                    date,
+                    description: desc,
+                    amount,
+                    category,
+                    account: account_id.to_string(),
+                    payee,
+                    transaction_type: ttype,
+                }
+            })
+            .collect();
+        let core = CoreExportService {};
+        let cfg = CsvExportConfig::default().with_include_header(include_header);
+        let out = core
+            .generate_csv_simple(&mapped, Some(&cfg))
+            .map_err(|_e| ApiError::InternalServerError)?;
+        let mapped_len = mapped.len();
+        (out, mapped_len)
+    };
+
+    #[cfg(not(feature = "core_export"))]
+    let (bytes, count_for_audit) = {
+        let cfg = CsvExportConfig { include_header: req.include_header.unwrap_or(true), ..CsvExportConfig::default() };
+        let mut out = String::new();
+        if cfg.include_header {
+            out.push_str(&format!(
+                "Date{}Description{}Amount{}Category{}Account{}Payee{}Type\n",
+                cfg.delimiter, cfg.delimiter, cfg.delimiter, cfg.delimiter, cfg.delimiter, cfg.delimiter
+            ));
+        }
+        for row in rows.into_iter() {
+            let date: NaiveDate = row.get("transaction_date");
+            let desc: String = row.try_get::<String, _>("description").unwrap_or_default();
+            let amount: Decimal = row.get("amount");
+            let category: Option<String> = row
+                .try_get::<String, _>("category_name")
+                .ok()
+                .and_then(|s| if s.is_empty() { None } else { Some(s) });
+            let account_id: Uuid = row.get("account_id");
+            let payee: Option<String> = row
+                .try_get::<String, _>("payee_name")
+                .ok()
+                .and_then(|s| if s.is_empty() { None } else { Some(s) });
+            let ttype: String = row.get("transaction_type");
+
+            let fields = [
+                date.to_string(),
+                csv_escape_cell(desc, cfg.delimiter),
+                amount.to_string(),
+                csv_escape_cell(category.unwrap_or_default(), cfg.delimiter),
+                account_id.to_string(),
+                csv_escape_cell(payee.unwrap_or_default(), cfg.delimiter),
+                csv_escape_cell(ttype, cfg.delimiter),
+            ];
+            out.push_str(&fields.join(&cfg.delimiter.to_string()));
+            out.push('\n');
+        }
+        let line_count = out.lines().count();
+        let data_rows = if cfg.include_header { line_count.saturating_sub(1) } else { line_count };
+        (out.into_bytes(), data_rows)
+    };
+    let encoded = base64::engine::general_purpose::STANDARD.encode(&bytes);
+    let url = format!("data:text/csv;charset=utf-8;base64,{}", encoded);
+
+    // Audit log (best-effort)
+    let ua = headers
+        .get(header::USER_AGENT)
+        .and_then(|v| v.to_str().ok())
+        .map(|s| s.to_string());
+    let ip = headers
+        .get("x-forwarded-for")
+        .or_else(|| headers.get("x-real-ip"))
+        .and_then(|v| v.to_str().ok())
+        .map(|s| s.split(',').next().unwrap_or(s).trim().to_string());
+    let audit_id = AuditService::new(pool.clone()).log_action_returning_id(
+        ctx.family_id,
+        ctx.user_id,
+        crate::models::audit::CreateAuditLogRequest {
+            action: crate::models::audit::AuditAction::Export,
+            entity_type: "transactions".to_string(),
+            entity_id: None,
+            old_values: None,
+            new_values: Some(serde_json::json!({
+                "count": count_for_audit,
+                "format": "csv",
+                "filters": {
+                    "account_id": req.account_id,
+                    "ledger_id": req.ledger_id,
+                    "category_id": req.category_id,
+                    "start_date": req.start_date,
+                    "end_date": req.end_date,
+                }
+            })),
+        },
+        ip,
+        ua,
+    ).await.ok();
+    // Build response with optional X-Audit-Id header
+    let mut resp_headers = HeaderMap::new();
+    if let Some(aid) = audit_id {
+        resp_headers.insert("x-audit-id", aid.to_string().parse().unwrap());
+    }
+
+    // Also mirror audit id in the JSON for POST CSV
+    Ok((resp_headers, Json(serde_json::json!({
+        "success": true,
+        "file_name": file_name,
+        "mime_type": "text/csv",
+        "download_url": url,
+        "size": bytes.len(),
+        "audit_id": audit_id,
+    }))))
+}
+
+/// 流式 CSV 下载（更适合浏览器原生下载）
+pub async fn export_transactions_csv_stream(
+    State(pool): State<PgPool>,
+    claims: Claims,
+    headers: HeaderMap,
+    Query(q): Query<ExportTransactionsRequest>,
+) -> ApiResult<impl IntoResponse> {
+    let user_id = claims.user_id()?;
+    let family_id = claims.family_id.ok_or(ApiError::BadRequest("缺少 family_id 上下文".to_string()))?;
+    let auth_service = AuthService::new(pool.clone());
+    let ctx = auth_service
+        .validate_family_access(user_id, family_id)
+        .await
+        .map_err(|_| ApiError::Forbidden)?;
+    ctx.require_permission(Permission::ExportData)
+        .map_err(|_| ApiError::Forbidden)?;
+
+    // 复用查询逻辑（与 JSON/CSV data:URL 相同条件，限定家庭）
+    let mut query = QueryBuilder::new(
+        "SELECT t.id, t.account_id, t.ledger_id, t.amount, t.transaction_type, t.transaction_date, \
+         t.category_id, c.name as category_name, t.payee_id, p.name as payee_name, \
+         t.description, t.notes \
+         FROM transactions t \
+         JOIN ledgers l ON t.ledger_id = l.id \
+         LEFT JOIN categories c ON t.category_id = c.id \
+         LEFT JOIN payees p ON t.payee_id = p.id \
+         WHERE t.deleted_at IS NULL AND l.family_id = "
+    );
+    query.push_bind(ctx.family_id);
+    if let Some(account_id) = q.account_id { query.push(" AND t.account_id = "); query.push_bind(account_id); }
+    if let Some(ledger_id) = q.ledger_id { query.push(" AND t.ledger_id = "); query.push_bind(ledger_id); }
+    if let Some(category_id) = q.category_id { query.push(" AND t.category_id = "); query.push_bind(category_id); }
+    if let Some(start_date) = q.start_date { query.push(" AND t.transaction_date >= "); query.push_bind(start_date); }
+    if let Some(end_date) = q.end_date { query.push(" AND t.transaction_date <= "); query.push_bind(end_date); }
+    query.push(" ORDER BY t.transaction_date DESC, t.id DESC");
+
+    // Execute fully and build CSV body (simple, reliable)
+    let rows_all = query.build().fetch_all(&pool).await
+        .map_err(|e| ApiError::DatabaseError(format!("查询交易失败: {}", e)))?;
+    // Build response body bytes depending on feature flag
+    #[cfg(feature = "core_export")]
+    let body_bytes: Vec<u8> = {
+        let include_header = q.include_header.unwrap_or(true);
+        let mapped: Vec<SimpleTransactionExport> = rows_all
+            .into_iter()
+            .map(|row| {
+                let date: NaiveDate = row.get("transaction_date");
+                let desc: String = row.try_get::<String, _>("description").unwrap_or_default();
+                let amount: Decimal = row.get("amount");
+                let category: Option<String> = row
+                    .try_get::<String, _>("category_name")
+                    .ok()
+                    .and_then(|s| if s.is_empty() { None } else { Some(s) });
+                let account_id: Uuid = row.get("account_id");
+                let payee: Option<String> = row
+                    .try_get::<String, _>("payee_name")
+                    .ok()
+                    .and_then(|s| if s.is_empty() { None } else { Some(s) });
+                let ttype: String = row.get("transaction_type");
+
+                SimpleTransactionExport {
+                    date,
+                    description: desc,
+                    amount,
+                    category,
+                    account: account_id.to_string(),
+                    payee,
+                    transaction_type: ttype,
+                }
+            })
+            .collect();
+        let core = CoreExportService {};
+        let cfg = CsvExportConfig::default().with_include_header(include_header);
+        core
+            .generate_csv_simple(&mapped, Some(&cfg))
+            .map_err(|_e| ApiError::InternalServerError)?
+    };
+
+    #[cfg(not(feature = "core_export"))]
+    let body_bytes: Vec<u8> = {
+        let cfg = CsvExportConfig { include_header: q.include_header.unwrap_or(true), ..CsvExportConfig::default() };
+        let mut out = String::new();
+        if cfg.include_header {
+            out.push_str(&format!(
+                "Date{}Description{}Amount{}Category{}Account{}Payee{}Type\n",
+                cfg.delimiter, cfg.delimiter, cfg.delimiter, cfg.delimiter, cfg.delimiter, cfg.delimiter
+            ));
+        }
+        for row in rows_all.iter() {
+            let date: NaiveDate = row.get("transaction_date");
+            let desc: String = row.try_get::<String, _>("description").unwrap_or_default();
+            let amount: Decimal = row.get("amount");
+            let category: Option<String> = row
+                .try_get::<String, _>("category_name")
+                .ok()
+                .and_then(|s| if s.is_empty() { None } else { Some(s) });
+            let account_id: Uuid = row.get("account_id");
+            let payee: Option<String> = row
+                .try_get::<String, _>("payee_name")
+                .ok()
+                .and_then(|s| if s.is_empty() { None } else { Some(s) });
+            let ttype: String = row.get("transaction_type");
+            let fields = [
+                date.to_string(),
+                csv_escape_cell(desc, cfg.delimiter),
+                amount.to_string(),
+                csv_escape_cell(category.clone().unwrap_or_default(), cfg.delimiter),
+                account_id.to_string(),
+                csv_escape_cell(payee.clone().unwrap_or_default(), cfg.delimiter),
+                csv_escape_cell(ttype, cfg.delimiter),
+            ];
+            out.push_str(&fields.join(&cfg.delimiter.to_string()));
+            out.push('\n');
+        }
+        out.into_bytes()
+    };
+
+    // Audit log the export action (best-effort, ignore errors). We estimate row count via a COUNT query.
+    let mut count_q = QueryBuilder::new(
+        "SELECT COUNT(*) AS c FROM transactions t JOIN ledgers l ON t.ledger_id = l.id WHERE t.deleted_at IS NULL AND l.family_id = "
+    );
+    count_q.push_bind(ctx.family_id);
+    if let Some(account_id) = q.account_id { count_q.push(" AND t.account_id = "); count_q.push_bind(account_id); }
+    if let Some(ledger_id) = q.ledger_id { count_q.push(" AND t.ledger_id = "); count_q.push_bind(ledger_id); }
+    if let Some(category_id) = q.category_id { count_q.push(" AND t.category_id = "); count_q.push_bind(category_id); }
+    if let Some(start_date) = q.start_date { count_q.push(" AND t.transaction_date >= "); count_q.push_bind(start_date); }
+    if let Some(end_date) = q.end_date { count_q.push(" AND t.transaction_date <= "); count_q.push_bind(end_date); }
+    let estimated_count: i64 = count_q.build().fetch_one(&pool).await
+        .ok()
+        .and_then(|row| row.try_get::<i64, _>("c").ok())
+        .unwrap_or(0);
+
+    // Extract UA/IP for audit
+    let ua = headers
+        .get(header::USER_AGENT)
+        .and_then(|v| v.to_str().ok())
+        .map(|s| s.to_string());
+    let ip = headers
+        .get("x-forwarded-for")
+        .or_else(|| headers.get("x-real-ip"))
+        .and_then(|v| v.to_str().ok())
+        .map(|s| s.split(',').next().unwrap_or(s).trim().to_string());
+
+    let audit_id = AuditService::new(pool.clone()).log_action_returning_id(
+        ctx.family_id,
+        ctx.user_id,
+        crate::models::audit::CreateAuditLogRequest {
+            action: crate::models::audit::AuditAction::Export,
+            entity_type: "transactions".to_string(),
+            entity_id: None,
+            old_values: None,
+            new_values: Some(serde_json::json!({
+                "estimated_count": estimated_count,
+                "filters": {
+                    "account_id": q.account_id,
+                    "ledger_id": q.ledger_id,
+                    "category_id": q.category_id,
+                    "start_date": q.start_date,
+                    "end_date": q.end_date,
+                }
+            })),
+        },
+        ip,
+        ua,
+    ).await.ok();
+
+    let filename = format!("transactions_export_{}.csv", Utc::now().format("%Y%m%d%H%M%S"));
+    let mut headers_map = header::HeaderMap::new();
+    headers_map.insert(header::CONTENT_TYPE, "text/csv; charset=utf-8".parse().unwrap());
+    headers_map.insert(
+        header::CONTENT_DISPOSITION,
+        format!("attachment; filename=\"{}\"", filename).parse().unwrap(),
+    );
+    if let Some(aid) = audit_id { headers_map.insert("x-audit-id", aid.to_string().parse().unwrap()); }
+    Ok((headers_map, Body::from(body_bytes)))
+}
 
 /// 交易查询参数
 #[derive(Debug, Deserialize)]

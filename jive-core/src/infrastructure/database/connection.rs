@@ -66,13 +66,18 @@ impl Database {
         Ok(())
     }
 
-    /// 执行数据库迁移
+    /// 执行数据库迁移（可选启用 embed_migrations 特性）
+    #[cfg(feature = "db")]
     pub async fn migrate(&self) -> Result<(), sqlx::migrate::MigrateError> {
-        info!("Running database migrations...");
-        sqlx::migrate!("../../migrations")
-            .run(&self.pool)
-            .await?;
-        info!("Database migrations completed");
+        #[cfg(feature = "embed_migrations")]
+        {
+            info!("Running database migrations (embedded)...");
+            sqlx::migrate!("../../migrations")
+                .run(&self.pool)
+                .await?;
+            info!("Database migrations completed");
+        }
+        // 默认情况下不执行嵌入式迁移，以避免构建期需要本地 migrations 目录
         Ok(())
     }
 

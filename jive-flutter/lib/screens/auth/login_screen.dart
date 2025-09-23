@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../services/auth_service.dart';
-import '../../services/storage_service.dart';
-import '../../widgets/wechat_login_button.dart';
-import '../../core/router/app_router.dart';
-import '../../providers/auth_provider.dart';
+import 'package:jive_money/services/auth_service.dart';
+import 'package:jive_money/services/storage_service.dart';
+import 'package:jive_money/widgets/wechat_login_button.dart';
+import 'package:jive_money/core/router/app_router.dart';
+import 'package:jive_money/providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -299,6 +299,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 // 清除保存的凭据
                                 await _storageService
                                     .clearRememberedCredentials();
+                                if (!mounted) return;
                                 setState(() {
                                   _emailController.clear();
                                   _passwordController.clear();
@@ -306,14 +307,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   _rememberPassword = false;
                                   _rememberPermanently = false;
                                 });
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('已清除保存的登录信息'),
-                                      backgroundColor: Colors.blue,
-                                    ),
-                                  );
-                                }
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('已清除保存的登录信息'),
+                                    backgroundColor: Colors.blue,
+                                  ),
+                                );
                               },
                               child: const Text(
                                 '清除',
@@ -503,6 +502,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       buttonText: '使用微信登录',
                       onSuccess: (authResult, userInfo) async {
                         final result = await _authService.wechatLogin();
+
+                        if (!context.mounted) return;
 
                         if (result.success) {
                           ScaffoldMessenger.of(context).showSnackBar(

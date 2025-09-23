@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../providers/currency_provider.dart';
-import '../../../core/constants/app_constants.dart';
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
 
 class AccountCard extends ConsumerWidget {
   final String id;
@@ -35,7 +35,31 @@ class AccountCard extends ConsumerWidget {
     this.lastSyncAt,
     this.onTap,
     this.onSync,
+    // Additional compatibility parameters
+    dynamic account,
+    VoidCallback? onLongPress,
+    EdgeInsets? margin,
   });
+
+  // Factory constructor that accepts Account object
+  factory AccountCard.fromAccount({
+    Key? key,
+    required dynamic account,
+    VoidCallback? onTap,
+    VoidCallback? onLongPress,
+  }) {
+    return AccountCard(
+      key: key,
+      id: account.id ?? '',
+      name: account.name ?? 'Unknown Account',
+      type: account.type ?? 'unknown',
+      balance: account.balance ?? 0.0,
+      currency: account.currency ?? 'CNY',
+      color: account.color,
+      onTap: onTap,
+      onSync: onLongPress,
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -46,7 +70,7 @@ class AccountCard extends ConsumerWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       elevation: 2,
-      shadowColor: (color ?? theme.primaryColor).withOpacity(0.2),
+      shadowColor: (color ?? theme.primaryColor).withValues(alpha: 0.2),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
       ),
@@ -58,7 +82,7 @@ class AccountCard extends ConsumerWidget {
             end: Alignment.bottomRight,
             colors: [
               color ?? theme.primaryColor,
-              (color ?? theme.primaryColor).withOpacity(0.8),
+              (color ?? theme.primaryColor).withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -77,7 +101,7 @@ class AccountCard extends ConsumerWidget {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Icon(
@@ -103,7 +127,7 @@ class AccountCard extends ConsumerWidget {
                           Text(
                             _getAccountSubtitle(),
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: Colors.white.withOpacity(0.8),
+                              color: Colors.white.withValues(alpha: 0.8),
                             ),
                           ),
                         ],
@@ -116,7 +140,7 @@ class AccountCard extends ConsumerWidget {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.orange.withOpacity(0.9),
+                          color: Colors.orange.withValues(alpha: 0.9),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -145,7 +169,7 @@ class AccountCard extends ConsumerWidget {
                           Text(
                             '余额',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: Colors.white.withOpacity(0.8),
+                              color: Colors.white.withValues(alpha: 0.8),
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -172,7 +196,7 @@ class AccountCard extends ConsumerWidget {
                             padding: const EdgeInsets.all(8),
                             child: Icon(
                               Icons.sync,
-                              color: Colors.white.withOpacity(0.8),
+                              color: Colors.white.withValues(alpha: 0.8),
                               size: 20,
                             ),
                           ),
@@ -189,14 +213,14 @@ class AccountCard extends ConsumerWidget {
                     children: [
                       Icon(
                         Icons.sync,
-                        color: Colors.white.withOpacity(0.6),
+                        color: Colors.white.withValues(alpha: 0.6),
                         size: 14,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         '上次同步: ${_formatLastSync()}',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: Colors.white.withOpacity(0.6),
+                          color: Colors.white.withValues(alpha: 0.6),
                           fontSize: 12,
                         ),
                       ),

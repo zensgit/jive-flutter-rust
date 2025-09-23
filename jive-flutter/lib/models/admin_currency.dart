@@ -97,8 +97,8 @@ class AdminCurrency {
       coingeckoId: coingeckoId ?? this.coingeckoId,
       coincapSymbol: coincapSymbol ?? this.coincapSymbol,
       binanceSymbol: binanceSymbol ?? this.binanceSymbol,
-      updatedAt: updatedAt ?? this.updatedAt,
-      lastRefreshedAt: lastRefreshedAt ?? this.lastRefreshedAt,
+      updatedAt: updatedAt ?? updatedAt,
+      lastRefreshedAt: lastRefreshedAt ?? lastRefreshedAt,
     );
   }
 }

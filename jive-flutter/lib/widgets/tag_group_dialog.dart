@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/tag.dart';
-import '../providers/tag_provider.dart';
+import 'package:jive_money/models/tag.dart';
+import 'package:jive_money/providers/tag_provider.dart';
 
 class TagGroupDialog extends ConsumerStatefulWidget {
   final TagGroup? group;

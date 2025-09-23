@@ -45,11 +45,12 @@ echo -e "${BLUE}⏳ 等待数据库就绪...${NC}"
 sleep 3
 
 # 4. 检查数据库连接
-if psql postgresql://postgres:postgres@localhost:5433/jive_money -c "SELECT 1" > /dev/null 2>&1; then
+DB_PORT=${DB_PORT:-5433}
+if psql postgresql://postgres:postgres@localhost:$DB_PORT/jive_money -c "SELECT 1" > /dev/null 2>&1; then
     echo -e "${GREEN}✅ 数据库连接成功${NC}"
 else
     echo -e "${YELLOW}⚠️  数据库连接失败，尝试创建数据库...${NC}"
-    psql postgresql://postgres:postgres@localhost:5433 -c "CREATE DATABASE jive_money;" 2>/dev/null || true
+    psql postgresql://postgres:postgres@localhost:$DB_PORT -c "CREATE DATABASE jive_money;" 2>/dev/null || true
 fi
 
 # 5. 运行API
@@ -63,7 +64,7 @@ echo "  - 查看日志: docker-compose -f docker-compose.macos.yml logs -f"
 echo ""
 
 # 设置环境变量并运行
-export DATABASE_URL="postgresql://postgres:postgres@localhost:5433/jive_money"
+export DATABASE_URL=${DATABASE_URL:-"postgresql://postgres:postgres@localhost:$DB_PORT/jive_money"}
 export REDIS_URL="redis://localhost:6380"
 export API_PORT=8012
 export RUST_LOG=info

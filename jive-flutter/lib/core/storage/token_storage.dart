@@ -198,11 +198,5 @@ class AuthInfo {
 
   @override
   String toString() =>
-      'AuthInfo(userId: ' +
-      (userId ?? 'null') +
-      ', exp: ' +
-      (expiryDate?.toIso8601String() ?? 'null') +
-      ', expired=' +
-      isExpired.toString() +
-      ')';
+      'AuthInfo(userId: ${userId ?? 'null'}, exp: ${expiryDate?.toIso8601String() ?? 'null'}, expired=$isExpired)';
 }

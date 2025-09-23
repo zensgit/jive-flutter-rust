@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/category.dart';
-import '../models/tag.dart';
-import '../providers/category_management_provider.dart';
+import 'package:jive_money/providers/category_management_provider.dart';
 
 /// 批量操作栏
 class BatchOperationBar extends ConsumerStatefulWidget {
@@ -13,13 +11,13 @@ class BatchOperationBar extends ConsumerStatefulWidget {
   final String operationType; // 'category' or 'tag'
 
   const BatchOperationBar({
-    Key? key,
+    super.key,
     required this.selectedIds,
     required this.onCancel,
     required this.onSelectAll,
     required this.isAllSelected,
     this.operationType = 'category',
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<BatchOperationBar> createState() => _BatchOperationBarState();
@@ -70,7 +68,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
           color: colorScheme.primaryContainer,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -165,7 +163,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: Material(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         child: InkWell(
           onTap: onPressed,
@@ -302,6 +300,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
             onPressed: () async {
               final provider = ref.read(categoryManagementProvider);
               await provider.batchDeleteCategories(widget.selectedIds);
+              if (!context.mounted) return;
               Navigator.pop(context);
               widget.onCancel();
               ScaffoldMessenger.of(context).showSnackBar(
@@ -330,10 +329,10 @@ class BatchMoveDialog extends ConsumerStatefulWidget {
   final VoidCallback onConfirm;
 
   const BatchMoveDialog({
-    Key? key,
+    super.key,
     required this.selectedIds,
     required this.onConfirm,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<BatchMoveDialog> createState() => _BatchMoveDialogState();
@@ -354,7 +353,7 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
           const SizedBox(height: 16),
           // TODO: 添加分类选择器
           DropdownButtonFormField<String>(
-            value: _targetParentId,
+            initialValue: _targetParentId,
             decoration: const InputDecoration(
               labelText: '目标父分类',
               border: OutlineInputBorder(),
@@ -387,6 +386,7 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
               widget.selectedIds,
               _targetParentId,
             );
+            if (!mounted) return;
             Navigator.pop(context);
             widget.onConfirm();
             ScaffoldMessenger.of(context).showSnackBar(
@@ -408,10 +408,10 @@ class BatchConvertToTagDialog extends ConsumerStatefulWidget {
   final VoidCallback onConfirm;
 
   const BatchConvertToTagDialog({
-    Key? key,
+    super.key,
     required this.selectedIds,
     required this.onConfirm,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<BatchConvertToTagDialog> createState() =>
@@ -472,6 +472,7 @@ class _BatchConvertToTagDialogState
                 applyToTransactions: _applyToTransactions,
                 deleteCategory: _deleteCategories,
               );
+              if (!context.mounted) return;
             }
 
             Navigator.pop(context);

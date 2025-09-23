@@ -1,6 +1,6 @@
 // 加载状态组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
 
 class LoadingWidget extends StatelessWidget {
   final String? message;
@@ -38,7 +38,7 @@ class LoadingWidget extends StatelessWidget {
           Text(
             message!,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             textAlign: TextAlign.center,
           ),
@@ -233,7 +233,7 @@ class _ShimmerCardState extends State<ShimmerCard>
               end: Alignment.centerRight,
               colors: [
                 theme.cardColor,
-                theme.cardColor.withOpacity(0.5),
+                theme.cardColor.withValues(alpha: 0.5),
                 theme.cardColor,
               ],
               stops: [
@@ -285,7 +285,7 @@ class EmptyWidget extends StatelessWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: theme.primaryColor.withOpacity(0.1),
+                color: theme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(40),
               ),
               child: Icon(
@@ -312,7 +312,7 @@ class EmptyWidget extends StatelessWidget {
             Text(
               subtitle!,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               textAlign: TextAlign.center,
             ),

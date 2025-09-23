@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/rule.dart';
+import 'package:jive_money/models/rule.dart';
 
 /// 规则状态管理 - 基于Riverpod
 class RuleNotifier extends StateNotifier<List<Rule>> {
@@ -19,7 +19,7 @@ class RuleNotifier extends StateNotifier<List<Rule>> {
         active: true,
         priority: 1,
         conditions: [
-          RuleCondition(
+          const RuleCondition(
             id: 'c1',
             type: ConditionType.description,
             operator: ConditionOperator.contains,
@@ -27,12 +27,12 @@ class RuleNotifier extends StateNotifier<List<Rule>> {
           ),
         ],
         actions: [
-          RuleAction(
+          const RuleAction(
             id: 'a1',
             type: ActionType.setCategory,
             value: 'dining_category_id',
           ),
-          RuleAction(
+          const RuleAction(
             id: 'a2',
             type: ActionType.addTag,
             value: 'coffee_tag_id',
@@ -52,13 +52,13 @@ class RuleNotifier extends StateNotifier<List<Rule>> {
         active: true,
         priority: 2,
         conditions: [
-          RuleCondition(
+          const RuleCondition(
             id: 'c2',
             type: ConditionType.description,
             operator: ConditionOperator.contains,
             value: '工资',
           ),
-          RuleCondition(
+          const RuleCondition(
             id: 'c3',
             type: ConditionType.amount,
             operator: ConditionOperator.greaterThan,
@@ -66,12 +66,12 @@ class RuleNotifier extends StateNotifier<List<Rule>> {
           ),
         ],
         actions: [
-          RuleAction(
+          const RuleAction(
             id: 'a3',
             type: ActionType.setCategory,
             value: 'salary_category_id',
           ),
-          RuleAction(
+          const RuleAction(
             id: 'a4',
             type: ActionType.addTag,
             value: 'work_tag_id',
@@ -91,7 +91,7 @@ class RuleNotifier extends StateNotifier<List<Rule>> {
         active: true,
         priority: 3,
         conditions: [
-          RuleCondition(
+          const RuleCondition(
             id: 'c4',
             type: ConditionType.amount,
             operator: ConditionOperator.greaterThan,
@@ -99,12 +99,12 @@ class RuleNotifier extends StateNotifier<List<Rule>> {
           ),
         ],
         actions: [
-          RuleAction(
+          const RuleAction(
             id: 'a5',
             type: ActionType.notify,
             value: '检测到大额支出，请注意核实',
           ),
-          RuleAction(
+          const RuleAction(
             id: 'a6',
             type: ActionType.addTag,
             value: 'large_expense_tag_id',
@@ -124,7 +124,7 @@ class RuleNotifier extends StateNotifier<List<Rule>> {
         active: false,
         priority: 0,
         conditions: [
-          RuleCondition(
+          const RuleCondition(
             id: 'c5',
             type: ConditionType.description,
             operator: ConditionOperator.contains,
@@ -132,7 +132,7 @@ class RuleNotifier extends StateNotifier<List<Rule>> {
           ),
         ],
         actions: [
-          RuleAction(
+          const RuleAction(
             id: 'a7',
             type: ActionType.markAsTransfer,
           ),

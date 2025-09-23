@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../utils/string_utils.dart';
+import 'package:jive_money/utils/string_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../providers/auth_provider.dart';
-import '../../providers/ledger_provider.dart';
-import '../../providers/settings_provider.dart' hide currentUserProvider;
-import '../../providers/currency_provider.dart';
-import '../management/user_currency_browser.dart';
-import '../../widgets/dialogs/create_family_dialog.dart';
-import '../../widgets/dialogs/invite_member_dialog.dart';
+import 'package:jive_money/providers/auth_provider.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
+import 'package:jive_money/providers/settings_provider.dart' hide currentUserProvider;
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/widgets/dialogs/create_family_dialog.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -102,6 +100,13 @@ class SettingsScreen extends ConsumerWidget {
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () => context.go('/settings/currency/user-browser'),
               ),
+              ListTile(
+                leading: const Icon(Icons.rule),
+                title: const Text('手动覆盖清单'),
+                subtitle: const Text('查看/清理今日的手动汇率覆盖'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () => context.go('/settings/currency/manual-overrides'),
+              ),
             ],
           ),
 
@@ -120,7 +125,7 @@ class SettingsScreen extends ConsumerWidget {
                 secondary: const Icon(Icons.notifications),
                 title: const Text('预算提醒'),
                 subtitle: const Text('接近预算限额时提醒'),
-                value: settings.budgetNotifications ?? true,
+                value: settings.budgetNotifications,
                 onChanged: (value) {
                   ref
                       .read(settingsProvider.notifier)
@@ -151,7 +156,8 @@ class SettingsScreen extends ConsumerWidget {
               ListTile(
                 leading: const Icon(Icons.import_export),
                 title: const Text('导入/导出'),
-                subtitle: const Text('导入导出CSV/Excel文件'),
+                // 已恢复 CSV 导出
+                subtitle: const Text('支持CSV导入，导出为 CSV/Excel/PDF/JSON'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () => _navigateToImportExport(context),
               ),
@@ -401,10 +407,10 @@ class SettingsScreen extends ConsumerWidget {
                         context: context,
                         builder: (ctx) => AlertDialog(
                           title: const Text('更换基础货币'),
-                          content: Column(
+                          content: const Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
+                            children: [
                               Text('1. 旧账单若有币种转换，将保留原转换单位'),
                               SizedBox(height: 8),
                               Text('2. 旧账单若无币种转换，将以新币种显示'),

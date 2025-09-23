@@ -1,7 +1,7 @@
 // 应用脚手架组件
 import 'package:flutter/material.dart';
-import '../navigation/app_navigation_bar.dart';
-import '../../../core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/navigation/app_navigation_bar.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
 
 class AppScaffold extends StatelessWidget {
   final Widget body;
@@ -205,8 +205,8 @@ class AppCard extends StatelessWidget {
     return Card(
       margin: margin ?? const EdgeInsets.all(8),
       elevation: elevation ?? 1,
-      backgroundColor: backgroundColor ?? theme.cardColor,
-      shadowColor: theme.shadowColor.withOpacity(0.1),
+      color: backgroundColor ?? theme.cardColor,
+      shadowColor: theme.shadowColor.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius:
             borderRadius ?? BorderRadius.circular(AppConstants.borderRadius),
@@ -267,7 +267,7 @@ class AppSectionHeader extends StatelessWidget {
                     Text(
                       subtitle!,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                   ],

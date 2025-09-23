@@ -1,8 +1,8 @@
 // 确认对话框组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
-import '../buttons/primary_button.dart';
-import '../buttons/secondary_button.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/buttons/primary_button.dart';
+import 'package:jive_money/ui/components/buttons/secondary_button.dart';
 
 class ConfirmDialog extends StatelessWidget {
   final String title;
@@ -48,7 +48,7 @@ class ConfirmDialog extends StatelessWidget {
               decoration: BoxDecoration(
                 color:
                     (isDangerous ? AppConstants.errorColor : theme.primaryColor)
-                        .withOpacity(0.1),
+                        .withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(32),
               ),
               child: Icon(
@@ -76,7 +76,7 @@ class ConfirmDialog extends StatelessWidget {
           Text(
             message,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             textAlign: TextAlign.center,
           ),

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../utils/string_utils.dart';
+import 'package:jive_money/utils/string_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../models/ledger.dart';
-import '../../providers/ledger_provider.dart';
-import '../../services/api/ledger_service.dart';
-import 'family_settings_screen.dart';
-import 'family_members_screen.dart';
+import 'package:jive_money/models/ledger.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
+import 'package:jive_money/screens/family/family_settings_screen.dart';
+import 'package:jive_money/screens/family/family_members_screen.dart';
 
 /// 家庭统计仪表板
 class FamilyDashboardScreen extends ConsumerStatefulWidget {
@@ -219,7 +218,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -589,13 +588,13 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                     },
                   ),
                   titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
+                    leftTitles: const AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
                     ),
-                    rightTitles: AxisTitles(
+                    rightTitles: const AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
                     ),
-                    topTitles: AxisTitles(
+                    topTitles: const AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
                     ),
                     bottomTitles: AxisTitles(
@@ -627,10 +626,10 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                       isCurved: true,
                       color: Theme.of(context).primaryColor,
                       barWidth: 3,
-                      dotData: FlDotData(show: true),
+                      dotData: const FlDotData(show: true),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                       ),
                     ),
                   ],
@@ -644,22 +643,22 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
   }
 
   Widget _buildIncomeExpenseComparison() {
-    return Card(
+    return const Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               '收支对比',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             // TODO: 实现收支对比图表
-            const Center(
+            Center(
               child: Text('收支对比图表开发中'),
             ),
           ],
@@ -669,22 +668,22 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
   }
 
   Widget _buildCategoryTrends() {
-    return Card(
+    return const Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               '类别趋势',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             // TODO: 实现类别趋势图表
-            const Center(
+            Center(
               child: Text('类别趋势图表开发中'),
             ),
           ],

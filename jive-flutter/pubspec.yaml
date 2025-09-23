@@ -76,6 +76,12 @@ dependencies:
   # flutter_secure_storage: ^4.2.1  # 暂时注释，需要 Android V2 嵌入
   # connectivity_plus: ^6.0.3  # 暂时注释，需要 Android V2 嵌入
 
+  web_socket_channel: any
+  mailer: any
+  share_plus: any
+  screenshot: any
+  uni_links: any
+  qr_flutter: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -103,6 +109,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.13.1
 
 
+  riverpod: any
 dependency_overrides:
   # 解决flutter_localizations与intl版本冲突
   # Flutter 3.35.3的flutter_localizations需要intl 0.19.0

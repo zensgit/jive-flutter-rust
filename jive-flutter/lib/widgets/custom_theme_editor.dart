@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/theme_models.dart' as models;
-import '../services/theme_service.dart';
-import 'color_picker_dialog.dart';
-import 'theme_preview_card.dart';
+import 'package:jive_money/models/theme_models.dart' as models;
+import 'package:jive_money/services/theme_service.dart';
+import 'package:jive_money/widgets/color_picker_dialog.dart';
+import 'package:jive_money/widgets/theme_preview_card.dart';
 
 /// 自定义主题编辑器
 class CustomThemeEditor extends StatefulWidget {
@@ -520,7 +520,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
       ),
       subtitle: Text(item.subtitle),
       trailing: Text(
-        '#${item.color.value.toRadixString(16).substring(2).toUpperCase()}',
+        '#${item.color.toARGB32().toRadixString(16).substring(2).toUpperCase()}',
         style: const TextStyle(
           fontFamily: 'monospace',
           fontSize: 12,
@@ -752,6 +752,8 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
           baseTheme: finalTheme,
         );
       }
+
+      if (!context.mounted) return;
 
       Navigator.of(context).pop(finalTheme);
     } catch (e) {

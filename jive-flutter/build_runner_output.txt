@@ -1,0 +1,76 @@
+[INFO] Generating build script...
+[INFO] Generating build script completed, took 149ms
+
+[INFO] Initializing inputs
+[INFO] Reading cached asset graph...
+[INFO] Reading cached asset graph completed, took 186ms
+
+[INFO] Checking for updates since last build...
+[INFO] Checking for updates since last build completed, took 857ms
+
+[INFO] Running build...
+[INFO] 1.0s elapsed, 22/31 actions completed.
+[WARNING] riverpod_generator on lib/utils/date_utils.dart:
+Your current `analyzer` version may not fully support your current SDK version.
+
+Analyzer language version: 3.4.0
+SDK language version: 3.9.0
+
+Please update to the latest `analyzer` version (8.1.1) by running
+`flutter packages upgrade`.
+
+If you are not getting the latest version by running the above command, you
+can try adding a constraint like the following to your pubspec to start
+diagnosing why you can't get the latest version:
+
+dev_dependencies:
+  analyzer: ^8.1.1
+
+[INFO] 6.1s elapsed, 22/31 actions completed.
+[INFO] 8.0s elapsed, 26/31 actions completed.
+[INFO] Running build completed, took 8.3s
+
+[INFO] Caching finalized dependency graph...
+[INFO] Caching finalized dependency graph completed, took 102ms
+
+[SEVERE] hive_generator on lib/ui/components/cards/transaction_card.dart (cached):
+
+This builder requires Dart inputs without syntax errors.
+However, package:jive_money/ui/components/cards/transaction_card.dart (or an existing part) contains the following errors.
+transaction_card.dart:279:10: Expected to find ';'.
+
+Try fixing the errors and re-running the build.
+
+[SEVERE] json_serializable on lib/ui/components/cards/transaction_card.dart (cached):
+
+This builder requires Dart inputs without syntax errors.
+However, package:jive_money/ui/components/cards/transaction_card.dart (or an existing part) contains the following errors.
+transaction_card.dart:279:10: Expected to find ';'.
+
+Try fixing the errors and re-running the build.
+
+[SEVERE] retrofit_generator on lib/ui/components/cards/transaction_card.dart (cached):
+
+This builder requires Dart inputs without syntax errors.
+However, package:jive_money/ui/components/cards/transaction_card.dart (or an existing part) contains the following errors.
+transaction_card.dart:279:10: Expected to find ';'.
+
+Try fixing the errors and re-running the build.
+
+[SEVERE] riverpod_generator on lib/ui/components/cards/transaction_card.dart (cached):
+
+This builder requires Dart inputs without syntax errors.
+However, package:jive_money/ui/components/cards/transaction_card.dart (or an existing part) contains the following errors.
+transaction_card.dart:279:10: Expected to find ';'.
+
+Try fixing the errors and re-running the build.
+
+[SEVERE] freezed on lib/ui/components/cards/transaction_card.dart (cached):
+
+This builder requires Dart inputs without syntax errors.
+However, package:jive_money/ui/components/cards/transaction_card.dart (or an existing part) contains the following errors.
+transaction_card.dart:279:10: Expected to find ';'.
+
+Try fixing the errors and re-running the build.
+
+[SEVERE] Failed after 8.4s

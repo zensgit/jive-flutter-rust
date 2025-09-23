@@ -126,10 +126,22 @@ optional = true
 version = "0.24"
 optional = true
 
+[dependencies.rand]
+version = "0.8"
+optional = true
+
+[dependencies.urlencoding]
+version = "2.1"
+optional = true
+
 [features]
-default = ["wasm"]
+default = []
 wasm = ["wasm-bindgen", "js-sys", "web-sys", "console_error_panic_hook", "wee_alloc"]
-server = ["sqlx", "reqwest", "tokio", "dep:csv", "dep:calamine", "dep:base32", "dep:hmac", "dep:sha1", "dep:qrcode", "dep:printpdf", "dep:image"]
+server = ["tokio"]
+db = ["sqlx", "reqwest", "tokio", "dep:csv", "dep:calamine", "dep:base32", "dep:hmac", "dep:sha1", "dep:qrcode", "dep:printpdf", "dep:image", "dep:rand", "dep:urlencoding"]
+server-lite = []
+# Gate unfinished application/infra modules to keep builds green by default
+app_experimental = []
 
 # WASM 优化配置
 [profile.release]

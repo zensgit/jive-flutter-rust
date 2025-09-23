@@ -24,6 +24,33 @@ Primary commands (see `Makefile`):
 - `make docker-up` / `make docker-down` Run via Docker Compose
 Backend only: `cargo test -p jive-core`; Flutter only: `cd jive-flutter && flutter test`.
 
+### CSV export feature gating
+- API supports two CSV paths in `jive-api/src/handlers/transactions.rs`:
+  - With feature `core_export`: delegates to `jive-core` `ExportService::generate_csv_simple`.
+  - Without `core_export`: uses a local, safe CSV writer.
+- Enabling `core_export` also activates `jive-core/db` (CSV helpers) via `jive-api/Cargo.toml`.
+
+### SQLx Offline Metadata (Rust server+db tier)
+- Goal: Verify SQL queries without depending on a live DB at compile time.
+- CI flow (already enabled):
+  1) Start PostgreSQL (health-checked) on 5432.
+  2) Run migrations under `jive-api/migrations/`.
+  3) Prepare SQLx metadata for `jive-core` server+db tier:
+     - `cd jive-core && SQLX_OFFLINE=false cargo sqlx prepare -- --features "server,db"`
+  4) Offline check server+db tier:
+     - `SQLX_OFFLINE=true cargo check --features "server,db"`
+
+- Local workflow tips:
+  - If you change SQL or migrations, regenerate `.sqlx` locally using the same prepare command above.
+  - Keep `.sqlx/` up to date in PRs to avoid CI drift; you may commit the updated files or let CI upload as artifacts (team preference).
+  - If offline check fails with “no cached data for this query”, re-run the prepare step against a DB that has the latest migrations applied.
+
+### Feature Tiers (Rust core)
+- `default`: platform-agnostic core (no DB).
+- `server`: runtime only; avoid DB-bound code.
+- `server,db`: enables DB-related logic and queries; requires `.sqlx` metadata or online prepare.
+- In-progress application modules may be gated behind features; avoid pulling unfinished modules into `default/server` builds.
+
 Manager script shortcuts (`jive-manager.sh`):
 - `./jive-manager.sh start all` secure full stack (DB/Redis/API/Web)
 - `./jive-manager.sh start all-dev` full stack with relaxed CORS (API sets `CORS_DEV=1`)
@@ -52,6 +79,12 @@ PRs must include:
 5. Rollback plan if risky
 Link related issue IDs. Request review from a Rust + a Flutter reviewer for cross‑layer changes.
 
+### Git Hooks
+- Local pre-commit hook provided at `.githooks/pre-commit` runs `make api-lint` to enforce SQLx offline checks and Clippy.
+- Enable hooks once per clone:
+  - `git config core.hooksPath .githooks`
+  - Then commit as usual; the hook will run automatically.
+
 ## Security & Configuration
 Never commit real secrets—use `.env.example` for new vars. Run `make check` before pushing (ensures ports & env). Validate input at service boundary (API layer) and keep domain invariants enforced in constructors or smart methods. Log sensitive data only in anonymized form.
 
@@ -61,6 +94,24 @@ Never commit real secrets—use `.env.example` for new vars. Run `make check` be
 
 ## Architecture Notes
 Rust core is platform‑agnostic; API crate owns persistence & external IO. Flutter should treat the core/API as the single source of truth. Favor thin adapters over duplicating logic. When adding a feature, update corresponding design/status docs if impacted.
+
+### Ports & Environments
+- Local dev via Docker or manager scripts typically maps PostgreSQL to host 5433.
+- CI and container-internal services use 5432.
+- Migration helper script `jive-api/scripts/migrate_local.sh` auto-detects across 5433/5432; prefer 5433 locally, keep CI on 5432.
+
+#### Port Overrides (Examples)
+- Defaults: `DB_PORT=5433`, `API_PORT=8012` for local dev.
+- Override per command:
+  - `DB_PORT=5432 API_PORT=18012 ./jive-api/start-api.sh`
+  - `DB_PORT=5432 make db-migrate`
+- Environment-wide overrides in your shell profile if you always use a custom mapping.
+
+#### API Developer Shortcuts
+- `make api-sqlx-check` strict SQLx offline validation (requires up-to-date `.sqlx`).
+- `make sqlx-prepare-api` generate `.sqlx` metadata (DB + migrations must be ready).
+- `make api-clippy` run clippy with `SQLX_OFFLINE=true` and deny warnings locally.
+- `make api-lint` runs both SQLx check and clippy for a quick pre-commit gate.
 
 ## Agent-Specific Instructions
 When modifying files, respect this guide’s layering rules. Large automated refactors (format only) should be isolated. Do not adjust unrelated modules while implementing a focused change unless build breaks.

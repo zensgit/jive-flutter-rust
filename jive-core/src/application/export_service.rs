@@ -65,6 +65,7 @@ pub struct ExportOptions {
 impl Default for ExportOptions {
     fn default() -> Self {
         Self {
+            // 默认导出格式：CSV
             format: ExportFormat::CSV,
             scope: ExportScope::All,
             include_transactions: true,
@@ -207,6 +208,26 @@ impl Default for CsvExportConfig {
     }
 }
 
+impl CsvExportConfig {
+    // Allow external crates (API) to toggle header inclusion without exposing fields.
+    pub fn with_include_header(mut self, include_header: bool) -> Self {
+        self.include_header = include_header;
+        self
+    }
+}
+
+/// 轻量导出行（供服务端快速复用，不依赖内部数据收集）
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SimpleTransactionExport {
+    pub date: NaiveDate,
+    pub description: String,
+    pub amount: Decimal,
+    pub category: Option<String>,
+    pub account: String,
+    pub payee: Option<String>,
+    pub transaction_type: String,
+}
+
 /// Excel 导出配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExcelExportConfig {
@@ -312,6 +333,59 @@ pub struct ReportData {
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub struct ExportService {}
 
+impl ExportService {
+    // Lightweight CSV generator usable on server builds
+    pub fn generate_csv_simple(
+        &self,
+        rows: &[SimpleTransactionExport],
+        config: Option<&CsvExportConfig>,
+    ) -> Result<Vec<u8>> {
+        let cfg = config.cloned().unwrap_or_default();
+        let mut out = String::new();
+        if cfg.include_header {
+            out.push_str(&format!(
+                "Date{}Description{}Amount{}Category{}Account{}Payee{}Type\n",
+                cfg.delimiter, cfg.delimiter, cfg.delimiter, cfg.delimiter, cfg.delimiter, cfg.delimiter
+            ));
+        }
+        for r in rows {
+            let amount_str = r.amount.to_string().replace('.', &cfg.decimal_separator);
+            out.push_str(&format!(
+                "{}{}{}{}{}{}{}{}{}{}{}{}{}\n",
+                r.date.format(&cfg.date_format), cfg.delimiter,
+                escape_csv_field(&sanitize_csv_cell(&r.description), cfg.delimiter), cfg.delimiter,
+                amount_str, cfg.delimiter,
+                escape_csv_field(r.category.as_deref().unwrap_or(""), cfg.delimiter), cfg.delimiter,
+                escape_csv_field(&r.account, cfg.delimiter), cfg.delimiter,
+                escape_csv_field(r.payee.as_deref().unwrap_or(""), cfg.delimiter), cfg.delimiter,
+                escape_csv_field(&r.transaction_type, cfg.delimiter),
+            ));
+        }
+        Ok(out.into_bytes())
+    }
+}
+
+fn escape_csv_field(input: &str, delimiter: char) -> String {
+    let needs_quotes = input.contains(delimiter) || input.contains('"') || input.contains('\n');
+    if needs_quotes {
+        let escaped = input.replace('"', "\"\"");
+        format!("\"{}\"", escaped)
+    } else {
+        input.to_string()
+    }
+}
+
+fn sanitize_csv_cell(input: &str) -> String {
+    if let Some(first) = input.chars().next() {
+        if matches!(first, '=' | '+' | '-' | '@') {
+            let mut s = String::with_capacity(input.len() + 1);
+            s.push('\'');
+            s.push_str(input);
+            return s;
+        }
+    }
+    input.to_string()
+}
 #[cfg(feature = "wasm")]
 #[wasm_bindgen]
 impl ExportService {
@@ -581,8 +655,9 @@ impl ExportService {
             total_items: 150,
             exported_items: 150,
             file_size: 204800,
-            file_path: Some("export_2024_01.csv".to_string()),
-            download_url: Some("/downloads/export_2024_01.csv".to_string()),
+            // 统一改为 JSON 示例文件名
+            file_path: Some("export_2024_01.json".to_string()),
+            download_url: Some("/downloads/export_2024_01.json".to_string()),
             error_message: None,
             started_at: Utc::now() - chrono::Duration::minutes(5),
             completed_at: Some(Utc::now()),
@@ -618,8 +693,9 @@ impl ExportService {
                 total_items: 5000,
                 exported_items: 5000,
                 file_size: 2048000,
-                file_path: Some("export_2024_full.csv".to_string()),
-                download_url: Some("/downloads/export_2024_full.csv".to_string()),
+                // 统一改为 JSON 示例文件名
+                file_path: Some("export_2024_full.json".to_string()),
+                download_url: Some("/downloads/export_2024_full.json".to_string()),
                 error_message: None,
                 started_at: Utc::now() - chrono::Duration::days(1),
                 completed_at: Some(Utc::now() - chrono::Duration::days(1) + chrono::Duration::minutes(10)),
@@ -870,6 +946,7 @@ mod tests {
     #[test]
     fn test_export_options_default() {
         let options = ExportOptions::default();
+        // 默认改为 CSV
         assert_eq!(options.format, ExportFormat::CSV);
         assert_eq!(options.scope, ExportScope::All);
         assert!(options.include_transactions);
@@ -906,6 +983,7 @@ mod tests {
     #[test]
     fn test_file_extension() {
         let service = ExportService::new();
+        // 仍保留映射，便于兼容历史数据，但功能已禁用
         assert_eq!(service.get_file_extension(&ExportFormat::CSV), "csv");
         assert_eq!(service.get_file_extension(&ExportFormat::Excel), "xlsx");
         assert_eq!(service.get_file_extension(&ExportFormat::JSON), "json");

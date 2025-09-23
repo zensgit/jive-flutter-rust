@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../states/loading_indicator.dart';
-import '../states/empty_state.dart';
-import '../states/error_state.dart';
+import 'package:jive_money/widgets/states/loading_indicator.dart';
+import 'package:jive_money/widgets/states/empty_state.dart';
+import 'package:jive_money/widgets/states/error_state.dart';
 
 /// 可刷新列表组件
 class RefreshableList<T> extends StatefulWidget {
@@ -115,7 +115,7 @@ class _RefreshableListState<T> extends State<RefreshableList<T>> {
         onRefresh: widget.onRefresh,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          child: SizedBox(
+          child: const SizedBox(
             height: MediaQuery.of(context).size.height - 200,
             child: widget.emptyWidget ?? EmptyStates.noData(),
           ),
@@ -227,7 +227,7 @@ class SimpleRefreshableList<T> extends StatelessWidget {
         onRefresh: onRefresh,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          child: SizedBox(
+          child: const SizedBox(
             height: MediaQuery.of(context).size.height - 200,
             child: emptyWidget ?? EmptyStates.noData(),
           ),

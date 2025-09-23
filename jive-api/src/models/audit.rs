@@ -4,6 +4,7 @@ use serde_json::Value;
 use sqlx::FromRow;
 use uuid::Uuid;
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct AuditLog {
     pub id: Uuid,
@@ -63,9 +64,9 @@ impl TryFrom<String> for AuditAction {
     }
 }
 
-impl ToString for AuditAction {
-    fn to_string(&self) -> String {
-        match self {
+impl std::fmt::Display for AuditAction {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
             AuditAction::Create => "CREATE",
             AuditAction::Update => "UPDATE",
             AuditAction::Delete => "DELETE",
@@ -80,7 +81,8 @@ impl ToString for AuditAction {
             AuditAction::MemberRemoved => "MEMBER_REMOVED",
             AuditAction::RoleChanged => "ROLE_CHANGED",
             AuditAction::PermissionChanged => "PERMISSION_CHANGED",
-        }.to_string()
+        };
+        write!(f, "{}", s)
     }
 }
 

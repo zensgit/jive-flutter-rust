@@ -26,7 +26,7 @@ class LoadingIndicator extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
+            const SizedBox(
               width: size,
               height: size,
               child: CircularProgressIndicator(
@@ -78,7 +78,7 @@ class LoadingOverlay extends StatelessWidget {
             child: AbsorbPointer(
               absorbing: !dismissible,
               child: Container(
-                color: barrierColor ?? Colors.black.withOpacity(0.5),
+                color: barrierColor ?? Colors.black.withValues(alpha: 0.5),
                 child: LoadingIndicator(
                   message: message,
                   size: 50,
@@ -115,7 +115,7 @@ class LoadingButton extends StatelessWidget {
       onPressed: isLoading ? null : onPressed,
       style: style,
       child: isLoading
-          ? SizedBox(
+          ? const SizedBox(
               width: loadingSize,
               height: loadingSize,
               child: CircularProgressIndicator(
@@ -192,7 +192,7 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
           return Container(
             decoration: BoxDecoration(
               borderRadius: widget.borderRadius ?? BorderRadius.circular(4),
-              color: Colors.grey.withOpacity(_animation.value),
+              color: Colors.grey.withValues(alpha: _animation.value),
             ),
           );
         },
