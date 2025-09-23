@@ -45,6 +45,7 @@ use handlers::family_handler::{list_families, create_family, get_family, update_
 use handlers::member_handler::{get_family_members, add_member, remove_member, update_member_role, update_member_permissions};
 #[cfg(feature = "demo_endpoints")]
 use handlers::placeholder::{export_data, activity_logs, advanced_settings, family_settings};
+#[cfg(feature = "demo_endpoints")]
 use handlers::audit_handler::{get_audit_logs, export_audit_logs, cleanup_audit_logs};
 
 // 使用库中的 AppState
@@ -382,15 +383,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/families/:id/advanced-settings", get(advanced_settings))
         .route("/api/v1/export/data", post(export_data))
         .route("/api/v1/activity/logs", get(activity_logs))
-        // Audit logs endpoints
-        .route("/api/v1/families/:id/audit-logs", get(get_audit_logs))
-        .route("/api/v1/families/:id/audit-logs/export", get(export_audit_logs))
-        .route("/api/v1/families/:id/audit-logs/cleanup", post(cleanup_audit_logs))
         // 简化演示入口
         .route("/api/v1/export", get(export_data))
         .route("/api/v1/activity-logs", get(activity_logs))
         .route("/api/v1/advanced-settings", get(advanced_settings))
         .route("/api/v1/family-settings", get(family_settings));
+
+    // Audit logs endpoints (also demo endpoints)
+    #[cfg(feature = "demo_endpoints")]
+    let app = app
+        .route("/api/v1/families/:id/audit-logs", get(get_audit_logs))
+        .route("/api/v1/families/:id/audit-logs/export", get(export_audit_logs))
+        .route("/api/v1/families/:id/audit-logs/cleanup", post(cleanup_audit_logs));
 
     let app = app
         .layer(
