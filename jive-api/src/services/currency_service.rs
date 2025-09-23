@@ -457,7 +457,7 @@ impl CurrencyService {
             // effective_date 为非空（schema 约束）；直接使用
             effective_date: row.effective_date,
             // created_at 在 schema 中可能可空；兜底当前时间
-            created_at: row.created_at.unwrap_or_else(|| Utc::now()),
+            created_at: row.created_at.unwrap_or_else(Utc::now),
         }).collect())
     }
     

@@ -604,7 +604,7 @@ pub async fn get_crypto_prices(
         // created_at 可能为可空；为空时使用当前时间
         let created_naive = row
             .created_at
-            .unwrap_or_else(|| Utc::now())
+            .unwrap_or_else(Utc::now)
             .naive_utc();
         if last_updated.map(|lu| created_naive > lu).unwrap_or(true) {
             last_updated = Some(created_naive);
