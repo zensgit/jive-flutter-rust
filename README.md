@@ -46,6 +46,10 @@ make dev
 
 # 查看更多命令
 make help
+
+首次建议：
+- 启用本地 pre-commit 钩子：`make hooks`
+- 如涉及数据库迁移：`make api-sqlx-prepare-local`（迁移 + 刷新 `.sqlx/`）
 ```
 
 ### 方法 3: 使用 Docker Compose

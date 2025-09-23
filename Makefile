@@ -137,6 +137,13 @@ api-lint:
 	@$(MAKE) api-sqlx-check
 	@$(MAKE) api-clippy
 
+# One-shot: migrate local DB (5433) and refresh SQLx cache for API
+api-sqlx-prepare-local:
+	@echo "Migrating local DB (default DB_PORT=5433) and preparing SQLx cache..."
+	@cd jive-api && DB_PORT=$${DB_PORT:-5433} ./scripts/migrate_local.sh --force
+	@cd jive-api && cargo install sqlx-cli --no-default-features --features postgres || true
+	@cd jive-api && SQLX_OFFLINE=false cargo sqlx prepare
+
 # Enable local git hooks once per clone
 hooks:
 	@git config core.hooksPath .githooks
