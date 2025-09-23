@@ -18,6 +18,36 @@ env:
   RUST_VERSION: '1.89.0'
 
 jobs:
+  rustfmt-check:
+    name: Rustfmt Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: ${{ env.RUST_VERSION }}
+        components: rustfmt
+    - name: Check formatting (workspace)
+      run: |
+        rustup component add rustfmt || true
+        cargo fmt --all -- --check
+
+  cargo-deny:
+    name: Cargo Deny Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install cargo-deny
+      run: |
+        curl -sSfL https://github.com/EmbarkStudios/cargo-deny/releases/download/0.14.24/cargo-deny-0.14.24-x86_64-unknown-linux-musl.tar.gz | tar xz
+        sudo mv cargo-deny*/cargo-deny /usr/local/bin/cargo-deny
+        cargo-deny --version
+    - name: Run cargo-deny
+      run: |
+        cargo-deny check -c deny.toml
   flutter-test:
     name: Flutter Tests
     runs-on: ubuntu-latest
@@ -192,7 +222,7 @@ jobs:
         SQLX_OFFLINE: 'true'
       run: |
         cargo check --all-features
-        cargo clippy --all-features -- -D warnings || true
+        cargo clippy --all-features -- -D warnings
 
     - name: Generate schema report
       if: always()
@@ -311,7 +341,7 @@ jobs:
   summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [flutter-test, rust-test, field-compare]
+    needs: [flutter-test, rust-test, field-compare, rustfmt-check, cargo-deny]
     if: always()
 
     steps:
@@ -330,6 +360,8 @@ jobs:
         echo "## Test Results" >> ci-summary.md
         echo "- Flutter Tests: ${{ needs.flutter-test.result }}" >> ci-summary.md
         echo "- Rust Tests: ${{ needs.rust-test.result }}" >> ci-summary.md
+        echo "- Rustfmt Check: ${{ needs.rustfmt-check.result }}" >> ci-summary.md
+        echo "- Cargo Deny: ${{ needs.cargo-deny.result }}" >> ci-summary.md
         echo "- Field Comparison: ${{ needs.field-compare.result }}" >> ci-summary.md
         echo "" >> ci-summary.md
 
