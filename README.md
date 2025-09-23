@@ -1,5 +1,7 @@
 # Jive Money - 集腋记账
 
+[![Core CI (Strict)](https://github.com/zensgit/jive-flutter-rust/actions/workflows/ci.yml/badge.svg)](https://github.com/zensgit/jive-flutter-rust/actions/workflows/ci.yml)
+
 一个全功能的个人财务管理系统，采用 Flutter 前端和 Rust 后端架构。
 
 > **集腋成裘，细水长流** - 用心记录每一笔收支，积小成大，理财从记账开始。
@@ -151,6 +153,30 @@ make logs
 chmod +x scripts/ci_local.sh
 ./scripts/ci_local.sh
 ```
+
+### SQLx 离线校验（开发者速记）
+
+- 离线校验用途：在不依赖在线数据库的情况下，编译期验证 SQL 宏的类型与签名。
+- 何时需要更新 `.sqlx/`：任何迁移或查询签名变动后。
+
+常用命令：
+
+```bash
+# 1) 跑迁移（确保 DB 最新）
+cd jive-api && ./scripts/migrate_local.sh --force
+
+# 2) 刷新离线缓存
+SQLX_OFFLINE=false cargo sqlx prepare
+
+# 3) 本地严格校验 + Clippy
+make api-lint
+```
+
+CI 策略：
+- 严格检查 `.sqlx` 与查询是否一致；若不一致：
+  - 上传 `api-sqlx-diff` 工件（含新旧缓存与 diff patch）
+  - 在 PR 自动评论首 80 行 diff 预览，便于定位
+  - 失败退出，提示开发者提交更新后的 `.sqlx/`
 
 该脚本会：
 - 尝试用 Docker 启动本地 Postgres/Redis（如已安装）

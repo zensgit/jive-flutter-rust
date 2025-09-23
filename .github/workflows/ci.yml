@@ -226,6 +226,30 @@ jobs:
         echo "SQLx offline cache mismatch detected. See api-sqlx-diff artifact." >&2
         exit 1
 
+    - name: Comment SQLx diff summary to PR
+      if: steps.sqlx_check.outcome == 'failure' && github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const pr = context.payload.pull_request?.number;
+          if (!pr) { core.info('No PR context; skip comment'); return; }
+          let body = 'SQLx offline cache mismatch detected.\\n\\n';
+          try {
+            const patch = fs.readFileSync('api-sqlx-diff/api-sqlx-diff.patch','utf8');
+            const lines = patch.split('\n').slice(0, 80).join('\n');
+            body += 'Patch preview (first 80 lines):\\n\\n```diff\n' + lines + '\n```\\n';
+          } catch (e) {
+            body += 'No patch preview available.\\n';
+          }
+          body += '\\nArtifact: api-sqlx-diff (see Actions artifacts).';
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: pr,
+            body,
+          });
+
     - name: Run tests (SQLx offline)
       working-directory: jive-api
       env:
