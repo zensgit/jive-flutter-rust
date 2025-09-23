@@ -42,7 +42,7 @@ axum-extra = { version = "0.10.1", features = ["typed-header"] }
 anyhow = "1.0.99"
 base64 = "0.22"
 # Make core optional; gate usage behind feature `core_export`
-jive-core = { path = "../jive-core", package = "jive-core", features = ["server"], default-features = false, optional = true }
+jive-core = { path = "../jive-core", package = "jive-core", features = ["server", "db"], default-features = false, optional = true }
 bytes = "1"
 
 # WebSocket支持

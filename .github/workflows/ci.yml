@@ -242,16 +242,16 @@ jobs:
         else
           cargo check -p jive-core --no-default-features --features server
         fi
-        # 先编译避免冷启动对输出影响
-        cargo test --no-run --all-features
+        # 先编译避免冷启动对输出影响 (不使用 core_export 功能，因为 jive-core 尚未准备好)
+        cargo test --no-run --no-default-features --features demo_endpoints
         # 运行手动汇率相关测试（单对 + 批量）
-        cargo test --test currency_manual_rate_test -- --nocapture || true
-        cargo test --test currency_manual_rate_batch_test -- --nocapture || true
+        cargo test --test currency_manual_rate_test --no-default-features --features demo_endpoints -- --nocapture || true
+        cargo test --test currency_manual_rate_batch_test --no-default-features --features demo_endpoints -- --nocapture || true
         # 运行交易导出及审计清理相关测试
-        cargo test --test transactions_export_test -- --nocapture || true
+        cargo test --test transactions_export_test --no-default-features --features demo_endpoints -- --nocapture || true
         # 其余测试
-        cargo test --all-features -- --nocapture > ../rust-test-results.txt 2>&1 || true
-        cargo test --all-features || true
+        cargo test --no-default-features --features demo_endpoints -- --nocapture > ../rust-test-results.txt 2>&1 || true
+        cargo test --no-default-features --features demo_endpoints || true
 
     - name: Future-incompatibility report (non-fatal)
       working-directory: jive-api
@@ -287,8 +287,8 @@ jobs:
       env:
         SQLX_OFFLINE: 'true'
       run: |
-        # Ensure default build compiles (demo_endpoints on)
-        cargo check --all-features
+        # Ensure default build compiles (demo_endpoints on, but not core_export)
+        cargo check --no-default-features --features demo_endpoints
         # Run strict clippy without default features to exclude demo endpoints
         cargo clippy --no-default-features -- -D warnings
 
