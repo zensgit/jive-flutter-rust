@@ -1,0 +1,127 @@
+version: 2
+updates:
+  # Rust dependencies for jive-api
+  - package-ecosystem: "cargo"
+    directory: "/jive-api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "huazhou"
+    assignees:
+      - "huazhou"
+    commit-message:
+      prefix: "cargo"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "rust"
+      - "jive-api"
+    ignore:
+      # Ignore major version updates for stable dependencies
+      - dependency-name: "tokio"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "sqlx"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "axum"
+        update-types: ["version-update:semver-major"]
+
+  # Rust dependencies for jive-core
+  - package-ecosystem: "cargo"
+    directory: "/jive-core"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:30"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "huazhou"
+    assignees:
+      - "huazhou"
+    commit-message:
+      prefix: "cargo(core)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "rust"
+      - "jive-core"
+
+  # Flutter/Dart dependencies
+  - package-ecosystem: "pub"
+    directory: "/jive-flutter"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "huazhou"
+    assignees:
+      - "huazhou"
+    commit-message:
+      prefix: "flutter"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "flutter"
+      - "dart"
+    ignore:
+      # Ignore major Flutter SDK updates (handle manually)
+      - dependency-name: "flutter"
+        update-types: ["version-update:semver-major"]
+      # Ignore breaking changes in UI libraries
+      - dependency-name: "provider"
+        update-types: ["version-update:semver-major"]
+
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "first-monday"
+      time: "10:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "huazhou"
+    assignees:
+      - "huazhou"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "ci"
+
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/jive-api"
+    schedule:
+      interval: "monthly"
+      day: "second-monday"
+      time: "10:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 2
+    reviewers:
+      - "huazhou"
+    assignees:
+      - "huazhou"
+    commit-message:
+      prefix: "docker"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"
+    ignore:
+      # Ignore PostgreSQL major version updates (handle manually)
+      - dependency-name: "postgres"
+        update-types: ["version-update:semver-major"]
+      # Ignore Redis major version updates (handle manually)
+      - dependency-name: "redis"
+        update-types: ["version-update:semver-major"]
