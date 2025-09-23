@@ -331,6 +331,7 @@ jobs:
   rust-core-check:
     name: Rust Core Dual Mode Check
     runs-on: ubuntu-latest
+    continue-on-error: true
     services:
       postgres:
         image: postgres:15

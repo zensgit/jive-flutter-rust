@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[pre-commit] Running API lint (SQLx check + Clippy)..."
+make api-lint
+echo "[pre-commit] OK"
+

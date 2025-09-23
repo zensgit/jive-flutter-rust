@@ -8,6 +8,8 @@ import 'package:jive_money/services/exchange_rate_service.dart';
 import 'package:jive_money/services/crypto_price_service.dart';
 import 'package:jive_money/services/currency_service.dart' as api;
 import 'package:jive_money/services/currency_service.dart';
+import 'package:jive_money/core/network/http_client.dart';
+import 'package:jive_money/core/network/api_readiness.dart';
 
 // --- PR1: Currency catalog meta state (fallback / errors / sync times) ---
 class CurrencyCatalogMeta {
@@ -135,6 +137,7 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
 
   bool _initialized = false;
   final bool _suppressAutoInit;
+  bool _disposed = false;
 
   CurrencyNotifier(
     this._prefsBox,
@@ -357,11 +360,14 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   }
 
   Future<void> _performRateUpdate() async {
-    if (_isLoadingRates) return;
+    if (_isLoadingRates || _disposed) return;
 
     _isLoadingRates = true;
 
     try {
+      // Check if disposed before continuing
+      if (_disposed) return;
+
       // Always fetch live rates first for selected targets (no mock)
       final targets = state.selectedCurrencies
           .where((c) => c != state.baseCurrency)
@@ -419,9 +425,11 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       }
     } catch (e) {
       debugPrint('Error loading exchange rates: $e');
-      _exchangeRates = MockExchangeRates.getAllRatesFrom(state.baseCurrency);
-      _lastRateUpdate = DateTime.now();
-      state = state.copyWith(isFallback: true);
+      if (!_disposed) {
+        _exchangeRates = MockExchangeRates.getAllRatesFrom(state.baseCurrency);
+        _lastRateUpdate = DateTime.now();
+        state = state.copyWith(isFallback: true);
+      }
     } finally {
       _isLoadingRates = false;
     }
@@ -1044,6 +1052,13 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   /// Save preferences to storage
   Future<void> _savePreferences() async {
     await _prefsBox.put('currency_preferences', state.toJson());
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _pendingRateUpdate = null;
+    super.dispose();
   }
 }
 
