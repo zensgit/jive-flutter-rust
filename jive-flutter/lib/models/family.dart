@@ -1,5 +1,6 @@
 /// Family（家庭/组织）模型
 /// 支持多Family架构，一个用户可以属于多个Family
+library;
 
 import 'package:flutter/material.dart';
 

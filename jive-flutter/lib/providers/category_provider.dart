@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/category.dart' as category_model;
-import '../models/category_template.dart';
+import 'package:jive_money/models/category.dart' as category_model;
+import 'package:jive_money/models/category_template.dart';
 
 /// 分类服务提供器 (简化版本，暂不使用API服务)
 // final categoryServiceProvider = Provider<CategoryService>((ref) {

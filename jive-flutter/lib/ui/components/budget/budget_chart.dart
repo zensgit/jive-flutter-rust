@@ -1,8 +1,8 @@
 // 预算图表组件
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../../core/constants/app_constants.dart';
-import 'budget_progress.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/budget/budget_progress.dart';
 
 class BudgetPieChart extends StatefulWidget {
   final List<BudgetData> budgets;
@@ -236,7 +236,7 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
   }
 
   Widget _buildEmptyState(ThemeData theme) {
-    return Container(
+    return SizedBox(
       height: widget.height,
       child: Center(
         child: Column(
@@ -388,10 +388,10 @@ class BudgetComparisonChart extends StatelessWidget {
                       },
                     ),
                   ),
-                  topTitles: AxisTitles(
+                  topTitles: const AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
                   ),
-                  rightTitles: AxisTitles(
+                  rightTitles: const AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
                   ),
                 ),
@@ -483,7 +483,7 @@ class BudgetComparisonChart extends StatelessWidget {
   }
 
   Widget _buildEmptyState(ThemeData theme) {
-    return Container(
+    return SizedBox(
       height: height,
       child: Center(
         child: Column(

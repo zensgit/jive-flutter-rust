@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/tag.dart';
-import '../providers/tag_provider.dart';
+import 'package:jive_money/models/tag.dart';
+import 'package:jive_money/providers/tag_provider.dart';
 
 class TagCreateDialog extends ConsumerStatefulWidget {
   final String? initialGroupId;
@@ -117,7 +117,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                 // 标题
                 Row(
                   children: [
-                    Text(
+                    const Text(
                       '创建标签',
                       style: TextStyle(
                         fontSize: 20,
@@ -127,7 +127,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                     const Spacer(),
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: Icon(Icons.close),
+                      icon: const Icon(Icons.close),
                     ),
                   ],
                 ),
@@ -153,7 +153,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                 const SizedBox(height: 16),
 
                 // 选择颜色
-                Text('选择颜色',
+                const Text('选择颜色',
                     style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 Wrap(
@@ -174,7 +174,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                               : null,
                         ),
                         child: isSelected
-                            ? Icon(Icons.check, color: Colors.white)
+                            ? const Icon(Icons.check, color: Colors.white)
                             : null,
                       ),
                     );
@@ -183,10 +183,10 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                 const SizedBox(height: 16),
 
                 // 选择图标
-                Text('选择图标 (可选)',
+                const Text('选择图标 (可选)',
                     style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
-                Container(
+                SizedBox(
                   height: 80,
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -208,7 +208,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                               ),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Icon(Icons.cancel, color: Colors.grey),
+                            child: const Icon(Icons.cancel, color: Colors.grey),
                           ),
                         ),
                         // 图标选项
@@ -233,7 +233,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                               child: Icon(entry.value, color: Colors.grey[700]),
                             ),
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                   ),
@@ -241,7 +241,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                 const SizedBox(height: 16),
 
                 // 分组选择 - 增强版
-                Text('选择分组 (可选)',
+                const Text('选择分组 (可选)',
                     style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 _buildGroupSelector(tagGroups),
@@ -249,7 +249,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
 
                 // 预览
                 if (_nameController.text.isNotEmpty) ...[
-                  Text('预览',
+                  const Text('预览',
                       style: TextStyle(fontWeight: FontWeight.w500)),
                   const SizedBox(height: 8),
                   Container(
@@ -299,7 +299,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text('取消'),
+                      child: const Text('取消'),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
@@ -310,7 +310,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                               height: 16,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : Text('创建'),
+                          : const Text('创建'),
                     ),
                   ],
                 ),
@@ -343,7 +343,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
               children: [
                 if (_groupController.text.isNotEmpty)
                   IconButton(
-                    icon: Icon(Icons.clear, size: 18),
+                    icon: const Icon(Icons.clear, size: 18),
                     onPressed: () {
                       _groupController.clear();
                       setState(() {
@@ -370,7 +370,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                 ),
                 if (_canCreateNewGroup())
                   IconButton(
-                    icon: Icon(Icons.add, size: 18, color: Colors.green),
+                    icon: const Icon(Icons.add, size: 18, color: Colors.green),
                     tooltip: '创建新分组',
                     onPressed: _createQuickGroup,
                   ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../states/loading_indicator.dart';
-import '../states/empty_state.dart';
-import '../states/error_state.dart';
+import 'package:jive_money/widgets/states/loading_indicator.dart';
+import 'package:jive_money/widgets/states/empty_state.dart';
+import 'package:jive_money/widgets/states/error_state.dart';
 
 /// 可刷新列表组件
 class RefreshableList<T> extends StatefulWidget {
@@ -360,10 +360,10 @@ class _SearchableRefreshableListState<T>
             controller: _searchController,
             decoration: InputDecoration(
               hintText: widget.searchHint ?? '搜索...',
-              prefixIcon: Icon(Icons.search),
+              prefixIcon: const Icon(Icons.search),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
-                      icon: Icon(Icons.clear),
+                      icon: const Icon(Icons.clear),
                       onPressed: () {
                         _searchController.clear();
                       },

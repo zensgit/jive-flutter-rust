@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../management/category_management_page.dart';
+import 'package:jive_money/screens/management/category_management_page.dart';
 
 /// 简单的登录页面
 class LoginPage extends ConsumerStatefulWidget {
@@ -135,7 +135,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : Text('登录'),
+                      : const Text('登录'),
                 ),
                 const SizedBox(height: 16),
 
@@ -151,7 +151,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: Text('演示模式（跳过登录）'),
+                  child: const Text('演示模式（跳过登录）'),
                 ),
               ],
             ),

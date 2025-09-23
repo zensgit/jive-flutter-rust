@@ -22,13 +22,13 @@ Future<void> showDataSourceInfoSheet(BuildContext context) async {
                 children: [
                   Icon(Icons.info_outline, color: cs.primary),
                   const SizedBox(width: 8),
-                  Text(
+                  const Text(
                     '数据来源与缓存说明',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const Spacer(),
                   IconButton(
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                     onPressed: () => Navigator.pop(ctx),
                   )
                 ],

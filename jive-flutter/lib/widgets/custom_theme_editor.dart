@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/theme_models.dart' as models;
-import '../services/theme_service.dart';
-import 'color_picker_dialog.dart';
-import 'theme_preview_card.dart';
+import 'package:jive_money/models/theme_models.dart' as models;
+import 'package:jive_money/services/theme_service.dart';
+import 'package:jive_money/widgets/color_picker_dialog.dart';
+import 'package:jive_money/widgets/theme_preview_card.dart';
 
 /// 自定义主题编辑器
 class CustomThemeEditor extends StatefulWidget {
@@ -64,12 +64,12 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
         actions: [
           if (_isEditing)
             IconButton(
-              icon: Icon(Icons.preview),
+              icon: const Icon(Icons.preview),
               onPressed: _previewTheme,
               tooltip: '预览主题',
             ),
           IconButton(
-            icon: Icon(Icons.save),
+            icon: const Icon(Icons.save),
             onPressed: _isLoading ? null : _saveTheme,
             tooltip: '保存主题',
           ),
@@ -178,7 +178,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
         const SizedBox(height: 24),
 
         // 预设主题模板
-        Text(
+        const Text(
           '快速开始',
           style: TextStyle(
             fontSize: 18,
@@ -186,7 +186,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
           ),
         ),
         const SizedBox(height: 12),
-        Text(
+        const Text(
           '选择一个预设主题作为起点，然后自定义颜色：',
           style: TextStyle(color: Colors.grey),
         ),
@@ -303,14 +303,14 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
               );
             });
           },
-          title: Text('紧凑密度'),
-          subtitle: Text('减少垂直留白，显示更多列表项'),
+          title: const Text('紧凑密度'),
+          subtitle: const Text('减少垂直留白，显示更多列表项'),
         ),
         const SizedBox(height: 8),
         ListTile(
-          leading: Icon(Icons.crop_square_rounded),
-          title: Text('圆角大小'),
-          subtitle: Text('小 / 中 / 大'),
+          leading: const Icon(Icons.crop_square_rounded),
+          title: const Text('圆角大小'),
+          subtitle: const Text('小 / 中 / 大'),
           trailing: DropdownButton<String>(
             value: _editingTheme.cornerRadius,
             items: const [
@@ -520,7 +520,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
       ),
       subtitle: Text(item.subtitle),
       trailing: Text(
-        '#${item.color.value.toRadixString(16).substring(2).toUpperCase()}',
+        '#${item.color.toARGB32().toRadixString(16).substring(2).toUpperCase()}',
         style: const TextStyle(
           fontFamily: 'monospace',
           fontSize: 12,
@@ -629,7 +629,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
         data: _editingTheme.toFlutterThemeData(),
         child: Scaffold(
           appBar: AppBar(
-            title: Text('主题预览'),
+            title: const Text('主题预览'),
             centerTitle: true,
             backgroundColor: _editingTheme.navigationBar,
             foregroundColor: _editingTheme.navigationBarText,
@@ -662,12 +662,12 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
                         children: [
                           ElevatedButton(
                             onPressed: () {},
-                            child: Text('主要按钮'),
+                            child: const Text('主要按钮'),
                           ),
                           const SizedBox(width: 8),
                           OutlinedButton(
                             onPressed: () {},
-                            child: Text('次要按钮'),
+                            child: const Text('次要按钮'),
                           ),
                         ],
                       ),
@@ -682,11 +682,11 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
                             );
                           });
                         },
-                        title: Text('紧凑密度'),
-                        subtitle: Text('减少垂直留白以显示更多内容'),
+                        title: const Text('紧凑密度'),
+                        subtitle: const Text('减少垂直留白以显示更多内容'),
                       ),
                       ListTile(
-                        title: Text('圆角大小'),
+                        title: const Text('圆角大小'),
                         trailing: DropdownButton<String>(
                           value: _editingTheme.cornerRadius,
                           items: const [
@@ -713,7 +713,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
           floatingActionButton: FloatingActionButton(
             onPressed: () => Navigator.of(context).pop(),
             backgroundColor: _editingTheme.primaryColor,
-            child: Icon(Icons.close),
+            child: const Icon(Icons.close),
           ),
         ),
       ),
@@ -752,6 +752,8 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
           baseTheme: finalTheme,
         );
       }
+
+      if (!context.mounted) return;
 
       Navigator.of(context).pop(finalTheme);
     } catch (e) {

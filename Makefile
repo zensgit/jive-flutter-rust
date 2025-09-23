@@ -23,7 +23,7 @@ help:
 # 安装依赖
 install:
 	@echo "安装 Rust 依赖..."
-	@cd jive-core && cargo build
+	@cd jive-core && cargo build --no-default-features --features server
 	@echo "安装 Flutter 依赖..."
 	@cd jive-flutter && flutter pub get
 	@echo "✅ 依赖安装完成"
@@ -53,7 +53,7 @@ build: build-rust build-flutter
 
 build-rust:
 	@echo "构建 Rust 生产版本..."
-	@cd jive-core && cargo build --release
+	@cd jive-core && cargo build --release --no-default-features --features server
 	@echo "✅ Rust 构建完成"
 
 build-flutter:
@@ -66,7 +66,7 @@ test: test-rust test-flutter
 
 test-rust:
 	@echo "运行 Rust 测试..."
-	@cd jive-core && cargo test
+	@cd jive-core && cargo test --no-default-features --features server
 
 test-flutter:
 	@echo "运行 Flutter 测试..."
@@ -102,20 +102,45 @@ docker-logs:
 
 # 数据库操作
 db-migrate:
-	@echo "运行数据库迁移..."
-	@cd jive-core && cargo run --bin migrate
+	@echo "运行数据库迁移 (jive-api/scripts/migrate_local.sh)..."
+	@cd jive-api && ./scripts/migrate_local.sh --force
 
 db-seed:
-	@echo "填充测试数据..."
-	@cd jive-core && cargo run --bin seed
+	@echo "填充测试数据 (运行迁移并可选导入种子)..."
+	@cd jive-api && ./scripts/migrate_local.sh || true
+	@echo "如需创建/更新超级管理员，可设置 DATABASE_URL 后执行: psql $$DATABASE_URL -f scripts/upsert_superadmin.sql"
 
 db-reset:
-	@echo "重置数据库..."
-	@cd jive-core && cargo run --bin reset
+	@echo "重置数据库 (jive-api/scripts/reset-db.sh)..."
+	@cd jive-api && ./scripts/reset-db.sh
 
 # 查看日志
 logs:
 	@tail -f logs/*.log
+
+# ---- API helpers ----
+api-clippy:
+	@echo "Clippy (API, deny warnings, SQLx offline)..."
+	@cd jive-api && SQLX_OFFLINE=true cargo clippy -- -D warnings
+
+api-sqlx-check:
+	@echo "SQLx offline cache check (API strict)..."
+	@cd jive-api && SQLX_OFFLINE=true cargo sqlx prepare --check
+
+sqlx-prepare-api:
+	@echo "Prepare SQLx metadata for API (requires DB ready + migrations applied)..."
+	@cd jive-api && cargo install sqlx-cli --no-default-features --features postgres || true
+	@cd jive-api && SQLX_OFFLINE=false cargo sqlx prepare
+
+api-lint:
+	@echo "API lint: SQLx offline check + Clippy (deny warnings)"
+	@$(MAKE) api-sqlx-check
+	@$(MAKE) api-clippy
+
+# Enable local git hooks once per clone
+hooks:
+	@git config core.hooksPath .githooks
+	@echo "✅ Git hooks enabled (pre-commit runs make api-lint)"
 
 # 启动完整版 API（宽松 CORS 开发模式，支持自定义端口 API_PORT）
 api-dev:

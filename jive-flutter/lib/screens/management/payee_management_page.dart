@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../utils/string_utils.dart';
+import 'package:jive_money/utils/string_utils.dart';
 
 /// 交易对方管理页面 - 简化版本
 class PayeeManagementPage extends StatefulWidget {
@@ -94,13 +94,13 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text('交易对方管理'),
+        title: const Text('交易对方管理'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () => _showAddPayeeDialog(),
           ),
         ],
@@ -140,7 +140,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
               },
               decoration: InputDecoration(
                 hintText: '搜索交易对方...',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: Colors.grey[300]!),
@@ -179,8 +179,8 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddPayeeDialog(),
-        icon: Icon(Icons.person_add),
-        label: Text('新建对方'),
+        icon: const Icon(Icons.person_add),
+        label: const Text('新建对方'),
       ),
     );
   }
@@ -256,7 +256,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
               const SizedBox(height: 8),
               TextButton.icon(
                 onPressed: () => _showAddPayeeDialog(),
-                icon: Icon(Icons.add),
+                icon: const Icon(Icons.add),
                 label: Text('添加${type == 'family' ? '家庭成员' : '服务提供商'}'),
               ),
             ],
@@ -340,12 +340,12 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('新建交易对方'),
-        content: Text('这里是创建交易对方的功能界面，基于maybe-main设计模式实现。'),
+        title: const Text('新建交易对方'),
+        content: const Text('这里是创建交易对方的功能界面，基于maybe-main设计模式实现。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           TextButton(
             onPressed: () {
@@ -354,7 +354,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
                 const SnackBar(content: Text('交易对方创建功能演示')),
               );
             },
-            child: Text('创建'),
+            child: const Text('创建'),
           ),
         ],
       ),
@@ -366,11 +366,11 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
       context: context,
       builder: (context) => AlertDialog(
         title: Text('编辑: ${payee['name']}'),
-        content: Text('这里是编辑交易对方的功能界面。'),
+        content: const Text('这里是编辑交易对方的功能界面。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           TextButton(
             onPressed: () {
@@ -379,7 +379,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
                 SnackBar(content: Text('已编辑: ${payee['name']}')),
               );
             },
-            child: Text('保存'),
+            child: const Text('保存'),
           ),
         ],
       ),
@@ -390,14 +390,14 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('删除交易对方'),
+        title: const Text('删除交易对方'),
         content: Text(
           '确定要删除"${payee['name']}"吗？\n这将影响 ${payee['transactionCount']} 笔交易记录。',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           TextButton(
             onPressed: () {
@@ -407,7 +407,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
               );
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text('删除'),
+            child: const Text('删除'),
           ),
         ],
       ),
@@ -464,7 +464,7 @@ class _PayeeManagementPageState extends State<PayeeManagementPage>
               ],
             ),
             const SizedBox(height: 20),
-            Text(
+            const Text(
               '联系信息',
               style: TextStyle(
                 fontSize: 16,

@@ -1,6 +1,6 @@
 // 仪表板摘要卡片组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
 
 class SummaryCard extends StatelessWidget {
   final String title;

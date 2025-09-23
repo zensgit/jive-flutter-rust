@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/currency_converter.dart';
-import '../providers/currency_provider.dart';
-import '../models/currency.dart';
-import '../widgets/source_badge.dart';
+import 'package:jive_money/widgets/currency_converter.dart';
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/models/currency.dart';
+import 'package:jive_money/widgets/source_badge.dart';
 
 /// Standalone currency converter page
 class CurrencyConverterPage extends ConsumerStatefulWidget {
@@ -76,11 +75,11 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                 children: [
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    icon: Icon(Icons.arrow_back),
+                    icon: const Icon(Icons.arrow_back),
                     color: Colors.black,
                   ),
                   const SizedBox(width: 8),
-                  Text(
+                  const Text(
                     '货币转换',
                     style: TextStyle(
                       fontSize: 18,
@@ -92,7 +91,7 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                   if (_isInitializing)
                     Row(
                       children: [
-                        const SizedBox(
+                        SizedBox(
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
@@ -192,7 +191,7 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                           ),
                           child: Icon(Icons.settings, color: Colors.blue[700]),
                         ),
-                        title: Text('货币设置'),
+                        title: const Text('货币设置'),
                         subtitle: Text(
                           '已选择 ${selectedCurrencies.length} 种货币 · ${currencyPrefs.multiCurrencyEnabled ? '多币种模式' : '单币种模式'}',
                           style: TextStyle(
@@ -200,7 +199,7 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                             color: Colors.grey[600],
                           ),
                         ),
-                        trailing: Icon(Icons.chevron_right),
+                        trailing: const Icon(Icons.chevron_right),
                         onTap: () {
                           Navigator.pushNamed(context, '/settings/currency');
                         },
@@ -295,7 +294,7 @@ class _CurrencyConverterPageState extends ConsumerState<CurrencyConverterPage> {
                   ],
                 )
               else if (snapshot.connectionState == ConnectionState.waiting)
-                const SizedBox(
+                SizedBox(
                   width: 16,
                   height: 16,
                   child: CircularProgressIndicator(

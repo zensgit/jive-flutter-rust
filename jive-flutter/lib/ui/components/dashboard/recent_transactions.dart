@@ -1,8 +1,8 @@
 // 最近交易组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
-import '../../../models/transaction.dart';
-import '../cards/transaction_card.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/models/transaction.dart';
+import 'package:jive_money/ui/components/cards/transaction_card.dart';
 
 class RecentTransactions extends StatelessWidget {
   final List<Transaction> transactions;
@@ -169,7 +169,7 @@ class GroupedRecentTransactions extends StatelessWidget {
                 if (onViewAll != null)
                   TextButton(
                     onPressed: onViewAll,
-                    child: Text('查看全部'),
+                    child: const Text('查看全部'),
                   ),
               ],
             ),

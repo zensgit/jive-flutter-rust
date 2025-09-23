@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../services/wechat_service.dart';
-import 'wechat_register_form_screen.dart';
+import 'package:jive_money/services/wechat_service.dart';
+import 'package:jive_money/screens/auth/wechat_register_form_screen.dart';
 
 /// 微信二维码扫描页面
 class WeChatQRScreen extends StatefulWidget {
@@ -96,6 +96,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
         try {
           final userInfo = await WeChatService.simulateGetUserInfo();
           final authResult = await WeChatService.simulateLogin();
+          if (!context.mounted) return;
 
           if (userInfo != null && authResult != null) {
             if (widget.isLogin) {
@@ -115,6 +116,8 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                   ),
                 ),
               );
+
+              if (!context.mounted) return;
 
               if (result != null) {
                 Navigator.of(context).pop(result);
@@ -153,7 +156,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
               ),
               const SizedBox(height: 20),
 
-              Text(
+              const Text(
                 'Jive Money',
                 style: TextStyle(
                   fontSize: 24,
@@ -256,7 +259,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                                   right: 20,
                                   child: Container(
                                     height: 2,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       gradient: LinearGradient(
                                         colors: [
                                           Colors.transparent,
@@ -286,20 +289,20 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                                 decoration: BoxDecoration(
                                   border: Border(
                                     top: isTop
-                                        ? BorderSide(
+                                        ? const BorderSide(
                                             color: Colors.green, width: 3)
                                         : BorderSide.none,
                                     bottom: isTop
                                         ? BorderSide.none
-                                        : BorderSide(
+                                        : const BorderSide(
                                             color: Colors.green, width: 3),
                                     left: isLeft
-                                        ? BorderSide(
+                                        ? const BorderSide(
                                             color: Colors.green, width: 3)
                                         : BorderSide.none,
                                     right: isLeft
                                         ? BorderSide.none
-                                        : BorderSide(
+                                        : const BorderSide(
                                             color: Colors.green, width: 3),
                                   ),
                                 ),
@@ -352,7 +355,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                 onPressed: () {
                   Navigator.of(context).pop({'success': false});
                 },
-                child: Text(
+                child: const Text(
                   '取消',
                   style: TextStyle(
                     fontSize: 16,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/app.dart' as core;
-import '../../widgets/theme_appearance.dart';
+import 'package:jive_money/core/app.dart' as core;
+import 'package:jive_money/widgets/theme_appearance.dart';
 
 class ThemeSettingsScreen extends ConsumerWidget {
   const ThemeSettingsScreen({super.key});
@@ -12,7 +12,7 @@ class ThemeSettingsScreen extends ConsumerWidget {
     final themeMode = ref.watch(core.themeModeProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text('主题设置')),
+      appBar: AppBar(title: const Text('主题设置')),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 24),
         children: [
@@ -27,8 +27,8 @@ class ThemeSettingsScreen extends ConsumerWidget {
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    icon: Icon(Icons.phone_iphone, size: 18),
-                    label: Text('跟随系统'),
+                    icon: const Icon(Icons.phone_iphone, size: 18),
+                    label: const Text('跟随系统'),
                     onPressed: () => ref
                         .read(core.themeModeProvider.notifier)
                         .setThemeMode(ThemeMode.system),
@@ -43,8 +43,8 @@ class ThemeSettingsScreen extends ConsumerWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: OutlinedButton.icon(
-                    icon: Icon(Icons.wb_sunny_outlined, size: 18),
-                    label: Text('浅色'),
+                    icon: const Icon(Icons.wb_sunny_outlined, size: 18),
+                    label: const Text('浅色'),
                     onPressed: () => ref
                         .read(core.themeModeProvider.notifier)
                         .setThemeMode(ThemeMode.light),
@@ -59,8 +59,8 @@ class ThemeSettingsScreen extends ConsumerWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: OutlinedButton.icon(
-                    icon: Icon(Icons.nightlight_round, size: 18),
-                    label: Text('深色'),
+                    icon: const Icon(Icons.nightlight_round, size: 18),
+                    label: const Text('深色'),
                     onPressed: () => ref
                         .read(core.themeModeProvider.notifier)
                         .setThemeMode(ThemeMode.dark),

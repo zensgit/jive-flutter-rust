@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/family.dart' as family_model;
-import '../../services/api/family_service.dart';
-import '../../providers/family_provider.dart';
+import 'package:jive_money/models/family.dart' as family_model;
+import 'package:jive_money/services/api/family_service.dart';
+import 'package:jive_money/providers/family_provider.dart';
 
 class DeleteFamilyDialog extends ConsumerStatefulWidget {
   final family_model.Family family;
@@ -44,7 +44,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
     final secondConfirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('⚠️ 最终确认'),
+        title: const Text('⚠️ 最终确认'),
         content: Text(
           '您确定要删除 "${widget.family.name}" 吗？\n'
           '此操作不可恢复！\n\n'
@@ -56,14 +56,14 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: Text('确认删除'),
+            child: const Text('确认删除'),
           ),
         ],
       ),
@@ -81,17 +81,18 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
       await familyService.deleteFamily(widget.family.id);
 
       // 刷新Family列表
-      await ref.refresh(userFamiliesProvider);
+      ref.refresh(userFamiliesProvider);
 
       if (mounted) {
         // 如果删除的是当前Family，切换到其他Family或显示空状态
         final currentFamily = ref.read(currentFamilyProvider);
         if (currentFamily?.id == widget.family.id) {
           final families = ref.read(userFamiliesProvider);
-          if (families != null && families.isNotEmpty) {
+          if (families.isNotEmpty) {
             // 切换到第一个可用的Family
             await familyService.switchFamily(families.first.family.id);
-            await ref.refresh(currentFamilyProvider);
+            if (!context.mounted) return;
+            ref.refresh(currentFamilyProvider);
           }
         }
 
@@ -129,7 +130,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
             color: theme.colorScheme.error,
           ),
           const SizedBox(width: 8),
-          Text('删除Family'),
+          const Text('删除Family'),
         ],
       ),
       content: SingleChildScrollView(
@@ -184,7 +185,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
                 border: const OutlineInputBorder(),
                 errorText: _error,
                 suffixIcon: _isNameValid
-                    ? Icon(Icons.check_circle, color: Colors.green)
+                    ? const Icon(Icons.check_circle, color: Colors.green)
                     : null,
               ),
               enabled: !_isDeleting,
@@ -195,7 +196,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
       actions: [
         TextButton(
           onPressed: _isDeleting ? null : () => Navigator.pop(context),
-          child: Text('取消'),
+          child: const Text('取消'),
         ),
         FilledButton(
           onPressed: _isNameValid && !_isDeleting ? _deleteFamily : null,
@@ -211,7 +212,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 )
-              : Text('删除Family'),
+              : const Text('删除Family'),
         ),
       ],
     );

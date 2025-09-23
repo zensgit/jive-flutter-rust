@@ -1,16 +1,16 @@
 
 running 24 tests
-test middleware::permission::tests::test_permission_group ... ok
 test models::audit::tests::test_audit_action_conversion ... ok
+test middleware::permission::tests::test_permission_group ... ok
 test models::audit::tests::test_new_audit_log ... ok
-test models::audit::tests::test_log_builders ... ok
 test models::family::tests::test_generate_invite_code ... ok
+test models::audit::tests::test_log_builders ... ok
 test models::family::tests::test_new_family ... ok
-test models::invitation::tests::test_accept_invitation ... ok
 test models::invitation::tests::test_cancel_invitation ... ok
-test middleware::permission::tests::test_permission_cache ... ok
+test models::invitation::tests::test_accept_invitation ... ok
 test models::invitation::tests::test_expired_invitation ... ok
 test models::invitation::tests::test_new_invitation ... ok
+test middleware::permission::tests::test_permission_cache ... ok
 test models::membership::tests::test_can_manage_member ... ok
 test models::membership::tests::test_can_perform ... ok
 test models::membership::tests::test_change_role ... ok
@@ -20,10 +20,10 @@ test models::permission::tests::test_owner_has_all_permissions ... ok
 test models::permission::tests::test_permission_from_str ... ok
 test models::permission::tests::test_role_from_str ... ok
 test models::permission::tests::test_viewer_has_limited_permissions ... ok
-test services::avatar_service::tests::test_deterministic_avatar ... ok
-test services::currency_service::tests::test_convert_amount ... ok
 test services::avatar_service::tests::test_generate_random_avatar ... ok
 test services::avatar_service::tests::test_get_initials ... ok
+test services::avatar_service::tests::test_deterministic_avatar ... ok
+test services::currency_service::tests::test_convert_amount ... ok
 
 test result: ok. 24 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 

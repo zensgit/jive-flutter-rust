@@ -1,7 +1,7 @@
 // 交易筛选组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
-import 'transaction_form.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/transactions/transaction_form.dart';
 
 class TransactionFilter extends StatefulWidget {
   final TransactionFilterData? initialFilter;
@@ -69,7 +69,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
               if (widget.onReset != null)
                 TextButton(
                   onPressed: _handleReset,
-                  child: Text('重置'),
+                  child: const Text('重置'),
                 ),
             ],
           ),
@@ -82,7 +82,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
             decoration: InputDecoration(
               labelText: '搜索',
               hintText: '搜索描述、备注或收款方',
-              prefixIcon: Icon(Icons.search),
+              prefixIcon: const Icon(Icons.search),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppConstants.borderRadius),
               ),
@@ -142,7 +142,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
           spacing: 8,
           children: [
             FilterChip(
-              label: Text('全部'),
+              label: const Text('全部'),
               selected: _filter.types.isEmpty,
               onSelected: (selected) {
                 setState(() {
@@ -153,7 +153,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
               },
             ),
             FilterChip(
-              label: Text('支出'),
+              label: const Text('支出'),
               selected: _filter.types.contains(TransactionType.expense),
               onSelected: (selected) {
                 setState(() {
@@ -168,7 +168,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
               },
             ),
             FilterChip(
-              label: Text('收入'),
+              label: const Text('收入'),
               selected: _filter.types.contains(TransactionType.income),
               onSelected: (selected) {
                 setState(() {
@@ -183,7 +183,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
               },
             ),
             FilterChip(
-              label: Text('转账'),
+              label: const Text('转账'),
               selected: _filter.types.contains(TransactionType.transfer),
               onSelected: (selected) {
                 setState(() {
@@ -262,23 +262,23 @@ class _TransactionFilterState extends State<TransactionFilter> {
           spacing: 8,
           children: [
             ActionChip(
-              label: Text('今天'),
+              label: const Text('今天'),
               onPressed: () => _setDateRange(DateRange.today),
             ),
             ActionChip(
-              label: Text('本周'),
+              label: const Text('本周'),
               onPressed: () => _setDateRange(DateRange.thisWeek),
             ),
             ActionChip(
-              label: Text('本月'),
+              label: const Text('本月'),
               onPressed: () => _setDateRange(DateRange.thisMonth),
             ),
             ActionChip(
-              label: Text('上月'),
+              label: const Text('上月'),
               onPressed: () => _setDateRange(DateRange.lastMonth),
             ),
             ActionChip(
-              label: Text('今年'),
+              label: const Text('今年'),
               onPressed: () => _setDateRange(DateRange.thisYear),
             ),
           ],
@@ -461,14 +461,14 @@ class _TransactionFilterState extends State<TransactionFilter> {
         Expanded(
           child: OutlinedButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
           child: ElevatedButton(
             onPressed: _handleApply,
-            child: Text('应用筛选'),
+            child: const Text('应用筛选'),
           ),
         ),
       ],

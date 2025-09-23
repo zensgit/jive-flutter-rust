@@ -6,7 +6,7 @@ use chrono::Utc;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use serde::de::{self, Deserializer, SeqAccess, Visitor};
-use sqlx::PgPool;
+use sqlx::{PgPool, Row};
 use std::collections::HashMap;
 
 use crate::auth::Claims;
@@ -225,7 +225,7 @@ pub async fn get_realtime_exchange_rates(
     let base_currency = query.base_currency.unwrap_or_else(|| "USD".to_string());
     
     // Check if we have recent rates (within 15 minutes)
-    let recent_rates = sqlx::query!(
+    let recent_rates = sqlx::query(
         r#"
         SELECT 
             to_currency,
@@ -236,8 +236,8 @@ pub async fn get_realtime_exchange_rates(
         AND created_at > NOW() - INTERVAL '15 minutes'
         ORDER BY created_at DESC
         "#,
-        base_currency
     )
+    .bind(&base_currency)
     .fetch_all(&pool)
     .await
     .map_err(|_| ApiError::InternalServerError)?;
@@ -246,8 +246,11 @@ pub async fn get_realtime_exchange_rates(
     let mut last_updated: Option<chrono::NaiveDateTime> = None;
     
     for row in recent_rates {
-        rates.insert(row.to_currency, row.rate);
-        let created_naive = row.created_at.naive_utc();
+        let to_currency: String = row.get("to_currency");
+        let rate: Decimal = row.get("rate");
+        let created_at: chrono::DateTime<Utc> = row.get("created_at");
+        rates.insert(to_currency, rate);
+        let created_naive = created_at.naive_utc();
         if last_updated.map(|lu| created_naive > lu).unwrap_or(true) {
             last_updated = Some(created_naive);
         }
@@ -295,12 +298,83 @@ pub struct DetailedRatesRequest {
 pub struct DetailedRateItem {
     pub rate: Decimal,
     pub source: String,
+    pub is_manual: bool,
+    pub manual_rate_expiry: Option<chrono::NaiveDateTime>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct DetailedRatesResponse {
     pub base_currency: String,
     pub rates: HashMap<String, DetailedRateItem>,
+}
+
+// List manual overrides for current business date
+#[derive(Debug, Deserialize)]
+pub struct ManualOverridesQuery {
+    pub base_currency: String,
+    pub only_active: Option<bool>, // if true: expiry is NULL or > NOW()
+}
+
+#[derive(Debug, Serialize)]
+pub struct ManualOverrideItem {
+    pub to_currency: String,
+    pub rate: Decimal,
+    pub manual_rate_expiry: Option<chrono::NaiveDateTime>,
+    pub updated_at: chrono::NaiveDateTime,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ManualOverridesResponse {
+    pub base_currency: String,
+    pub overrides: Vec<ManualOverrideItem>,
+}
+
+pub async fn get_manual_overrides(
+    State(pool): State<PgPool>,
+    Query(q): Query<ManualOverridesQuery>,
+) -> ApiResult<Json<ApiResponse<ManualOverridesResponse>>> {
+    let only_active = q.only_active.unwrap_or(true);
+    let sql = if only_active {
+        r#"
+        SELECT to_currency, rate, manual_rate_expiry, updated_at
+        FROM exchange_rates
+        WHERE from_currency = $1 AND date = CURRENT_DATE AND is_manual = true
+          AND (manual_rate_expiry IS NULL OR manual_rate_expiry > NOW())
+        ORDER BY updated_at DESC
+        "#
+    } else {
+        r#"
+        SELECT to_currency, rate, manual_rate_expiry, updated_at
+        FROM exchange_rates
+        WHERE from_currency = $1 AND date = CURRENT_DATE AND is_manual = true
+        ORDER BY updated_at DESC
+        "#
+    };
+
+    let rows = sqlx::query(sql)
+        .bind(&q.base_currency)
+        .fetch_all(&pool)
+        .await
+        .map_err(|_| ApiError::InternalServerError)?;
+
+    let mut overrides = Vec::with_capacity(rows.len());
+    for row in rows {
+        let to_currency: String = row.get("to_currency");
+        let rate: Decimal = row.get("rate");
+        let mre: Option<chrono::DateTime<Utc>> = row.get("manual_rate_expiry");
+        let updated_at: chrono::DateTime<Utc> = row.get("updated_at");
+        overrides.push(ManualOverrideItem {
+            to_currency,
+            rate,
+            manual_rate_expiry: mre.map(|dt| dt.naive_utc()),
+            updated_at: updated_at.naive_utc(),
+        });
+    }
+
+    Ok(Json(ApiResponse::success(ManualOverridesResponse {
+        base_currency: q.base_currency,
+        overrides,
+    })))
 }
 
 /// Get detailed batch rates (supports fiat and crypto) with source label
@@ -459,7 +533,29 @@ pub async fn get_detailed_batch_rates(
         };
 
         if let Some((rate, source)) = rate_and_source {
-            result.insert(tgt.clone(), DetailedRateItem { rate, source });
+            // Lookup manual flags from DB for this pair on business date (today)
+            let row = sqlx::query(
+                r#"
+                SELECT is_manual, manual_rate_expiry
+                FROM exchange_rates
+                WHERE from_currency = $1 AND to_currency = $2 AND date = CURRENT_DATE
+                ORDER BY updated_at DESC
+                LIMIT 1
+                "#,
+            )
+            .bind(&base)
+            .bind(tgt)
+            .fetch_optional(&pool)
+            .await
+            .map_err(|_| ApiError::InternalServerError)?;
+
+            let (is_manual, manual_rate_expiry) = if let Some(r) = row {
+                let is_manual: Option<bool> = r.get("is_manual");
+                let mre: Option<chrono::DateTime<Utc>> = r.get("manual_rate_expiry");
+                (is_manual.unwrap_or(false), mre.map(|dt| dt.naive_utc()))
+            } else { (false, None) };
+
+            result.insert(tgt.clone(), DetailedRateItem { rate, source, is_manual, manual_rate_expiry });
         }
     }
 
@@ -505,7 +601,11 @@ pub async fn get_crypto_prices(
     for row in prices {
         let price = Decimal::ONE / row.price;
         crypto_prices.insert(row.crypto_code, price);
-        let created_naive = row.created_at.naive_utc();
+        // created_at 可能为可空；为空时使用当前时间
+        let created_naive = row
+            .created_at
+            .unwrap_or_else(|| Utc::now())
+            .naive_utc();
         if last_updated.map(|lu| created_naive > lu).unwrap_or(true) {
             last_updated = Some(created_naive);
         }

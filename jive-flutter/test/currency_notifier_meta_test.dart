@@ -11,8 +11,8 @@ class _StubCatalogResult {
   final List<Currency> items;
   final String? etag;
   final bool notModified;
-  final String? error;
-  _StubCatalogResult(this.items, this.etag, this.notModified, {this.error});
+  String? error;
+  _StubCatalogResult(this.items, this.etag, this.notModified);
 }
 
 // We wrap notifier directly to inject fake behavior by subclassing api service via composition if needed.

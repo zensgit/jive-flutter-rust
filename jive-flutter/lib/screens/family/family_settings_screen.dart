@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import '../../models/ledger.dart';
-import '../../models/family.dart' as family_model;
-import '../../providers/ledger_provider.dart';
-import '../../providers/family_provider.dart';
-import '../../services/api/ledger_service.dart';
-import '../../services/api/family_service.dart';
-import '../../widgets/dialogs/delete_family_dialog.dart';
-import 'family_members_screen.dart';
-import '../invitations/invitation_management_screen.dart';
-import '../../widgets/sheets/generate_invite_code_sheet.dart';
+import 'package:jive_money/models/ledger.dart';
+import 'package:jive_money/models/family.dart' as family_model;
+import 'package:jive_money/providers/ledger_provider.dart';
+import 'package:jive_money/services/api/family_service.dart';
+import 'package:jive_money/widgets/dialogs/delete_family_dialog.dart';
+import 'package:jive_money/screens/family/family_members_screen.dart';
+import 'package:jive_money/screens/invitations/invitation_management_screen.dart';
+import 'package:jive_money/widgets/sheets/generate_invite_code_sheet.dart';
+import 'package:jive_money/providers/auth_provider.dart' show currentUserProvider;
 
 /// 家庭设置页面
 class FamilySettingsScreen extends ConsumerStatefulWidget {
@@ -83,12 +82,12 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('家庭设置'),
+        title: const Text('家庭设置'),
         actions: [
           if (_hasChanges)
             TextButton(
               onPressed: _isLoading ? null : _saveChanges,
-              child: Text(
+              child: const Text(
                 '保存',
                 style: TextStyle(color: Colors.white),
               ),
@@ -139,7 +138,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                           radius: 18,
                           backgroundColor: theme.primaryColor,
                           child: IconButton(
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.camera_alt,
                               size: 18,
                               color: Colors.white,
@@ -186,7 +185,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                     controller: _nameController,
                     decoration: InputDecoration(
                       labelText: '家庭名称',
-                      prefixIcon: Icon(Icons.home),
+                      prefixIcon: const Icon(Icons.home),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -199,7 +198,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: DropdownButtonFormField<LedgerType>(
-                    value: _selectedType,
+                    initialValue: _selectedType,
                     decoration: InputDecoration(
                       labelText: '类型',
                       prefixIcon: Icon(_getTypeIcon(_selectedType)),
@@ -240,7 +239,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                     controller: _descriptionController,
                     decoration: InputDecoration(
                       labelText: '描述',
-                      prefixIcon: Icon(Icons.description),
+                      prefixIcon: const Icon(Icons.description),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -254,8 +253,8 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: SwitchListTile(
-                    title: Text('设为默认家庭'),
-                    subtitle: Text('登录后自动选择此家庭'),
+                    title: const Text('设为默认家庭'),
+                    subtitle: const Text('登录后自动选择此家庭'),
                     value: _isDefault,
                     onChanged: (value) {
                       setState(() {
@@ -273,14 +272,14 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
               title: '成员管理',
               children: [
                 ListTile(
-                  leading: Icon(Icons.people),
-                  title: Text('查看所有成员'),
+                  leading: const Icon(Icons.people),
+                  title: const Text('查看所有成员'),
                   subtitle: membersAsync.when(
                     data: (members) => Text('共 ${members.length} 位成员'),
-                    loading: () => Text('加载中...'),
-                    error: (_, __) => Text('加载失败'),
+                    loading: () => const Text('加载中...'),
+                    error: (_, __) => const Text('加载失败'),
                   ),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -292,23 +291,23 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.person_add),
-                  title: Text('邀请新成员'),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                  leading: const Icon(Icons.person_add),
+                  title: const Text('邀请新成员'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: _inviteMember,
                 ),
                 ListTile(
-                  leading: Icon(Icons.link),
-                  title: Text('管理邀请码'),
-                  subtitle: Text('查看和管理待处理的邀请'),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                  leading: const Icon(Icons.link),
+                  title: const Text('管理邀请码'),
+                  subtitle: const Text('查看和管理待处理的邀请'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: _manageInvitations,
                 ),
                 ListTile(
-                  leading: Icon(Icons.qr_code),
-                  title: Text('生成邀请码'),
-                  subtitle: Text('创建新的邀请链接或二维码'),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                  leading: const Icon(Icons.qr_code),
+                  title: const Text('生成邀请码'),
+                  subtitle: const Text('创建新的邀请链接或二维码'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: _generateInviteCode,
                 ),
               ],
@@ -319,24 +318,24 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
               title: '高级设置',
               children: [
                 ListTile(
-                  leading: Icon(Icons.backup),
-                  title: Text('导出数据'),
-                  subtitle: Text('导出此家庭的所有数据'),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                  leading: const Icon(Icons.backup),
+                  title: const Text('导出数据'),
+                  subtitle: const Text('导出此家庭的所有数据'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: _exportData,
                 ),
                 ListTile(
-                  leading: Icon(Icons.history),
-                  title: Text('活动日志'),
-                  subtitle: Text('查看家庭活动记录'),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                  leading: const Icon(Icons.history),
+                  title: const Text('活动日志'),
+                  subtitle: const Text('查看家庭活动记录'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: _viewActivityLog,
                 ),
                 ListTile(
-                  leading: Icon(Icons.archive),
-                  title: Text('归档家庭'),
-                  subtitle: Text('暂时隐藏此家庭'),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                  leading: const Icon(Icons.archive),
+                  title: const Text('归档家庭'),
+                  subtitle: const Text('暂时隐藏此家庭'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: _archiveFamily,
                 ),
               ],
@@ -348,19 +347,19 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
               titleColor: Colors.red,
               children: [
                 ListTile(
-                  leading: Icon(Icons.exit_to_app, color: Colors.orange),
-                  title: Text('退出家庭',
+                  leading: const Icon(Icons.exit_to_app, color: Colors.orange),
+                  title: const Text('退出家庭',
                       style: TextStyle(color: Colors.orange)),
-                  subtitle: Text('退出后需要重新邀请才能加入'),
+                  subtitle: const Text('退出后需要重新邀请才能加入'),
                   onTap: _leaveFamily,
                 ),
                 if (widget.ledger.ownerId == ref.read(currentUserProvider)?.id)
                   ListTile(
                     leading:
-                        Icon(Icons.delete_forever, color: Colors.red),
+                        const Icon(Icons.delete_forever, color: Colors.red),
                     title:
-                        Text('删除家庭', style: TextStyle(color: Colors.red)),
-                    subtitle: Text('此操作不可恢复，所有数据将被永久删除'),
+                        const Text('删除家庭', style: TextStyle(color: Colors.red)),
+                    subtitle: const Text('此操作不可恢复，所有数据将被永久删除'),
                     onTap: _deleteFamily,
                   ),
               ],
@@ -530,12 +529,12 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('归档家庭'),
-        content: Text('归档后，此家庭将从列表中隐藏，但数据不会丢失。您可以随时恢复。'),
+        title: const Text('归档家庭'),
+        content: const Text('归档后，此家庭将从列表中隐藏，但数据不会丢失。您可以随时恢复。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -545,7 +544,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                 const SnackBar(content: Text('归档功能开发中')),
               );
             },
-            child: Text('归档'),
+            child: const Text('归档'),
           ),
         ],
       ),
@@ -556,12 +555,12 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('退出家庭'),
+        title: const Text('退出家庭'),
         content: Text('确定要退出"${widget.ledger.name}"吗？退出后需要重新邀请才能加入。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           TextButton(
             onPressed: () async {
@@ -572,7 +571,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
               );
             },
             style: TextButton.styleFrom(foregroundColor: Colors.orange),
-            child: Text('退出'),
+            child: const Text('退出'),
           ),
         ],
       ),
@@ -608,7 +607,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
       createdAt: widget.ledger.createdAt ?? DateTime.now(),
       updatedAt: widget.ledger.updatedAt ?? DateTime.now(),
       settings: {
-        'currency': widget.ledger.currency ?? 'CNY',
+        'currency': widget.ledger.currency,
         'locale': 'zh_CN',
         'timezone': 'Asia/Shanghai',
         'start_of_week': 1,
@@ -635,7 +634,9 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
       ),
     );
 
-    if (result == true && mounted) {
+    if (!mounted) return;
+
+    if (result == true) {
       // Family已删除，对话框会处理导航
     }
   }
@@ -671,10 +672,4 @@ class InviteMemberDialog extends StatelessWidget {
   }
 }
 
-// 临时的 currentUserProvider
-final currentUserProvider = Provider<User?>((ref) => null);
-
-class User {
-  final String id;
-  const User({required this.id});
-}
+// 移除临时的 currentUserProvider 和 User，使用全局定义。

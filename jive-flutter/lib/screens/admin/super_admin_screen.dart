@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/current_user_provider.dart';
-import '../../utils/string_utils.dart';
-import 'currency_admin_screen.dart';
+import 'package:jive_money/providers/current_user_provider.dart';
+import 'package:jive_money/utils/string_utils.dart';
+import 'package:jive_money/screens/admin/currency_admin_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SuperAdminScreen extends ConsumerStatefulWidget {
@@ -98,7 +98,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
               height: 28,
             ),
             const SizedBox(width: 8),
-            Text('系统管理'),
+            const Text('系统管理'),
           ],
         ),
         backgroundColor: Colors.red[700],
@@ -140,7 +140,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             '系统概览',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
@@ -203,7 +203,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
           const SizedBox(height: 32),
 
           // 最近活动
-          Text(
+          const Text(
             '最近活动',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
@@ -251,9 +251,9 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Expanded(
+              const Expanded(
                 child: TextField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: '搜索用户',
                     prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(),
@@ -263,8 +263,8 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
               const SizedBox(width: 16),
               ElevatedButton.icon(
                 onPressed: () => _showCreateUserDialog(),
-                icon: Icon(Icons.person_add),
-                label: Text('创建用户'),
+                icon: const Icon(Icons.person_add),
+                label: const Text('创建用户'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
@@ -322,7 +322,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text(
+        const Text(
           '系统配置',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
@@ -350,7 +350,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
         _buildConfigSection('数据设置', [
           _buildConfigItem('自动备份', '每日'),
           _buildConfigItem('数据保留', '7年'),
-          _buildConfigItem('导出格式', 'CSV, PDF, Excel'),
+          _buildConfigItem('导出格式', 'JSON, PDF, Excel'),
         ]),
       ],
     );
@@ -380,7 +380,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
     return ListTile(
       title: Text(title),
       subtitle: Text(value),
-      trailing: trailing ?? Icon(Icons.edit),
+      trailing: trailing ?? const Icon(Icons.edit),
       contentPadding: EdgeInsets.zero,
       onTap: trailing == null ? () {} : null,
     );
@@ -393,9 +393,9 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Expanded(
+              const Expanded(
                 child: TextField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: '搜索日志',
                     prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(),
@@ -481,25 +481,25 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('创建新用户'),
+        title: const Text('创建新用户'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(decoration: InputDecoration(labelText: '姓名')),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextField(decoration: InputDecoration(labelText: '邮箱')),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextField(decoration: InputDecoration(labelText: '初始密码')),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('创建'),
+            child: const Text('创建'),
           ),
         ],
       ),
@@ -528,11 +528,11 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('保存'),
+            child: const Text('保存'),
           ),
         ],
       ),
@@ -543,17 +543,17 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('暂停用户'),
+        title: const Text('暂停用户'),
         content: Text('确定要暂停用户 "${user['name']}" 吗？暂停后用户将无法登录系统。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-            child: Text('暂停'),
+            child: const Text('暂停'),
           ),
         ],
       ),
@@ -564,17 +564,17 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('删除用户'),
+        title: const Text('删除用户'),
         content: Text('确定要删除用户 "${user['name']}" 吗？此操作不可撤销，将删除用户的所有数据。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text('删除'),
+            child: const Text('删除'),
           ),
         ],
       ),
@@ -585,7 +585,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('重置密码'),
+        title: const Text('重置密码'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -600,11 +600,11 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('重置'),
+            child: const Text('重置'),
           ),
         ],
       ),

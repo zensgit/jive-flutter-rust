@@ -1,11 +1,11 @@
 // 仪表板概览组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
-import '../charts/balance_chart.dart';
-import 'summary_card.dart';
-import 'quick_actions.dart';
-import 'recent_transactions.dart';
-import '../cards/transaction_card.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/charts/balance_chart.dart';
+import 'package:jive_money/ui/components/dashboard/summary_card.dart';
+import 'package:jive_money/ui/components/dashboard/quick_actions.dart';
+import 'package:jive_money/ui/components/dashboard/recent_transactions.dart';
+import 'package:jive_money/ui/components/cards/transaction_card.dart';
 
 class DashboardOverview extends StatelessWidget {
   final DashboardData data;
@@ -165,7 +165,7 @@ class DashboardOverview extends StatelessWidget {
                 const Spacer(),
                 TextButton(
                   onPressed: data.onViewAllAccounts,
-                  child: Text('查看全部'),
+                  child: const Text('查看全部'),
                 ),
               ],
             ),
@@ -253,7 +253,7 @@ class DashboardOverview extends StatelessWidget {
                 const Spacer(),
                 TextButton(
                   onPressed: data.onViewAllBudgets,
-                  child: Text('查看全部'),
+                  child: const Text('查看全部'),
                 ),
               ],
             ),

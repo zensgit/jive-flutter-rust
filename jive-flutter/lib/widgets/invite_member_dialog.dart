@@ -43,10 +43,11 @@ class _InviteMemberDialogState extends State<InviteMemberDialog> {
     try {
       // 模拟发送邀请请求
       await Future.delayed(const Duration(seconds: 2));
+      if (!mounted) return;
 
       // 生成邀请码和链接
       _inviteCode = _generateInviteCode();
-      _inviteLink = 'https://jivemoney.com/invite/${_inviteCode}';
+      _inviteLink = 'https://jivemoney.com/invite/$_inviteCode';
 
       setState(() {
         _showInviteResult = true;
@@ -91,24 +92,24 @@ class _InviteMemberDialogState extends State<InviteMemberDialog> {
 
   // 生成邀请邮件内容
   String _generateEmailContent() {
-    final currentUser = 'superadmin'; // 获取当前用户名
-    final familyName = 'Jive Money Family'; // 获取家庭名称
+    const currentUser = 'superadmin'; // 获取当前用户名
+    const familyName = 'Jive Money Family'; // 获取家庭名称
 
     return '''
 🏠 Jive Money - 家庭财务管理邀请
 
 您好！
 
-${currentUser} 邀请您加入 "${familyName}" 家庭，一起管理家庭财务。
+$currentUser 邀请您加入 "$familyName" 家庭，一起管理家庭财务。
 
-👤 邀请角色：${_selectedRole}
-🔑 邀请码：${_inviteCode}
-🔗 邀请链接：${_inviteLink}
+👤 邀请角色：$_selectedRole
+🔑 邀请码：$_inviteCode
+🔗 邀请链接：$_inviteLink
 
 💡 如何加入：
 1. 点击上方链接，或
 2. 访问 https://jivemoney.com
-3. 注册时输入邀请码：${_inviteCode}
+3. 注册时输入邀请码：$_inviteCode
 
 📱 Jive Money 帮您：
 • 记录和分类每笔收支
@@ -119,7 +120,7 @@ ${currentUser} 邀请您加入 "${familyName}" 家庭，一起管理家庭财务
 
 ⏰ 此邀请7天内有效，请尽快注册。
 
-如有问题，请联系邀请人：${currentUser}
+如有问题，请联系邀请人：$currentUser
 
 ---
 Jive Money - 集腋记账
@@ -142,7 +143,7 @@ Jive Money - 集腋记账
         children: [
           Icon(Icons.person_add, color: Colors.blue[600]),
           const SizedBox(width: 8),
-          Text('邀请成员'),
+          const Text('邀请成员'),
         ],
       ),
       content: Form(
@@ -212,7 +213,7 @@ Jive Money - 集腋记账
                     children: [
                       Icon(Icons.info, size: 16, color: Colors.blue[600]),
                       const SizedBox(width: 8),
-                      Text(
+                      const Text(
                         '邀请说明',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -222,7 +223,7 @@ Jive Money - 集腋记账
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  const Text(
                     '系统将生成邀请码和链接，您可以通过邮件或聊天软件分享给对方',
                     style: TextStyle(fontSize: 11),
                   ),
@@ -235,7 +236,7 @@ Jive Money - 集腋记账
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('取消'),
+          child: const Text('取消'),
         ),
         ElevatedButton(
           onPressed: _isLoading ? null : _sendInvite,
@@ -252,7 +253,7 @@ Jive Money - 集腋记账
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 )
-              : Text('发送邀请'),
+              : const Text('发送邀请'),
         ),
       ],
     );
@@ -271,7 +272,7 @@ Jive Money - 集腋记账
               children: [
                 Icon(Icons.check_circle, color: Colors.green[600], size: 28),
                 const SizedBox(width: 12),
-                Text(
+                const Text(
                   '邀请已生成',
                   style: TextStyle(
                     fontSize: 20,
@@ -307,7 +308,7 @@ Jive Money - 集腋记账
                   _buildInfoRow('角色', _selectedRole),
                   _buildInfoRow('邀请码', _inviteCode),
                   const SizedBox(height: 8),
-                  Text(
+                  const Text(
                     '邀请链接:',
                     style: TextStyle(
                       fontSize: 14,
@@ -341,7 +342,7 @@ Jive Money - 集腋记账
             // 操作按钮
             Column(
               children: [
-                const SizedBox(
+                SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: _copyInviteLink,
@@ -350,12 +351,12 @@ Jive Money - 集腋记账
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),
                 const SizedBox(height: 8),
-                const SizedBox(
+                SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     onPressed: _copyEmailContent,
@@ -364,12 +365,12 @@ Jive Money - 集腋记账
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.black,
                       side: BorderSide(color: Colors.black),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                const SizedBox(
+                SizedBox(
                   width: double.infinity,
                   child: TextButton(
                     onPressed: () => Navigator.pop(context),
@@ -421,7 +422,7 @@ Jive Money - 集腋记账
             width: 60,
             child: Text(
               '$label:',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),

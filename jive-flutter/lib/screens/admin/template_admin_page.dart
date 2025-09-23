@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../services/api/category_service.dart';
-import '../../models/category_template.dart';
-import '../../models/user.dart';
-import '../../providers/current_user_provider.dart'; // For UserDataExt extension
-import '../../services/auth_service.dart';
-import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
-import '../../models/account_classification.dart';
+import 'package:jive_money/services/api/category_service.dart';
+import 'package:jive_money/models/category_template.dart';
+// For UserDataExt extension
+import 'package:jive_money/services/auth_service.dart';
+import 'package:jive_money/widgets/common/loading_widget.dart';
+import 'package:jive_money/widgets/states/error_state.dart';
+import 'package:jive_money/models/account_classification.dart';
 
 /// 超级管理员模板管理页面
 ///
 /// 仅超级管理员可访问，用于管理系统分类模板
 class TemplateAdminPage extends StatefulWidget {
-  const TemplateAdminPage({Key? key}) : super(key: key);
+  const TemplateAdminPage({super.key});
 
   @override
   State<TemplateAdminPage> createState() => _TemplateAdminPageState();
@@ -139,6 +138,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
           try {
             if (_isCreating) {
               await _categoryService.createTemplate(updatedTemplate);
+              if (!context.mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('模板创建成功'),
@@ -147,6 +147,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
               );
             } else {
               await _categoryService.updateTemplate(updatedTemplate.id, updatedTemplate.toJson());
+              if (!context.mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('模板更新成功'),
@@ -157,6 +158,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
             Navigator.pop(context);
             _loadTemplates();
           } catch (e) {
+            if (!context.mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('保存失败: $e'),
@@ -176,19 +178,19 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('删除模板'),
+        title: const Text('删除模板'),
         content: Text('确定要删除模板"${template.name}"吗？此操作不可恢复。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: Text('删除'),
+            child: const Text('删除'),
           ),
         ],
       ),
@@ -197,6 +199,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
     if (confirmed == true) {
       try {
         await _categoryService.deleteTemplate(template.id);
+        if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('模板已删除'),
@@ -205,6 +208,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         );
         _loadTemplates();
       } catch (e) {
+        if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('删除失败: $e'),
@@ -219,6 +223,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
     try {
       template.setFeatured(!template.isFeatured);
       await _categoryService.updateTemplate(template.id, {'isFeatured': !template.isFeatured});
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -228,6 +233,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
       );
       _loadTemplates();
     } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('操作失败: $e'),
@@ -242,13 +248,13 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
     if (_error.isNotEmpty && _error.contains('无权访问')) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('模板管理'),
+          title: const Text('模板管理'),
         ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Icons.lock,
                 size: 64,
                 color: Colors.red,
@@ -269,7 +275,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('系统模板管理'),
+        title: const Text('系统模板管理'),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -293,12 +299,12 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () => _showTemplateEditor(),
             tooltip: '创建模板',
           ),
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: _loadTemplates,
             tooltip: '刷新',
           ),
@@ -307,7 +313,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
       body: _isLoading
           ? const LoadingWidget()
           : _error.isNotEmpty
-              ? ErrorWidget(
+              ? ErrorState(
                   message: _error,
                   onRetry: _loadTemplates,
                 )
@@ -342,10 +348,10 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
           TextField(
             decoration: InputDecoration(
               hintText: '搜索模板名称、标签...',
-              prefixIcon: Icon(Icons.search),
+              prefixIcon: const Icon(Icons.search),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
-                      icon: Icon(Icons.clear),
+                      icon: const Icon(Icons.clear),
                       onPressed: () {
                         setState(() {
                           _searchQuery = '';
@@ -407,7 +413,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
               // 精选过滤
               Row(
                 children: [
-                  Text('仅精选'),
+                  const Text('仅精选'),
                   Switch(
                     value: _showOnlyFeatured,
                     onChanged: (value) {
@@ -532,7 +538,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
                   color: Colors.orange[100],
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: Text(
+                child: const Text(
                   '精选',
                   style: TextStyle(
                     fontSize: 10,
@@ -589,12 +595,12 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
               tooltip: template.isFeatured ? '取消精选' : '设为精选',
             ),
             IconButton(
-              icon: Icon(Icons.edit),
+              icon: const Icon(Icons.edit),
               onPressed: () => _showTemplateEditor(template),
               tooltip: '编辑',
             ),
             IconButton(
-              icon: Icon(Icons.delete, color: Colors.red),
+              icon: const Icon(Icons.delete, color: Colors.red),
               onPressed: () => _deleteTemplate(template),
               tooltip: '删除',
             ),
@@ -612,8 +618,6 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         return '支出';
       case AccountClassification.transfer:
         return '转账';
-      default:
-        return '未知';
     }
   }
 }
@@ -904,7 +908,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                   children: [
                     Expanded(
                       child: SwitchListTile(
-                        title: Text('精选'),
+                        title: const Text('精选'),
                         value: _isFeatured,
                         onChanged: (value) {
                           setState(() {
@@ -915,7 +919,7 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                     ),
                     Expanded(
                       child: SwitchListTile(
-                        title: Text('启用'),
+                        title: const Text('启用'),
                         value: _isActive,
                         onChanged: (value) {
                           setState(() {
@@ -934,12 +938,12 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
                   children: [
                     TextButton(
                       onPressed: widget.onCancel,
-                      child: Text('取消'),
+                      child: const Text('取消'),
                     ),
                     const SizedBox(width: 12),
                     ElevatedButton(
                       onPressed: _saveTemplate,
-                      child: Text('保存'),
+                      child: const Text('保存'),
                     ),
                   ],
                 ),
@@ -996,8 +1000,6 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
         return '支出';
       case AccountClassification.transfer:
         return '转账';
-      default:
-        return '未知';
     }
   }
 }

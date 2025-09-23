@@ -1,4 +1,4 @@
-import '../../../providers/auth_provider.dart';
+import 'package:jive_money/providers/auth_provider.dart';
 
 // 重新导出主要的auth provider
 export '../../../providers/auth_provider.dart';

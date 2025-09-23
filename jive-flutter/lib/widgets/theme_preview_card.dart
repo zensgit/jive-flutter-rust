@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/theme_models.dart' as models;
+import 'package:jive_money/models/theme_models.dart' as models;
 
 /// 主题预览卡片
 class ThemePreviewCard extends StatelessWidget {
@@ -77,7 +77,7 @@ class ThemePreviewCard extends StatelessWidget {
                               color: theme.primaryColor,
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Text(
+                            child: const Text(
                               '当前',
                               style: TextStyle(
                                 color: Colors.white,
@@ -452,7 +452,7 @@ class CompactThemePreviewCard extends StatelessWidget {
                     color: theme.primaryColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(
+                  child: const Text(
                     '当前',
                     style: TextStyle(
                       color: Colors.white,

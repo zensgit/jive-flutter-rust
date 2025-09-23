@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../constants/app_constants.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
 
 /// 应用主题配置
 class AppTheme {
@@ -45,10 +45,11 @@ class AppTheme {
       primary: primaryColor,
       secondary: secondaryColor,
       error: errorColor,
-      background: lightBackground,
       surface: lightSurface,
-      onBackground: lightOnBackground,
+      // For M3, prefer surface/surfaceContainer roles; avoid duplicates
+      surfaceContainer: lightBackground,
       onSurface: lightOnSurface,
+      onSurfaceVariant: lightOnBackground,
     );
 
     return ThemeData(
@@ -89,10 +90,10 @@ class AppTheme {
       primary: primaryColor,
       secondary: secondaryColor,
       error: errorColor,
-      background: darkBackground,
       surface: darkSurface,
-      onBackground: darkOnBackground,
+      surfaceContainer: darkBackground,
       onSurface: darkOnSurface,
+      onSurfaceVariant: darkOnBackground,
     );
 
     return ThemeData(

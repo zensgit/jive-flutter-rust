@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/wechat_service.dart';
-import '../screens/auth/wechat_qr_screen.dart';
+import 'package:jive_money/services/wechat_service.dart';
+import 'package:jive_money/screens/auth/wechat_qr_screen.dart';
 
 /// 微信登录按钮组件
 class WeChatLoginButton extends StatefulWidget {
@@ -78,7 +78,7 @@ class _WeChatLoginButtonState extends State<WeChatLoginButton> {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
+    return SizedBox(
       width: double.infinity,
       height: 50,
       child: OutlinedButton.icon(
@@ -99,7 +99,7 @@ class _WeChatLoginButtonState extends State<WeChatLoginButton> {
                   valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF07C160)),
                 ),
               )
-            : Icon(Icons.wechat_outlined, size: 24),
+            : const Icon(Icons.wechat_outlined, size: 24),
         label: Text(
           widget.buttonText,
           style: const TextStyle(
@@ -135,10 +135,10 @@ class WeChatBindingCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.wechat, color: Color(0xFF07C160)),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   '微信账户',
                   style: TextStyle(
@@ -159,7 +159,7 @@ class WeChatBindingCard extends StatelessWidget {
                         ? NetworkImage(weChatInfo!.headImgUrl)
                         : null,
                     child: weChatInfo!.headImgUrl.isEmpty
-                        ? Icon(Icons.person)
+                        ? const Icon(Icons.person)
                         : null,
                   ),
                   const SizedBox(width: 12),
@@ -203,14 +203,14 @@ class WeChatBindingCard extends StatelessWidget {
                                     AlwaysStoppedAnimation<Color>(Colors.red),
                               ),
                             )
-                          : Text('解绑'),
+                          : const Text('解绑'),
                     ),
                   ),
                 ],
               ),
             ] else ...[
               // 未绑定状态
-              Text(
+              const Text(
                 '绑定微信账户后，您可以使用微信快速登录',
                 style: TextStyle(
                   fontSize: 14,

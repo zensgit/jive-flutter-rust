@@ -1,11 +1,15 @@
 // 交易列表组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
-import '../cards/transaction_card.dart';
-import '../loading/loading_widget.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/cards/transaction_card.dart';
+import 'package:jive_money/ui/components/loading/loading_widget.dart';
+import 'package:jive_money/models/transaction.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../providers/currency_provider.dart';
+import 'package:jive_money/providers/currency_provider.dart';
+
+// 类型别名以兼容现有代码
+typedef TransactionData = Transaction;
 
 class TransactionList extends ConsumerWidget {
   final List<TransactionData> transactions;
@@ -352,7 +356,7 @@ class SwipeableTransactionList extends StatelessWidget {
         color: AppConstants.primaryColor,
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(left: 20),
-        child: Icon(
+        child: const Icon(
           Icons.edit,
           color: Colors.white,
         ),
@@ -361,7 +365,7 @@ class SwipeableTransactionList extends StatelessWidget {
         color: AppConstants.errorColor,
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
-        child: Icon(
+        child: const Icon(
           Icons.delete,
           color: Colors.white,
         ),
@@ -378,19 +382,19 @@ class SwipeableTransactionList extends StatelessWidget {
     return await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('确认删除'),
-            content: Text('确定要删除这笔交易吗？'),
+            title: const Text('确认删除'),
+            content: const Text('确定要删除这笔交易吗？'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text('取消'),
+                child: const Text('取消'),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
                 style: TextButton.styleFrom(
                   foregroundColor: AppConstants.errorColor,
                 ),
-                child: Text('删除'),
+                child: const Text('删除'),
               ),
             ],
           ),

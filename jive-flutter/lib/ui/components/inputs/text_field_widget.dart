@@ -1,7 +1,7 @@
 // 文本输入框组件
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../core/constants/app_constants.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
 
 class TextFieldWidget extends StatefulWidget {
   final String? label;

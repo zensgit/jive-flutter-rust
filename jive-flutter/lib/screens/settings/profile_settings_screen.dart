@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import '../../services/api_service.dart';
-import '../../services/auth_service.dart';
+import 'package:jive_money/services/api_service.dart';
+import 'package:jive_money/services/auth_service.dart';
 
 class ProfileSettingsScreen extends StatefulWidget {
   const ProfileSettingsScreen({super.key});
@@ -301,7 +300,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    const Text(
                       '选择头像',
                       style: TextStyle(
                         fontSize: 18,
@@ -310,7 +309,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     ),
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: Icon(Icons.close),
+                      icon: const Icon(Icons.close),
                     ),
                   ],
                 ),
@@ -405,7 +404,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                                 backgroundImage: NetworkImage(avatar['url']),
                                 backgroundColor: Colors.grey.shade200,
                                 child: avatar['url'].contains('error')
-                                    ? Icon(Icons.broken_image)
+                                    ? const Icon(Icons.broken_image)
                                     : null,
                               ),
                             ),
@@ -456,9 +455,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           'avatar_type': 'emoji',
           'avatar_data': _selectedSystemAvatar!['icon'],
           'avatar_color':
-              '#${(_selectedSystemAvatar!['color'] as Color).value.toRadixString(16).padLeft(8, '0')}',
+              '#${(_selectedSystemAvatar!['color'] as Color).toARGB32().toRadixString(16).padLeft(8, '0')}',
           'avatar_background':
-              '#${(_selectedSystemAvatar!['background'] as Color).value.toRadixString(16).padLeft(8, '0')}',
+              '#${(_selectedSystemAvatar!['background'] as Color).toARGB32().toRadixString(16).padLeft(8, '0')}',
         });
       }
 
@@ -516,8 +515,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('确认重置账户'),
-        content: Text(
+        title: const Text('确认重置账户'),
+        content: const Text(
           '此操作将删除您所有的账户、分类、收款人、标签和其他交易数据。\n\n'
           '您的用户账户将保留，但所有财务数据将被清除。\n\n'
           '此操作不可逆！您确定要继续吗？',
@@ -525,11 +524,11 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(
+            child: const Text(
               '确认重置',
               style: TextStyle(color: Colors.orange),
             ),
@@ -547,11 +546,11 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         title: const Row(
           children: [
             Icon(Icons.warning, color: Colors.orange),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text('最后确认'),
           ],
         ),
-        content: Text(
+        content: const Text(
           '这是最后一次确认！\n\n'
           '所有财务数据将被永久删除。\n'
           '确定要重置账户吗？',
@@ -559,18 +558,20 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
             ),
-            child: Text('确认重置'),
+            child: const Text('确认重置'),
           ),
         ],
       ),
     );
+
+    if (!mounted) return;
 
     if (finalConfirmed != true) return;
 
@@ -641,7 +642,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('个人资料设置'),
+          title: const Text('个人资料设置'),
           backgroundColor: Theme.of(context).primaryColor,
         ),
         body: const Center(
@@ -652,7 +653,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('个人资料设置'),
+        title: const Text('个人资料设置'),
         backgroundColor: Theme.of(context).primaryColor,
         actions: [
           TextButton(
@@ -740,7 +741,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                               color: Theme.of(context).primaryColor,
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.camera_alt,
                               size: 20,
                               color: Colors.white,
@@ -761,7 +762,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                                 border:
                                     Border.all(color: Colors.white, width: 2),
                               ),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.face,
                                 size: 16,
                                 color: Colors.white,
@@ -792,7 +793,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     '基本信息',
                     style: TextStyle(
                       fontSize: 18,
@@ -831,7 +832,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     '偏好设置',
                     style: TextStyle(
                       fontSize: 18,
@@ -851,7 +852,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           '示例账户',
                           style: TextStyle(
                             color: Colors.grey,
@@ -889,7 +890,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
                   // Country
                   DropdownButtonFormField<String>(
-                    value: _selectedCountry,
+                    initialValue: _selectedCountry,
                     decoration: const InputDecoration(
                       labelText: '国家/地区',
                       border: OutlineInputBorder(),
@@ -907,7 +908,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
                   // Language
                   DropdownButtonFormField<String>(
-                    value: _selectedLanguage,
+                    initialValue: _selectedLanguage,
                     decoration: const InputDecoration(
                       labelText: '语言',
                       border: OutlineInputBorder(),
@@ -924,7 +925,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
                   // Timezone
                   DropdownButtonFormField<String>(
-                    value: _selectedTimezone,
+                    initialValue: _selectedTimezone,
                     decoration: const InputDecoration(
                       labelText: '时区',
                       border: OutlineInputBorder(),
@@ -941,7 +942,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
                   // Date Format
                   DropdownButtonFormField<String>(
-                    value: _selectedDateFormat,
+                    initialValue: _selectedDateFormat,
                     decoration: const InputDecoration(
                       labelText: '日期格式',
                       border: OutlineInputBorder(),
@@ -966,7 +967,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     '危险操作',
                     style: TextStyle(
                       fontSize: 18,
@@ -984,7 +985,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             '重置账户',
                             style: TextStyle(
                               fontSize: 16,
@@ -993,19 +994,19 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Text(
+                          const Text(
                             '重置账户将删除您所有的账户、分类、收款人、标签和其他数据，但保留您的用户账户。',
                             style: TextStyle(fontSize: 14),
                           ),
                           const SizedBox(height: 16),
-                          const SizedBox(
+                          SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: _resetAccount,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.orange,
                               ),
-                              child: Text('重置账户'),
+                              child: const Text('重置账户'),
                             ),
                           ),
                         ],
@@ -1022,7 +1023,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             '删除账户',
                             style: TextStyle(
                               fontSize: 16,
@@ -1031,7 +1032,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Text(
+                          const Text(
                             '删除账户后，您的所有数据将被永久删除，无法恢复。',
                             style: TextStyle(fontSize: 14),
                           ),
@@ -1059,33 +1060,33 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.orange,
                                 ),
-                                child: Text('获取验证码'),
+                                child: const Text('获取验证码'),
                               ),
                             ],
                           ),
                           const SizedBox(height: 16),
-                          const SizedBox(
+                          SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
                                 showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    title: Text('确认删除账户'),
-                                    content: Text(
+                                    title: const Text('确认删除账户'),
+                                    content: const Text(
                                       '您确定要删除账户吗？此操作不可逆！',
                                     ),
                                     actions: [
                                       TextButton(
                                         onPressed: () => Navigator.pop(context),
-                                        child: Text('取消'),
+                                        child: const Text('取消'),
                                       ),
                                       TextButton(
                                         onPressed: () {
                                           Navigator.pop(context);
                                           _deleteAccount();
                                         },
-                                        child: Text(
+                                        child: const Text(
                                           '确认删除',
                                           style: TextStyle(color: Colors.red),
                                         ),
@@ -1097,7 +1098,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.red,
                               ),
-                              child: Text('删除账户'),
+                              child: const Text('删除账户'),
                             ),
                           ),
                         ],

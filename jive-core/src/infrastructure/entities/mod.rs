@@ -1,18 +1,17 @@
 // Jive Money Entity Mappings
 // Based on Maybe's database structure
 
+#[cfg(feature = "db")]
 pub mod family;
+#[cfg(feature = "db")]
 pub mod user;
+#[cfg(feature = "db")]
 pub mod account;
+#[cfg(feature = "db")]
 pub mod transaction;
-pub mod category;
-pub mod payee;
 pub mod budget;
 pub mod balance;
-pub mod tag;
 pub mod import;
-pub mod plaid;
-pub mod security;
 pub mod rule;
 
 use chrono::{DateTime, NaiveDate, Utc};

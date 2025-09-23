@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/admin_currency.dart';
-import '../../services/admin/currency_admin_service.dart';
+import 'package:jive_money/models/admin_currency.dart';
+import 'package:jive_money/services/admin/currency_admin_service.dart';
 
 final currencyAdminProvider =
     FutureProvider.autoDispose<List<AdminCurrency>>((ref) async {
@@ -25,10 +25,10 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
     final asyncList = ref.watch(currencyAdminProvider);
     return Scaffold(
       appBar: AppBar(
-        title: Text('币种管理'),
+        title: const Text('币种管理'),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () => _openEditDialog(context),
             tooltip: '新增币种',
           )
@@ -68,17 +68,17 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                           ElevatedButton.icon(
                             onPressed: () async {
                               await CurrencyAdminService().refreshCatalog();
-                              if (mounted) {
+                              if (mounted && context.mounted) {
                                 ref.invalidate(currencyAdminProvider);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(content: Text('已触发目录刷新')));
                               }
                             },
-                            icon: Icon(Icons.refresh),
-                            label: Text('刷新目录'),
+                            icon: const Icon(Icons.refresh),
+                            label: const Text('刷新目录'),
                           ),
                           const SizedBox(width: 12),
-                          Text('来源/更新时间显示如下：'),
+                          const Text('来源/更新时间显示如下：'),
                         ],
                       ),
                     ),
@@ -109,7 +109,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: cs.surfaceVariant,
+            color: cs.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: cs.outlineVariant),
           ),
@@ -125,7 +125,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: cs.surfaceVariant,
+                color: cs.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(c.symbol,
@@ -224,7 +224,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('改码 / 合并'),
+        title: const Text('改码 / 合并'),
         content: SizedBox(
           width: 420,
           child: Column(
@@ -266,7 +266,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                         (context as Element).markNeedsBuild();
                       }
                     },
-                    child: Text('选择日期'),
+                    child: const Text('选择日期'),
                   )
                 ],
               ),
@@ -276,7 +276,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                 builder: (context, v, _) => CheckboxListTile(
                   value: v,
                   onChanged: (nv) => deactivateOld.value = nv ?? true,
-                  title: Text('创建别名后将旧代码设为停用'),
+                  title: const Text('创建别名后将旧代码设为停用'),
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
               ),
@@ -286,10 +286,10 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text('取消')),
+              child: const Text('取消')),
           ElevatedButton(
               onPressed: () => Navigator.pop(context, true),
-              child: Text('保存')),
+              child: const Text('保存')),
         ],
       ),
     );
@@ -301,7 +301,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
       if (deactivateOld.value) {
         await svc.updateCurrency(c.code, {'is_active': false});
       }
-      if (mounted) {
+      if (mounted && context.mounted) {
         ref.invalidate(currencyAdminProvider);
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text('已创建别名并保存')));
@@ -400,7 +400,7 @@ class _EditCurrencyDialogState extends State<_EditCurrencyDialog> {
                 SwitchListTile(
                   value: _isCrypto,
                   onChanged: (v) => setState(() => _isCrypto = v),
-                  title: Text('加密货币'),
+                  title: const Text('加密货币'),
                 ),
                 if (_isCrypto) ...[
                   _text(_coingeckoId, 'CoinGecko ID (推荐)'),
@@ -414,7 +414,7 @@ class _EditCurrencyDialogState extends State<_EditCurrencyDialog> {
                 SwitchListTile(
                   value: _isActive,
                   onChanged: (v) => setState(() => _isActive = v),
-                  title: Text('启用'),
+                  title: const Text('启用'),
                 ),
               ],
             ),
@@ -423,8 +423,8 @@ class _EditCurrencyDialogState extends State<_EditCurrencyDialog> {
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.pop(context), child: Text('取消')),
-        ElevatedButton(onPressed: _submit, child: Text('保存')),
+            onPressed: () => Navigator.pop(context), child: const Text('取消')),
+        ElevatedButton(onPressed: _submit, child: const Text('保存')),
       ],
     );
   }

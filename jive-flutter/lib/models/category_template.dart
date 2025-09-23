@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'category.dart';
+import 'package:jive_money/models/category.dart';
 
 part 'category_template.freezed.dart';
 part 'category_template.g.dart';
@@ -40,6 +40,9 @@ enum CategoryGroup {
   entertainmentSocial('entertainmentSocial', '娱乐社交'),
   education('education', '教育培训'),
   finance('finance', '金融投资'),
+  healthEducation('healthEducation', '健康教育'),
+  financial('financial', '财务管理'),
+  business('business', '商业投资'),
   other('other', '其他');
 
   const CategoryGroup(this.key, this.displayName);
@@ -66,6 +69,12 @@ enum CategoryGroup {
         return '📚';
       case CategoryGroup.finance:
         return '💳';
+      case CategoryGroup.healthEducation:
+        return '🩺';
+      case CategoryGroup.financial:
+        return '💼';
+      case CategoryGroup.business:
+        return '🏢';
       case CategoryGroup.other:
         return '📦';
     }

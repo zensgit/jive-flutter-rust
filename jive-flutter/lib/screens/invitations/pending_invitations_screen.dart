@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../utils/string_utils.dart';
+import 'package:jive_money/utils/string_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/invitation.dart';
-import '../../models/family.dart';
-import '../../services/api/family_service.dart';
-import '../../providers/family_provider.dart' as family_provider;
+import 'package:jive_money/models/invitation.dart';
+import 'package:jive_money/models/family.dart';
+import 'package:jive_money/services/api/family_service.dart';
+import 'package:jive_money/providers/family_provider.dart' as family_provider;
 
 /// 待处理邀请页面
 class PendingInvitationsScreen extends ConsumerStatefulWidget {
-  const PendingInvitationsScreen({Key? key}) : super(key: key);
+  const PendingInvitationsScreen({super.key});
 
   @override
   ConsumerState<PendingInvitationsScreen> createState() =>
@@ -60,7 +60,7 @@ class _PendingInvitationsScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('接受邀请'),
+        title: const Text('接受邀请'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,11 +76,11 @@ class _PendingInvitationsScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('接受'),
+            child: const Text('接受'),
           ),
         ],
       ),
@@ -93,7 +93,7 @@ class _PendingInvitationsScreenState
       // await _familyService.acceptInvitation(invitation.invitation.id);
 
       // 刷新Family列表
-      await ref.refresh(family_provider.userFamiliesProvider);
+      ref.refresh(family_provider.userFamiliesProvider);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -126,19 +126,19 @@ class _PendingInvitationsScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('拒绝邀请'),
+        title: const Text('拒绝邀请'),
         content: Text('您确定要拒绝来自 "${invitation.family.name}" 的邀请吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: Text('拒绝'),
+            child: const Text('拒绝'),
           ),
         ],
       ),
@@ -203,11 +203,11 @@ class _PendingInvitationsScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('待处理的邀请'),
+        title: const Text('待处理的邀请'),
         actions: [
           // 筛选按钮
           PopupMenuButton<InvitationStatus?>(
-            icon: Icon(Icons.filter_list),
+            icon: const Icon(Icons.filter_list),
             tooltip: '筛选',
             onSelected: (status) {
               setState(() {
@@ -228,7 +228,7 @@ class _PendingInvitationsScreenState
           ),
           // 排序按钮
           PopupMenuButton<String>(
-            icon: Icon(Icons.sort),
+            icon: const Icon(Icons.sort),
             tooltip: '排序',
             onSelected: (value) {
               setState(() {
@@ -268,13 +268,13 @@ class _PendingInvitationsScreenState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
             Text(_error!),
             const SizedBox(height: 16),
             FilledButton(
               onPressed: _loadInvitations,
-              child: Text('重试'),
+              child: const Text('重试'),
             ),
           ],
         ),
@@ -308,7 +308,7 @@ class _PendingInvitationsScreenState
                     _filterStatus = null;
                   });
                 },
-                child: Text('查看全部'),
+                child: const Text('查看全部'),
               ),
             ],
           ],
@@ -430,12 +430,12 @@ class _PendingInvitationsScreenState
                   children: [
                     TextButton(
                       onPressed: () => _declineInvitation(invitation),
-                      child: Text('拒绝'),
+                      child: const Text('拒绝'),
                     ),
                     const SizedBox(width: 8),
                     FilledButton(
                       onPressed: () => _acceptInvitation(invitation),
-                      child: Text('接受'),
+                      child: const Text('接受'),
                     ),
                   ],
                 ),
@@ -575,7 +575,7 @@ class _PendingInvitationsScreenState
                           Navigator.pop(context);
                           _declineInvitation(invitation);
                         },
-                        child: Text('拒绝'),
+                        child: const Text('拒绝'),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -585,7 +585,7 @@ class _PendingInvitationsScreenState
                           Navigator.pop(context);
                           _acceptInvitation(invitation);
                         },
-                        child: Text('接受邀请'),
+                        child: const Text('接受邀请'),
                       ),
                     ),
                   ],
@@ -620,7 +620,7 @@ class _PendingInvitationsScreenState
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(
+          SizedBox(
             width: 100,
             child: Text(
               label,

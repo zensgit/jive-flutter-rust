@@ -137,12 +137,12 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
           ),
           if (isUser) ...[
             const SizedBox(width: 12),
-            CircleAvatar(
+            const CircleAvatar(
               radius: 20,
               backgroundColor: Colors.blue,
               child: Text(
                 '我',
-                style: const TextStyle(color: Colors.white, fontSize: 14),
+                style: TextStyle(color: Colors.white, fontSize: 14),
               ),
             ),
           ],
@@ -171,7 +171,7 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
                 children: [
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    icon: Icon(Icons.arrow_back),
+                    icon: const Icon(Icons.arrow_back),
                     color: Colors.black,
                   ),
                   const SizedBox(width: 8),
@@ -181,7 +181,7 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
                     height: 24,
                   ),
                   const SizedBox(width: 8),
-                  Text(
+                  const Text(
                     'AI助理',
                     style: TextStyle(
                       fontSize: 18,
@@ -224,10 +224,10 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
                               color: Colors.grey[100],
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            child: Row(
+                            child: const Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const SizedBox(
+                                SizedBox(
                                   width: 16,
                                   height: 16,
                                   child: CircularProgressIndicator(
@@ -236,7 +236,7 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
                                         Colors.blue),
                                   ),
                                 ),
-                                const SizedBox(width: 12),
+                                SizedBox(width: 12),
                                 Text('正在思考...'),
                               ],
                             ),
@@ -293,7 +293,7 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
                     ),
                     child: IconButton(
                       onPressed: _isLoading ? null : _sendMessage,
-                      icon: Icon(Icons.send, color: Colors.white),
+                      icon: const Icon(Icons.send, color: Colors.white),
                     ),
                   ),
                 ],

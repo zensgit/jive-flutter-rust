@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/theme_models.dart' as models;
-import '../services/theme_service.dart';
-import '../widgets/theme_preview_card.dart';
-import '../widgets/custom_theme_editor.dart';
-import '../widgets/theme_share_dialog.dart';
+import 'package:jive_money/models/theme_models.dart' as models;
+import 'package:jive_money/services/theme_service.dart';
+import 'package:jive_money/widgets/theme_preview_card.dart';
+import 'package:jive_money/widgets/theme_share_dialog.dart';
 
 /// 主题管理页面
 class ThemeManagementScreen extends StatefulWidget {
@@ -42,11 +41,11 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('主题设置'),
+        title: const Text('主题设置'),
         centerTitle: true,
         actions: [
           PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert),
+            icon: const Icon(Icons.more_vert),
             onSelected: _handleMenuAction,
             itemBuilder: (context) => [
               const PopupMenuItem(
@@ -54,7 +53,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
                 child: Row(
                   children: [
                     Icon(Icons.content_paste, size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text('从剪贴板导入'),
                   ],
                 ),
@@ -64,7 +63,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
                 child: Row(
                   children: [
                     Icon(Icons.qr_code, size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text('输入分享码'),
                   ],
                 ),
@@ -74,7 +73,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
                 child: Row(
                   children: [
                     Icon(Icons.refresh, size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text('重置为默认'),
                   ],
                 ),
@@ -84,7 +83,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
                 child: Row(
                   children: [
                     Icon(Icons.visibility, size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text('一键护眼主题'),
                   ],
                 ),
@@ -94,7 +93,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
                 child: Row(
                   children: [
                     Icon(Icons.color_lens, size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text('应用护眼·蓝灰'),
                   ],
                 ),
@@ -104,7 +103,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
                 child: Row(
                   children: [
                     Icon(Icons.color_lens, size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text('应用护眼·青绿'),
                   ],
                 ),
@@ -114,7 +113,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
                 child: Row(
                   children: [
                     Icon(Icons.dark_mode, size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text('应用护眼·夜间'),
                   ],
                 ),
@@ -154,7 +153,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   '主题模式',
                   style: TextStyle(
                     fontSize: 18,
@@ -189,7 +188,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     '当前主题',
                     style: TextStyle(
                       fontSize: 18,
@@ -216,7 +215,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text(
+        const Text(
           '选择预设主题',
           style: TextStyle(
             fontSize: 18,
@@ -245,7 +244,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
               onTap: () => _themeService.applyPresetTheme(theme.id),
               actions: [
                 IconButton(
-                  icon: Icon(Icons.share),
+                  icon: const Icon(Icons.share),
                   onPressed: () => _shareTheme(theme),
                   tooltip: '分享主题',
                 ),
@@ -276,7 +275,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
                     size: 48,
                     color: Colors.grey,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     '创建新主题',
                     style: TextStyle(
@@ -301,7 +300,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
 
         // 自定义主题列表
         if (_themeService.customThemes.isNotEmpty) ...[
-          Text(
+          const Text(
             '我的自定义主题',
             style: TextStyle(
               fontSize: 18,
@@ -330,17 +329,17 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
                 onTap: () => _themeService.applyCustomTheme(theme.id),
                 actions: [
                   IconButton(
-                    icon: Icon(Icons.edit),
+                    icon: const Icon(Icons.edit),
                     onPressed: () => _editTheme(theme),
                     tooltip: '编辑主题',
                   ),
                   IconButton(
-                    icon: Icon(Icons.share),
+                    icon: const Icon(Icons.share),
                     onPressed: () => _shareTheme(theme),
                     tooltip: '分享主题',
                   ),
                   PopupMenuButton<String>(
-                    icon: Icon(Icons.more_vert),
+                    icon: const Icon(Icons.more_vert),
                     onSelected: (action) => _handleThemeAction(action, theme),
                     itemBuilder: (context) => [
                       const PopupMenuItem(
@@ -348,7 +347,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
                         child: Row(
                           children: [
                             Icon(Icons.copy, size: 16),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Text('复制'),
                           ],
                         ),
@@ -358,7 +357,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
                         child: Row(
                           children: [
                             Icon(Icons.download, size: 16),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Text('导出'),
                           ],
                         ),
@@ -368,7 +367,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
                         child: Row(
                           children: [
                             Icon(Icons.delete, size: 16, color: Colors.red),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Text('删除', style: TextStyle(color: Colors.red)),
                           ],
                         ),
@@ -461,6 +460,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
         builder: (context) => const CustomThemeEditor(),
       ),
     );
+    if (!mounted) return;
 
     if (result != null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -478,6 +478,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
         builder: (context) => CustomThemeEditor(theme: theme),
       ),
     );
+    if (!mounted) return;
 
     if (result != null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -504,6 +505,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
         description: theme.description,
         baseTheme: theme,
       );
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -524,6 +526,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
   Future<void> _exportTheme(models.CustomThemeData theme) async {
     try {
       await _themeService.copyThemeToClipboard(theme.id);
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('主题已复制到剪贴板'),
@@ -544,12 +547,12 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('确认删除'),
+        title: const Text('确认删除'),
         content: Text('确定要删除主题"${theme.name}"吗？此操作不可撤销。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
@@ -557,7 +560,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: Text('删除'),
+            child: const Text('删除'),
           ),
         ],
       ),
@@ -566,6 +569,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
     if (confirmed == true) {
       try {
         await _themeService.deleteCustomTheme(theme.id);
+        if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('主题"${theme.name}"已删除'),
@@ -586,6 +590,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
   Future<void> _importFromClipboard() async {
     try {
       final theme = await _themeService.importThemeFromClipboard();
+      if (!context.mounted) return;
       if (theme != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -617,11 +622,11 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('输入分享码'),
+        title: const Text('输入分享码'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('请输入8位分享码或完整的分享链接：'),
+            const Text('请输入8位分享码或完整的分享链接：'),
             const SizedBox(height: 16),
             TextField(
               controller: controller,
@@ -639,7 +644,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(controller.text.trim()),
@@ -647,7 +652,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
               backgroundColor: Colors.black,
               foregroundColor: Colors.white,
             ),
-            child: Text('导入'),
+            child: const Text('导入'),
           ),
         ],
       ),
@@ -668,6 +673,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
       } else {
         // 从分享码导入
         theme = await _themeService.importSharedTheme(input);
+        if (!context.mounted) return;
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -690,12 +696,12 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('重置主题'),
-        content: Text('确定要重置为系统默认主题吗？'),
+        title: const Text('重置主题'),
+        content: const Text('确定要重置为系统默认主题吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
@@ -703,7 +709,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
               backgroundColor: Colors.black,
               foregroundColor: Colors.white,
             ),
-            child: Text('重置'),
+            child: const Text('重置'),
           ),
         ],
       ),
@@ -711,6 +717,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
 
     if (confirmed == true) {
       await _themeService.resetToSystemTheme();
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('已重置为系统默认主题'),

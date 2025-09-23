@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/family.dart' as family_model;
-import '../../services/api/family_service.dart';
-import '../../providers/auth_provider.dart';
-import '../../widgets/loading_overlay.dart';
+import 'package:jive_money/models/family.dart' as family_model;
+import 'package:jive_money/services/api/family_service.dart';
+import 'package:jive_money/widgets/loading_overlay.dart';
 
 /// 权限编辑界面
 class FamilyPermissionsEditorScreen extends ConsumerStatefulWidget {
@@ -11,10 +10,10 @@ class FamilyPermissionsEditorScreen extends ConsumerStatefulWidget {
   final String familyName;
 
   const FamilyPermissionsEditorScreen({
-    Key? key,
+    super.key,
     required this.familyId,
     required this.familyName,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<FamilyPermissionsEditorScreen> createState() =>
@@ -155,13 +154,9 @@ class _FamilyPermissionsEditorScreenState
       final customRoles = await _familyService.getCustomRoles(widget.familyId);
 
       setState(() {
-        if (permissions != null) {
-          _rolePermissions = permissions;
-        }
-        if (customRoles != null) {
-          _customRoles = customRoles;
-        }
-      });
+        _rolePermissions = permissions;
+              _customRoles = customRoles;
+            });
     } catch (e) {
       _showError('加载权限配置失败: $e');
     } finally {
@@ -281,12 +276,12 @@ class _FamilyPermissionsEditorScreenState
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('删除角色'),
-        content: Text('确定要删除这个自定义角色吗？此操作不可恢复。'),
+        title: const Text('删除角色'),
+        content: const Text('确定要删除这个自定义角色吗？此操作不可恢复。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           TextButton(
             onPressed: () async {
@@ -318,7 +313,7 @@ class _FamilyPermissionsEditorScreenState
               }
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text('删除'),
+            child: const Text('删除'),
           ),
         ],
       ),
@@ -394,7 +389,7 @@ class _FamilyPermissionsEditorScreenState
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('权限管理'),
+              const Text('权限管理'),
               Text(
                 widget.familyName,
                 style: theme.textTheme.bodySmall,
@@ -407,16 +402,16 @@ class _FamilyPermissionsEditorScreenState
                 onPressed: () {
                   setState(() => _pendingChanges.clear());
                 },
-                icon: Icon(Icons.clear),
-                label: Text('重置'),
+                icon: const Icon(Icons.clear),
+                label: const Text('重置'),
               ),
             IconButton(
-              icon: Icon(Icons.save),
+              icon: const Icon(Icons.save),
               onPressed: _pendingChanges.isNotEmpty ? _savePermissions : null,
               tooltip: '保存更改',
             ),
             PopupMenuButton<String>(
-              icon: Icon(Icons.more_vert),
+              icon: const Icon(Icons.more_vert),
               onSelected: (value) {
                 switch (value) {
                   case 'create_role':
@@ -473,8 +468,8 @@ class _FamilyPermissionsEditorScreenState
                 children: [
                   Container(
                     padding: const EdgeInsets.all(16),
-                    color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
-                    child: Text(
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                    child: const Text(
                       '角色列表',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
@@ -591,7 +586,7 @@ class _FamilyPermissionsEditorScreenState
         style: const TextStyle(fontSize: 12),
       ),
       trailing: IconButton(
-        icon: Icon(Icons.delete_outline, size: 18),
+        icon: const Icon(Icons.delete_outline, size: 18),
         onPressed: () => _deleteCustomRole(role.id),
       ),
       onTap: () {
@@ -620,7 +615,7 @@ class _FamilyPermissionsEditorScreenState
         // 头部信息
         Container(
           padding: const EdgeInsets.all(16),
-          color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
+          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
           child: Row(
             children: [
               Expanded(
@@ -831,7 +826,7 @@ class _CreateCustomRoleDialogState extends State<_CreateCustomRoleDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('创建自定义角色'),
+      title: const Text('创建自定义角色'),
       content: Form(
         key: _formKey,
         child: Column(
@@ -861,7 +856,7 @@ class _CreateCustomRoleDialogState extends State<_CreateCustomRoleDialog> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              value: _baseRole,
+              initialValue: _baseRole,
               decoration: const InputDecoration(
                 labelText: '基于角色',
                 helperText: '新角色将继承所选角色的权限',
@@ -869,15 +864,15 @@ class _CreateCustomRoleDialogState extends State<_CreateCustomRoleDialog> {
               items: [
                 DropdownMenuItem(
                   value: family_model.FamilyRole.admin.toString(),
-                  child: Text('管理员'),
+                  child: const Text('管理员'),
                 ),
                 DropdownMenuItem(
                   value: family_model.FamilyRole.member.toString(),
-                  child: Text('成员'),
+                  child: const Text('成员'),
                 ),
                 DropdownMenuItem(
                   value: family_model.FamilyRole.viewer.toString(),
-                  child: Text('观察者'),
+                  child: const Text('观察者'),
                 ),
               ],
               onChanged: (value) {
@@ -890,7 +885,7 @@ class _CreateCustomRoleDialogState extends State<_CreateCustomRoleDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('取消'),
+          child: const Text('取消'),
         ),
         ElevatedButton(
           onPressed: () {
@@ -905,7 +900,7 @@ class _CreateCustomRoleDialogState extends State<_CreateCustomRoleDialog> {
               );
             }
           },
-          child: Text('创建'),
+          child: const Text('创建'),
         ),
       ],
     );
@@ -928,59 +923,59 @@ class _PermissionTemplateDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('选择权限模板'),
+      title: const Text('选择权限模板'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            leading: Icon(Icons.all_inclusive),
-            title: Text('完全访问'),
-            subtitle: Text('拥有所有权限'),
+            leading: const Icon(Icons.all_inclusive),
+            title: const Text('完全访问'),
+            subtitle: const Text('拥有所有权限'),
             onTap: () {
               Navigator.pop(context);
               onApplyTemplate(PermissionTemplate.fullAccess);
             },
           ),
           ListTile(
-            leading: Icon(Icons.visibility),
-            title: Text('只读访问'),
-            subtitle: Text('仅可查看，不可修改'),
+            leading: const Icon(Icons.visibility),
+            title: const Text('只读访问'),
+            subtitle: const Text('仅可查看，不可修改'),
             onTap: () {
               Navigator.pop(context);
               onApplyTemplate(PermissionTemplate.readOnly);
             },
           ),
           ListTile(
-            leading: Icon(Icons.edit),
-            title: Text('贡献者'),
-            subtitle: Text('可创建和编辑内容'),
+            leading: const Icon(Icons.edit),
+            title: const Text('贡献者'),
+            subtitle: const Text('可创建和编辑内容'),
             onTap: () {
               Navigator.pop(context);
               onApplyTemplate(PermissionTemplate.contributor);
             },
           ),
           ListTile(
-            leading: Icon(Icons.shield),
-            title: Text('协管员'),
-            subtitle: Text('管理权限但不能删除'),
+            leading: const Icon(Icons.shield),
+            title: const Text('协管员'),
+            subtitle: const Text('管理权限但不能删除'),
             onTap: () {
               Navigator.pop(context);
               onApplyTemplate(PermissionTemplate.moderator);
             },
           ),
           ListTile(
-            leading: Icon(Icons.account_balance),
-            title: Text('财务专员'),
-            subtitle: Text('仅管理交易和预算'),
+            leading: const Icon(Icons.account_balance),
+            title: const Text('财务专员'),
+            subtitle: const Text('仅管理交易和预算'),
             onTap: () {
               Navigator.pop(context);
               onApplyTemplate(PermissionTemplate.financial);
             },
           ),
           ListTile(
-            leading: Icon(Icons.remove_circle_outline),
-            title: Text('最小权限'),
-            subtitle: Text('仅查看交易和报表'),
+            leading: const Icon(Icons.remove_circle_outline),
+            title: const Text('最小权限'),
+            subtitle: const Text('仅查看交易和报表'),
             onTap: () {
               Navigator.pop(context);
               onApplyTemplate(PermissionTemplate.minimal);
@@ -991,7 +986,7 @@ class _PermissionTemplateDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('取消'),
+          child: const Text('取消'),
         ),
       ],
     );

@@ -1,8 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'providers/category_provider.dart';
-import 'models/category_template.dart';
+import 'package:jive_money/providers/category_provider.dart';
+import 'package:jive_money/models/category_template.dart';
 
 void main() {
   runApp(
@@ -37,10 +36,10 @@ class NetworkTestScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Network Category Test'),
+        title: const Text('Network Category Test'),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: () {
               ref
                   .read(systemTemplatesProvider.notifier)
@@ -93,7 +92,7 @@ class NetworkTestScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CircularProgressIndicator(),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Text('Loading templates...'),
                   ],
                 ),
@@ -102,7 +101,7 @@ class NetworkTestScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.error_outline,
+                    const Icon(Icons.error_outline,
                         size: 64, color: Colors.red),
                     const SizedBox(height: 16),
                     Text('Error: $error'),
@@ -113,7 +112,7 @@ class NetworkTestScreen extends ConsumerWidget {
                             .read(systemTemplatesProvider.notifier)
                             .refresh(forceRefresh: true);
                       },
-                      child: Text('Retry'),
+                      child: const Text('Retry'),
                     ),
                   ],
                 ),
@@ -133,8 +132,8 @@ class NetworkTestScreen extends ConsumerWidget {
         onPressed: () {
           _testNetworkCall(ref);
         },
-        label: Text('Test Network'),
-        icon: Icon(Icons.network_check),
+        label: const Text('Test Network'),
+        icon: const Icon(Icons.network_check),
       ),
     );
   }
@@ -206,7 +205,7 @@ class TemplateCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (template.isFeatured)
-              Icon(Icons.star, color: Colors.amber, size: 16),
+              const Icon(Icons.star, color: Colors.amber, size: 16),
             Text('${template.globalUsageCount}'),
           ],
         ),

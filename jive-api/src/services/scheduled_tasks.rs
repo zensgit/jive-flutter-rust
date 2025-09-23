@@ -49,6 +49,26 @@ impl ScheduledTaskManager {
             tokio::time::sleep(TokioDuration::from_secs(60)).await;
             manager_clone.run_cache_cleanup_task().await;
         });
+
+        // 启动手动汇率过期清理任务（可配置开关与频率）
+        let manager_clone = Arc::clone(&self);
+        tokio::spawn(async move {
+            let enabled = std::env::var("MANUAL_CLEAR_ENABLED")
+                .ok()
+                .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
+                .unwrap_or(true);
+            if !enabled {
+                info!("Manual rate cleanup task disabled by MANUAL_CLEAR_ENABLED");
+                return;
+            }
+            let mins = std::env::var("MANUAL_CLEAR_INTERVAL_MIN")
+                .ok()
+                .and_then(|v| v.parse::<u64>().ok())
+                .unwrap_or(60);
+            info!("Manual rate cleanup task will start in 90 seconds, interval: {} minutes", mins);
+            tokio::time::sleep(TokioDuration::from_secs(90)).await;
+            manager_clone.run_manual_overrides_cleanup_task(mins).await;
+        });
         
         info!("All scheduled tasks initialized (will start after delay)");
     }
@@ -206,9 +226,36 @@ impl ScheduledTaskManager {
                 }
             }
             
-            // 清理过期的手动汇率（当前表结构可能无相关列，暂略过以避免编译时检查失败）
-            // 如需启用，请确认 exchange_rates 存在 is_manual / manual_rate_expiry 列后恢复以下逻辑
-            // 并相应更新迁移脚本确保兼容
+        }
+    }
+
+    /// 手动汇率过期清理任务（仅清除标志与过期时间，不删除记录）
+    async fn run_manual_overrides_cleanup_task(&self, interval_minutes: u64) {
+        let mut interval = interval(TokioDuration::from_secs(interval_minutes * 60));
+        loop {
+            interval.tick().await;
+            match sqlx::query(
+                r#"
+                UPDATE exchange_rates
+                SET is_manual = false,
+                    manual_rate_expiry = NULL,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE is_manual = true
+                  AND manual_rate_expiry IS NOT NULL
+                  AND manual_rate_expiry <= NOW()
+                "#
+            )
+            .execute(&*self.pool)
+            .await
+            {
+                Ok(res) => {
+                    let n = res.rows_affected();
+                    if n > 0 { info!("Cleared {} expired manual rate flags", n); }
+                }
+                Err(e) => {
+                    warn!("Failed to clear expired manual rates: {:?}", e);
+                }
+            }
         }
     }
     

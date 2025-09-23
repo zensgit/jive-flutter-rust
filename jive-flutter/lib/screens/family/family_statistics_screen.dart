@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../services/api/family_service.dart';
+import 'package:jive_money/services/api/family_service.dart';
 import 'package:intl/intl.dart';
 
 /// 家庭统计信息页面
@@ -10,10 +10,10 @@ class FamilyStatisticsScreen extends ConsumerStatefulWidget {
   final String familyName;
 
   const FamilyStatisticsScreen({
-    Key? key,
+    super.key,
     required this.familyId,
     required this.familyName,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<FamilyStatisticsScreen> createState() =>
@@ -24,7 +24,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _selectedPeriod = 'month';
-  DateTime _selectedDate = DateTime.now();
+  final DateTime _selectedDate = DateTime.now();
   FamilyStatistics? _statistics;
   bool _isLoading = true;
 
@@ -83,7 +83,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('统计分析'),
+            const Text('统计分析'),
             Text(
               widget.familyName,
               style: theme.textTheme.bodySmall,
@@ -108,10 +108,10 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  Icon(Icons.date_range, size: 20),
+                  const Icon(Icons.date_range, size: 20),
                   const SizedBox(width: 4),
                   Text(_periodOptions[_selectedPeriod]!),
-                  Icon(Icons.arrow_drop_down),
+                  const Icon(Icons.arrow_drop_down),
                 ],
               ),
             ),
@@ -236,7 +236,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                   const SizedBox(height: 8),
                   LinearProgressIndicator(
                     value: stats.savingsRate / 100,
-                    backgroundColor: theme.colorScheme.surfaceVariant,
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
                     color: _getSavingsRateColor(stats.savingsRate),
                     minHeight: 8,
                   ),
@@ -274,7 +274,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                 children: [
                   Text('收支趋势', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 16),
-                  const SizedBox(
+                  SizedBox(
                     height: 250,
                     child: LineChart(
                       LineChartData(
@@ -309,7 +309,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                                     style: const TextStyle(fontSize: 10),
                                   );
                                 }
-                                return Text('');
+                                return const Text('');
                               },
                             ),
                           ),
@@ -382,7 +382,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                 children: [
                   Text('月度对比', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 16),
-                  const SizedBox(
+                  SizedBox(
                     height: 200,
                     child: BarChart(
                       BarChartData(
@@ -423,7 +423,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                                     style: const TextStyle(fontSize: 10),
                                   );
                                 }
-                                return Text('');
+                                return const Text('');
                               },
                             ),
                           ),
@@ -471,7 +471,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                 children: [
                   Text('支出分类', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 16),
-                  const SizedBox(
+                  SizedBox(
                     height: 250,
                     child: PieChart(
                       PieChartData(
@@ -610,7 +610,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                             const SizedBox(height: 8),
                             LinearProgressIndicator(
                               value: member.percentage / 100,
-                              backgroundColor: theme.colorScheme.surfaceVariant,
+                              backgroundColor: theme.colorScheme.surfaceContainerHighest,
                               minHeight: 4,
                             ),
                           ],
@@ -857,7 +857,7 @@ class _BudgetProgressCard extends StatelessWidget {
             const SizedBox(height: 8),
             LinearProgressIndicator(
               value: percentage / 100,
-              backgroundColor: theme.colorScheme.surfaceVariant,
+              backgroundColor: theme.colorScheme.surfaceContainerHighest,
               color: isOverBudget ? Colors.red : Colors.blue,
               minHeight: 6,
             ),

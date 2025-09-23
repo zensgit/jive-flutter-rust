@@ -1,7 +1,6 @@
+import 'package:jive_money/models/category.dart';
+
 /// Minimal classification enum used by template/category admin screens.
-enum AccountClassification {
-  income,
-  expense,
-  transfer,
-}
+/// This is now an alias to CategoryClassification for compatibility.
+typedef AccountClassification = CategoryClassification;
 

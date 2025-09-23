@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/router/app_router.dart';
-import '../../../providers/account_provider.dart';
-import '../../../models/account.dart';
+import 'package:jive_money/core/router/app_router.dart';
+import 'package:jive_money/providers/account_provider.dart';
+import 'package:jive_money/models/account.dart';
 
 class AccountOverview extends ConsumerWidget {
   const AccountOverview({super.key});
@@ -20,12 +20,12 @@ class AccountOverview extends ConsumerWidget {
       return Center(
         child: Column(
           children: [
-            Icon(Icons.error_outline, color: Colors.red),
+            const Icon(Icons.error_outline, color: Colors.red),
             const SizedBox(height: 8),
             Text('加载失败: ${accountState.errorMessage}'),
             TextButton(
               onPressed: () => ref.read(accountProvider.notifier).refresh(),
-              child: Text('重试'),
+              child: const Text('重试'),
             ),
           ],
         ),
@@ -87,7 +87,7 @@ class AccountOverview extends ConsumerWidget {
                 color: Theme.of(context).primaryColor,
               ),
               const SizedBox(height: 12),
-              Text(
+              const Text(
                 '添加您的第一个账户',
                 style: TextStyle(
                   fontSize: 16,
@@ -112,7 +112,7 @@ class AccountOverview extends ConsumerWidget {
   Widget _buildAssetLiabilityOverview(double assets, double liabilities) {
     final netWorth = assets - liabilities;
 
-    return const SizedBox(
+    return SizedBox(
       width: double.infinity,
       child: Row(
         children: [

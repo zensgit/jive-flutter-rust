@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/currency.dart' as model;
-import '../../providers/currency_provider.dart';
-import '../../widgets/source_badge.dart';
-import '../../providers/settings_provider.dart';
+import 'package:jive_money/models/currency.dart' as model;
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/widgets/source_badge.dart';
+import 'package:jive_money/providers/settings_provider.dart';
 
 /// 货币选择管理页面
 class CurrencySelectionPage extends ConsumerStatefulWidget {
@@ -187,7 +187,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                    color: cs.surfaceVariant,
+                    color: cs.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(4)),
                 child: Text(currency.symbol,
                     style: TextStyle(fontSize: dense ? 11 : 12)),
@@ -198,8 +198,8 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
               style: TextStyle(
                   fontSize: dense ? 12 : 13, color: cs.onSurfaceVariant)),
           trailing: isBaseCurrency
-              ? Icon(Icons.check_circle, color: Colors.amber)
-              : Icon(Icons.chevron_right),
+              ? const Icon(Icons.check_circle, color: Colors.amber)
+              : const Icon(Icons.chevron_right),
           onTap: () => Navigator.pop(context, currency),
         ),
       );
@@ -272,7 +272,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: cs.surfaceVariant,
+                          color: cs.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(currency.symbol,
@@ -301,12 +301,31 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                         ),
                         const SizedBox(width: 6),
                         SourceBadge(
-                            source:
-                                _localRateOverrides.containsKey(currency.code)
-                                    ? 'manual'
-                                    : (rateObj?.source)),
+                          source: _localRateOverrides.containsKey(currency.code)
+                              ? 'manual'
+                              : (rateObj?.source),
+                        ),
                       ],
                     ),
+                    if (rateObj?.source == 'manual')
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Builder(builder: (_) {
+                          final expiry = ref
+                              .read(currencyProvider.notifier)
+                              .manualExpiryFor(currency.code);
+                          final text = expiry != null
+                              ? '手动有效至 ${expiry.year}-${expiry.month.toString().padLeft(2, '0')}-${expiry.day.toString().padLeft(2, '0')} ${expiry.hour.toString().padLeft(2, '0')}:${expiry.minute.toString().padLeft(2, '0')}'
+                              : '手动汇率有效中';
+                          return Text(
+                            text,
+                            style: TextStyle(
+                              fontSize: dense ? 10 : 11,
+                              color: Colors.orange[700],
+                            ),
+                          );
+                        }),
+                      ),
                   ],
                 ],
               ),
@@ -342,7 +361,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                         children: [
                           Icon(Icons.trending_up, size: 16, color: cs.primary),
                           const SizedBox(width: 8),
-                          Text(
+                          const Text(
                             '汇率设置',
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
@@ -413,8 +432,8 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                                       .read(currencyProvider.notifier)
                                       .clearManualRate(currency.code);
                                 },
-                                icon: Icon(Icons.refresh, size: 18),
-                                label: Text('自动'),
+                                icon: const Icon(Icons.refresh, size: 18),
+                                label: const Text('自动'),
                                 style: TextButton.styleFrom(
                                     foregroundColor: cs.primary),
                               ),
@@ -479,8 +498,8 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                                     }
                                   }
                                 },
-                                icon: Icon(Icons.save, size: 18),
-                                label: Text('保存(含有效期)'),
+                                icon: const Icon(Icons.save, size: 18),
+                                label: const Text('保存(含有效期)'),
                                 style: TextButton.styleFrom(
                                     foregroundColor: cs.primary),
                               ),
@@ -561,7 +580,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : Icon(Icons.refresh),
+                  : const Icon(Icons.refresh),
               tooltip: '更新汇率',
             ),
         ],
@@ -581,10 +600,10 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
               },
               decoration: InputDecoration(
                 hintText: '搜索货币（代码、名称、符号）',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: Icon(Icons.clear),
+                        icon: const Icon(Icons.clear),
                         onPressed: () {
                           setState(() {
                             _searchController.clear();
@@ -671,8 +690,8 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      icon: Icon(Icons.check),
-                      label: Text('完成'),
+                      icon: const Icon(Icons.check),
+                      label: const Text('完成'),
                     ),
                   ],
                 ),

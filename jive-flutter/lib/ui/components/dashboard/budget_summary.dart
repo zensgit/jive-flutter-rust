@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/router/app_router.dart';
-import '../../../providers/budget_provider.dart';
+import 'package:jive_money/core/router/app_router.dart';
+import 'package:jive_money/providers/budget_provider.dart';
 
 class BudgetSummary extends ConsumerWidget {
   const BudgetSummary({super.key});
@@ -69,12 +69,12 @@ class BudgetSummary extends ConsumerWidget {
       error: (error, _) => Center(
         child: Column(
           children: [
-            Icon(Icons.error_outline, color: Colors.red),
+            const Icon(Icons.error_outline, color: Colors.red),
             const SizedBox(height: 8),
             Text('加载失败: $error'),
             TextButton(
               onPressed: () => ref.invalidate(currentMonthBudgetsProvider),
-              child: Text('重试'),
+              child: const Text('重试'),
             ),
           ],
         ),
@@ -97,7 +97,7 @@ class BudgetSummary extends ConsumerWidget {
                 color: Theme.of(context).primaryColor,
               ),
               const SizedBox(height: 12),
-              Text(
+              const Text(
                 '设置您的第一个预算',
                 style: TextStyle(
                   fontSize: 16,
@@ -174,7 +174,7 @@ class BudgetSummary extends ConsumerWidget {
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    const SizedBox(
+                    SizedBox(
                       width: 80,
                       height: 80,
                       child: CircularProgressIndicator(

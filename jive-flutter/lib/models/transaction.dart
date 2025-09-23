@@ -291,7 +291,7 @@ class TransactionCategory {
       parentId: json['parent_id']?.toString(),
       // 避免运行时根据 codePoint 构造 IconData，使用常量映射或默认常量
       icon: Icons.category,
-      color: Color(json['color'] ?? Colors.grey.value),
+      color: Color(json['color'] ?? Colors.grey.toARGB32()),
       type: TransactionType.fromString(json['type']),
       sortOrder: json['sort_order'] ?? 0,
       isSystem: json['is_system'] ?? false,
@@ -310,7 +310,7 @@ class TransactionCategory {
       'name': name,
       'parent_id': parentId,
       'icon': icon.codePoint,
-      'color': color.value,
+      'color': color.toARGB32(),
       'type': type.value,
       'sort_order': sortOrder,
       'is_system': isSystem,

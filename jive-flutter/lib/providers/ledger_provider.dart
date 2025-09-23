@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/api/ledger_service.dart' as api;
-import '../models/ledger.dart';
-import 'account_provider.dart';
-import 'transaction_provider.dart';
-import 'budget_provider.dart';
+import 'package:jive_money/services/api/ledger_service.dart' as api;
+import 'package:jive_money/models/ledger.dart';
+import 'package:jive_money/providers/account_provider.dart';
+import 'package:jive_money/providers/transaction_provider.dart';
+import 'package:jive_money/providers/budget_provider.dart';
 
 // 账本服务Provider
 final ledgerServiceProvider = Provider<api.LedgerService>((ref) {

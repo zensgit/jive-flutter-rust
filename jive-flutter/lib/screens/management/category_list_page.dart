@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/category_provider.dart';
+import 'package:jive_money/providers/category_provider.dart';
 
 /// 基础版分类列表页面（恢复最小可用功能）
 /// 后续增强（拖拽/批量/模板/统计）将在独立 PR 中逐步回填。
@@ -14,7 +14,7 @@ class CategoryListPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('分类管理'),
+        title: const Text('分类管理'),
       ),
       body: categories.isEmpty
           ? _EmptyState(colorScheme: colorScheme)
@@ -31,7 +31,7 @@ class CategoryListPage extends ConsumerWidget {
                   ),
                   title: Text(c.name),
                   subtitle: c.parentId != null
-                      ? Text('子分类', style: TextStyle(fontSize: 11))
+                      ? const Text('子分类', style: TextStyle(fontSize: 11))
                       : null,
                   dense: true,
                   visualDensity: VisualDensity.compact,
@@ -45,7 +45,7 @@ class CategoryListPage extends ConsumerWidget {
             const SnackBar(content: Text('创建分类功能后续 PR 提供')),
           );
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -77,7 +77,7 @@ class _EmptyState extends StatelessWidget {
           children: [
             Icon(Icons.category_outlined, size: 56, color: colorScheme.primary),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               '暂无分类',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../services/auth_service.dart';
-import '../../widgets/wechat_login_button.dart';
+import 'package:jive_money/services/auth_service.dart';
+import 'package:jive_money/widgets/wechat_login_button.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -118,7 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('用户注册'),
+        title: const Text('用户注册'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
@@ -141,7 +141,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       height: 80,
                     ),
                     const SizedBox(height: 24),
-                    Text(
+                    const Text(
                       '创建账户',
                       style: TextStyle(
                         fontSize: 28,
@@ -226,7 +226,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       decoration: InputDecoration(
                         labelText: '密码',
                         hintText: '创建安全密码',
-                        prefixIcon: Icon(Icons.lock),
+                        prefixIcon: const Icon(Icons.lock),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _isPasswordVisible
@@ -268,7 +268,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: _confirmPasswordController,
                       decoration: InputDecoration(
                         labelText: '确认密码',
-                        prefixIcon: Icon(Icons.lock_outline),
+                        prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _isConfirmPasswordVisible
@@ -315,7 +315,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 _agreeToTerms = !_agreeToTerms;
                               });
                             },
-                            child: Text(
+                            child: const Text(
                               '我已阅读并同意用户协议和隐私政策',
                               style: TextStyle(fontSize: 14),
                             ),
@@ -326,7 +326,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 24),
 
                     // 注册按钮
-                    const SizedBox(
+                    SizedBox(
                       height: 50,
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _register,
@@ -339,7 +339,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 valueColor:
                                     AlwaysStoppedAnimation<Color>(Colors.white),
                               )
-                            : Text(
+                            : const Text(
                                 '注册',
                                 style: TextStyle(fontSize: 16),
                               ),
@@ -397,22 +397,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text('已有账户？点击登录'),
+                      child: const Text('已有账户？点击登录'),
                     ),
 
                     const SizedBox(height: 20),
 
                     // 家庭邀请说明
-                    Card(
+                    const Card(
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: EdgeInsets.all(16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
                                 Icon(Icons.family_restroom, color: Colors.blue),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8),
                                 Text(
                                   '家庭协作',
                                   style: TextStyle(
@@ -422,7 +422,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             Text(
                               '• 注册后自动成为家庭管理员（Owner）\n'
                               '• 可邀请家庭成员加入财务管理\n'

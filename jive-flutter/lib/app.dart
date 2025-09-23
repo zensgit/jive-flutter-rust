@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/constants/app_constants.dart';
-import 'core/router/app_router.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/core/router/app_router.dart';
 
 class JiveApp extends ConsumerWidget {
   const JiveApp({super.key});
@@ -64,11 +64,11 @@ class JiveApp extends ConsumerWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-          borderSide: BorderSide(color: AppConstants.primaryColor, width: 2),
+          borderSide: const BorderSide(color: AppConstants.primaryColor, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-          borderSide: BorderSide(color: AppConstants.errorColor),
+          borderSide: const BorderSide(color: AppConstants.errorColor),
         ),
       ),
     );
@@ -118,11 +118,11 @@ class JiveApp extends ConsumerWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-          borderSide: BorderSide(color: AppConstants.primaryColor, width: 2),
+          borderSide: const BorderSide(color: AppConstants.primaryColor, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-          borderSide: BorderSide(color: AppConstants.errorColor),
+          borderSide: const BorderSide(color: AppConstants.errorColor),
         ),
       ),
     );

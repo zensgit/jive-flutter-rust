@@ -1,17 +1,14 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide ErrorWidget;
 import 'package:provider/provider.dart';
-import '../../services/api/category_service.dart';
-import '../../models/category.dart';
-import '../../models/category_template.dart';
-import '../../utils/constants.dart';
-import '../../widgets/common/custom_card.dart';
-import '../../ui/components/loading/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
-import '../../models/account_classification.dart';
+import 'package:jive_money/services/api/category_service.dart';
+import 'package:jive_money/models/category_template.dart';
+import 'package:jive_money/ui/components/loading/loading_widget.dart';
+import 'package:jive_money/models/account_classification.dart';
+import 'package:jive_money/widgets/common/error_widget.dart';
 
 /// 分类模板库页面 - 浏览和导入系统预设分类模板
 class CategoryTemplateLibraryPage extends StatefulWidget {
-  const CategoryTemplateLibraryPage({Key? key}) : super(key: key);
+  const CategoryTemplateLibraryPage({super.key});
 
   @override
   State<CategoryTemplateLibraryPage> createState() =>
@@ -27,7 +24,7 @@ class _CategoryTemplateLibraryPageState
   // 模板数据
   List<SystemCategoryTemplate> _allTemplates = [];
   List<SystemCategoryTemplate> _filteredTemplates = [];
-  Map<String, List<SystemCategoryTemplate>> _templatesByGroup = {};
+  final Map<String, List<SystemCategoryTemplate>> _templatesByGroup = {};
 
   // UI状态
   bool _isLoading = true;
@@ -79,7 +76,7 @@ class _CategoryTemplateLibraryPageState
       _templatesByGroup.clear();
       for (final template in templates) {
         final group = template.categoryGroup;
-        _templatesByGroup.putIfAbsent(group, () => []).add(template);
+        _templatesByGroup.putIfAbsent(group.key, () => []).add(template);
       }
 
       setState(() {
@@ -179,16 +176,16 @@ class _CategoryTemplateLibraryPageState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('导入分类模板'),
+        title: const Text('导入分类模板'),
         content: Text('确定要导入 ${_selectedTemplateIds.length} 个分类模板吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('导入'),
+            child: const Text('导入'),
           ),
         ],
       ),
@@ -199,7 +196,8 @@ class _CategoryTemplateLibraryPageState
         // 批量导入模板
         for (final templateId in _selectedTemplateIds) {
           final template = _allTemplates.firstWhere((t) => t.id == templateId);
-          await _categoryService.importTemplateAsCategory(template);
+          await _categoryService.importTemplateAsCategory(template.id);
+          if (!context.mounted) return;
         }
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -227,7 +225,7 @@ class _CategoryTemplateLibraryPageState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('导入分类'),
+        title: const Text('导入分类'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,11 +259,11 @@ class _CategoryTemplateLibraryPageState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('导入'),
+            child: const Text('导入'),
           ),
         ],
       ),
@@ -273,7 +271,8 @@ class _CategoryTemplateLibraryPageState
 
     if (confirmed == true) {
       try {
-        await _categoryService.importTemplateAsCategory(template);
+        await _categoryService.importTemplateAsCategory(template.id);
+        if (!context.mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -296,7 +295,7 @@ class _CategoryTemplateLibraryPageState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('分类模板库'),
+        title: const Text('分类模板库'),
         bottom: TabBar(
           controller: _tabController,
           onTap: (_) => _filterTemplates(),
@@ -309,17 +308,17 @@ class _CategoryTemplateLibraryPageState
         actions: [
           if (_isSelectionMode) ...[
             IconButton(
-              icon: Icon(Icons.select_all),
+              icon: const Icon(Icons.select_all),
               onPressed: _selectAll,
               tooltip: '全选',
             ),
             IconButton(
-              icon: Icon(Icons.clear),
+              icon: const Icon(Icons.clear),
               onPressed: _clearSelection,
               tooltip: '清除选择',
             ),
             IconButton(
-              icon: Icon(Icons.download),
+              icon: const Icon(Icons.download),
               onPressed: _selectedTemplateIds.isNotEmpty
                   ? _importSelectedTemplates
                   : null,
@@ -332,7 +331,7 @@ class _CategoryTemplateLibraryPageState
             tooltip: _isSelectionMode ? '退出选择' : '批量选择',
           ),
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: _loadTemplates,
             tooltip: '刷新',
           ),
@@ -385,10 +384,10 @@ class _CategoryTemplateLibraryPageState
           TextField(
             decoration: InputDecoration(
               hintText: '搜索模板...',
-              prefixIcon: Icon(Icons.search),
+              prefixIcon: const Icon(Icons.search),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
-                      icon: Icon(Icons.clear),
+                      icon: const Icon(Icons.clear),
                       onPressed: () {
                         setState(() {
                           _searchQuery = '';
@@ -455,7 +454,7 @@ class _CategoryTemplateLibraryPageState
               // 精选开关
               Row(
                 children: [
-                  Text('仅显示精选'),
+                  const Text('仅显示精选'),
                   Switch(
                     value: _showOnlyFeatured,
                     onChanged: (value) {
@@ -681,7 +680,7 @@ class _CategoryTemplateLibraryPageState
                               color: Colors.orange[100],
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: Text(
+                            child: const Text(
                               '精选',
                               style: TextStyle(
                                 fontSize: 10,
@@ -724,7 +723,7 @@ class _CategoryTemplateLibraryPageState
                 )
               else
                 IconButton(
-                  icon: Icon(Icons.add_circle_outline),
+                  icon: const Icon(Icons.add_circle_outline),
                   onPressed: () => _importSingleTemplate(template),
                   color: color,
                   tooltip: '导入',
@@ -867,7 +866,7 @@ class _CategoryTemplateLibraryPageState
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text('关闭'),
+                      child: const Text('关闭'),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -877,8 +876,8 @@ class _CategoryTemplateLibraryPageState
                         Navigator.pop(context);
                         _importSingleTemplate(template);
                       },
-                      icon: Icon(Icons.add),
-                      label: Text('导入分类'),
+                      icon: const Icon(Icons.add),
+                      label: const Text('导入分类'),
                     ),
                   ),
                 ],
@@ -937,8 +936,6 @@ class _CategoryTemplateLibraryPageState
         return '支出';
       case AccountClassification.transfer:
         return '转账';
-      default:
-        return '未知';
     }
   }
 }

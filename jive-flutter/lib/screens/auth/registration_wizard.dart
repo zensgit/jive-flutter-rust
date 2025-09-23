@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import '../../services/auth_service.dart';
-import '../../services/api_service.dart';
+import 'package:jive_money/services/auth_service.dart';
+import 'package:jive_money/services/api_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/currency_provider.dart';
-import '../../core/storage/token_storage.dart';
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/core/storage/token_storage.dart';
 
 class RegistrationWizard extends ConsumerStatefulWidget {
   const RegistrationWizard({super.key});
@@ -281,7 +279,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           side: const BorderSide(color: Colors.grey),
                         ),
-                        child: Text(
+                        child: const Text(
                           '上一步',
                           style: TextStyle(color: Colors.white),
                         ),
@@ -328,7 +326,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               '创建您的账户',
               style: TextStyle(
                 fontSize: 28,
@@ -518,8 +516,8 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                       _agreeToTerms = value ?? false;
                     });
                   },
-                  fillColor: MaterialStateProperty.resolveWith((states) {
-                    if (states.contains(MaterialState.selected)) {
+                  fillColor: WidgetStateProperty.resolveWith((states) {
+                    if (states.contains(WidgetState.selected)) {
                       return Colors.blue;
                     }
                     return Colors.grey[700];
@@ -554,7 +552,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               "Let's set up your account",
               style: TextStyle(
                 fontSize: 28,
@@ -613,7 +611,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
             // Upload button
             OutlinedButton.icon(
               onPressed: _pickImage,
-              icon: Icon(Icons.camera_alt, color: Colors.white),
+              icon: const Icon(Icons.camera_alt, color: Colors.white),
               label: Text(
                 'Upload photo (optional)',
                 style: TextStyle(color: Colors.grey[300]),
@@ -675,7 +673,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Configure your preferences',
               style: TextStyle(
                 fontSize: 28,
@@ -713,7 +711,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    _getCurrencySymbol(_selectedCurrency) + '2,325.25',
+                    '${_getCurrencySymbol(_selectedCurrency)}2,325.25',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 32,
@@ -761,7 +759,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
 
             // Country Selection
             DropdownButtonFormField<String>(
-              value: _selectedCountry,
+              initialValue: _selectedCountry,
               decoration: InputDecoration(
                 labelText: '国家/地区',
                 labelStyle: TextStyle(color: Colors.grey[400]),
@@ -792,7 +790,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
 
             // Currency Selection
             DropdownButtonFormField<String>(
-              value: _selectedCurrency,
+              initialValue: _selectedCurrency,
               decoration: InputDecoration(
                 labelText: '货币',
                 labelStyle: TextStyle(color: Colors.grey[400]),
@@ -821,7 +819,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
 
             // Language Selection
             DropdownButtonFormField<String>(
-              value: _selectedLanguage,
+              initialValue: _selectedLanguage,
               decoration: InputDecoration(
                 labelText: '语言',
                 labelStyle: TextStyle(color: Colors.grey[400]),
@@ -850,7 +848,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
 
             // Timezone Selection
             DropdownButtonFormField<String>(
-              value: _selectedTimezone,
+              initialValue: _selectedTimezone,
               decoration: InputDecoration(
                 labelText: '时区',
                 labelStyle: TextStyle(color: Colors.grey[400]),
@@ -880,7 +878,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
 
             // Date Format Selection
             DropdownButtonFormField<String>(
-              value: _selectedDateFormat,
+              initialValue: _selectedDateFormat,
               decoration: InputDecoration(
                 labelText: '日期格式',
                 labelStyle: TextStyle(color: Colors.grey[400]),

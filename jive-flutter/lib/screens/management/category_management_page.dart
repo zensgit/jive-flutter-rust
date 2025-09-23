@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'category_management_enhanced.dart';
+import 'package:jive_money/screens/management/category_management_enhanced.dart';
 
 /// 分类管理页面 - 路由到增强版本
 ///

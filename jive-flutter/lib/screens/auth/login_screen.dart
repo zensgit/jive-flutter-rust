@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../services/auth_service.dart';
-import '../../services/storage_service.dart';
-import '../../widgets/wechat_login_button.dart';
-import '../../core/router/app_router.dart';
-import '../../providers/auth_provider.dart';
+import 'package:jive_money/services/auth_service.dart';
+import 'package:jive_money/services/storage_service.dart';
+import 'package:jive_money/widgets/wechat_login_button.dart';
+import 'package:jive_money/core/router/app_router.dart';
+import 'package:jive_money/providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -177,7 +177,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       height: 80,
                     ),
                     const SizedBox(height: 24),
-                    Text(
+                    const Text(
                       'Jive Money',
                       style: TextStyle(
                         fontSize: 32,
@@ -186,7 +186,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    Text(
+                    const Text(
                       '集腋记账',
                       style: TextStyle(
                         fontSize: 16,
@@ -235,7 +235,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       controller: _passwordController,
                       decoration: InputDecoration(
                         labelText: '密码',
-                        prefixIcon: Icon(Icons.lock),
+                        prefixIcon: const Icon(Icons.lock),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _isPasswordVisible
@@ -280,7 +280,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 });
                               },
                             ),
-                            Text('记住账号'),
+                            const Text('记住账号'),
                             const SizedBox(width: 16),
                             Checkbox(
                               value: _rememberPassword && _rememberMe,
@@ -292,13 +292,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     }
                                   : null,
                             ),
-                            Text('记住密码'),
+                            const Text('记住密码'),
                             const Spacer(),
                             TextButton(
                               onPressed: () async {
                                 // 清除保存的凭据
                                 await _storageService
                                     .clearRememberedCredentials();
+                                if (!mounted) return;
                                 setState(() {
                                   _emailController.clear();
                                   _passwordController.clear();
@@ -306,16 +307,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   _rememberPassword = false;
                                   _rememberPermanently = false;
                                 });
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('已清除保存的登录信息'),
-                                      backgroundColor: Colors.blue,
-                                    ),
-                                  );
-                                }
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('已清除保存的登录信息'),
+                                    backgroundColor: Colors.blue,
+                                  ),
+                                );
                               },
-                              child: Text(
+                              child: const Text(
                                 '清除',
                                 style: TextStyle(fontSize: 12),
                               ),
@@ -335,7 +334,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   });
                                 },
                               ),
-                              Text(
+                              const Text(
                                 '永久记住（测试模式）',
                                 style: TextStyle(
                                   fontSize: 14,
@@ -436,7 +435,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const SizedBox(height: 16),
 
                     // 登录按钮
-                    const SizedBox(
+                    SizedBox(
                       height: 50,
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _login,
@@ -449,7 +448,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 valueColor:
                                     AlwaysStoppedAnimation<Color>(Colors.white),
                               )
-                            : Text(
+                            : const Text(
                                 '登录',
                                 style: TextStyle(fontSize: 16),
                               ),
@@ -462,7 +461,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       onPressed: () {
                         context.push(AppRoutes.register);
                       },
-                      child: Text('还没有账户？点击注册'),
+                      child: const Text('还没有账户？点击注册'),
                     ),
 
                     // 忘记密码链接
@@ -473,7 +472,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           const SnackBar(content: Text('忘记密码功能暂未实现')),
                         );
                       },
-                      child: Text('忘记密码？'),
+                      child: const Text('忘记密码？'),
                     ),
 
                     const SizedBox(height: 24),
@@ -503,6 +502,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       buttonText: '使用微信登录',
                       onSuccess: (authResult, userInfo) async {
                         final result = await _authService.wechatLogin();
+
+                        if (!context.mounted) return;
 
                         if (result.success) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -564,7 +565,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 Icon(Icons.info,
                                     color: Colors.blue[700], size: 16),
                                 const SizedBox(width: 8),
-                                Text(
+                                const Text(
                                   '登录说明',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
@@ -573,7 +574,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ],
                             ),
                             const SizedBox(height: 4),
-                            Text(
+                            const Text(
                               '• 支持用户名或邮箱地址登录\n'
                               '• 管理员账户：admin / 密码：admin123\n'
                               '• 邮箱和密码请填写完整\n'

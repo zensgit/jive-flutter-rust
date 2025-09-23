@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/router/app_router.dart';
+import 'package:jive_money/core/router/app_router.dart';
 
 class QuickActions extends ConsumerWidget {
-  const QuickActions({super.key});
+  final List<dynamic>? actions;
+  final int? itemsPerRow;
+
+  const QuickActions({
+    super.key,
+    this.actions,
+    this.itemsPerRow,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView(
         scrollDirection: Axis.horizontal,

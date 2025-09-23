@@ -1,8 +1,12 @@
 // 账户列表组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
-import '../cards/account_card.dart';
-import '../loading/loading_widget.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/cards/account_card.dart';
+import 'package:jive_money/ui/components/loading/loading_widget.dart';
+import 'package:jive_money/models/account.dart';
+
+// 类型别名以兼容现有代码
+typedef AccountData = Account;
 
 class AccountList extends StatelessWidget {
   final List<AccountData> accounts;
@@ -79,8 +83,8 @@ class AccountList extends StatelessWidget {
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: onAddAccount,
-              icon: Icon(Icons.add),
-              label: Text('添加账户'),
+              icon: const Icon(Icons.add),
+              label: const Text('添加账户'),
             ),
           ],
         ],

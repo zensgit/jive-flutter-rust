@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../services/wechat_service.dart';
-import '../../services/auth_service.dart';
-import '../../utils/password_strength.dart';
+import 'package:jive_money/services/wechat_service.dart';
+import 'package:jive_money/services/auth_service.dart';
+import 'package:jive_money/utils/password_strength.dart';
 
 /// 微信注册表单页面
 class WeChatRegisterFormScreen extends StatefulWidget {
@@ -87,6 +87,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
       if (result.success && result.userData != null) {
         // 注册成功后绑定微信
         final bindResult = await _authService.bindWechat();
+        if (!context.mounted) return;
 
         if (bindResult.success) {
           // 绑定成功，返回成功结果
@@ -138,7 +139,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('完善账户信息'),
+        title: const Text('完善账户信息'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0.5,
@@ -165,7 +166,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                               ? NetworkImage(widget.weChatUserInfo.headImgUrl)
                               : null,
                           child: widget.weChatUserInfo.headImgUrl.isEmpty
-                              ? Icon(Icons.person, size: 30)
+                              ? const Icon(Icons.person, size: 30)
                               : null,
                         ),
                         const SizedBox(width: 16),
@@ -175,7 +176,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.wechat,
+                                  const Icon(Icons.wechat,
                                       color: Colors.green, size: 16),
                                   const SizedBox(width: 4),
                                   Text(
@@ -204,7 +205,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                                   color: Colors.green,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   '微信授权成功',
                                   style: TextStyle(
                                     fontSize: 10,
@@ -223,7 +224,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
 
                 const SizedBox(height: 24),
 
-                Text(
+                const Text(
                   '请设置您的账户信息',
                   style: TextStyle(
                     fontSize: 18,
@@ -293,7 +294,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                   decoration: InputDecoration(
                     labelText: '设置密码',
                     hintText: '请输入密码',
-                    prefixIcon: Icon(Icons.lock),
+                    prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _isPasswordVisible
@@ -364,7 +365,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                   decoration: InputDecoration(
                     labelText: '确认密码',
                     hintText: '请再次输入密码',
-                    prefixIcon: Icon(Icons.lock_outline),
+                    prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _isConfirmPasswordVisible
@@ -395,7 +396,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                 const SizedBox(height: 32),
 
                 // 注册按钮
-                const SizedBox(
+                SizedBox(
                   height: 50,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _register,
@@ -408,7 +409,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                             valueColor:
                                 AlwaysStoppedAnimation<Color>(Colors.white),
                           )
-                        : Text(
+                        : const Text(
                             '完成注册',
                             style: TextStyle(fontSize: 16),
                           ),
@@ -429,7 +430,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                           children: [
                             Icon(Icons.info, color: Colors.blue[700], size: 16),
                             const SizedBox(width: 8),
-                            Text(
+                            const Text(
                               '注册说明',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 14),
@@ -437,7 +438,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
                           ],
                         ),
                         const SizedBox(height: 4),
-                        Text(
+                        const Text(
                           '• 您的微信账户已成功授权\n'
                           '• 注册完成后将自动绑定微信账户\n'
                           '• 以后可以使用用户名/邮箱或微信登录\n'

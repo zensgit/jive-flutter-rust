@@ -67,6 +67,80 @@ pub async fn get_audit_logs(
     }
 }
 
+// Optional: delete old audit logs (admin only). Use with caution.
+#[derive(Debug, Deserialize)]
+pub struct CleanupAuditQuery {
+    pub older_than_days: Option<i64>,
+    pub limit: Option<i64>,
+}
+
+pub async fn cleanup_audit_logs(
+    State(pool): State<PgPool>,
+    Path(family_id): Path<Uuid>,
+    Query(query): Query<CleanupAuditQuery>,
+    Extension(ctx): Extension<ServiceContext>,
+) -> Result<Json<ApiResponse<serde_json::Value>>, StatusCode> {
+    if ctx.family_id != family_id {
+        return Err(StatusCode::FORBIDDEN);
+    }
+    // Require admin-level permission
+    use crate::models::permission::Permission;
+    if ctx.require_permission(Permission::ManageSettings).is_err() {
+        return Err(StatusCode::FORBIDDEN);
+    }
+
+    let days = query.older_than_days.unwrap_or(90);
+    let limit = query.limit.unwrap_or(1000).clamp(1, 10_000);
+
+    // Enforce a hard limit by selecting candidate IDs first, then deleting by ID
+    let deleted: i64 = sqlx::query_scalar(
+        r#"
+        WITH to_del AS (
+            SELECT id
+            FROM family_audit_logs
+            WHERE family_id = $1 AND created_at < NOW() - ($2 || ' days')::interval
+            ORDER BY created_at
+            LIMIT $3
+        ), del AS (
+            DELETE FROM family_audit_logs
+            WHERE id IN (SELECT id FROM to_del)
+            RETURNING 1
+        )
+        SELECT COUNT(*) FROM del
+        "#
+    )
+    .bind(family_id)
+    .bind(days)
+    .bind(limit)
+    .fetch_one(&pool)
+    .await
+    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    // Log this cleanup operation into audit trail (best-effort)
+    let _ = AuditService::new(pool.clone()).log_action(
+        family_id,
+        ctx.user_id,
+        crate::models::audit::CreateAuditLogRequest {
+            action: crate::models::audit::AuditAction::Delete,
+            entity_type: "audit_logs".to_string(),
+            entity_id: None,
+            old_values: None,
+            new_values: Some(serde_json::json!({
+                "older_than_days": days,
+                "limit": limit,
+                "deleted": deleted,
+            })),
+        },
+        None,
+        None,
+    ).await;
+
+    Ok(Json(ApiResponse::success(serde_json::json!({
+        "deleted": deleted,
+        "older_than_days": days,
+    }))))
+}
+
 // Export query parameters
 #[derive(Debug, Deserialize)]
 pub struct ExportQuery {

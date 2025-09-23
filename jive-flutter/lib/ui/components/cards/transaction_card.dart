@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../providers/currency_provider.dart';
-import '../../../core/constants/app_constants.dart';
-import '../../../models/transaction.dart';
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/models/transaction.dart';
 
 class TransactionCard extends ConsumerWidget {
   // 支持Transaction对象的构造方法
@@ -84,8 +84,9 @@ class TransactionCard extends ConsumerWidget {
     final cardAmount = transaction?.amount ?? amount ?? 0.0;
     final cardDate = transaction?.date ?? date ?? DateTime.now();
     final cardCategory = transaction?.category ?? category ?? '';
-    final cardIsIncome =
-        transaction?.type == TransactionType.income ?? (isIncome ?? false);
+    final cardIsIncome = transaction != null
+        ? transaction!.type == TransactionType.income
+        : (isIncome ?? false);
     final cardPayee = transaction?.payee ?? payee;
     final cardTags = transaction?.tags ?? tags;
 

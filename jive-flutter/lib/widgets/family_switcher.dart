@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../models/ledger.dart';
-import '../providers/ledger_provider.dart';
-import 'dialogs/create_family_dialog.dart';
+import 'package:jive_money/models/ledger.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
+import 'package:jive_money/widgets/dialogs/create_family_dialog.dart';
 
 /// 家庭切换器组件
 class FamilySwitcher extends ConsumerWidget {
@@ -129,7 +129,7 @@ class FamilySwitcher extends ConsumerWidget {
                                   color: Colors.orange.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   '默认',
                                   style: TextStyle(
                                     fontSize: 10,
@@ -188,7 +188,7 @@ class FamilySwitcher extends ConsumerWidget {
               ),
             ),
           );
-        }).toList(),
+        }),
 
         const PopupMenuDivider(),
 
@@ -206,7 +206,7 @@ class FamilySwitcher extends ConsumerWidget {
                     color: Colors.blue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.add,
                     size: 20,
                     color: Colors.blue,
@@ -224,7 +224,7 @@ class FamilySwitcher extends ConsumerWidget {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      SizedBox(height: 2),
                       Text(
                         '成为Owner，拥有全部权限',
                         style: TextStyle(
@@ -261,7 +261,7 @@ class FamilySwitcher extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text('管理所有家庭'),
+                const Text('管理所有家庭'),
               ],
             ),
           ),
@@ -333,13 +333,13 @@ class FamilySwitcher extends ConsumerWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.error_outline, size: 16, color: Colors.red),
+          const Icon(Icons.error_outline, size: 16, color: Colors.red),
           const SizedBox(width: 8),
           Text(currentLedger?.name ?? '加载失败'),
           const SizedBox(width: 8),
           IconButton(
             tooltip: '复制错误',
-            icon: Icon(Icons.copy, size: 16, color: Colors.red),
+            icon: const Icon(Icons.copy, size: 16, color: Colors.red),
             onPressed: () async {
               final text = currentLedger?.name ?? '加载失败';
               await Clipboard.setData(ClipboardData(text: text));

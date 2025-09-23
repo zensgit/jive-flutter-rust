@@ -1,6 +1,6 @@
 // 应用导航栏组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
 
 class AppNavigationBar extends StatelessWidget {
   final int currentIndex;

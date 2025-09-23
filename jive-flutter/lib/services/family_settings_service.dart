@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'api/family_service.dart';
+import 'package:jive_money/services/api/family_service.dart';
 
 /// 家庭设置服务 - 负责设置的持久化和同步
 class FamilySettingsService extends ChangeNotifier {
@@ -189,10 +189,11 @@ class FamilySettingsService extends ChangeNotifier {
 
           case 'user_preferences':
             if (change.type == ChangeType.update) {
-              success = await _familyService.updateUserPreferences(
+              await _familyService.updateUserPreferences(
                 change.entityId,
-                UserPreferences.fromJson(change.data!),
+                UserPreferences.fromJson(change.data!).toJson(),
               );
+              success = true;
             }
             break;
         }

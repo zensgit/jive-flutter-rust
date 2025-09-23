@@ -1,6 +1,6 @@
 // 次要按钮组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
 
 class SecondaryButton extends StatelessWidget {
   final String text;
@@ -33,14 +33,14 @@ class SecondaryButton extends StatelessWidget {
     final theme = Theme.of(context);
     final isEnabled = !isDisabled && !isLoading && onPressed != null;
 
-    return const SizedBox(
+    return SizedBox(
       width: width,
       height: height,
       child: OutlinedButton.icon(
         onPressed: isEnabled ? onPressed : null,
         style: OutlinedButton.styleFrom(
           foregroundColor: textColor ?? theme.primaryColor,
-          padding: padding ?? const EdgeInsets.symmetric(horizontal: 24),
+          padding: padding ?? EdgeInsets.symmetric(horizontal: 24),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
           ),
@@ -59,7 +59,7 @@ class SecondaryButton extends StatelessWidget {
 
   Widget _buildIcon(ThemeData theme) {
     if (isLoading) {
-      return const SizedBox(
+      return SizedBox(
         width: 20,
         height: 20,
         child: CircularProgressIndicator(

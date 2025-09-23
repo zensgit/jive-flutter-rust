@@ -90,7 +90,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
+      builder: (context) => const AlertDialog(
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -99,7 +99,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
               color: Colors.green,
               size: 64,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               '扫码成功！',
               style: TextStyle(
@@ -107,7 +107,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text('正在绑定微信账户...'),
           ],
         ),
@@ -176,7 +176,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
                 ),
                 IconButton(
                   onPressed: widget.onCancel,
-                  icon: Icon(Icons.close),
+                  icon: const Icon(Icons.close),
                 ),
               ],
             ),
@@ -209,7 +209,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
               ),
               const SizedBox(height: 8),
               Text(
-                '二维码${_countdown}秒后过期',
+                '二维码$_countdown秒后过期',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[600],
@@ -227,11 +227,11 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
               const SizedBox(height: 16),
               OutlinedButton.icon(
                 onPressed: _refreshQR,
-                icon: Icon(Icons.refresh),
-                label: Text('刷新二维码'),
+                icon: const Icon(Icons.refresh),
+                label: const Text('刷新二维码'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.black,
-                  side: BorderSide(color: Colors.black),
+                  side: const BorderSide(color: Colors.black),
                 ),
               ),
             ],
@@ -247,7 +247,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 ),
-                child: Text('模拟扫码成功 (测试用)'),
+                child: const Text('模拟扫码成功 (测试用)'),
               ),
             ],
 
@@ -268,7 +268,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
                     children: [
                       Icon(Icons.info, size: 16, color: Colors.blue[600]),
                       const SizedBox(width: 8),
-                      Text(
+                      const Text(
                         '绑定说明',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -278,7 +278,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  const Text(
                     '• 打开微信，点击右上角"+"号\n'
                     '• 选择"扫一扫"功能\n'
                     '• 对准屏幕上的二维码扫描\n'
@@ -332,7 +332,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
                             color: Colors.green,
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Icons.wechat,
                             color: Colors.white,
                             size: 16,

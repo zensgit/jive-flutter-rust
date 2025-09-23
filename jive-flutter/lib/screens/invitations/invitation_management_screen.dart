@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/invitation.dart';
-import '../../models/family.dart' as family_model;
-import '../../services/invitation_service.dart';
-import '../../utils/snackbar_utils.dart';
-import '../../widgets/sheets/generate_invite_code_sheet.dart';
+import 'package:jive_money/models/invitation.dart';
+import 'package:jive_money/models/family.dart' as family_model;
+import 'package:jive_money/services/invitation_service.dart';
+import 'package:jive_money/utils/snackbar_utils.dart';
+import 'package:jive_money/widgets/sheets/generate_invite_code_sheet.dart';
 
 /// 邀请管理页面
 class InvitationManagementScreen extends ConsumerStatefulWidget {
@@ -84,16 +84,16 @@ class _InvitationManagementScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('取消邀请'),
+        title: const Text('取消邀请'),
         content: Text('确定要取消发送给 ${invitation.email} 的邀请吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('确定'),
+            child: const Text('确定'),
           ),
         ],
       ),
@@ -133,7 +133,7 @@ class _InvitationManagementScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('邀请管理'),
+        title: const Text('邀请管理'),
         bottom: TabBar(
           controller: _tabController,
           tabs: [
@@ -141,28 +141,28 @@ class _InvitationManagementScreenState
               text: '待处理',
               icon: Badge(
                 label: Text(_pendingInvitations.length.toString()),
-                child: Icon(Icons.pending),
+                child: const Icon(Icons.pending),
               ),
             ),
             Tab(
               text: '已接受',
               icon: Badge(
                 label: Text(_acceptedInvitations.length.toString()),
-                child: Icon(Icons.check_circle),
+                child: const Icon(Icons.check_circle),
               ),
             ),
             Tab(
               text: '已过期',
               icon: Badge(
                 label: Text(_expiredInvitations.length.toString()),
-                child: Icon(Icons.schedule),
+                child: const Icon(Icons.schedule),
               ),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: _loadInvitations,
           ),
         ],
@@ -246,8 +246,8 @@ class _InvitationManagementScreenState
             ),
           );
         },
-        icon: Icon(Icons.add),
-        label: Text('新建邀请'),
+        icon: const Icon(Icons.add),
+        label: const Text('新建邀请'),
       ),
     );
   }
@@ -359,19 +359,19 @@ class _InvitationManagementScreenState
               children: [
                 if (showActions) ...[
                   IconButton(
-                    icon: Icon(Icons.send),
+                    icon: const Icon(Icons.send),
                     onPressed: () => _resendInvitation(invitation),
                     tooltip: '重新发送',
                   ),
                   IconButton(
-                    icon: Icon(Icons.cancel),
+                    icon: const Icon(Icons.cancel),
                     onPressed: () => _cancelInvitation(invitation),
                     tooltip: '取消邀请',
                   ),
                 ] else if (showResend)
                   TextButton(
                     onPressed: () => _resendInvitation(invitation),
-                    child: Text('重新邀请'),
+                    child: const Text('重新邀请'),
                   ),
               ],
             ),

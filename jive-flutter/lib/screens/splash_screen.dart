@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../core/router/app_router.dart';
-import '../providers/auth_provider.dart';
+import 'package:jive_money/core/router/app_router.dart';
+import 'package:jive_money/providers/auth_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -20,6 +20,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   Future<void> _checkAuthAndNavigate() async {
     await Future.delayed(const Duration(seconds: 1));
+    if (!mounted) return;
 
     if (!mounted) return;
 
@@ -46,6 +47,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         }
 
         await Future.delayed(const Duration(milliseconds: checkInterval));
+        if (!mounted) return;
         waitTime += checkInterval;
       }
 
@@ -90,14 +92,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                     ),
                   ],
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.account_balance_wallet,
                   size: 60,
                   color: Color(0xFF6366F1),
                 ),
               ),
               const SizedBox(height: 32),
-              Text(
+              const Text(
                 'Jive Money',
                 style: TextStyle(
                   fontSize: 32,
@@ -107,7 +109,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 '智能财务管理',
                 style: TextStyle(
                   fontSize: 16,

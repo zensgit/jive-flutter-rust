@@ -1,9 +1,9 @@
 // 交易表单组件
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../core/constants/app_constants.dart';
-import '../buttons/primary_button.dart';
-import '../buttons/secondary_button.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/buttons/primary_button.dart';
+import 'package:jive_money/ui/components/buttons/secondary_button.dart';
 
 class TransactionForm extends StatefulWidget {
   final TransactionFormData? initialData;
@@ -287,7 +287,7 @@ class _TransactionFormState extends State<TransactionForm> {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
           ),
-          suffixIcon: Icon(Icons.calendar_today),
+          suffixIcon: const Icon(Icons.calendar_today),
         ),
         child: Text(
           _formatDate(_selectedDate),
@@ -375,7 +375,7 @@ class _TransactionFormState extends State<TransactionForm> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         ),
-        suffixIcon: Icon(Icons.person_outline),
+        suffixIcon: const Icon(Icons.person_outline),
       ),
     );
   }
@@ -390,7 +390,7 @@ class _TransactionFormState extends State<TransactionForm> {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
           ),
-          suffixIcon: Icon(Icons.label_outline),
+          suffixIcon: const Icon(Icons.label_outline),
         ),
         child: _selectedTags.isEmpty
             ? Text(
@@ -561,7 +561,7 @@ class _TagSelectionDialogState extends State<_TagSelectionDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('选择标签'),
+      title: const Text('选择标签'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -587,11 +587,11 @@ class _TagSelectionDialogState extends State<_TagSelectionDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text('取消'),
+          child: const Text('取消'),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(_selected),
-          child: Text('确定'),
+          child: const Text('确定'),
         ),
       ],
     );

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:uni_links/uni_links.dart';
+import 'package:uni_links/uni_links.dart' as uni_links;
 import 'dart:async';
-import '../screens/invitations/accept_invitation_screen.dart';
-import '../screens/family/family_dashboard_screen.dart';
-import '../models/ledger.dart';
+import 'package:jive_money/screens/family/family_dashboard_screen.dart';
+import 'package:jive_money/models/ledger.dart';
 
 /// 深链接服务 - 处理应用内外部链接跳转
 class DeepLinkService {
@@ -20,7 +19,7 @@ class DeepLinkService {
   Future<void> initialize() async {
     // 处理应用启动时的链接
     try {
-      final initialLink = await getInitialLink();
+      final initialLink = await uni_links.getInitialLink();
       if (initialLink != null) {
         _handleDeepLink(initialLink);
       }
@@ -29,8 +28,8 @@ class DeepLinkService {
     }
 
     // 监听应用运行时的链接
-    _linkSubscription = linkStream.listen((link) {
-      _handleDeepLink(link.url);
+    _linkSubscription = uni_links.linkStream.listen((link) {
+      _handleDeepLink(link);
     }, onError: (err) {
       debugPrint('Link stream error: $err');
     });
@@ -447,9 +446,9 @@ class AcceptInvitationScreen extends StatefulWidget {
   final String inviteToken;
 
   const AcceptInvitationScreen({
-    Key? key,
+    super.key,
     required this.inviteToken,
-  }) : super(key: key);
+  });
 
   @override
   State<AcceptInvitationScreen> createState() => _AcceptInvitationScreenState();
@@ -520,7 +519,7 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Icons.error_outline,
                 size: 64,
                 color: Colors.red,
@@ -540,7 +539,7 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
               ElevatedButton(
                 onPressed: () =>
                     Navigator.pushReplacementNamed(context, '/home'),
-                child: Text('返回首页'),
+                child: const Text('返回首页'),
               ),
             ],
           ),
@@ -550,14 +549,14 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('接受邀请'),
+        title: const Text('接受邀请'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.group_add,
               size: 80,
               color: Colors.blue,
@@ -578,7 +577,7 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
+                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -598,14 +597,14 @@ class _AcceptInvitationScreenState extends State<AcceptInvitationScreen> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Text('拒绝'),
+                    child: const Text('拒绝'),
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _acceptInvitation,
-                    child: Text('接受邀请'),
+                    child: const Text('接受邀请'),
                   ),
                 ),
               ],
@@ -635,14 +634,14 @@ class LoginScreen extends StatelessWidget {
   final String? pendingInviteToken;
 
   const LoginScreen({
-    Key? key,
+    super.key,
     this.pendingInviteToken,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('登录')),
+      appBar: AppBar(title: const Text('登录')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -655,12 +654,12 @@ class LoginScreen extends StatelessWidget {
                   color: Colors.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(
+                child: const Text(
                   '登录后将自动处理邀请',
                   style: TextStyle(color: Colors.blue),
                 ),
               ),
-            Text('登录页面'),
+            const Text('登录页面'),
           ],
         ),
       ),

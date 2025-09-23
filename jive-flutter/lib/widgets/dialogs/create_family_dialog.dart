@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/ledger.dart';
-import '../../providers/ledger_provider.dart';
+import 'package:jive_money/models/ledger.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
 
 /// 创建家庭对话框
 class CreateFamilyDialog extends ConsumerStatefulWidget {
@@ -141,7 +141,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                     size: 28,
                   ),
                   const SizedBox(width: 12),
-                  Text(
+                  const Text(
                     '创建新家庭',
                     style: TextStyle(
                       fontSize: 20,
@@ -166,7 +166,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                       decoration: InputDecoration(
                         labelText: '名称',
                         hintText: '例如：我的家庭',
-                        prefixIcon: Icon(Icons.home),
+                        prefixIcon: const Icon(Icons.home),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -185,7 +185,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
 
                     // 类型选择
                     DropdownButtonFormField<LedgerType>(
-                      value: _selectedType,
+                      initialValue: _selectedType,
                       decoration: InputDecoration(
                         labelText: '类型',
                         prefixIcon: Icon(_getTypeIcon(_selectedType)),
@@ -215,10 +215,10 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
 
                     // 货币选择
                     DropdownButtonFormField<String>(
-                      value: _selectedCurrency,
+                      initialValue: _selectedCurrency,
                       decoration: InputDecoration(
                         labelText: '货币',
-                        prefixIcon: Icon(Icons.attach_money),
+                        prefixIcon: const Icon(Icons.attach_money),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -263,7 +263,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                       decoration: InputDecoration(
                         labelText: '描述（可选）',
                         hintText: '简单描述这个账本的用途',
-                        prefixIcon: Icon(Icons.description),
+                        prefixIcon: const Icon(Icons.description),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -274,8 +274,8 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
 
                     // 设为默认
                     CheckboxListTile(
-                      title: Text('设为默认'),
-                      subtitle: Text('登录后自动选择此账本'),
+                      title: const Text('设为默认'),
+                      subtitle: const Text('登录后自动选择此账本'),
                       value: _isDefault,
                       onChanged: (value) {
                         setState(() => _isDefault = value ?? false);
@@ -333,7 +333,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                   TextButton(
                     onPressed:
                         _isLoading ? null : () => Navigator.of(context).pop(),
-                    child: Text('取消'),
+                    child: const Text('取消'),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
@@ -355,7 +355,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                               strokeWidth: 2,
                             ),
                           )
-                        : Text('创建'),
+                        : const Text('创建'),
                   ),
                 ],
               ),

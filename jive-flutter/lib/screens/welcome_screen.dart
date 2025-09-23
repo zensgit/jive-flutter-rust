@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import '../core/router/app_router.dart';
+import 'package:jive_money/core/router/app_router.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -24,7 +24,7 @@ class WelcomeScreen extends StatelessWidget {
                     height: 120,
                   ),
                   const SizedBox(height: 24),
-                  Text(
+                  const Text(
                     'Jive Money',
                     style: TextStyle(
                       fontSize: 36,
@@ -32,7 +32,7 @@ class WelcomeScreen extends StatelessWidget {
                       color: Colors.blue,
                     ),
                   ),
-                  Text(
+                  const Text(
                     '集腋记账',
                     style: TextStyle(
                       fontSize: 20,
@@ -41,7 +41,7 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(
+                  const Text(
                     '集腋成裘，细水长流',
                     style: TextStyle(
                       fontSize: 16,
@@ -83,7 +83,7 @@ class WelcomeScreen extends StatelessWidget {
                   const SizedBox(height: 48),
 
                   // 登录按钮
-                  const SizedBox(
+                  SizedBox(
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
@@ -104,7 +104,7 @@ class WelcomeScreen extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   // 注册按钮
-                  const SizedBox(
+                  SizedBox(
                     width: double.infinity,
                     height: 50,
                     child: OutlinedButton(
@@ -113,7 +113,7 @@ class WelcomeScreen extends StatelessWidget {
                       },
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.black,
-                        side: const BorderSide(color: Colors.black),
+                        side: BorderSide(color: Colors.black),
                       ),
                       child: Text(
                         '注册新账户',
@@ -129,7 +129,7 @@ class WelcomeScreen extends StatelessWidget {
                     onPressed: () {
                       context.go(AppRoutes.dashboard);
                     },
-                    child: Text(
+                    child: const Text(
                       '先体验一下',
                       style: TextStyle(
                         color: Colors.grey,

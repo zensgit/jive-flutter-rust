@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/invitation.dart';
-import '../../models/family.dart' as family_model;
-import '../../services/invitation_service.dart';
-import '../../utils/snackbar_utils.dart';
+import 'package:jive_money/models/invitation.dart';
+import 'package:jive_money/models/family.dart' as family_model;
+import 'package:jive_money/services/invitation_service.dart';
+import 'package:jive_money/utils/snackbar_utils.dart';
 
 /// 生成邀请码底部弹窗
 class GenerateInviteCodeSheet extends ConsumerStatefulWidget {
@@ -156,7 +156,7 @@ class _GenerateInviteCodeSheetState
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.close),
+                  icon: const Icon(Icons.close),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -174,7 +174,7 @@ class _GenerateInviteCodeSheetState
                 decoration: InputDecoration(
                   labelText: '邮箱地址',
                   hintText: '输入被邀请人的邮箱',
-                  prefixIcon: Icon(Icons.email_outlined),
+                  prefixIcon: const Icon(Icons.email_outlined),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -186,10 +186,10 @@ class _GenerateInviteCodeSheetState
 
               // 角色选择
               DropdownButtonFormField<family_model.FamilyRole>(
-                value: _selectedRole,
+                initialValue: _selectedRole,
                 decoration: InputDecoration(
                   labelText: '分配角色',
-                  prefixIcon: Icon(Icons.shield_outlined),
+                  prefixIcon: const Icon(Icons.shield_outlined),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -279,7 +279,7 @@ class _GenerateInviteCodeSheetState
                   decoration: InputDecoration(
                     labelText: '附加消息（可选）',
                     hintText: '给被邀请人的留言',
-                    prefixIcon: Icon(Icons.message_outlined),
+                    prefixIcon: const Icon(Icons.message_outlined),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -291,7 +291,7 @@ class _GenerateInviteCodeSheetState
               const SizedBox(height: 24),
 
               // 生成按钮
-              const SizedBox(
+              SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
                   onPressed: _isLoading ? null : _generateInvitation,
@@ -304,7 +304,7 @@ class _GenerateInviteCodeSheetState
                             color: Colors.white,
                           ),
                         )
-                      : Icon(Icons.send),
+                      : const Icon(Icons.send),
                   label: Text(_isLoading ? '生成中...' : '生成邀请'),
                 ),
               ),
@@ -329,7 +329,7 @@ class _GenerateInviteCodeSheetState
           decoration: BoxDecoration(
             color: isSelected
                 ? theme.colorScheme.primaryContainer
-                : theme.colorScheme.surfaceVariant.withValues(alpha: 0.5),
+                : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color:
@@ -367,7 +367,7 @@ class _GenerateInviteCodeSheetState
               color: Colors.green.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(
+            child: const Icon(
               Icons.check_circle,
               color: Colors.green,
               size: 48,
@@ -381,7 +381,7 @@ class _GenerateInviteCodeSheetState
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.5),
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -389,7 +389,7 @@ class _GenerateInviteCodeSheetState
             children: [
               Row(
                 children: [
-                  Icon(Icons.email_outlined, size: 20),
+                  const Icon(Icons.email_outlined, size: 20),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -402,7 +402,7 @@ class _GenerateInviteCodeSheetState
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.shield_outlined, size: 20),
+                  const Icon(Icons.shield_outlined, size: 20),
                   const SizedBox(width: 8),
                   Text(
                     '角色: ${_getRoleDisplay(_generatedInvitation!.role)}',
@@ -413,7 +413,7 @@ class _GenerateInviteCodeSheetState
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.access_time, size: 20),
+                  const Icon(Icons.access_time, size: 20),
                   const SizedBox(width: 8),
                   Text(
                     '有效期: ${_generatedInvitation!.remainingTimeDescription}',
@@ -444,7 +444,7 @@ class _GenerateInviteCodeSheetState
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.copy),
+                icon: const Icon(Icons.copy),
                 onPressed: () => _copyToClipboard(_inviteLink!),
                 tooltip: '复制链接',
               ),
@@ -467,16 +467,16 @@ class _GenerateInviteCodeSheetState
                     _messageController.clear();
                   });
                 },
-                icon: Icon(Icons.add),
-                label: Text('新建邀请'),
+                icon: const Icon(Icons.add),
+                label: const Text('新建邀请'),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: FilledButton.icon(
                 onPressed: _shareInvitation,
-                icon: Icon(Icons.share),
-                label: Text('分享邀请'),
+                icon: const Icon(Icons.share),
+                label: const Text('分享邀请'),
               ),
             ),
           ],

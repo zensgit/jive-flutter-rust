@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/tag.dart';
-import '../providers/tag_provider.dart';
+import 'package:jive_money/models/tag.dart';
+import 'package:jive_money/providers/tag_provider.dart';
 
 class TagGroupDialog extends ConsumerStatefulWidget {
   final TagGroup? group;
@@ -85,7 +85,7 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
               }),
             ),
             const SizedBox(height: 16),
-            Text('选择颜色', style: TextStyle(fontWeight: FontWeight.w500)),
+            const Text('选择颜色', style: TextStyle(fontWeight: FontWeight.w500)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -104,7 +104,7 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
                           : null,
                     ),
                     child: isSelected
-                        ? Icon(Icons.check, color: Colors.white)
+                        ? const Icon(Icons.check, color: Colors.white)
                         : null,
                   ),
                 );
@@ -116,7 +116,7 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
               children: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('取消'),
+                  child: const Text('取消'),
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(

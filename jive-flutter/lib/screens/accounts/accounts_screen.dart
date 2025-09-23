@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/router/app_router.dart';
-import '../../providers/account_provider.dart';
-import '../../models/account.dart';
-import '../../providers/currency_provider.dart';
+import 'package:jive_money/core/router/app_router.dart';
+import 'package:jive_money/providers/account_provider.dart';
+import 'package:jive_money/models/account.dart';
+import 'package:jive_money/providers/currency_provider.dart';
 
 class AccountsScreen extends ConsumerStatefulWidget {
   const AccountsScreen({super.key});
@@ -15,7 +15,7 @@ class AccountsScreen extends ConsumerStatefulWidget {
 
 class _AccountsScreenState extends ConsumerState<AccountsScreen> {
   String _viewMode = 'list'; // list, group
-  String _selectedGroupId = 'all';
+  final String _selectedGroupId = 'all';
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('账户管理'),
+        title: const Text('账户管理'),
         actions: [
           // 视图切换
           IconButton(
@@ -72,8 +72,8 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
       body: _buildBody(accountState, accounts, accountGroups),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.go('${AppRoutes.accounts}/add'),
-        icon: Icon(Icons.add),
-        label: Text('新增账户'),
+        icon: const Icon(Icons.add),
+        label: const Text('新增账户'),
       ),
     );
   }
@@ -89,13 +89,13 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
             Text('加载失败: ${accountState.errorMessage}'),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => ref.read(accountProvider.notifier).refresh(),
-              child: Text('重试'),
+              child: const Text('重试'),
             ),
           ],
         ),
@@ -143,8 +143,8 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
           const SizedBox(height: 32),
           ElevatedButton.icon(
             onPressed: () => context.go('${AppRoutes.accounts}/add'),
-            icon: Icon(Icons.add),
-            label: Text('添加账户'),
+            icon: const Icon(Icons.add),
+            label: const Text('添加账户'),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
@@ -375,7 +375,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                         color: Colors.orange.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      child: Text(
+                      child: const Text(
                         '默认',
                         style: TextStyle(
                           fontSize: 10,
@@ -419,15 +419,15 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: Icon(Icons.edit),
-              title: Text('编辑账户'),
+              leading: const Icon(Icons.edit),
+              title: const Text('编辑账户'),
               onTap: () {
                 Navigator.pop(context);
                 // TODO: 导航到编辑页面
               },
             ),
             ListTile(
-              leading: Icon(Icons.star),
+              leading: const Icon(Icons.star),
               title: Text(account.isDefault ? '取消默认' : '设为默认'),
               onTap: () {
                 Navigator.pop(context);
@@ -435,16 +435,16 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.archive),
-              title: Text('归档账户'),
+              leading: const Icon(Icons.archive),
+              title: const Text('归档账户'),
               onTap: () {
                 Navigator.pop(context);
                 // TODO: 归档账户
               },
             ),
             ListTile(
-              leading: Icon(Icons.delete, color: Colors.red),
-              title: Text('删除账户', style: TextStyle(color: Colors.red)),
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('删除账户', style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(context);
                 _confirmDelete(account);
@@ -460,19 +460,19 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('确认删除'),
+        title: const Text('确认删除'),
         content: Text('确定要删除账户"${account.name}"吗？此操作不可撤销。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           TextButton(
             onPressed: () {
               // TODO: 删除账户
               Navigator.pop(context);
             },
-            child: Text('删除', style: TextStyle(color: Colors.red)),
+            child: const Text('删除', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

@@ -165,15 +165,12 @@ warning • The value of the field '_lastGlobalFailure' isn't used • lib/core/
    info • Use 'const' with the constructor to improve performance • lib/main_simple.dart:1723:23 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/main_simple.dart:1725:32 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/main_simple.dart:1780:35 • prefer_const_constructors
-  error • Invalid constant value • lib/main_simple.dart:1832:35 • invalid_constant
    info • Use 'const' with the constructor to improve performance • lib/main_simple.dart:1854:19 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/main_simple.dart:1856:28 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/main_simple.dart:1869:29 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/main_simple.dart:1871:38 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/main_simple.dart:1900:32 • prefer_const_constructors
-  error • The constructor being called isn't a const constructor • lib/main_simple.dart:1916:24 • const_with_non_const
-   info • Unnecessary 'const' keyword • lib/main_simple.dart:1919:25 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/main_simple.dart:1931:30 • unnecessary_const
+   info • Use 'const' with the constructor to improve performance • lib/main_simple.dart:1926:25 • prefer_const_constructors
 warning • The declaration '_buildFamilyMember' isn't referenced • lib/main_simple.dart:1944:10 • unused_element
 warning • The declaration '_formatDate' isn't referenced • lib/main_simple.dart:1974:10 • unused_element
 warning • The declaration '_buildStatRow' isn't referenced • lib/main_simple.dart:1979:10 • unused_element
@@ -517,25 +514,13 @@ warning • The value of the field '_selectedGroupId' isn't used • lib/screens
    info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/screens/admin/currency_admin_screen.dart:112:23 • deprecated_member_use
    info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/screens/admin/currency_admin_screen.dart:128:27 • deprecated_member_use
    info • Use 'const' with the constructor to improve performance • lib/screens/admin/currency_admin_screen.dart:227:16 • prefer_const_constructors
-  error • The constructor being called isn't a const constructor • lib/screens/admin/currency_admin_screen.dart:233:15 • const_with_non_const
-   info • Unnecessary 'const' keyword • lib/screens/admin/currency_admin_screen.dart:236:29 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/screens/admin/currency_admin_screen.dart:239:15 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/screens/admin/currency_admin_screen.dart:242:29 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/screens/admin/currency_admin_screen.dart:247:15 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/screens/admin/currency_admin_screen.dart:273:15 • unnecessary_const
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/currency_admin_screen.dart:269:28 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/admin/currency_admin_screen.dart:279:26 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/admin/currency_admin_screen.dart:289:22 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/admin/currency_admin_screen.dart:292:22 • prefer_const_constructors
    info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/admin/currency_admin_screen.dart:306:30 • use_build_context_synchronously
-  error • Invalid constant value • lib/screens/admin/currency_admin_screen.dart:372:16 • invalid_constant
-   info • Unnecessary 'const' keyword • lib/screens/admin/currency_admin_screen.dart:381:19 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/screens/admin/currency_admin_screen.dart:384:17 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/screens/admin/currency_admin_screen.dart:387:19 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/screens/admin/currency_admin_screen.dart:390:17 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/screens/admin/currency_admin_screen.dart:393:19 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/screens/admin/currency_admin_screen.dart:399:17 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/screens/admin/currency_admin_screen.dart:407:19 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/screens/admin/currency_admin_screen.dart:410:21 • unnecessary_const
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/currency_admin_screen.dart:403:26 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/admin/currency_admin_screen.dart:417:26 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/admin/currency_admin_screen.dart:426:61 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/admin/currency_admin_screen.dart:427:51 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/admin/super_admin_screen.dart:101:13 • prefer_const_constructors
@@ -573,7 +558,6 @@ warning • Unused import: '../../providers/current_user_provider.dart' • lib/
 warning • Unused import: '../../widgets/common/error_widget.dart' • lib/screens/admin/template_admin_page.dart:9:8 • unused_import
    info • Parameter 'key' could be a super parameter • lib/screens/admin/template_admin_page.dart:16:9 • use_super_parameters
 warning • The value of the field '_editingTemplate' isn't used • lib/screens/admin/template_admin_page.dart:41:27 • unused_field
-  error • The getter 'isSuperAdmin' isn't defined for the type 'UserData' • lib/screens/admin/template_admin_page.dart:62:31 • undefined_getter
    info • The type of the right operand ('AccountClassification?') isn't a subtype or a supertype of the left operand ('CategoryClassification') • lib/screens/admin/template_admin_page.dart:114:39 • unrelated_type_equality_checks
    info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:142:36 • use_build_context_synchronously
    info • Don't use 'BuildContext's across async gaps • lib/screens/admin/template_admin_page.dart:150:36 • use_build_context_synchronously
@@ -673,8 +657,6 @@ warning • This default clause is covered by the previous cases • lib/screens
    info • Use 'const' with the constructor to improve performance • lib/screens/auth/login_screen.dart:320:40 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/auth/login_screen.dart:338:31 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/auth/login_screen.dart:340:40 • prefer_const_constructors
-  error • Invalid constant value • lib/screens/auth/login_screen.dart:442:36 • invalid_constant
-   info • Unnecessary 'const' keyword • lib/screens/auth/login_screen.dart:448:31 • unnecessary_const
    info • Use 'const' with the constructor to improve performance • lib/screens/auth/login_screen.dart:465:30 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/auth/login_screen.dart:476:30 • prefer_const_constructors
    info • Don't use 'BuildContext's across async gaps • lib/screens/auth/login_screen.dart:508:48 • use_build_context_synchronously
@@ -691,8 +673,6 @@ warning • This default clause is covered by the previous cases • lib/screens
    info • Use 'const' with the constructor to improve performance • lib/screens/auth/register_screen.dart:271:37 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/auth/register_screen.dart:318:36 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/auth/register_screen.dart:320:38 • prefer_const_constructors
-  error • Invalid constant value • lib/screens/auth/register_screen.dart:332:36 • invalid_constant
-   info • Unnecessary 'const' keyword • lib/screens/auth/register_screen.dart:338:31 • unnecessary_const
    info • Use 'const' with the constructor to improve performance • lib/screens/auth/register_screen.dart:400:30 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/auth/register_screen.dart:406:21 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/auth/register_screen.dart:407:30 • prefer_const_constructors
@@ -799,7 +779,6 @@ warning • The value of the local variable 'baseCurrency' isn't used • lib/sc
    info • Use 'const' with the constructor to improve performance • lib/screens/currency/exchange_rate_screen.dart:336:23 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/currency/exchange_rate_screen.dart:365:21 • prefer_const_constructors
    info • The import of 'package:flutter/foundation.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' • lib/screens/currency_converter_page.dart:2:8 • unnecessary_import
-  error • The getter 'ratesNeedUpdate' isn't defined for the type 'CurrencyNotifier' • lib/screens/currency_converter_page.dart:41:28 • undefined_getter
    info • Use 'const' with the constructor to improve performance • lib/screens/currency_converter_page.dart:79:27 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/currency_converter_page.dart:83:19 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/currency_converter_page.dart:85:28 • prefer_const_constructors
@@ -815,7 +794,6 @@ warning • The value of the local variable 'baseCurrency' isn't used • lib/sc
 warning • The declaration '_showLedgerSwitcher' isn't referenced • lib/screens/dashboard/dashboard_screen.dart:255:8 • unused_element
    info • Use 'const' with the constructor to improve performance • lib/screens/dashboard/dashboard_screen.dart:292:23 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/dashboard/dashboard_screen.dart:293:24 • prefer_const_constructors
-  error • The constructor being called isn't a const constructor • lib/screens/dashboard/dashboard_screen.dart:335:20 • const_with_non_const
    info • The import of '../../models/audit_log.dart' is unnecessary because all of the used elements are also provided by the import of '../../services/audit_service.dart' • lib/screens/family/family_activity_log_screen.dart:4:8 • unnecessary_import
    info • Parameter 'key' could be a super parameter • lib/screens/family/family_activity_log_screen.dart:13:9 • use_super_parameters
    info • The private field _groupedLogs could be 'final' • lib/screens/family/family_activity_log_screen.dart:31:31 • prefer_final_fields
@@ -830,8 +808,6 @@ warning • The declaration '_showLedgerSwitcher' isn't referenced • lib/scree
    info • Use 'const' with the constructor to improve performance • lib/screens/family/family_activity_log_screen.dart:176:29 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/family/family_activity_log_screen.dart:179:31 • prefer_const_constructors
    info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/screens/family/family_activity_log_screen.dart:249:44 • deprecated_member_use
-  error • The method 'isToday' isn't defined for the type 'DateUtils' • lib/screens/family/family_activity_log_screen.dart:311:42 • undefined_method
-  error • The method 'isYesterday' isn't defined for the type 'DateUtils' • lib/screens/family/family_activity_log_screen.dart:312:46 • undefined_method
    info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/screens/family/family_activity_log_screen.dart:376:38 • deprecated_member_use
   error • The argument type 'Map<String, dynamic>' can't be assigned to the parameter type 'String'.  • lib/screens/family/family_activity_log_screen.dart:435:23 • argument_type_not_assignable
    info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/screens/family/family_activity_log_screen.dart:449:50 • deprecated_member_use
@@ -1039,60 +1015,60 @@ warning • The value of the local variable 'isSystemRole' isn't used • lib/sc
    info • Use 'const' with the constructor to improve performance • lib/screens/family/family_permissions_editor_screen.dart:994:18 • prefer_const_constructors
 warning • Unused import: '../../providers/family_provider.dart' • lib/screens/family/family_settings_screen.dart:8:8 • unused_import
 warning • Unused import: '../../services/api/ledger_service.dart' • lib/screens/family/family_settings_screen.dart:9:8 • unused_import
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:86:16 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:91:22 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:93:24 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:142:35 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:189:35 • prefer_const_constructors
-   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/screens/family/family_settings_screen.dart:202:21 • deprecated_member_use
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:243:35 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:257:28 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:258:31 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:276:28 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:277:26 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:280:36 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:281:39 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:283:29 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:295:28 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:296:26 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:297:29 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:301:28 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:302:26 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:303:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:87:16 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:92:22 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:94:24 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:143:35 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:190:35 • prefer_const_constructors
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/screens/family/family_settings_screen.dart:203:21 • deprecated_member_use
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:244:35 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:258:28 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:259:31 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:277:28 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:278:26 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:281:36 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:282:39 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:284:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:296:28 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:297:26 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:298:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:302:28 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:303:26 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:304:29 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:308:28 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:309:26 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:310:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:305:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:309:28 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:310:26 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:311:29 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:322:28 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:323:26 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:324:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:312:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:323:28 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:324:26 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:325:29 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:329:28 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:330:26 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:331:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:326:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:330:28 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:331:26 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:332:29 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:336:28 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:337:26 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:338:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:333:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:337:28 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:338:26 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:339:29 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:351:28 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:352:26 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:353:30 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:354:29 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:360:25 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:362:25 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:362:45 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:363:31 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:533:16 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:534:18 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:538:20 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:548:20 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:559:16 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:564:20 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:575:20 • prefer_const_constructors
-warning • The left operand can't be null, so the right operand is never executed • lib/screens/family/family_settings_screen.dart:611:47 • dead_null_aware_expression
-   info • Don't use 'BuildContext's across async gaps • lib/screens/family/family_settings_screen.dart:630:7 • use_build_context_synchronously
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:340:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:352:28 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:353:26 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:354:30 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:355:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:361:25 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:363:25 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:363:45 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:364:31 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:534:16 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:535:18 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:539:20 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:549:20 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:560:16 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:565:20 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_settings_screen.dart:576:20 • prefer_const_constructors
+warning • The left operand can't be null, so the right operand is never executed • lib/screens/family/family_settings_screen.dart:612:47 • dead_null_aware_expression
+   info • Don't use 'BuildContext's across async gaps • lib/screens/family/family_settings_screen.dart:631:7 • use_build_context_synchronously
    info • Parameter 'key' could be a super parameter • lib/screens/family/family_statistics_screen.dart:12:9 • use_super_parameters
    info • The private field _selectedDate could be 'final' • lib/screens/family/family_statistics_screen.dart:27:12 • prefer_final_fields
   error • The named parameter 'period' isn't defined • lib/screens/family/family_statistics_screen.dart:59:9 • undefined_named_parameter
@@ -1149,10 +1125,8 @@ warning • The value of the local variable 'theme' isn't used • lib/screens/i
    info • Use 'const' with the constructor to improve performance • lib/screens/invitations/pending_invitations_screen.dart:271:13 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/invitations/pending_invitations_screen.dart:277:22 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/invitations/pending_invitations_screen.dart:311:24 • prefer_const_constructors
-  error • The getter 'fullName' isn't defined for the type 'User' • lib/screens/invitations/pending_invitations_screen.dart:376:54 • undefined_getter
    info • Use 'const' with the constructor to improve performance • lib/screens/invitations/pending_invitations_screen.dart:433:30 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/invitations/pending_invitations_screen.dart:438:30 • prefer_const_constructors
-  error • The getter 'fullName' isn't defined for the type 'User' • lib/screens/invitations/pending_invitations_screen.dart:550:61 • undefined_getter
    info • Use 'const' with the constructor to improve performance • lib/screens/invitations/pending_invitations_screen.dart:578:32 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/invitations/pending_invitations_screen.dart:588:32 • prefer_const_constructors
   error • Arguments of a constant creation must be constant expressions • lib/screens/invitations/pending_invitations_screen.dart:626:15 • const_with_non_constant_argument
@@ -1201,13 +1175,13 @@ warning • Unused import: '../../widgets/common/error_widget.dart' • lib/scre
    info • Use 'const' with the constructor to improve performance • lib/screens/management/category_template_library.dart:182:16 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/category_template_library.dart:187:20 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/category_template_library.dart:191:20 • prefer_const_constructors
-  error • The method 'importTemplateAsCategory' isn't defined for the type 'CategoryService' • lib/screens/management/category_template_library.dart:202:34 • undefined_method
+  error • The argument type 'SystemCategoryTemplate' can't be assigned to the parameter type 'String'.  • lib/screens/management/category_template_library.dart:202:59 • argument_type_not_assignable
    info • Don't use 'BuildContext's across async gaps • lib/screens/management/category_template_library.dart:205:30 • use_build_context_synchronously
    info • Don't use 'BuildContext's across async gaps • lib/screens/management/category_template_library.dart:216:30 • use_build_context_synchronously
    info • Use 'const' with the constructor to improve performance • lib/screens/management/category_template_library.dart:230:16 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/category_template_library.dart:264:20 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/category_template_library.dart:268:20 • prefer_const_constructors
-  error • The method 'importTemplateAsCategory' isn't defined for the type 'CategoryService' • lib/screens/management/category_template_library.dart:276:32 • undefined_method
+  error • The argument type 'SystemCategoryTemplate' can't be assigned to the parameter type 'String'.  • lib/screens/management/category_template_library.dart:276:57 • argument_type_not_assignable
    info • Don't use 'BuildContext's across async gaps • lib/screens/management/category_template_library.dart:278:30 • use_build_context_synchronously
    info • Don't use 'BuildContext's across async gaps • lib/screens/management/category_template_library.dart:285:30 • use_build_context_synchronously
    info • Use 'const' with the constructor to improve performance • lib/screens/management/category_template_library.dart:299:16 • prefer_const_constructors
@@ -1220,10 +1194,8 @@ warning • Unused import: '../../widgets/common/error_widget.dart' • lib/scre
   error • The named parameter 'onRetry' isn't defined • lib/screens/management/category_template_library.dart:346:19 • undefined_named_parameter
    info • Use 'const' with the constructor to improve performance • lib/screens/management/category_template_library.dart:388:27 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/category_template_library.dart:391:29 • prefer_const_constructors
-  error • The getter 'icon' isn't defined for the type 'CategoryGroup' • lib/screens/management/category_template_library.dart:438:42 • undefined_getter
    info • Use 'const' with the constructor to improve performance • lib/screens/management/category_template_library.dart:458:19 • prefer_const_constructors
    info • The type of the right operand ('AccountClassification') isn't a subtype or a supertype of the left operand ('CategoryClassification') • lib/screens/management/category_template_library.dart:498:40 • unrelated_type_equality_checks
-  error • The getter 'icon' isn't defined for the type 'CategoryGroup' • lib/screens/management/category_template_library.dart:548:27 • undefined_getter
    info • Use 'const' with the constructor to improve performance • lib/screens/management/category_template_library.dart:684:36 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/category_template_library.dart:686:38 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/category_template_library.dart:727:25 • prefer_const_constructors
@@ -1235,10 +1207,8 @@ warning • Unused import: '../../widgets/common/error_widget.dart' • lib/scre
 warning • This default clause is covered by the previous cases • lib/screens/management/category_template_library.dart:940:7 • unreachable_switch_default
    info • Use of 'return' in a 'finally' clause • lib/screens/management/crypto_selection_page.dart:69:21 • control_flow_in_finally
 warning • The declaration '_getCryptoIcon' isn't referenced • lib/screens/management/crypto_selection_page.dart:88:10 • unused_element
-  error • Invalid constant value • lib/screens/management/crypto_selection_page.dart:230:45 • invalid_constant
    info • Use 'const' with the constructor to improve performance • lib/screens/management/crypto_selection_page.dart:313:27 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/crypto_selection_page.dart:315:36 • prefer_const_constructors
-  error • Invalid constant value • lib/screens/management/crypto_selection_page.dart:367:49 • invalid_constant
    info • Use 'const' with the constructor to improve performance • lib/screens/management/crypto_selection_page.dart:385:39 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/crypto_selection_page.dart:386:40 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/crypto_selection_page.dart:441:39 • prefer_const_constructors
@@ -1265,7 +1235,6 @@ warning • The declaration '_promptManualRate' isn't referenced • lib/screens
    info • The variable name '_DeprecatedCurrencyNotice' isn't a lowerCamelCase identifier • lib/screens/management/currency_management_page_v2.dart:293:10 • non_constant_identifier_names
    info • Use 'const' with the constructor to improve performance • lib/screens/management/currency_management_page_v2.dart:317:20 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/currency_management_page_v2.dart:334:18 • prefer_const_constructors
-  error • Methods can't be invoked in constant expressions • lib/screens/management/currency_management_page_v2.dart:339:25 • const_eval_method_invocation
    info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/screens/management/currency_management_page_v2.dart:348:27 • deprecated_member_use
    info • Use 'const' with the constructor to improve performance • lib/screens/management/currency_management_page_v2.dart:368:24 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/currency_management_page_v2.dart:382:22 • prefer_const_constructors
@@ -1322,7 +1291,6 @@ warning • Dead code • lib/screens/management/currency_management_page_v2.dar
    info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/screens/management/currency_selection_page.dart:275:37 • deprecated_member_use
    info • Use 'const' with the constructor to improve performance • lib/screens/management/currency_selection_page.dart:345:27 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/currency_selection_page.dart:347:36 • prefer_const_constructors
-  error • Invalid constant value • lib/screens/management/currency_selection_page.dart:399:49 • invalid_constant
    info • Use 'const' with the constructor to improve performance • lib/screens/management/currency_selection_page.dart:416:39 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/currency_selection_page.dart:417:40 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/currency_selection_page.dart:482:39 • prefer_const_constructors
@@ -1359,38 +1327,24 @@ warning • The value of the field '_isCalculating' isn't used • lib/screens/m
    info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page.dart:410:20 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page.dart:467:13 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page.dart:469:22 • prefer_const_constructors
-   info • Don't use 'BuildContext's across async gaps • lib/screens/management/payee_management_page_v2.dart:83:28 • use_build_context_synchronously
-   info • Don't use 'BuildContext's across async gaps • lib/screens/management/payee_management_page_v2.dart:88:28 • use_build_context_synchronously
-   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:102:16 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:125:24 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:135:20 • prefer_const_constructors
-  error • The named parameter 'ledgerId' isn't defined • lib/screens/management/payee_management_page_v2.dart:143:21 • undefined_named_parameter
-  error • The named parameter 'notes' isn't defined • lib/screens/management/payee_management_page_v2.dart:145:21 • undefined_named_parameter
-  error • The named parameter 'isVendor' isn't defined • lib/screens/management/payee_management_page_v2.dart:148:21 • undefined_named_parameter
-  error • The named parameter 'isCustomer' isn't defined • lib/screens/management/payee_management_page_v2.dart:149:21 • undefined_named_parameter
-  error • The named parameter 'isActive' isn't defined • lib/screens/management/payee_management_page_v2.dart:150:21 • undefined_named_parameter
-  error • The named parameter 'transactionCount' isn't defined • lib/screens/management/payee_management_page_v2.dart:151:21 • undefined_named_parameter
-   info • Don't use 'BuildContext's across async gaps • lib/screens/management/payee_management_page_v2.dart:156:33 • use_build_context_synchronously
-   info • Don't use 'BuildContext's across async gaps • lib/screens/management/payee_management_page_v2.dart:157:40 • use_build_context_synchronously
-   info • Don't use 'BuildContext's across async gaps • lib/screens/management/payee_management_page_v2.dart:162:40 • use_build_context_synchronously
-   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:168:20 • prefer_const_constructors
-  error • The getter 'isVendor' isn't defined for the type 'Payee' • lib/screens/management/payee_management_page_v2.dart:177:52 • undefined_getter
-  error • The getter 'isCustomer' isn't defined for the type 'Payee' • lib/screens/management/payee_management_page_v2.dart:178:54 • undefined_getter
-   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:183:16 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:189:19 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:193:19 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:218:29 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:238:29 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:245:38 • prefer_const_constructors
-  error • The getter 'categoryName' isn't defined for the type 'Payee' • lib/screens/management/payee_management_page_v2.dart:303:27 • undefined_getter
-  error • The getter 'categoryName' isn't defined for the type 'Payee' • lib/screens/management/payee_management_page_v2.dart:304:37 • undefined_getter
-  error • The getter 'transactionCount' isn't defined for the type 'Payee' • lib/screens/management/payee_management_page_v2.dart:305:37 • undefined_getter
-  error • The getter 'totalAmount' isn't defined for the type 'Payee' • lib/screens/management/payee_management_page_v2.dart:306:27 • undefined_getter
-  error • The method 'Consumer' isn't defined for the type '_PayeeManagementPageV2State' • lib/screens/management/payee_management_page_v2.dart:307:19 • undefined_method
-  error • Undefined name 'baseCurrencyProvider' • lib/screens/management/payee_management_page_v2.dart:308:44 • undefined_identifier
-  error • Undefined name 'currencyProvider' • lib/screens/management/payee_management_page_v2.dart:310:31 • undefined_identifier
-  error • The getter 'totalAmount' isn't defined for the type 'Payee' • lib/screens/management/payee_management_page_v2.dart:311:47 • undefined_getter
-  error • The argument type 'String?' can't be assigned to the parameter type 'String'.  • lib/screens/management/payee_management_page_v2.dart:321:32 • argument_type_not_assignable
+warning • Unused import: 'package:flutter_riverpod/flutter_riverpod.dart' • lib/screens/management/payee_management_page_v2.dart:2:8 • unused_import
+warning • Unused import: '../../providers/currency_provider.dart' • lib/screens/management/payee_management_page_v2.dart:6:8 • unused_import
+   info • Don't use 'BuildContext's across async gaps • lib/screens/management/payee_management_page_v2.dart:85:28 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/management/payee_management_page_v2.dart:90:28 • use_build_context_synchronously
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:104:16 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:127:24 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:137:20 • prefer_const_constructors
+   info • Don't use 'BuildContext's across async gaps • lib/screens/management/payee_management_page_v2.dart:153:33 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/management/payee_management_page_v2.dart:154:40 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/management/payee_management_page_v2.dart:159:40 • use_build_context_synchronously
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:165:20 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:180:16 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:186:19 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:190:19 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:215:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:235:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/payee_management_page_v2.dart:242:38 • prefer_const_constructors
+  error • The argument type 'String?' can't be assigned to the parameter type 'String'.  • lib/screens/management/payee_management_page_v2.dart:311:32 • argument_type_not_assignable
    info • Use 'const' with the constructor to improve performance • lib/screens/management/rules_management_page.dart:76:16 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/rules_management_page.dart:82:19 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/management/rules_management_page.dart:123:29 • prefer_const_constructors
@@ -1505,19 +1459,13 @@ warning • The declaration '_showTagMenu' isn't referenced • lib/screens/mana
    info • Use 'const' with the constructor to improve performance • lib/screens/settings/profile_settings_screen.dart:989:36 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/settings/profile_settings_screen.dart:996:27 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/settings/profile_settings_screen.dart:998:36 • prefer_const_constructors
-  error • Invalid constant value • lib/screens/settings/profile_settings_screen.dart:1004:42 • invalid_constant
    info • Use 'const' with the constructor to improve performance • lib/screens/settings/profile_settings_screen.dart:1025:27 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/settings/profile_settings_screen.dart:1027:36 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/settings/profile_settings_screen.dart:1034:27 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/settings/profile_settings_screen.dart:1036:36 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/screens/settings/profile_settings_screen.dart:1062:40 • prefer_const_constructors
-  error • Invalid constant value • lib/screens/settings/profile_settings_screen.dart:1070:42 • invalid_constant
-   info • Use 'const' with the constructor to improve performance • lib/screens/settings/profile_settings_screen.dart:1074:44 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/settings/profile_settings_screen.dart:1075:46 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/settings/profile_settings_screen.dart:1081:48 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/settings/profile_settings_screen.dart:1088:48 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/screens/settings/profile_settings_screen.dart:1090:50 • prefer_const_constructors
 warning • The declaration '_getCurrencyItems' isn't referenced • lib/screens/settings/profile_settings_screen.dart:1157:34 • unused_element
+warning • The library 'package:jive_money/providers/settings_provider.dart' doesn't export a member with the hidden name 'currentUserProvider' • lib/screens/settings/settings_screen.dart:7:54 • undefined_hidden_name
 warning • Unused import: '../management/user_currency_browser.dart' • lib/screens/settings/settings_screen.dart:9:8 • unused_import
 warning • Unused import: '../../widgets/dialogs/invite_member_dialog.dart' • lib/screens/settings/settings_screen.dart:11:8 • unused_import
    info • Use 'const' with the constructor to improve performance • lib/screens/settings/settings_screen.dart:23:16 • prefer_const_constructors
@@ -1818,7 +1766,7 @@ warning • The declaration '_isAdmin' isn't referenced • lib/services/admin/c
   error • Undefined class 'Ref' • lib/services/admin/currency_admin_service.dart:10:17 • undefined_class
 warning • Unnecessary cast • lib/services/api/auth_service.dart:58:35 • unnecessary_cast
 warning • The receiver can't be null, so the null-aware operator '?.' is unnecessary • lib/services/api/auth_service.dart:62:78 • invalid_null_aware_operator
-   info • Parameter 'message' could be a super parameter • lib/services/api/family_service.dart:345:3 • use_super_parameters
+   info • Parameter 'message' could be a super parameter • lib/services/api/family_service.dart:407:3 • use_super_parameters
 warning • Unnecessary type check; the result is always 'true' • lib/services/api_service.dart:59:9 • unnecessary_type_check
    info • Statements in an if should be enclosed in a block • lib/services/api_service.dart:61:9 • curly_braces_in_flow_control_structures
    info • Statements in an if should be enclosed in a block • lib/services/api_service.dart:63:9 • curly_braces_in_flow_control_structures
@@ -1856,7 +1804,6 @@ warning • The declaration '_headers' isn't referenced • lib/services/currenc
    info • The imported package 'uni_links' isn't a dependency of the importing package • lib/services/deep_link_service.dart:2:8 • depend_on_referenced_packages
   error • Target of URI doesn't exist: 'package:uni_links/uni_links.dart' • lib/services/deep_link_service.dart:2:8 • uri_does_not_exist
   error • Target of URI doesn't exist: '../screens/invitations/accept_invitation_screen.dart' • lib/services/deep_link_service.dart:4:8 • uri_does_not_exist
-  error • The method 'getInitialLink' isn't defined for the type 'DeepLinkService' • lib/services/deep_link_service.dart:23:33 • undefined_method
    info • Parameter 'key' could be a super parameter • lib/services/deep_link_service.dart:449:9 • use_super_parameters
    info • Use 'const' with the constructor to improve performance • lib/services/deep_link_service.dart:523:15 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/services/deep_link_service.dart:543:24 • prefer_const_constructors
@@ -1870,75 +1817,57 @@ warning • The declaration '_headers' isn't referenced • lib/services/currenc
    info • Use 'const' with the constructor to improve performance • lib/services/deep_link_service.dart:658:24 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/services/deep_link_service.dart:660:26 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/services/deep_link_service.dart:663:13 • prefer_const_constructors
-  error • The method 'getUserPermissions' isn't defined for the type 'FamilyService' • lib/services/dynamic_permissions_service.dart:76:32 • undefined_method
-  error • The method 'updateUserPermissions' isn't defined for the type 'FamilyService' • lib/services/dynamic_permissions_service.dart:185:44 • undefined_method
-  error • The method 'grantTemporaryPermission' isn't defined for the type 'FamilyService' • lib/services/dynamic_permissions_service.dart:240:28 • undefined_method
-  error • The method 'revokeTemporaryPermission' isn't defined for the type 'FamilyService' • lib/services/dynamic_permissions_service.dart:278:28 • undefined_method
-  error • The method 'delegatePermissions' isn't defined for the type 'FamilyService' • lib/services/dynamic_permissions_service.dart:316:28 • undefined_method
-  error • The method 'revokeDelegation' isn't defined for the type 'FamilyService' • lib/services/dynamic_permissions_service.dart:357:28 • undefined_method
+  error • This expression has a type of 'void' so its value can't be used • lib/services/dynamic_permissions_service.dart:191:11 • use_of_void_result
+  error • Too many positional arguments: 4 expected, but 5 found • lib/services/dynamic_permissions_service.dart:245:9 • extra_positional_arguments
+  error • Too many positional arguments: 4 expected, but 6 found • lib/services/dynamic_permissions_service.dart:321:9 • extra_positional_arguments
+  error • 3 positional arguments expected by 'revokeDelegation', but 2 found • lib/services/dynamic_permissions_service.dart:357:63 • not_enough_positional_arguments
    info • The imported package 'mailer' isn't a dependency of the importing package • lib/services/email_notification_service.dart:2:8 • depend_on_referenced_packages
   error • Target of URI doesn't exist: 'package:mailer/mailer.dart' • lib/services/email_notification_service.dart:2:8 • uri_does_not_exist
    info • The imported package 'mailer' isn't a dependency of the importing package • lib/services/email_notification_service.dart:3:8 • depend_on_referenced_packages
   error • Target of URI doesn't exist: 'package:mailer/smtp_server.dart' • lib/services/email_notification_service.dart:3:8 • uri_does_not_exist
-  error • Undefined class 'SmtpServer' • lib/services/email_notification_service.dart:15:8 • undefined_class
-  error • The method 'SmtpServer' isn't defined for the type 'EmailNotificationService' • lib/services/email_notification_service.dart:61:21 • undefined_method
+  error • SmtpServer isn't a type • lib/services/email_notification_service.dart:15:8 • not_a_type
    info • Use 'rethrow' to rethrow a caught exception • lib/services/email_notification_service.dart:78:7 • use_rethrow_when_possible
-  error • The method 'gmail' isn't defined for the type 'EmailNotificationService' • lib/services/email_notification_service.dart:84:19 • undefined_method
-  error • The method 'SmtpServer' isn't defined for the type 'EmailNotificationService' • lib/services/email_notification_service.dart:93:19 • undefined_method
-  error • The method 'Message' isn't defined for the type 'EmailNotificationService' • lib/services/email_notification_service.dart:488:21 • undefined_method
   error • The name 'Address' isn't a class • lib/services/email_notification_service.dart:489:22 • creation_with_non_type
-  error • The method 'send' isn't defined for the type 'EmailNotificationService' • lib/services/email_notification_service.dart:494:11 • undefined_method
-   info • The member 'dispose' overrides an inherited member but isn't annotated with '@override' • lib/services/email_notification_service.dart:572:8 • annotate_overrides
+   info • The variable name 'SmtpServer' isn't a lowerCamelCase identifier • lib/services/email_notification_service.dart:498:11 • non_constant_identifier_names
+   info • The variable name 'Message' isn't a lowerCamelCase identifier • lib/services/email_notification_service.dart:508:11 • non_constant_identifier_names
+   info • The member 'dispose' overrides an inherited member but isn't annotated with '@override' • lib/services/email_notification_service.dart:591:8 • annotate_overrides
 warning • The value of the local variable 'usedFallback' isn't used • lib/services/exchange_rate_service.dart:36:10 • unused_local_variable
 warning • The value of the field '_keySyncStatus' isn't used • lib/services/family_settings_service.dart:9:23 • unused_field
-  error • The method 'getFamilySettings' isn't defined for the type 'FamilyService' • lib/services/family_settings_service.dart:92:45 • undefined_method
-  error • The method 'updateFamilySettings' isn't defined for the type 'FamilyService' • lib/services/family_settings_service.dart:180:46 • undefined_method
-  error • The method 'deleteFamilySettings' isn't defined for the type 'FamilyService' • lib/services/family_settings_service.dart:186:40 • undefined_method
-  error • The method 'updateUserPreferences' isn't defined for the type 'FamilyService' • lib/services/family_settings_service.dart:192:46 • undefined_method
-  error • The method 'getFamilySettings' isn't defined for the type 'FamilyService' • lib/services/family_settings_service.dart:233:45 • undefined_method
-  error • Undefined name 'authStateProvider' • lib/services/permission_service.dart:59:38 • undefined_identifier
-  error • Undefined name 'familyProvider' • lib/services/permission_service.dart:96:32 • undefined_identifier
+  error • This expression has a type of 'void' so its value can't be used • lib/services/family_settings_service.dart:180:25 • use_of_void_result
+  error • The argument type 'FamilySettings' can't be assigned to the parameter type 'Map<String, dynamic>'.  • lib/services/family_settings_service.dart:182:17 • argument_type_not_assignable
+  error • This expression has a type of 'void' so its value can't be used • lib/services/family_settings_service.dart:186:19 • use_of_void_result
+  error • This expression has a type of 'void' so its value can't be used • lib/services/family_settings_service.dart:192:25 • use_of_void_result
+  error • The argument type 'UserPreferences' can't be assigned to the parameter type 'String'.  • lib/services/family_settings_service.dart:194:17 • argument_type_not_assignable
+  error • 3 positional arguments expected by 'updateUserPreferences', but 2 found • lib/services/family_settings_service.dart:194:55 • not_enough_positional_arguments
+  error • The getter 'ownerId' isn't defined for the type 'Family' • lib/services/permission_service.dart:104:18 • undefined_getter
 warning • This default clause is covered by the previous cases • lib/services/permission_service.dart:195:7 • unreachable_switch_default
    info • The imported package 'share_plus' isn't a dependency of the importing package • lib/services/share_service.dart:2:8 • depend_on_referenced_packages
   error • Target of URI doesn't exist: 'package:share_plus/share_plus.dart' • lib/services/share_service.dart:2:8 • uri_does_not_exist
    info • The imported package 'screenshot' isn't a dependency of the importing package • lib/services/share_service.dart:6:8 • depend_on_referenced_packages
   error • Target of URI doesn't exist: 'package:screenshot/screenshot.dart' • lib/services/share_service.dart:6:8 • uri_does_not_exist
-  error • Undefined class 'ScreenshotController' • lib/services/share_service.dart:14:16 • undefined_class
-  error • The method 'ScreenshotController' isn't defined for the type 'ShareService' • lib/services/share_service.dart:15:7 • undefined_method
-  error • Undefined name 'Share' • lib/services/share_service.dart:46:13 • undefined_identifier
-   info • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:51:18 • use_build_context_synchronously
-   info • Use 'const' with the constructor to improve performance • lib/services/share_service.dart:106:17 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/services/share_service.dart:108:26 • prefer_const_constructors
-  error • Undefined name 'Share' • lib/services/share_service.dart:126:15 • undefined_identifier
-  error • The method 'XFile' isn't defined for the type 'ShareService' • lib/services/share_service.dart:127:12 • undefined_method
-  error • Undefined name 'Share' • lib/services/share_service.dart:132:15 • undefined_identifier
-   info • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:135:18 • use_build_context_synchronously
-  error • The getter 'categoryName' isn't defined for the type 'Transaction' • lib/services/share_service.dart:157:21 • undefined_getter
-  error • The property 'isNotEmpty' can't be unconditionally accessed because the receiver can be 'null' • lib/services/share_service.dart:161:20 • unchecked_use_of_nullable_value
-  error • The method 'join' can't be unconditionally invoked because the receiver can be 'null' • lib/services/share_service.dart:161:60 • unchecked_use_of_nullable_value
-  error • Undefined name 'Share' • lib/services/share_service.dart:169:13 • undefined_identifier
-   info • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:171:18 • use_build_context_synchronously
-   info • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:192:18 • use_build_context_synchronously
-warning • The value of the local variable 'weiboUrl' isn't used • lib/services/share_service.dart:226:17 • unused_local_variable
-  error • Undefined name 'Share' • lib/services/share_service.dart:229:17 • undefined_identifier
-  error • Undefined name 'Share' • lib/services/share_service.dart:234:17 • undefined_identifier
-  error • Undefined name 'Share' • lib/services/share_service.dart:238:17 • undefined_identifier
-   info • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:241:18 • use_build_context_synchronously
-  error • Undefined name 'Share' • lib/services/share_service.dart:263:13 • undefined_identifier
-   info • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:265:18 • use_build_context_synchronously
-  error • Undefined name 'Share' • lib/services/share_service.dart:277:13 • undefined_identifier
-  error • The method 'XFile' isn't defined for the type 'ShareService' • lib/services/share_service.dart:278:10 • undefined_method
-   info • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:282:18 • use_build_context_synchronously
-  error • The method 'XFile' isn't defined for the type 'ShareService' • lib/services/share_service.dart:293:43 • undefined_method
-  error • Undefined name 'Share' • lib/services/share_service.dart:294:13 • undefined_identifier
-   info • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:296:18 • use_build_context_synchronously
-  error • Undefined name 'Share' • lib/services/share_service.dart:305:11 • undefined_identifier
-   info • Parameter 'key' could be a super parameter • lib/services/share_service.dart:359:9 • use_super_parameters
-   info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/services/share_service.dart:394:42 • deprecated_member_use
-   info • Use 'const' with the constructor to improve performance • lib/services/share_service.dart:416:21 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/services/share_service.dart:426:29 • prefer_const_constructors
-  error • Undefined name 'Share' • lib/services/share_service.dart:506:31 • undefined_identifier
-   info • Use 'const' with the constructor to improve performance • lib/services/share_service.dart:520:22 • prefer_const_constructors
+  error • The name 'XFile' isn't a type, so it can't be used as a type argument • lib/services/share_service.dart:20:40 • non_type_as_type_argument
+  error • ScreenshotController isn't a type • lib/services/share_service.dart:29:16 • not_a_type
+   info • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:66:18 • use_build_context_synchronously
+   info • Use 'const' with the constructor to improve performance • lib/services/share_service.dart:121:17 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/services/share_service.dart:123:26 • prefer_const_constructors
+   info • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:150:18 • use_build_context_synchronously
+  error • The property 'isNotEmpty' can't be unconditionally accessed because the receiver can be 'null' • lib/services/share_service.dart:176:20 • unchecked_use_of_nullable_value
+  error • The method 'join' can't be unconditionally invoked because the receiver can be 'null' • lib/services/share_service.dart:176:60 • unchecked_use_of_nullable_value
+   info • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:186:18 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:207:18 • use_build_context_synchronously
+warning • The value of the local variable 'weiboUrl' isn't used • lib/services/share_service.dart:241:17 • unused_local_variable
+   info • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:256:18 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:280:18 • use_build_context_synchronously
+  error • The named parameter 'mimeType' isn't defined • lib/services/share_service.dart:293:27 • undefined_named_parameter
+   info • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:297:18 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:311:18 • use_build_context_synchronously
+   info • The variable name 'ScreenshotController' isn't a lowerCamelCase identifier • lib/services/share_service.dart:352:18 • non_constant_identifier_names
+   info • The variable name 'XFile' isn't a lowerCamelCase identifier • lib/services/share_service.dart:356:18 • non_constant_identifier_names
+   info • Parameter 'key' could be a super parameter • lib/services/share_service.dart:383:9 • use_super_parameters
+   info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/services/share_service.dart:418:42 • deprecated_member_use
+   info • Use 'const' with the constructor to improve performance • lib/services/share_service.dart:440:21 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/services/share_service.dart:450:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/services/share_service.dart:544:22 • prefer_const_constructors
 warning • The value of the field '_keyAppSettings' isn't used • lib/services/storage_service.dart:20:23 • unused_field
    info • 'window' is deprecated and shouldn't be used. Look up the current FlutterView from the context via View.of(context) or consult the PlatformDispatcher directly instead. Deprecated to prepare for the upcoming multi-window support. This feature was deprecated after v3.7.0-32.0.pre • lib/services/theme_service.dart:412:46 • deprecated_member_use
    info • The imported package 'web_socket_channel' isn't a dependency of the importing package • lib/services/websocket_service.dart:4:8 • depend_on_referenced_packages
@@ -1998,14 +1927,6 @@ warning • The value of the field '_keyAppSettings' isn't used • lib/services
    info • Use 'const' with the constructor to improve performance • lib/ui/components/budget/budget_form.dart:346:18 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/ui/components/budget/budget_form.dart:347:21 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/ui/components/budget/budget_form.dart:358:17 • prefer_const_constructors
-  error • Undefined name 'ref' • lib/ui/components/budget/budget_progress.dart:84:30 • undefined_identifier
-  error • Undefined name 'currencyProvider' • lib/ui/components/budget/budget_progress.dart:84:39 • undefined_identifier
-  error • Undefined name 'ref' • lib/ui/components/budget/budget_progress.dart:84:88 • undefined_identifier
-  error • Undefined name 'baseCurrencyProvider' • lib/ui/components/budget/budget_progress.dart:84:97 • undefined_identifier
-  error • Undefined name 'ref' • lib/ui/components/budget/budget_progress.dart:84:130 • undefined_identifier
-  error • Undefined name 'currencyProvider' • lib/ui/components/budget/budget_progress.dart:84:139 • undefined_identifier
-  error • Undefined name 'ref' • lib/ui/components/budget/budget_progress.dart:84:191 • undefined_identifier
-  error • Undefined name 'baseCurrencyProvider' • lib/ui/components/budget/budget_progress.dart:84:200 • undefined_identifier
   error • Undefined name 'ref' • lib/ui/components/budget/budget_progress.dart:106:35 • undefined_identifier
   error • Undefined name 'currencyProvider' • lib/ui/components/budget/budget_progress.dart:106:44 • undefined_identifier
   error • Undefined name 'ref' • lib/ui/components/budget/budget_progress.dart:106:98 • undefined_identifier
@@ -2184,7 +2105,6 @@ warning • The value of the local variable 'imageExtensions' isn't used • lib
    info • Use 'const' with the constructor to improve performance • lib/widgets/common/selectable_text_widgets.dart:52:22 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/widgets/common/selectable_text_widgets.dart:60:22 • prefer_const_constructors
    info • Unnecessary 'const' keyword • lib/widgets/common/selectable_text_widgets.dart:136:15 • unnecessary_const
-  error • The getter 'ratesNeedUpdate' isn't defined for the type 'CurrencyNotifier' • lib/widgets/currency_converter.dart:56:26 • undefined_getter
   error • Arguments of a constant creation must be constant expressions • lib/widgets/currency_converter.dart:184:57 • const_with_non_constant_argument
    info • Use 'const' with the constructor to improve performance • lib/widgets/custom_theme_editor.dart:67:21 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/widgets/custom_theme_editor.dart:72:19 • prefer_const_constructors
@@ -2210,23 +2130,14 @@ warning • The value of the local variable 'imageExtensions' isn't used • lib
    info • Use 'const' with the constructor to improve performance • lib/widgets/data_source_info.dart:25:19 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/widgets/data_source_info.dart:27:28 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/widgets/data_source_info.dart:31:27 • prefer_const_constructors
-  error • The method 'acceptInvitation' isn't defined for the type 'InvitationService' • lib/widgets/dialogs/accept_invitation_dialog.dart:52:48 • undefined_method
-  error • Undefined name 'familyProvider' • lib/widgets/dialogs/accept_invitation_dialog.dart:59:24 • undefined_identifier
    info • Don't use 'BuildContext's across async gaps • lib/widgets/dialogs/accept_invitation_dialog.dart:63:11 • use_build_context_synchronously
    info • Don't use 'BuildContext's across async gaps • lib/widgets/dialogs/accept_invitation_dialog.dart:68:22 • use_build_context_synchronously
 warning • The value of the local variable 'currentUser' isn't used • lib/widgets/dialogs/accept_invitation_dialog.dart:92:11 • unused_local_variable
-  error • Undefined name 'authStateProvider' • lib/widgets/dialogs/accept_invitation_dialog.dart:92:35 • undefined_identifier
    info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/widgets/dialogs/accept_invitation_dialog.dart:104:40 • deprecated_member_use
-  error • The getter 'description' isn't defined for the type 'Family' • lib/widgets/dialogs/accept_invitation_dialog.dart:141:42 • undefined_getter
-  error • The getter 'description' isn't defined for the type 'Family' • lib/widgets/dialogs/accept_invitation_dialog.dart:143:42 • undefined_getter
-  error • The getter 'memberCount' isn't defined for the type 'Family' • lib/widgets/dialogs/accept_invitation_dialog.dart:161:37 • undefined_getter
-  error • The getter 'folder_outline' isn't defined for the type 'Icons' • lib/widgets/dialogs/accept_invitation_dialog.dart:166:33 • undefined_getter
-  error • The getter 'categoryCount' isn't defined for the type 'Family' • lib/widgets/dialogs/accept_invitation_dialog.dart:167:37 • undefined_getter
-  error • The getter 'transactionCount' isn't defined for the type 'Family' • lib/widgets/dialogs/accept_invitation_dialog.dart:173:37 • undefined_getter
-warning • The left operand can't be null, so the right operand is never executed • lib/widgets/dialogs/accept_invitation_dialog.dart:190:38 • dead_null_aware_expression
-  error • The getter 'warningContainer' isn't defined for the type 'ColorScheme' • lib/widgets/dialogs/accept_invitation_dialog.dart:262:44 • undefined_getter
-   info • Use 'const' with the constructor to improve performance • lib/widgets/dialogs/accept_invitation_dialog.dart:286:29 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/widgets/dialogs/accept_invitation_dialog.dart:290:31 • prefer_const_constructors
+warning • The left operand can't be null, so the right operand is never executed • lib/widgets/dialogs/accept_invitation_dialog.dart:189:38 • dead_null_aware_expression
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/dialogs/accept_invitation_dialog.dart:261:39 • deprecated_member_use
+   info • Use 'const' with the constructor to improve performance • lib/widgets/dialogs/accept_invitation_dialog.dart:285:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/dialogs/accept_invitation_dialog.dart:289:31 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/widgets/dialogs/create_family_dialog.dart:144:19 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/widgets/dialogs/create_family_dialog.dart:146:28 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/widgets/dialogs/create_family_dialog.dart:169:37 • prefer_const_constructors
@@ -2269,7 +2180,6 @@ warning • The value of 'refresh' should be used • lib/widgets/dialogs/delete
    info • Use 'const' with the constructor to improve performance • lib/widgets/family_switcher.dart:134:42 • prefer_const_constructors
    info • Unnecessary use of 'toList' in a spread • lib/widgets/family_switcher.dart:191:12 • unnecessary_to_list_in_spreads
    info • Use 'const' with the constructor to improve performance • lib/widgets/family_switcher.dart:209:26 • prefer_const_constructors
-   info • Unnecessary 'const' keyword • lib/widgets/family_switcher.dart:227:23 • unnecessary_const
    info • Use 'const' with the constructor to improve performance • lib/widgets/family_switcher.dart:264:17 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/widgets/family_switcher.dart:336:11 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/widgets/family_switcher.dart:342:19 • prefer_const_constructors
@@ -2304,33 +2214,32 @@ warning • The value of 'refresh' should be used • lib/widgets/dialogs/delete
    info • Unnecessary 'const' keyword • lib/widgets/invite_member_dialog.dart:424:22 • unnecessary_const
   error • The argument type 'Widget?' can't be assigned to the parameter type 'Widget'.  • lib/widgets/permission_guard.dart:148:16 • argument_type_not_assignable
 warning • The value of the local variable 'theme' isn't used • lib/widgets/permission_guard.dart:192:11 • unused_local_variable
-  error • The getter 'warningContainer' isn't defined for the type 'ColorScheme' • lib/widgets/permission_guard.dart:288:34 • undefined_getter
-  error • The getter 'onWarningContainer' isn't defined for the type 'ColorScheme' • lib/widgets/permission_guard.dart:291:36 • undefined_getter
-  error • The getter 'onWarningContainer' isn't defined for the type 'ColorScheme' • lib/widgets/permission_guard.dart:298:38 • undefined_getter
-  error • The getter 'onWarningContainer' isn't defined for the type 'ColorScheme' • lib/widgets/permission_guard.dart:307:42 • undefined_getter
+warning • The value of the local variable 'theme' isn't used • lib/widgets/permission_guard.dart:283:11 • unused_local_variable
    info • The imported package 'qr_flutter' isn't a dependency of the importing package • lib/widgets/qr_code_generator.dart:3:8 • depend_on_referenced_packages
   error • Target of URI doesn't exist: 'package:qr_flutter/qr_flutter.dart' • lib/widgets/qr_code_generator.dart:3:8 • uri_does_not_exist
    info • The imported package 'share_plus' isn't a dependency of the importing package • lib/widgets/qr_code_generator.dart:4:8 • depend_on_referenced_packages
   error • Target of URI doesn't exist: 'package:share_plus/share_plus.dart' • lib/widgets/qr_code_generator.dart:4:8 • uri_does_not_exist
    info • Parameter 'key' could be a super parameter • lib/widgets/qr_code_generator.dart:23:9 • use_super_parameters
   error • Undefined name 'Share' • lib/widgets/qr_code_generator.dart:91:13 • undefined_identifier
-  error • The method 'XFile' isn't defined for the type '_QrCodeGeneratorState' • lib/widgets/qr_code_generator.dart:92:10 • undefined_method
   error • Invalid constant value • lib/widgets/qr_code_generator.dart:200:26 • invalid_constant
    info • Unnecessary 'const' keyword • lib/widgets/qr_code_generator.dart:202:26 • unnecessary_const
-  error • The method 'QrImageView' isn't defined for the type '_QrCodeGeneratorState' • lib/widgets/qr_code_generator.dart:223:30 • undefined_method
   error • Undefined name 'QrVersions' • lib/widgets/qr_code_generator.dart:225:34 • undefined_identifier
   error • Undefined name 'QrErrorCorrectLevel' • lib/widgets/qr_code_generator.dart:229:47 • undefined_identifier
+  error • The named parameter 'embeddedImageStyle' isn't defined • lib/widgets/qr_code_generator.dart:233:25 • undefined_named_parameter
   error • The name 'QrEmbeddedImageStyle' isn't a class • lib/widgets/qr_code_generator.dart:233:51 • creation_with_non_type
+  error • The named parameter 'gapless' isn't defined • lib/widgets/qr_code_generator.dart:237:25 • undefined_named_parameter
    info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/widgets/qr_code_generator.dart:250:38 • deprecated_member_use
    info • Use 'const' with the constructor to improve performance • lib/widgets/qr_code_generator.dart:264:23 • prefer_const_constructors
-   info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/widgets/qr_code_generator.dart:327:32 • deprecated_member_use
-   info • Parameter 'key' could be a super parameter • lib/widgets/qr_code_generator.dart:359:9 • use_super_parameters
-   info • Use 'const' with the constructor to improve performance • lib/widgets/qr_code_generator.dart:386:23 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/widgets/qr_code_generator.dart:441:27 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/widgets/qr_code_generator.dart:442:28 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/widgets/qr_code_generator.dart:456:27 • prefer_const_constructors
-   info • Use 'const' with the constructor to improve performance • lib/widgets/qr_code_generator.dart:457:28 • prefer_const_constructors
-  error • Undefined name 'Share' • lib/widgets/qr_code_generator.dart:459:29 • undefined_identifier
+   info • The variable name 'XFile' isn't a lowerCamelCase identifier • lib/widgets/qr_code_generator.dart:310:11 • non_constant_identifier_names
+   info • The variable name 'QrImageView' isn't a lowerCamelCase identifier • lib/widgets/qr_code_generator.dart:314:10 • non_constant_identifier_names
+   info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/widgets/qr_code_generator.dart:356:32 • deprecated_member_use
+   info • Parameter 'key' could be a super parameter • lib/widgets/qr_code_generator.dart:388:9 • use_super_parameters
+   info • Use 'const' with the constructor to improve performance • lib/widgets/qr_code_generator.dart:415:23 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/qr_code_generator.dart:470:27 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/qr_code_generator.dart:471:28 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/qr_code_generator.dart:485:27 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/qr_code_generator.dart:486:28 • prefer_const_constructors
+  error • Undefined name 'Share' • lib/widgets/qr_code_generator.dart:488:29 • undefined_identifier
    info • Use 'const' with the constructor to improve performance • lib/widgets/sheets/generate_invite_code_sheet.dart:159:25 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/widgets/sheets/generate_invite_code_sheet.dart:177:31 • prefer_const_constructors
    info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/widgets/sheets/generate_invite_code_sheet.dart:189:17 • deprecated_member_use
@@ -2413,45 +2322,22 @@ warning • The value of the field '_selectedGroupName' isn't used • lib/widge
    info • Use 'const' with the constructor to improve performance • lib/widgets/theme_preview_card.dart:455:26 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/widgets/theme_preview_card.dart:457:28 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:32:11 • prefer_const_constructors
-  error • The constructor being called isn't a const constructor • lib/widgets/theme_share_dialog.dart:42:13 • const_with_non_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:44:24 • unnecessary_const
-  error • The constructor being called isn't a const constructor • lib/widgets/theme_share_dialog.dart:47:31 • const_with_non_const
-  error • The constructor being called isn't a const constructor • lib/widgets/theme_share_dialog.dart:48:25 • const_with_non_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:55:28 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:61:21 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:71:21 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:86:13 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:91:15 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:94:15 • unnecessary_const
-  error • The constructor being called isn't a const constructor • lib/widgets/theme_share_dialog.dart:96:24 • const_with_non_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:99:25 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:109:30 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:114:15 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:117:15 • unnecessary_const
-  error • The constructor being called isn't a const constructor • lib/widgets/theme_share_dialog.dart:119:24 • const_with_non_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:125:27 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:126:30 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:139:15 • unnecessary_const
-  error • The constructor being called isn't a const constructor • lib/widgets/theme_share_dialog.dart:142:15 • const_with_non_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:144:26 • unnecessary_const
-  error • The constructor being called isn't a const constructor • lib/widgets/theme_share_dialog.dart:147:33 • const_with_non_const
-  error • The constructor being called isn't a const constructor • lib/widgets/theme_share_dialog.dart:148:27 • const_with_non_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:160:21 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:166:36 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:184:15 • unnecessary_const
-  error • The constructor being called isn't a const constructor • lib/widgets/theme_share_dialog.dart:187:15 • const_with_non_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:189:26 • unnecessary_const
-  error • The constructor being called isn't a const constructor • lib/widgets/theme_share_dialog.dart:192:33 • const_with_non_const
-  error • The constructor being called isn't a const constructor • lib/widgets/theme_share_dialog.dart:193:27 • const_with_non_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:205:21 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:211:36 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:231:15 • unnecessary_const
-  error • The constructor being called isn't a const constructor • lib/widgets/theme_share_dialog.dart:234:15 • const_with_non_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:235:26 • unnecessary_const
-  error • The constructor being called isn't a const constructor • lib/widgets/theme_share_dialog.dart:238:33 • const_with_non_const
-  error • The constructor being called isn't a const constructor • lib/widgets/theme_share_dialog.dart:239:27 • const_with_non_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:247:25 • unnecessary_const
-   info • Unnecessary 'const' keyword • lib/widgets/theme_share_dialog.dart:257:21 • unnecessary_const
+   info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:90:15 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:104:25 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:121:25 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:122:26 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:132:15 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:134:24 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:153:21 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:155:30 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:175:33 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:198:21 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:200:30 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:222:33 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:248:25 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:250:34 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:258:21 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:262:30 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:274:18 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:279:19 • prefer_const_constructors
    info • Use 'const' with the constructor to improve performance • lib/widgets/theme_share_dialog.dart:280:20 • prefer_const_constructors
@@ -2508,4 +2394,4 @@ warning • A value for optional parameter 'error' isn't ever given • test/cur
    info • 'overrideWithProvider' is deprecated and shouldn't be used. Will be removed in 3.0.0. Use overrideWith instead • test/currency_selection_page_test.dart:121:39 • deprecated_member_use
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • test_tag_functionality.dart:70:36 • deprecated_member_use
 
-2507 issues found. (ran in 5.7s)
+2393 issues found. (ran in 3.5s)

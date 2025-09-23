@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/permission_service.dart';
-import '../models/family.dart' as family_model;
+import 'package:jive_money/services/permission_service.dart';
+import 'package:jive_money/models/family.dart' as family_model;
 
 /// 权限守卫组件 - 根据权限控制UI显示
 class PermissionGuard extends ConsumerWidget {
@@ -285,17 +285,15 @@ class PermissionHint extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.warningContainer.withValues(alpha: 0.3),
+        color: Colors.amber.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: theme.colorScheme.onWarningContainer.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: Colors.amber[800]!.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
           Icon(
             Icons.info_outline,
-            color: theme.colorScheme.onWarningContainer,
+            color: Colors.amber[800]!,
             size: 20,
           ),
           const SizedBox(width: 12),
@@ -304,7 +302,7 @@ class PermissionHint extends StatelessWidget {
               customMessage ?? _getDefaultMessage(action),
               style: TextStyle(
                 fontSize: 14,
-                color: theme.colorScheme.onWarningContainer,
+                color: Colors.amber[800]!,
               ),
             ),
           ),

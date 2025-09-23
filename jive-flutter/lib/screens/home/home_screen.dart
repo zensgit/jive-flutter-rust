@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/router/app_router.dart';
+import 'package:jive_money/core/router/app_router.dart';
 
 class HomeScreen extends StatefulWidget {
   final Widget child;
@@ -85,8 +85,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_selectedIndex == 0 || _selectedIndex == 1) {
       return FloatingActionButton(
         onPressed: () => _showQuickAddDialog(context),
-        child: Icon(Icons.add),
         tooltip: '快速添加',
+        child: const Icon(Icons.add),
       );
     }
     return null;
@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               '快速操作',
               style: TextStyle(
                 fontSize: 20,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'screens/management/category_management_page.dart';
+import 'package:jive_money/screens/management/category_management_page.dart';
 
 void main() {
   runApp(const ProviderScope(child: JiveApp()));
@@ -68,7 +68,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Jive Money'),
+        title: const Text('Jive Money'),
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
       ),
@@ -121,7 +121,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 24),
 
             // 功能菜单
-            Text(
+            const Text(
               '主要功能',
               style: TextStyle(
                 fontSize: 18,
@@ -234,7 +234,7 @@ class TransactionsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('交易记录'),
+        title: const Text('交易记录'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
@@ -243,7 +243,7 @@ class TransactionsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.receipt_long, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               '交易记录功能',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -263,7 +263,7 @@ class AccountsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('账户管理'),
+        title: const Text('账户管理'),
         backgroundColor: Colors.orange,
         foregroundColor: Colors.white,
       ),
@@ -272,7 +272,7 @@ class AccountsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.account_balance, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               '账户管理功能',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -292,7 +292,7 @@ class BudgetsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('预算管理'),
+        title: const Text('预算管理'),
         backgroundColor: Colors.purple,
         foregroundColor: Colors.white,
       ),
@@ -301,7 +301,7 @@ class BudgetsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.savings, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               '预算管理功能',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -321,7 +321,7 @@ class ReportsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('财务报表'),
+        title: const Text('财务报表'),
         backgroundColor: Colors.teal,
         foregroundColor: Colors.white,
       ),
@@ -330,7 +330,7 @@ class ReportsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.analytics, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               '财务报表功能',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -350,7 +350,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('系统设置'),
+        title: const Text('系统设置'),
         backgroundColor: Colors.grey,
         foregroundColor: Colors.white,
       ),
@@ -359,7 +359,7 @@ class SettingsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.settings, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               '系统设置功能',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),

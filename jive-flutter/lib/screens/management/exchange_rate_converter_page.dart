@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/currency.dart' as model;
-import '../../providers/currency_provider.dart';
+import 'package:jive_money/models/currency.dart' as model;
+import 'package:jive_money/providers/currency_provider.dart';
 
 /// 汇率转换器页面
 class ExchangeRateConverterPage extends ConsumerStatefulWidget {
@@ -233,7 +233,7 @@ class _ExchangeRateConverterPageState
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text('汇率转换器'),
+        title: const Text('汇率转换器'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0.5,
@@ -299,7 +299,7 @@ class _ExchangeRateConverterPageState
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     child: IconButton(
                       onPressed: _swapCurrencies,
-                      icon: Icon(Icons.swap_vert, size: 28),
+                      icon: const Icon(Icons.swap_vert, size: 28),
                       style: IconButton.styleFrom(
                         backgroundColor: Colors.blue[50],
                         foregroundColor: Colors.blue,
@@ -411,7 +411,7 @@ class _ExchangeRateConverterPageState
                           .formatCurrency(history.amount, history.from.code),
                       style: const TextStyle(fontWeight: FontWeight.w500),
                     ),
-                    Icon(Icons.arrow_forward, size: 16),
+                    const Icon(Icons.arrow_forward, size: 16),
                     Text(
                       ref
                           .read(currencyProvider.notifier)
@@ -552,7 +552,7 @@ class _CurrencyPickerSheetState extends ConsumerState<_CurrencyPickerSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                Text(
+                const Text(
                   '选择货币',
                   style: TextStyle(
                     fontSize: 18,
@@ -562,7 +562,7 @@ class _CurrencyPickerSheetState extends ConsumerState<_CurrencyPickerSheet> {
                 const Spacer(),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.close),
+                  icon: const Icon(Icons.close),
                 ),
               ],
             ),
@@ -580,7 +580,7 @@ class _CurrencyPickerSheetState extends ConsumerState<_CurrencyPickerSheet> {
               },
               decoration: InputDecoration(
                 hintText: '搜索货币',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -627,7 +627,7 @@ class _CurrencyPickerSheetState extends ConsumerState<_CurrencyPickerSheet> {
                   ),
                   subtitle: Text(currency.nameZh),
                   trailing: isSelected
-                      ? Icon(Icons.check_circle, color: Colors.green)
+                      ? const Icon(Icons.check_circle, color: Colors.green)
                       : null,
                   onTap: () {
                     Navigator.pop(context, currency);

@@ -1,8 +1,8 @@
 import 'dart:convert';
-import '../../core/network/http_client.dart';
-import '../../core/config/api_config.dart';
-import '../../models/category.dart';
-import '../../models/category_template.dart';
+import 'package:jive_money/core/network/http_client.dart';
+import 'package:jive_money/core/config/api_config.dart';
+import 'package:jive_money/models/category.dart';
+import 'package:jive_money/models/category_template.dart';
 
 /// 分类API服务
 class CategoryService {

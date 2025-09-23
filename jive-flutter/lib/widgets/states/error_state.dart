@@ -72,7 +72,7 @@ class ErrorState extends StatelessWidget {
               const SizedBox(height: 24),
               FilledButton.tonal(
                 onPressed: onRetry,
-                child: Text('重试'),
+                child: const Text('重试'),
               ),
             ],
           ],
@@ -275,7 +275,7 @@ class ErrorDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text('确定'),
+          child: const Text('确定'),
         ),
       ],
     );

@@ -1,6 +1,6 @@
 //! Utility functions for Jive Core
 
-use chrono::{DateTime, Utc, NaiveDate};
+use chrono::{DateTime, Utc, NaiveDate, Datelike};
 use uuid::Uuid;
 use rust_decimal::Decimal;
 use serde::{Serialize, Deserialize};
@@ -207,10 +207,10 @@ impl DateTimeUtils {
             .map_err(|_| JiveError::InvalidDate { date: date_str.to_string() })?;
         
         let next_month = if date.month() == 12 {
-            date.with_year(date.year() + 1).unwrap().with_month(1).unwrap()
+            NaiveDate::from_ymd_opt(date.year() + 1, 1, 1).unwrap()
         } else {
-            date.with_month(date.month() + 1).unwrap()
-        }.with_day(1).unwrap();
+            NaiveDate::from_ymd_opt(date.year(), date.month() + 1, 1).unwrap()
+        };
         
         let month_end = next_month.pred_opt().unwrap();
         Ok(month_end.to_string())

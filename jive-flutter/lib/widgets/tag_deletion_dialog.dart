@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/tag.dart';
-import '../providers/tag_provider.dart';
+import 'package:jive_money/models/tag.dart';
+import 'package:jive_money/providers/tag_provider.dart';
 
 class TagDeletionDialog extends ConsumerWidget {
   final Tag tag;
@@ -16,7 +16,7 @@ class TagDeletionDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AlertDialog(
-      title: Text('删除标签'),
+      title: const Text('删除标签'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,7 +34,7 @@ class TagDeletionDialog extends ConsumerWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('取消'),
+          child: const Text('取消'),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -53,7 +53,7 @@ class TagDeletionDialog extends ConsumerWidget {
             backgroundColor: Colors.red,
             foregroundColor: Colors.white,
           ),
-          child: Text('删除'),
+          child: const Text('删除'),
         ),
       ],
     );

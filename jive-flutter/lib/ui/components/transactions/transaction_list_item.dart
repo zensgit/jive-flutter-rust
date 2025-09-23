@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../../../providers/currency_provider.dart';
+import 'package:jive_money/providers/currency_provider.dart';
 
 class TransactionListItem extends ConsumerWidget {
   final dynamic transaction;
@@ -80,7 +80,7 @@ class TransactionListItem extends ConsumerWidget {
                               color: Colors.orange.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: Text(
+                            child: const Text(
                               '待确认',
                               style: TextStyle(
                                 fontSize: 10,

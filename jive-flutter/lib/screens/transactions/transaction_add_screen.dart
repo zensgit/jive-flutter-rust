@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import '../../providers/transaction_provider.dart';
-import '../../providers/account_provider.dart';
-import '../../providers/ledger_provider.dart';
+import 'package:jive_money/providers/transaction_provider.dart';
+import 'package:jive_money/providers/account_provider.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
 
 class TransactionAddScreen extends ConsumerStatefulWidget {
   final String? type; // income, expense, transfer
@@ -76,7 +76,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
         actions: [
           TextButton(
             onPressed: _isValid() ? _saveTransaction : null,
-            child: Text('保存'),
+            child: const Text('保存'),
           ),
         ],
       ),
@@ -93,7 +93,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         '交易类型',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
@@ -138,7 +138,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       '金额',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
@@ -216,10 +216,10 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                                 color: Theme.of(context).primaryColor,
                               ),
                               const SizedBox(width: 8),
-                              Text(account.name ?? '未命名'),
+                              Text(account.name),
                               const Spacer(),
                               Text(
-                                '¥${(account.balance ?? 0).toStringAsFixed(2)}',
+                                '¥${account.balance.toStringAsFixed(2)}',
                                 style: TextStyle(
                                   color: Colors.grey[600],
                                   fontSize: 12,
@@ -245,7 +245,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                     // 转账目标账户
                     if (_type == 'transfer') ...[
                       const SizedBox(height: 16),
-                      Text(
+                      const Text(
                         '转入账户',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
@@ -272,10 +272,10 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                                   color: Theme.of(context).primaryColor,
                                 ),
                                 const SizedBox(width: 8),
-                                Text(account.name ?? '未命名'),
+                                Text(account.name),
                                 const Spacer(),
                                 Text(
-                                  '¥${(account.balance ?? 0).toStringAsFixed(2)}',
+                                  '¥${account.balance.toStringAsFixed(2)}',
                                   style: TextStyle(
                                     color: Colors.grey[600],
                                     fontSize: 12,
@@ -313,7 +313,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         '分类',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
@@ -350,7 +350,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       '日期时间',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
@@ -360,7 +360,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed: _selectDate,
-                            icon: Icon(Icons.calendar_today),
+                            icon: const Icon(Icons.calendar_today),
                             label: Text(
                               DateFormat('yyyy年MM月dd日').format(_selectedDate),
                             ),
@@ -370,7 +370,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed: _selectTime,
-                            icon: Icon(Icons.access_time),
+                            icon: const Icon(Icons.access_time),
                             label: Text(
                               _selectedTime.format(context),
                             ),
@@ -392,7 +392,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       '描述',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
@@ -413,7 +413,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    Text(
+                    const Text(
                       '备注',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
@@ -445,7 +445,7 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        const Text(
                           '定期交易',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
@@ -493,8 +493,8 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _isValid() ? _saveTransaction : null,
-        icon: Icon(Icons.save),
-        label: Text('保存交易'),
+        icon: const Icon(Icons.save),
+        label: const Text('保存交易'),
       ),
     );
   }

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../utils/string_utils.dart';
-import '../../services/api_service.dart';
-import '../../models/payee.dart';
-import '../../providers/currency_provider.dart';
+import 'package:jive_money/utils/string_utils.dart';
+import 'package:jive_money/services/api_service.dart';
+import 'package:jive_money/models/payee.dart';
 
 /// 交易对方管理页面 - API版本
 class PayeeManagementPageV2 extends StatefulWidget {
@@ -82,6 +80,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
   Future<void> _deletePayee(String payeeId) async {
     try {
       await _apiService.deletePayee(payeeId);
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('收款人已删除')),
       );
@@ -101,7 +100,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('添加收款人'),
+        title: const Text('添加收款人'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -124,7 +123,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
             const SizedBox(height: 16),
             StatefulBuilder(
               builder: (context, setState) => SwitchListTile(
-                title: Text('供应商'),
+                title: const Text('供应商'),
                 value: isVendor,
                 onChanged: (value) => setState(() => isVendor = value),
               ),
@@ -134,7 +133,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -150,6 +149,8 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
                     updatedAt: DateTime.now(),
                   ));
 
+                  if (!context.mounted) return;
+
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('收款人已创建')),
@@ -162,7 +163,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
                 }
               }
             },
-            child: Text('创建'),
+            child: const Text('创建'),
           ),
         ],
       ),
@@ -177,17 +178,17 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text('收款人管理'),
+        title: const Text('收款人管理'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: _loadPayees,
           ),
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: _showAddPayeeDialog,
           ),
         ],
@@ -212,7 +213,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
               onChanged: _filterPayees,
               decoration: InputDecoration(
                 hintText: '搜索收款人...',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 filled: true,
                 fillColor: Colors.grey[100],
                 border: OutlineInputBorder(
@@ -232,14 +233,14 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.error_outline,
+                            const Icon(Icons.error_outline,
                                 size: 48, color: Colors.red),
                             const SizedBox(height: 16),
                             Text('加载失败: $_error'),
                             const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: _loadPayees,
-                              child: Text('重试'),
+                              child: const Text('重试'),
                             ),
                           ],
                         ),
@@ -308,7 +309,7 @@ class _PayeeManagementPageV2State extends State<PayeeManagementPageV2>
                 if (value == 'edit') {
                   // TODO: 实现编辑功能
                 } else if (value == 'delete') {
-                  _deletePayee(payee.id);
+                  if (payee.id != null) _deletePayee(payee.id!);
                 } else if (value == 'merge') {
                   // TODO: 实现合并功能
                 }

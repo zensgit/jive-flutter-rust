@@ -1,389 +1,8 @@
-00:00 +0: loading /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart                                                  00:00 +0 -1: loading /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart [E]                                           
-  Failed to load "/Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart":
-  Compilation failed for testPath=/Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart: lib/screens/management/currency_selection_page.dart:399:49: Error: Not a constant expression.
-                            const SizedBox(width: dense ? 8 : 12),
-                                                  ^^^^^
-  .
-
-To run this test again: /Users/huazhou/flutter-sdk/bin/cache/dart-sdk/bin/dart test /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart -p vm --plain-name 'loading /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart'
-  Error: The Dart compiler exited unexpectedly.
-  package:flutter_tools/src/base/common.dart 34:3  throwToolExit
-  package:flutter_tools/src/compile.dart 910:11    DefaultResidentCompiler._compile.<fn>
-  dart:async/zone.dart 1538:47                     _rootRunUnary
-  dart:async/zone.dart 1429:19                     _CustomZone.runUnary
-  dart:async/future_impl.dart 948:45               Future._propagateToListeners.handleValueCallback
-  dart:async/future_impl.dart 977:13               Future._propagateToListeners
-  dart:async/future_impl.dart 862:9                Future._propagateToListeners
-  dart:async/future_impl.dart 720:5                Future._completeWithValue
-  dart:async/future_impl.dart 804:7                Future._asyncCompleteWithValue.<fn>
-  dart:async/zone.dart 1525:13                     _rootRun
-  dart:async/zone.dart 1422:19                     _CustomZone.run
-  dart:async/zone.dart 1321:7                      _CustomZone.runGuarded
-  dart:async/zone.dart 1362:23                     _CustomZone.bindCallbackGuarded.<fn>
-  dart:async/schedule_microtask.dart 40:35         _microtaskLoop
-  dart:async/schedule_microtask.dart 49:5          _startMicrotaskLoop
-  dart:isolate-patch/isolate_patch.dart 127:13     _runPendingImmediateCallback
-  dart:isolate-patch/isolate_patch.dart 194:5      _RawReceivePort._handleMessage
-  
-00:02 +0 -1: loading /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_notifier_meta_test.dart                                                00:02 +0 -1: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_notifier_meta_test.dart: (setUpAll)                                            00:02 +0 -1: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_notifier_quiet_test.dart: ... first load; explicit refresh triggers second     00:02 +1 -1: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_notifier_meta_test.dart: ... initial usingFallback true when first fetch throws00:02 +2 -1: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_notifier_meta_test.dart: ... initial usingFallback true when first fetch throws00:02 +3 -1: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_notifier_meta_test.dart: ... initial usingFallback true when first fetch throws00:02 +3 -1: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_notifier_meta_test.dart: (tearDownAll)                                         00:02 +3 -2: loading /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/widget_test.dart [E]                                                            
-  Failed to load "/Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/widget_test.dart":
-  Compilation failed for testPath=/Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/widget_test.dart: lib/screens/auth/login_screen.dart:442:36: Error: Not a constant expression.
-                          onPressed: _isLoading ? null : _login,
-                                     ^^^^^^^^^^
-  lib/screens/auth/login_screen.dart:442:56: Error: Not a constant expression.
-                          onPressed: _isLoading ? null : _login,
-                                                         ^^^^^^
-  lib/screens/auth/login_screen.dart:443:47: Error: Method invocation is not a constant expression.
-                          style: ElevatedButton.styleFrom(
-                                                ^^^^^^^^^
-  lib/screens/auth/login_screen.dart:447:32: Error: Not a constant expression.
-                          child: _isLoading
-                                 ^^^^^^^^^^
-  lib/screens/auth/register_screen.dart:332:36: Error: Not a constant expression.
-                          onPressed: _isLoading ? null : _register,
-                                     ^^^^^^^^^^
-  lib/screens/auth/register_screen.dart:332:56: Error: Not a constant expression.
-                          onPressed: _isLoading ? null : _register,
-                                                         ^^^^^^^^^
-  lib/screens/auth/register_screen.dart:333:47: Error: Method invocation is not a constant expression.
-                          style: ElevatedButton.styleFrom(
-                                                ^^^^^^^^^
-  lib/screens/auth/register_screen.dart:337:32: Error: Not a constant expression.
-                          child: _isLoading
-                                 ^^^^^^^^^^
-  lib/screens/dashboard/dashboard_screen.dart:337:31: Error: Not a constant expression.
-                  Navigator.pop(context);
-                                ^^^^^^^
-  lib/screens/dashboard/dashboard_screen.dart:337:27: Error: Method invocation is not a constant expression.
-                  Navigator.pop(context);
-                            ^^^
-  lib/screens/dashboard/dashboard_screen.dart:336:26: Error: Not a constant expression.
-                onPressed: () {
-                           ^^
-  lib/screens/dashboard/dashboard_screen.dart:335:35: Error: Cannot invoke a non-'const' factory where a const expression is expected.
-  Try using a constructor or factory that is 'const'.
-              child: OutlinedButton.icon(
-                                    ^^^^
-  lib/screens/settings/profile_settings_screen.dart:1004:42: Error: Not a constant expression.
-                                onPressed: _resetAccount,
-                                           ^^^^^^^^^^^^^
-  lib/screens/settings/profile_settings_screen.dart:1005:53: Error: Method invocation is not a constant expression.
-                                style: ElevatedButton.styleFrom(
-                                                      ^^^^^^^^^
-  lib/screens/settings/profile_settings_screen.dart:1072:44: Error: Not a constant expression.
-                                    context: context,
-                                             ^^^^^^^
-  lib/screens/settings/profile_settings_screen.dart:1080:72: Error: Not a constant expression.
-                                          onPressed: () => Navigator.pop(context),
-                                                                         ^^^^^^^
-  lib/screens/settings/profile_settings_screen.dart:1080:68: Error: Method invocation is not a constant expression.
-                                          onPressed: () => Navigator.pop(context),
-                                                                     ^^^
-  lib/screens/settings/profile_settings_screen.dart:1080:52: Error: Not a constant expression.
-                                          onPressed: () => Navigator.pop(context),
-                                                     ^^
-  lib/screens/settings/profile_settings_screen.dart:1085:57: Error: Not a constant expression.
-                                            Navigator.pop(context);
-                                                          ^^^^^^^
-  lib/screens/settings/profile_settings_screen.dart:1085:53: Error: Method invocation is not a constant expression.
-                                            Navigator.pop(context);
-                                                      ^^^
-  lib/screens/settings/profile_settings_screen.dart:1086:43: Error: Not a constant expression.
-                                            _deleteAccount();
-                                            ^^^^^^^^^^^^^^
-  lib/screens/settings/profile_settings_screen.dart:1084:52: Error: Not a constant expression.
-                                          onPressed: () {
-                                                     ^^
-  lib/screens/settings/profile_settings_screen.dart:1073:44: Error: Not a constant expression.
-                                    builder: (context) => AlertDialog(
-                                             ^^^^^^^^^
-  lib/screens/settings/profile_settings_screen.dart:1071:33: Error: Method invocation is not a constant expression.
-                                  showDialog(
-                                  ^^^^^^^^^^
-  lib/screens/settings/profile_settings_screen.dart:1070:42: Error: Not a constant expression.
-                                onPressed: () {
-                                           ^^
-  lib/screens/settings/profile_settings_screen.dart:1097:53: Error: Method invocation is not a constant expression.
-                                style: ElevatedButton.styleFrom(
-                                                      ^^^^^^^^^
-  lib/screens/management/currency_management_page_v2.dart:344:44: Error: Not a constant expression.
-                        Expanded(child: Text(d.code)),
-                                             ^
-  lib/screens/management/currency_management_page_v2.dart:348:46: Error: Not a constant expression.
-                            value: selectedMap[d.code],
-                                               ^
-  lib/screens/management/currency_management_page_v2.dart:348:34: Error: Not a constant expression.
-                            value: selectedMap[d.code],
-                                   ^^^^^^^^^^^
-  lib/screens/management/currency_management_page_v2.dart:351:42: Error: Not a constant expression.
-                                    value: c.code,
-                                           ^
-  lib/screens/management/currency_management_page_v2.dart:352:50: Error: Not a constant expression.
-                                    child: Text('${c.code} · ${c.nameZh}')))
-                                                   ^
-  lib/screens/management/currency_management_page_v2.dart:352:62: Error: Not a constant expression.
-                                    child: Text('${c.code} · ${c.nameZh}')))
-                                                               ^
-  lib/screens/management/currency_management_page_v2.dart:350:36: Error: Not a constant expression.
-                                .map((c) => DropdownMenuItem(
-                                     ^^^
-  lib/screens/management/currency_management_page_v2.dart:349:34: Error: Not a constant expression.
-                            items: available
-                                   ^^^^^^^^^
-  lib/screens/management/currency_management_page_v2.dart:350:32: Error: Method invocation is not a constant expression.
-                                .map((c) => DropdownMenuItem(
-                                 ^^^
-  lib/screens/management/currency_management_page_v2.dart:353:32: Error: Method invocation is not a constant expression.
-                                .toList(),
-                                 ^^^^^^
-  lib/screens/management/currency_management_page_v2.dart:354:57: Error: Not a constant expression.
-                            onChanged: (v) => selectedMap[d.code] = v ?? d.code,
-                                                          ^
-  lib/screens/management/currency_management_page_v2.dart:354:45: Error: Not a constant expression.
-                            onChanged: (v) => selectedMap[d.code] = v ?? d.code,
-                                              ^^^^^^^^^^^
-  lib/screens/management/currency_management_page_v2.dart:354:72: Error: Not a constant expression.
-                            onChanged: (v) => selectedMap[d.code] = v ?? d.code,
-                                                                         ^
-  lib/screens/management/currency_management_page_v2.dart:354:67: Error: Not a constant expression.
-                            onChanged: (v) => selectedMap[d.code] = v ?? d.code,
-                                                                    ^
-  lib/screens/management/currency_management_page_v2.dart:354:65: Error: Not a constant expression.
-                            onChanged: (v) => selectedMap[d.code] = v ?? d.code,
-                                                                  ^
-  lib/screens/management/currency_management_page_v2.dart:354:38: Error: Not a constant expression.
-                            onChanged: (v) => selectedMap[d.code] = v ?? d.code,
-                                       ^^^
-  lib/screens/management/currency_management_page_v2.dart:347:32: Error: Cannot invoke a non-'const' constructor where a const expression is expected.
-  Try using a constructor or factory that is 'const'.
-                          child: DropdownButtonFormField<String>(
-                                 ^^^^^^^^^^^^^^^^^^^^^^^
-  lib/screens/management/currency_management_page_v2.dart:339:40: Error: Not a constant expression.
-                children: deprecated.map((d) {
-                                         ^^^
-  lib/screens/management/currency_management_page_v2.dart:339:25: Error: Not a constant expression.
-                children: deprecated.map((d) {
-                          ^^^^^^^^^^
-  lib/screens/management/currency_management_page_v2.dart:339:36: Error: Method invocation is not a constant expression.
-                children: deprecated.map((d) {
-                                     ^^^
-  lib/screens/management/currency_management_page_v2.dart:362:18: Error: Method invocation is not a constant expression.
-                }).toList(),
-                   ^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:330:53: Error: Not a constant expression.
-                    sections: _createPieChartSections(stats.accountTypeBreakdown),
-                                                      ^^^^^
-  lib/screens/family/family_dashboard_screen.dart:330:29: Error: Not a constant expression.
-                    sections: _createPieChartSections(stats.accountTypeBreakdown),
-                              ^^^^^^^^^^^^^^^^^^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:329:17: Error: Cannot invoke a non-'const' constructor where a const expression is expected.
-  Try using a constructor or factory that is 'const'.
-                  PieChartData(
-                  ^^^^^^^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:583:47: Error: Not a constant expression.
-                      getDrawingHorizontalLine: (value) {
-                                                ^^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:605:31: Error: Not a constant expression.
-                            if (value.toInt() < months.length) {
-                                ^^^^^
-  lib/screens/family/family_dashboard_screen.dart:605:37: Error: Method invocation is not a constant expression.
-                            if (value.toInt() < months.length) {
-                                      ^^^^^
-  lib/screens/family/family_dashboard_screen.dart:605:47: Error: Not a constant expression.
-                            if (value.toInt() < months.length) {
-                                                ^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:607:38: Error: Not a constant expression.
-                                months[value.toInt()].substring(5),
-                                       ^^^^^
-  lib/screens/family/family_dashboard_screen.dart:607:44: Error: Method invocation is not a constant expression.
-                                months[value.toInt()].substring(5),
-                                             ^^^^^
-  lib/screens/family/family_dashboard_screen.dart:607:31: Error: Not a constant expression.
-                                months[value.toInt()].substring(5),
-                                ^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:607:53: Error: Method invocation is not a constant expression.
-                                months[value.toInt()].substring(5),
-                                                      ^^^^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:603:42: Error: Not a constant expression.
-                          getTitlesWidget: (value, meta) {
-                                           ^^^^^^^^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:616:31: Error: Cannot invoke a non-'const' constructor where a const expression is expected.
-  Try using a constructor or factory that is 'const'.
-                    borderData: FlBorderData(show: false),
-                                ^^^^^^^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:619:30: Error: Not a constant expression.
-                        spots: monthlyTrend.entries
-                               ^^^^^^^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:620:28: Error: Method invocation is not a constant expression.
-                            .toList()
-                             ^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:621:28: Error: Method invocation is not a constant expression.
-                            .asMap()
-                             ^^^^^
-  lib/screens/family/family_dashboard_screen.dart:624:39: Error: Not a constant expression.
-                          return FlSpot(entry.key.toDouble(), entry.value.value);
-                                        ^^^^^
-  lib/screens/family/family_dashboard_screen.dart:624:49: Error: Method invocation is not a constant expression.
-                          return FlSpot(entry.key.toDouble(), entry.value.value);
-                                                  ^^^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:624:61: Error: Not a constant expression.
-                          return FlSpot(entry.key.toDouble(), entry.value.value);
-                                                              ^^^^^
-  lib/screens/family/family_dashboard_screen.dart:624:67: Error: Not a constant expression.
-                          return FlSpot(entry.key.toDouble(), entry.value.value);
-                                                                    ^^^^^
-  lib/screens/family/family_dashboard_screen.dart:623:32: Error: Not a constant expression.
-                            .map((entry) {
-                                 ^^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:623:28: Error: Method invocation is not a constant expression.
-                            .map((entry) {
-                             ^^^
-  lib/screens/family/family_dashboard_screen.dart:625:26: Error: Method invocation is not a constant expression.
-                        }).toList(),
-                           ^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:627:39: Error: Not a constant expression.
-                        color: Theme.of(context).primaryColor,
-                                        ^^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:627:36: Error: Method invocation is not a constant expression.
-                        color: Theme.of(context).primaryColor,
-                                     ^^
-  lib/screens/family/family_dashboard_screen.dart:632:41: Error: Not a constant expression.
-                          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                                          ^^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:632:38: Error: Method invocation is not a constant expression.
-                          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                                       ^^
-  lib/screens/family/family_dashboard_screen.dart:632:63: Error: Method invocation is not a constant expression.
-                          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                                                                ^^^^^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:630:37: Error: Cannot invoke a non-'const' constructor where a const expression is expected.
-  Try using a constructor or factory that is 'const'.
-                        belowBarData: BarAreaData(
-                                      ^^^^^^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:618:21: Error: Cannot invoke a non-'const' constructor where a const expression is expected.
-  Try using a constructor or factory that is 'const'.
-                      LineChartBarData(
-                      ^^^^^^^^^^^^^^^^
-  lib/screens/family/family_dashboard_screen.dart:578:17: Error: Cannot invoke a non-'const' constructor where a const expression is expected.
-  Try using a constructor or factory that is 'const'.
-                  LineChartData(
-                  ^^^^^^^^^^^^^
-  lib/widgets/wechat_login_button.dart:85:20: Error: Not a constant expression.
-          onPressed: _isLoading ? null : _handleWeChatLogin,
-                     ^^^^^^^^^^
-  lib/widgets/wechat_login_button.dart:85:40: Error: Not a constant expression.
-          onPressed: _isLoading ? null : _handleWeChatLogin,
-                                         ^^^^^^^^^^^^^^^^^^
-  lib/widgets/wechat_login_button.dart:90:40: Error: Cannot invoke a non-'const' constructor where a const expression is expected.
-  Try using a constructor or factory that is 'const'.
-              borderRadius: BorderRadius.circular(8),
-                                         ^^^^^^^^
-  lib/widgets/wechat_login_button.dart:86:31: Error: Method invocation is not a constant expression.
-          style: OutlinedButton.styleFrom(
-                                ^^^^^^^^^
-  lib/widgets/wechat_login_button.dart:93:15: Error: Not a constant expression.
-          icon: _isLoading
-                ^^^^^^^^^^
-  lib/widgets/wechat_login_button.dart:104:11: Error: Not a constant expression.
-            widget.buttonText,
-            ^^^^^^
-  lib/widgets/wechat_login_button.dart:84:29: Error: Cannot invoke a non-'const' factory where a const expression is expected.
-  Try using a constructor or factory that is 'const'.
-        child: OutlinedButton.icon(
-                              ^^^^
-  lib/ui/components/dashboard/account_overview.dart:122:15: Error: Not a constant expression.
-                assets,
-                ^^^^^^
-  lib/ui/components/dashboard/account_overview.dart:120:20: Error: Not a constant expression.
-              child: _buildOverviewCard(
-                     ^^^^^^^^^^^^^^^^^^
-  lib/ui/components/dashboard/account_overview.dart:131:15: Error: Not a constant expression.
-                liabilities,
-                ^^^^^^^^^^^
-  lib/ui/components/dashboard/account_overview.dart:129:20: Error: Not a constant expression.
-              child: _buildOverviewCard(
-                     ^^^^^^^^^^^^^^^^^^
-  lib/ui/components/dashboard/account_overview.dart:141:15: Error: Not a constant expression.
-                netWorth >= 0 ? Colors.blue : Colors.orange,
-                ^^^^^^^^
-  lib/ui/components/dashboard/account_overview.dart:140:15: Error: Not a constant expression.
-                netWorth,
-                ^^^^^^^^
-  lib/ui/components/dashboard/account_overview.dart:138:20: Error: Not a constant expression.
-              child: _buildOverviewCard(
-                     ^^^^^^^^^^^^^^^^^^
-  lib/ui/components/dashboard/budget_summary.dart:181:32: Error: Not a constant expression.
-                          value: spentPercentage.clamp(0.0, 1.0),
-                                 ^^^^^^^^^^^^^^^
-  lib/ui/components/dashboard/budget_summary.dart:181:48: Error: Method invocation is not a constant expression.
-                          value: spentPercentage.clamp(0.0, 1.0),
-                                                 ^^^^^
-  lib/ui/components/dashboard/budget_summary.dart:184:59: Error: Not a constant expression.
-                              AlwaysStoppedAnimation<Color>(warningLevel.color),
-                                                            ^^^^^^^^^^^^
-  lib/widgets/dialogs/invite_member_dialog.dart:438:15: Error: Not a constant expression.
-                permission,
-                ^^^^^^^^^^
-  lib/screens/management/currency_selection_page.dart:399:49: Error: Not a constant expression.
-                            const SizedBox(width: dense ? 8 : 12),
-                                                  ^^^^^
-  lib/screens/management/crypto_selection_page.dart:230:45: Error: Not a constant expression.
-                        const SizedBox(width: _compact ? 6 : 8),
-                                              ^^^^^^^^
-  lib/screens/management/crypto_selection_page.dart:367:49: Error: Not a constant expression.
-                            const SizedBox(width: _compact ? 8 : 12),
-                                                  ^^^^^^^^
-  lib/widgets/sheets/generate_invite_code_sheet.dart:297:30: Error: Not a constant expression.
-                    onPressed: _isLoading ? null : _generateInvitation,
-                               ^^^^^^^^^^
-  lib/widgets/sheets/generate_invite_code_sheet.dart:297:50: Error: Not a constant expression.
-                    onPressed: _isLoading ? null : _generateInvitation,
-                                                   ^^^^^^^^^^^^^^^^^^^
-  lib/widgets/sheets/generate_invite_code_sheet.dart:298:25: Error: Not a constant expression.
-                    icon: _isLoading
-                          ^^^^^^^^^^
-  lib/widgets/sheets/generate_invite_code_sheet.dart:308:31: Error: Not a constant expression.
-                    label: Text(_isLoading ? '生成中...' : '生成邀请'),
-                                ^^^^^^^^^^
-  lib/widgets/sheets/generate_invite_code_sheet.dart:296:37: Error: Cannot invoke a non-'const' factory where a const expression is expected.
-  Try using a constructor or factory that is 'const'.
-                  child: FilledButton.icon(
-                                      ^^^^
-  lib/screens/auth/wechat_register_form_screen.dart:401:32: Error: Not a constant expression.
-                      onPressed: _isLoading ? null : _register,
-                                 ^^^^^^^^^^
-  lib/screens/auth/wechat_register_form_screen.dart:401:52: Error: Not a constant expression.
-                      onPressed: _isLoading ? null : _register,
-                                                     ^^^^^^^^^
-  lib/screens/auth/wechat_register_form_screen.dart:402:43: Error: Method invocation is not a constant expression.
-                      style: ElevatedButton.styleFrom(
-                                            ^^^^^^^^^
-  lib/screens/auth/wechat_register_form_screen.dart:406:28: Error: Not a constant expression.
-                      child: _isLoading
-                             ^^^^^^^^^^
-  .
-
-To run this test again: /Users/huazhou/flutter-sdk/bin/cache/dart-sdk/bin/dart test /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/widget_test.dart -p vm --plain-name 'loading /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/widget_test.dart'
-00:02 +3 -2: loading /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart [E]                                           
-  Error: The Dart compiler exited unexpectedly.
-  package:flutter_tools/src/base/common.dart 34:3  throwToolExit
-  package:flutter_tools/src/compile.dart 910:11    DefaultResidentCompiler._compile.<fn>
-  dart:async/zone.dart 1538:47                     _rootRunUnary
-  dart:async/zone.dart 1429:19                     _CustomZone.runUnary
-  dart:async/future_impl.dart 948:45               Future._propagateToListeners.handleValueCallback
-  dart:async/future_impl.dart 977:13               Future._propagateToListeners
-  dart:async/future_impl.dart 862:9                Future._propagateToListeners
-  dart:async/future_impl.dart 720:5                Future._completeWithValue
-  dart:async/future_impl.dart 804:7                Future._asyncCompleteWithValue.<fn>
-  dart:async/zone.dart 1525:13                     _rootRun
-  dart:async/zone.dart 1422:19                     _CustomZone.run
-  dart:async/zone.dart 1321:7                      _CustomZone.runGuarded
-  dart:async/zone.dart 1362:23                     _CustomZone.bindCallbackGuarded.<fn>
-  dart:async/schedule_microtask.dart 40:35         _microtaskLoop
-  dart:async/schedule_microtask.dart 49:5          _startMicrotaskLoop
-  dart:isolate-patch/isolate_patch.dart 127:13     _runPendingImmediateCallback
-  dart:isolate-patch/isolate_patch.dart 194:5      _RawReceivePort._handleMessage
-  
-00:03 +3 -2: loading /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_preferences_sync_test.dart                                             00:03 +3 -2: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_preferences_sync_test.dart: (setUpAll)                                         00:03 +3 -2: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_preferences_sync_test.dart: ... combines rapid preference pushes and succeeds  00:03 +4 -2: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_preferences_sync_test.dart: ... combines rapid preference pushes and succeeds  00:03 +4 -2: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_preferences_sync_test.dart: failure stores pending then flush success clears it00:03 +4 -2: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_preferences_sync_test.dart: failure stores pending then flush success clears it
+00:00 +0: loading /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart                                                  00:00 +0: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart: (setUpAll)                                              00:00 +0: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart: Selecting base currency returns via Navigator.pop       00:00 +1: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart: Selecting base currency returns via Navigator.pop       00:01 +1: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart: Selecting base currency returns via Navigator.pop       00:01 +2: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart: Selecting base currency returns via Navigator.pop       00:01 +3: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart: Selecting base currency returns via Navigator.pop       00:01 +4: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart: Selecting base currency returns via Navigator.pop       00:01 +4: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart: Base currency is sorted to top and marked               00:01 +5: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart: Base currency is sorted to top and marked               00:01 +5: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart: (tearDownAll)                                           00:02 +5: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_selection_page_test.dart: (tearDownAll)                                           00:02 +5: loading /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/widget_test.dart                                                                   00:02 +5: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/widget_test.dart: (setUpAll)                                                               00:02 +5: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/widget_test.dart: App builds without exceptions                                            00:02 +6: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/widget_test.dart: App builds without exceptions                                            00:02 +6: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/widget_test.dart: App builds without exceptions                                            
+@@ App.builder start
+ℹ️ Skip auto refresh (token absent)
+Auth state in splash: AuthStatus.unauthenticated, user: null
+@@ App.builder start
+00:02 +7: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_preferences_sync_test.dart: failure stores pending then flush success clears it   00:02 +7: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_preferences_sync_test.dart: failure stores pending then flush success clears it   
 Failed to push currency preferences (will persist pending): Exception: network
-00:04 +5 -2: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_preferences_sync_test.dart: failure stores pending then flush success clears it00:04 +5 -2: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_preferences_sync_test.dart: startup flush clears preexisting pending           00:04 +6 -2: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_preferences_sync_test.dart: startup flush clears preexisting pending           00:04 +6 -2: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_preferences_sync_test.dart: (tearDownAll)                                      00:04 +6 -2: Some tests failed.                                                                                                                                                                        
+00:02 +8: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_preferences_sync_test.dart: failure stores pending then flush success clears it   00:02 +8: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_preferences_sync_test.dart: startup flush clears preexisting pending              00:02 +9: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_preferences_sync_test.dart: startup flush clears preexisting pending              00:02 +9: /Users/huazhou/Insync/hua.chau@outlook.com/OneDrive/应用/GitHub/jive-flutter-rust/jive-flutter/test/currency_preferences_sync_test.dart: (tearDownAll)                                         00:02 +9: All tests passed!                                                                                                                                                                            

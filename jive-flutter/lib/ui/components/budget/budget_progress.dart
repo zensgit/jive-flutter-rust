@@ -1,6 +1,6 @@
 // 预算进度组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
 
 class BudgetProgress extends StatelessWidget {
   final String category;
@@ -141,7 +141,7 @@ class BudgetProgress extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.warning,
                       size: 14,
                       color: AppConstants.errorColor,

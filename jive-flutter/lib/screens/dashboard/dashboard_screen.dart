@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../ui/components/dashboard/quick_actions.dart';
-import '../../ui/components/dashboard/account_overview.dart';
-import '../../ui/components/dashboard/recent_transactions.dart';
-import '../../ui/components/dashboard/budget_summary.dart';
-import '../../providers/ledger_provider.dart';
-import '../../providers/currency_provider.dart';
-import '../../providers/account_provider.dart';
-import '../../providers/transaction_provider.dart';
-import '../../models/account.dart';
-import '../../widgets/family_switcher.dart';
+import 'package:jive_money/ui/components/dashboard/quick_actions.dart';
+import 'package:jive_money/ui/components/dashboard/account_overview.dart';
+import 'package:jive_money/ui/components/dashboard/recent_transactions.dart';
+import 'package:jive_money/ui/components/dashboard/budget_summary.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/providers/account_provider.dart';
+import 'package:jive_money/providers/transaction_provider.dart';
+import 'package:jive_money/models/account.dart';
+import 'package:jive_money/widgets/family_switcher.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -25,7 +25,7 @@ class DashboardScreen extends ConsumerWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('概览'),
+            const Text('概览'),
             if (currentLedger != null)
               Text(
                 currentLedger.name,
@@ -41,7 +41,7 @@ class DashboardScreen extends ConsumerWidget {
           ),
           // 通知按钮
           IconButton(
-            icon: Icon(Icons.notifications_outlined),
+            icon: const Icon(Icons.notifications_outlined),
             onPressed: () {},
           ),
         ],
@@ -123,7 +123,7 @@ class DashboardScreen extends ConsumerWidget {
                         color: Colors.white70,
                       ),
                 ),
-                Icon(
+                const Icon(
                   Icons.trending_up,
                   color: Colors.white70,
                 ),
@@ -187,7 +187,7 @@ class DashboardScreen extends ConsumerWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white60,
             fontSize: 12,
           ),
@@ -232,7 +232,7 @@ class DashboardScreen extends ConsumerWidget {
         if (onTap != null)
           TextButton(
             onPressed: onTap,
-            child: Text('查看全部'),
+            child: const Text('查看全部'),
           ),
       ],
     );
@@ -289,8 +289,8 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
                   Navigator.pop(context);
                   // TODO: 导航到账本管理页面
                 },
-                icon: Icon(Icons.settings),
-                label: Text('管理'),
+                icon: const Icon(Icons.settings),
+                label: const Text('管理'),
               ),
             ],
           ),
@@ -330,15 +330,15 @@ class _LedgerSwitcherSheet extends ConsumerWidget {
             error: (error, _) => Center(child: Text('加载失败: $error')),
           ),
           const SizedBox(height: 16),
-          const SizedBox(
+          SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
               onPressed: () {
                 Navigator.pop(context);
                 // TODO: 导航到创建账本页面
               },
-              icon: Icon(Icons.add),
-              label: Text('创建新账本'),
+              icon: const Icon(Icons.add),
+              label: const Text('创建新账本'),
             ),
           ),
         ],

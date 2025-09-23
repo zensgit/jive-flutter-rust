@@ -12,7 +12,7 @@ class TransactionDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('交易详情'),
+        title: const Text('交易详情'),
       ),
       body: Center(
         child: Text('Transaction Detail: $transactionId'),

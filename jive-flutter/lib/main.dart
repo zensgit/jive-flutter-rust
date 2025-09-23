@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'core/app.dart';
-import 'core/storage/hive_config.dart';
-import 'core/utils/logger.dart';
+import 'package:jive_money/core/app.dart';
+import 'package:jive_money/core/storage/hive_config.dart';
+import 'package:jive_money/core/utils/logger.dart';
 
 void main() async {
   // 确保 Flutter 绑定初始化
@@ -105,13 +105,13 @@ class ErrorScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Icons.error_outline,
                 size: 64,
                 color: Colors.white,
               ),
               const SizedBox(height: 16),
-              Text(
+              const Text(
                 'App Initialization Failed',
                 style: TextStyle(
                   fontSize: 24,
@@ -143,7 +143,7 @@ class ErrorScreen extends StatelessWidget {
                     vertical: 16,
                   ),
                 ),
-                child: Text('Restart App'),
+                child: const Text('Restart App'),
               ),
             ],
           ),

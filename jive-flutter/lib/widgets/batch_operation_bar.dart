@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/category_management_provider.dart';
+import 'package:jive_money/providers/category_management_provider.dart';
 
 /// 批量操作栏
 class BatchOperationBar extends ConsumerStatefulWidget {
@@ -11,13 +11,13 @@ class BatchOperationBar extends ConsumerStatefulWidget {
   final String operationType; // 'category' or 'tag'
 
   const BatchOperationBar({
-    Key? key,
+    super.key,
     required this.selectedIds,
     required this.onCancel,
     required this.onSelectAll,
     required this.isAllSelected,
     this.operationType = 'category',
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<BatchOperationBar> createState() => _BatchOperationBarState();
@@ -82,7 +82,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
               children: [
                 // 取消按钮
                 IconButton(
-                  icon: Icon(Icons.close),
+                  icon: const Icon(Icons.close),
                   onPressed: widget.onCancel,
                   tooltip: '取消批量操作',
                 ),
@@ -218,12 +218,12 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('批量归档'),
+        title: const Text('批量归档'),
         content: Text('确定要归档选中的 ${widget.selectedIds.length} 个项目吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -236,7 +236,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
                 ),
               );
             },
-            child: Text('归档'),
+            child: const Text('归档'),
           ),
         ],
       ),
@@ -251,7 +251,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
           children: [
             Icon(Icons.warning, color: Theme.of(context).colorScheme.error),
             const SizedBox(width: 8),
-            Text('批量删除'),
+            const Text('批量删除'),
           ],
         ),
         content: Column(
@@ -291,7 +291,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -300,6 +300,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
             onPressed: () async {
               final provider = ref.read(categoryManagementProvider);
               await provider.batchDeleteCategories(widget.selectedIds);
+              if (!context.mounted) return;
               Navigator.pop(context);
               widget.onCancel();
               ScaffoldMessenger.of(context).showSnackBar(
@@ -314,7 +315,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
                 ),
               );
             },
-            child: Text('删除'),
+            child: const Text('删除'),
           ),
         ],
       ),
@@ -328,10 +329,10 @@ class BatchMoveDialog extends ConsumerStatefulWidget {
   final VoidCallback onConfirm;
 
   const BatchMoveDialog({
-    Key? key,
+    super.key,
     required this.selectedIds,
     required this.onConfirm,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<BatchMoveDialog> createState() => _BatchMoveDialogState();
@@ -343,7 +344,7 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('批量移动分类'),
+      title: const Text('批量移动分类'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -352,7 +353,7 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
           const SizedBox(height: 16),
           // TODO: 添加分类选择器
           DropdownButtonFormField<String>(
-            value: _targetParentId,
+            initialValue: _targetParentId,
             decoration: const InputDecoration(
               labelText: '目标父分类',
               border: OutlineInputBorder(),
@@ -376,7 +377,7 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('取消'),
+          child: const Text('取消'),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -385,6 +386,7 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
               widget.selectedIds,
               _targetParentId,
             );
+            if (!mounted) return;
             Navigator.pop(context);
             widget.onConfirm();
             ScaffoldMessenger.of(context).showSnackBar(
@@ -393,7 +395,7 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
               ),
             );
           },
-          child: Text('移动'),
+          child: const Text('移动'),
         ),
       ],
     );
@@ -406,10 +408,10 @@ class BatchConvertToTagDialog extends ConsumerStatefulWidget {
   final VoidCallback onConfirm;
 
   const BatchConvertToTagDialog({
-    Key? key,
+    super.key,
     required this.selectedIds,
     required this.onConfirm,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<BatchConvertToTagDialog> createState() =>
@@ -424,7 +426,7 @@ class _BatchConvertToTagDialogState
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('批量转换为标签'),
+      title: const Text('批量转换为标签'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -432,8 +434,8 @@ class _BatchConvertToTagDialogState
           Text('将 ${widget.selectedIds.length} 个分类转换为标签'),
           const SizedBox(height: 16),
           CheckboxListTile(
-            title: Text('应用到历史交易'),
-            subtitle: Text('将分类下的交易添加对应标签'),
+            title: const Text('应用到历史交易'),
+            subtitle: const Text('将分类下的交易添加对应标签'),
             value: _applyToTransactions,
             onChanged: (value) {
               setState(() {
@@ -442,8 +444,8 @@ class _BatchConvertToTagDialogState
             },
           ),
           CheckboxListTile(
-            title: Text('删除原分类'),
-            subtitle: Text('转换后删除原分类'),
+            title: const Text('删除原分类'),
+            subtitle: const Text('转换后删除原分类'),
             value: _deleteCategories,
             onChanged: (value) {
               setState(() {
@@ -456,7 +458,7 @@ class _BatchConvertToTagDialogState
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('取消'),
+          child: const Text('取消'),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -470,6 +472,7 @@ class _BatchConvertToTagDialogState
                 applyToTransactions: _applyToTransactions,
                 deleteCategory: _deleteCategories,
               );
+              if (!context.mounted) return;
             }
 
             Navigator.pop(context);
@@ -480,7 +483,7 @@ class _BatchConvertToTagDialogState
               ),
             );
           },
-          child: Text('转换'),
+          child: const Text('转换'),
         ),
       ],
     );

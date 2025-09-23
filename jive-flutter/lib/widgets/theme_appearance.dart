@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/settings_provider.dart';
+import 'package:jive_money/providers/settings_provider.dart';
 
 /// 可复用的“主题外观”组件：密度 + 圆角
 class ThemeAppearance extends ConsumerWidget {
@@ -27,7 +27,7 @@ class ThemeAppearance extends ConsumerWidget {
               children: [
                 Icon(Icons.tune, color: cs.primary, size: 20),
                 const SizedBox(width: 8),
-                Text(
+                const Text(
                   '主题外观',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
@@ -43,18 +43,18 @@ class ThemeAppearance extends ConsumerWidget {
                   .read(settingsProvider.notifier)
                   .updateSetting('listDensity', v ? 'compact' : 'comfortable');
             },
-            title: Text('紧凑密度'),
-            subtitle: Text('减少垂直留白，显示更多列表项'),
+            title: const Text('紧凑密度'),
+            subtitle: const Text('减少垂直留白，显示更多列表项'),
             contentPadding: EdgeInsets.zero,
-            activeColor: cs.primary,
+            activeThumbColor: cs.primary,
           ),
 
           // 圆角
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: Icon(Icons.crop_square_rounded, color: cs.secondary),
-            title: Text('圆角大小'),
-            subtitle: Text('小 / 中 / 大'),
+            title: const Text('圆角大小'),
+            subtitle: const Text('小 / 中 / 大'),
             trailing: DropdownButton<String>(
               value: settings.cornerRadius,
               items: const [

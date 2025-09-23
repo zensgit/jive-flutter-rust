@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/currency_provider.dart';
-import '../../providers/currency_provider.dart' show currencyCatalogMetaProvider; // explicit meta provider
+import 'package:jive_money/providers/currency_provider.dart';
+// explicit meta provider
 
 /// Exchange Rate Screen - Auto-refreshes when opened
 class ExchangeRateScreen extends ConsumerStatefulWidget {
@@ -108,7 +108,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('汇率转换'),
+        title: const Text('汇率转换'),
         actions: [
           IconButton(
             icon: _isRefreshing
@@ -120,7 +120,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   )
-                : Icon(Icons.refresh),
+                : const Icon(Icons.refresh),
             onPressed: _isRefreshing ? null : _refreshRates,
             tooltip: '刷新汇率',
           ),
@@ -143,7 +143,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.warning_amber_rounded,
+                    const Icon(Icons.warning_amber_rounded,
                         color: Colors.orange, size: 18),
                     const SizedBox(width: 8),
                     Expanded(
@@ -161,7 +161,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                       onPressed: _isRefreshing
                           ? null
                           : () => currencyNotifier.refreshCatalog(),
-                      child: Text('重试'),
+                      child: const Text('重试'),
                     ),
                   ],
                 ),
@@ -172,7 +172,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Row(
                   children: [
-                    Icon(Icons.schedule, size: 16, color: Colors.grey),
+                    const Icon(Icons.schedule, size: 16, color: Colors.grey),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
@@ -188,7 +188,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                       onPressed: _isRefreshing
                           ? null
                           : () => currencyNotifier.refreshCatalog(),
-                      child: Text('刷新目录'),
+                      child: const Text('刷新目录'),
                     )
                   ],
                 ),
@@ -220,7 +220,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
 
             // From currency
             DropdownButtonFormField<String>(
-              value: _fromCurrency,
+              initialValue: _fromCurrency,
               decoration: const InputDecoration(
                 labelText: '从',
                 border: OutlineInputBorder(),
@@ -261,7 +261,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
             // Swap button
             Center(
               child: IconButton(
-                icon: Icon(Icons.swap_vert, size: 32),
+                icon: const Icon(Icons.swap_vert, size: 32),
                 onPressed: () {
                   setState(() {
                     final temp = _fromCurrency;
@@ -278,7 +278,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
 
             // To currency
             DropdownButtonFormField<String>(
-              value: _toCurrency,
+              initialValue: _toCurrency,
               decoration: const InputDecoration(
                 labelText: '到',
                 border: OutlineInputBorder(),
@@ -333,7 +333,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                         '${_amount.toStringAsFixed(2)} $_fromCurrency',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      Icon(Icons.arrow_downward),
+                      const Icon(Icons.arrow_downward),
                       Text(
                         '${_convertedAmount!.toStringAsFixed(2)} $_toCurrency',
                         style: Theme.of(context)
@@ -362,7 +362,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                 padding: const EdgeInsets.all(12.0),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, size: 20),
+                    const Icon(Icons.info_outline, size: 20),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(

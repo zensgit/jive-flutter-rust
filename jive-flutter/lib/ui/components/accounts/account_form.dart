@@ -1,10 +1,10 @@
 // 账户表单组件
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../core/constants/app_constants.dart';
-import '../buttons/primary_button.dart';
-import '../buttons/secondary_button.dart';
-import 'account_list.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/buttons/primary_button.dart';
+import 'package:jive_money/ui/components/buttons/secondary_button.dart';
+import 'package:jive_money/ui/components/accounts/account_list.dart';
 
 class AccountForm extends StatefulWidget {
   final AccountFormData? initialData;
@@ -413,7 +413,7 @@ class _AccountFormState extends State<AccountForm> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Text('选择颜色'),
+                  const Text('选择颜色'),
                 ],
               ),
             ),
@@ -439,7 +439,7 @@ class _AccountFormState extends State<AccountForm> {
                 children: [
                   Icon(_icon, size: 24),
                   const SizedBox(width: 8),
-                  Text('选择图标'),
+                  const Text('选择图标'),
                 ],
               ),
             ),
@@ -474,14 +474,14 @@ class _AccountFormState extends State<AccountForm> {
         ),
         const SizedBox(height: 8),
         SwitchListTile(
-          title: Text('激活账户'),
-          subtitle: Text('停用的账户不会显示在列表中'),
+          title: const Text('激活账户'),
+          subtitle: const Text('停用的账户不会显示在列表中'),
           value: _isActive,
           onChanged: (value) => setState(() => _isActive = value),
         ),
         SwitchListTile(
-          title: Text('计入总额'),
-          subtitle: Text('是否将此账户余额计入净资产'),
+          title: const Text('计入总额'),
+          subtitle: const Text('是否将此账户余额计入净资产'),
           value: _includeInTotal,
           onChanged: (value) => setState(() => _includeInTotal = value),
         ),
@@ -600,7 +600,7 @@ class _AccountFormState extends State<AccountForm> {
     final selected = await showDialog<Color>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('选择颜色'),
+        title: const Text('选择颜色'),
         content: Wrap(
           spacing: 8,
           children: colors
@@ -644,7 +644,7 @@ class _AccountFormState extends State<AccountForm> {
     final selected = await showDialog<IconData>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('选择图标'),
+        title: const Text('选择图标'),
         content: Wrap(
           spacing: 8,
           children: icons

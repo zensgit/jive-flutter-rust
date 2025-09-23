@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/category_template.dart';
-import '../../providers/category_provider.dart';
-import '../../providers/ledger_provider.dart';
-import '../../services/api/category_service.dart';
-import '../../widgets/bottom_sheets/import_details_sheet.dart';
+import 'package:jive_money/models/category_template.dart';
+import 'package:jive_money/providers/category_provider.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
+import 'package:jive_money/services/api/category_service.dart';
+import 'package:jive_money/widgets/bottom_sheets/import_details_sheet.dart';
 
 class CategoryManagementEnhancedPage extends ConsumerStatefulWidget {
   const CategoryManagementEnhancedPage({super.key});
@@ -19,13 +19,13 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
   String _renderDryRunSubtitle(ImportActionDetail d) {
     switch (d.action) {
       case 'renamed':
-        return '将重命名' + (d.predictedName != null ? ' → ${d.predictedName}' : '');
+        return '将重命名${d.predictedName != null ? ' → ${d.predictedName}' : ''}';
       case 'updated':
         return '将覆盖同名分类';
       case 'skipped':
-        return '将跳过' + (d.reason != null ? '（${d.reason}）' : '');
+        return '将跳过${d.reason != null ? '（${d.reason}）' : ''}';
       case 'failed':
-        return '预检失败' + (d.reason != null ? '（${d.reason}）' : '');
+        return '预检失败${d.reason != null ? '（${d.reason}）' : ''}';
       case 'imported':
       default:
         return '将创建';
@@ -36,11 +36,11 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('分类管理'),
+        title: const Text('分类管理'),
         actions: [
           IconButton(
             tooltip: '从模板库导入',
-            icon: Icon(Icons.library_add),
+            icon: const Icon(Icons.library_add),
             onPressed: _busy ? null : _showTemplateLibrary,
           ),
         ],
@@ -48,7 +48,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
       body: Center(
         child: _busy
             ? const CircularProgressIndicator()
-            : Text('分类管理（最小版）：点击右上角导入模板')
+            : const Text('分类管理（最小版）：点击右上角导入模板')
       ),
     );
   }
@@ -91,7 +91,9 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
               if (fetching) return;
               fetching = true; setLocal((){});
               try {
-                if (reset) page = 1; else if (next) page += 1;
+                if (reset) {
+                  page = 1;
+                } else if (next) page += 1;
                 final res = await CategoryService().getTemplatesWithEtag(
                   etag: etag,
                   page: page,
@@ -121,8 +123,8 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
             }
 
             return AlertDialog(
-              title: Text('从模板库导入'),
-              content: const SizedBox(
+              title: const Text('从模板库导入'),
+              content: SizedBox(
                 width: 480,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -130,10 +132,10 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                   Row(
                     children: [
                       Text('冲突策略: '),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       DropdownButton<String>(
                         value: conflict,
-                        items: const [
+                        items: [
                           DropdownMenuItem(value: 'skip', child: Text('跳过')),
                           DropdownMenuItem(value: 'rename', child: Text('重命名')),
                           DropdownMenuItem(value: 'update', child: Text('覆盖')),
@@ -142,12 +144,12 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  const SizedBox(
+                  SizedBox(height: 8),
+                  SizedBox(
                     height: 320,
                     child: Column(
                       children: [
-                        if (fetching) const LinearProgressIndicator(minHeight: 2),
+                        if (fetching) LinearProgressIndicator(minHeight: 2),
                         Expanded(
                           child: ListView.builder(
                             itemCount: list.length,
@@ -184,12 +186,12 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                     ),
                   ),
                   if (preview != null) ...[
-                    const Divider(),
+                    Divider(),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text('预览（服务端 dry-run ）', style: Theme.of(context).textTheme.titleSmall),
                     ),
-                    const SizedBox(
+                    SizedBox(
                       height: 160,
                       child: ListView.builder(
                         itemCount: preview!.details.length,
@@ -213,7 +215,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx), child: Text('取消')),
+              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
               TextButton(
                 onPressed: selected.isEmpty ? null : () async {
                   try {
@@ -224,6 +226,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                       onConflict: conflict,
                       dryRun: true,
                     );
+                    if (!context.mounted) return;
                     setLocal((){ preview = res; });
                   } catch (e) {
                     if (context.mounted) {
@@ -231,7 +234,7 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                     }
                   }
                 },
-                child: Text('预览'),
+                child: const Text('预览'),
               ),
               FilledButton(
                 onPressed: (selected.isEmpty) ? null : () async {
@@ -245,13 +248,14 @@ class _CategoryManagementEnhancedPageState extends ConsumerState<CategoryManagem
                     );
                     if (!mounted) return;
                     await ref.read(userCategoriesProvider.notifier).refreshFromBackend(ledgerId: ledgerId);
+                    if (!context.mounted) return;
                     await ImportDetailsSheet.show(context, result);
                   } catch (e) {
                     if (!mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('导入失败: $e')));
                   }
                 },
-                child: Text('确认导入'),
+                child: const Text('确认导入'),
               ),
             ],
           );

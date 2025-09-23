@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../services/api/category_service.dart';
+import 'package:jive_money/services/api/category_service.dart';
 
 class ImportDetailsSheet {
   static Future<void> show(BuildContext context, ImportResult result) async {
@@ -39,7 +39,7 @@ class ImportDetailsSheet {
               children: [
                 Row(
                   children: [
-                    Text('导入详情', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    const Text('导入详情', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                     const Spacer(),
                     TextButton.icon(
                       onPressed: () async {
@@ -48,8 +48,8 @@ class ImportDetailsSheet {
                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('已复制 JSON 到剪贴板')));
                         }
                       },
-                      icon: Icon(Icons.copy, size: 18),
-                      label: Text('复制JSON'),
+                      icon: const Icon(Icons.copy, size: 18),
+                      label: const Text('复制JSON'),
                     ),
                   ],
                 ),

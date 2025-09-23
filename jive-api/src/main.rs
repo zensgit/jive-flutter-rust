@@ -11,6 +11,7 @@ use axum::{
 use serde::Deserialize;
 use serde_json::json;
 use sqlx::postgres::PgPoolOptions;
+use sqlx::Row;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tokio::net::TcpListener;
@@ -44,6 +45,7 @@ use handlers::family_handler::{list_families, create_family, get_family, update_
 use handlers::member_handler::{get_family_members, add_member, remove_member, update_member_role, update_member_permissions};
 #[cfg(feature = "demo_endpoints")]
 use handlers::placeholder::{export_data, activity_logs, advanced_settings, family_settings};
+use handlers::audit_handler::{get_audit_logs, export_audit_logs, cleanup_audit_logs};
 
 // 使用库中的 AppState
 use jive_money_api::AppState;
@@ -95,8 +97,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // 数据库连接
     // DATABASE_URL 回退：开发脚本使用宿主 5433 端口映射容器 5432，这里同步保持一致，避免脚本外手动运行 API 时连接被拒绝
-    let database_url = std::env::var("DATABASE_URL")
-        .unwrap_or_else(|_| "postgresql://huazhou:@localhost:5433/jive_money".to_string());
+    let database_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| {
+        let db_port = std::env::var("DB_PORT").unwrap_or_else(|_| "5433".to_string());
+        format!("postgresql://postgres:postgres@localhost:{}/jive_money", db_port)
+    });
     
     info!("📦 Connecting to database...");
     
@@ -245,6 +249,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         // 交易管理 API
         .route("/api/v1/transactions", get(list_transactions))
         .route("/api/v1/transactions", post(create_transaction))
+        .route("/api/v1/transactions/export", post(export_transactions))
+        .route("/api/v1/transactions/export.csv", get(export_transactions_csv_stream))
         .route("/api/v1/transactions/:id", get(get_transaction))
         .route("/api/v1/transactions/:id", put(update_transaction))
         .route("/api/v1/transactions/:id", delete(delete_transaction))
@@ -326,6 +332,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/currencies/rate", get(currency_handler::get_exchange_rate))
         .route("/api/v1/currencies/rates", post(currency_handler::get_batch_exchange_rates))
         .route("/api/v1/currencies/rates/add", post(currency_handler::add_exchange_rate))
+        .route("/api/v1/currencies/rates/clear-manual", post(currency_handler::clear_manual_exchange_rate))
+        .route("/api/v1/currencies/rates/clear-manual-batch", post(currency_handler::clear_manual_exchange_rates_batch))
         .route("/api/v1/currencies/convert", post(currency_handler::convert_amount))
         .route("/api/v1/currencies/history", get(currency_handler::get_exchange_rate_history))
         .route("/api/v1/currencies/popular-pairs", get(currency_handler::get_popular_exchange_pairs))
@@ -339,6 +347,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/currencies/user-settings", put(currency_handler_enhanced::update_user_currency_settings))
         .route("/api/v1/currencies/realtime-rates", get(currency_handler_enhanced::get_realtime_exchange_rates))
         .route("/api/v1/currencies/rates-detailed", post(currency_handler_enhanced::get_detailed_batch_rates))
+        .route("/api/v1/currencies/manual-overrides", get(currency_handler_enhanced::get_manual_overrides))
         // 保留 GET 语义，去除临时 POST 兼容，前端统一改为 GET
         .route("/api/v1/currencies/crypto-prices", get(currency_handler_enhanced::get_crypto_prices))
         .route("/api/v1/currencies/convert-any", post(currency_handler_enhanced::convert_currency))
@@ -373,6 +382,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/families/:id/advanced-settings", get(advanced_settings))
         .route("/api/v1/export/data", post(export_data))
         .route("/api/v1/activity/logs", get(activity_logs))
+        // Audit logs endpoints
+        .route("/api/v1/families/:id/audit-logs", get(get_audit_logs))
+        .route("/api/v1/families/:id/audit-logs/export", get(export_audit_logs))
+        .route("/api/v1/families/:id/audit-logs/cleanup", post(cleanup_audit_logs))
         // 简化演示入口
         .route("/api/v1/export", get(export_data))
         .route("/api/v1/activity-logs", get(activity_logs))
@@ -426,18 +439,59 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-/// 健康检查接口
+/// 健康检查接口（扩展：模式/近期指标）
 async fn health_check(State(state): State<AppState>) -> Json<serde_json::Value> {
+    // 运行模式：从 PID 标记或环境变量推断（最佳努力）
+    let mode = std::fs::read_to_string(".pids/api.mode").ok().unwrap_or_else(|| {
+        std::env::var("CORS_DEV").map(|v| if v == "1" { "dev".into() } else { "safe".into() }).unwrap_or_else(|_| "safe".into())
+    });
+    // 轻量指标（允许失败，不影响健康响应）
+    let latest_updated_at = sqlx::query(
+        r#"SELECT MAX(updated_at) AS ts FROM exchange_rates"#
+    )
+    .fetch_one(&state.pool)
+    .await
+    .ok()
+    .and_then(|row| row.try_get::<chrono::DateTime<chrono::Utc>, _>("ts").ok())
+    .map(|dt| dt.to_rfc3339());
+
+    let todays_rows = sqlx::query(r#"SELECT COUNT(*) AS c FROM exchange_rates WHERE date = CURRENT_DATE"#)
+        .fetch_one(&state.pool).await.ok()
+        .and_then(|row| row.try_get::<i64, _>("c").ok())
+        .unwrap_or(0);
+
+    let manual_active = sqlx::query(
+        r#"SELECT COUNT(*) AS c FROM exchange_rates 
+           WHERE is_manual = true AND (manual_rate_expiry IS NULL OR manual_rate_expiry > NOW()) AND date = CURRENT_DATE"#
+    ).fetch_one(&state.pool).await.ok()
+     .and_then(|row| row.try_get::<i64, _>("c").ok())
+     .unwrap_or(0);
+
+    let manual_expired = sqlx::query(
+        r#"SELECT COUNT(*) AS c FROM exchange_rates 
+           WHERE is_manual = true AND manual_rate_expiry IS NOT NULL AND manual_rate_expiry <= NOW()"#
+    ).fetch_one(&state.pool).await.ok()
+     .and_then(|row| row.try_get::<i64, _>("c").ok())
+     .unwrap_or(0);
+
     Json(json!({
         "status": "healthy",
         "service": "jive-money-api",
-        "version": "1.0.0-complete",
+        "mode": mode.trim(),
         "features": {
             "websocket": true,
             "database": true,
             "auth": true,
             "ledgers": true,
             "redis": state.redis.is_some()
+        },
+        "metrics": {
+            "exchange_rates": {
+                "latest_updated_at": latest_updated_at,
+                "todays_rows": todays_rows,
+                "manual_overrides_active": manual_active,
+                "manual_overrides_expired": manual_expired
+            }
         },
         "timestamp": chrono::Utc::now().to_rfc3339()
     }))

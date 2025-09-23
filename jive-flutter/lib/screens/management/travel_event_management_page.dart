@@ -96,13 +96,13 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text('旅行事件管理'),
+        title: const Text('旅行事件管理'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () => _showAddEventDialog(),
           ),
         ],
@@ -138,7 +138,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
               },
               decoration: InputDecoration(
                 hintText: '搜索旅行事件...',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: Colors.grey[300]!),
@@ -179,8 +179,8 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddEventDialog(),
-        icon: Icon(Icons.flight_takeoff),
-        label: Text('新建事件'),
+        icon: const Icon(Icons.flight_takeoff),
+        label: const Text('新建事件'),
       ),
     );
   }
@@ -259,8 +259,8 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
               const SizedBox(height: 8),
               TextButton.icon(
                 onPressed: () => _showAddEventDialog(),
-                icon: Icon(Icons.add),
-                label: Text('创建第一个旅行事件'),
+                icon: const Icon(Icons.add),
+                label: const Text('创建第一个旅行事件'),
               ),
             ],
           ],
@@ -294,7 +294,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
             color: event['color'] as Color,
             borderRadius: BorderRadius.circular(25),
           ),
-          child: Icon(
+          child: const Icon(
             Icons.flight,
             color: Colors.white,
             size: 24,
@@ -386,12 +386,12 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('新建旅行事件'),
-        content: Text('这里是创建旅行事件的功能界面，基于maybe-main设计模式实现。'),
+        title: const Text('新建旅行事件'),
+        content: const Text('这里是创建旅行事件的功能界面，基于maybe-main设计模式实现。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           TextButton(
             onPressed: () {
@@ -400,7 +400,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
                 const SnackBar(content: Text('旅行事件创建功能演示')),
               );
             },
-            child: Text('创建'),
+            child: const Text('创建'),
           ),
         ],
       ),
@@ -412,11 +412,11 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
       context: context,
       builder: (context) => AlertDialog(
         title: Text('编辑: ${event['name']}'),
-        content: Text('这里是编辑旅行事件的功能界面。'),
+        content: const Text('这里是编辑旅行事件的功能界面。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           TextButton(
             onPressed: () {
@@ -425,7 +425,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
                 SnackBar(content: Text('已编辑: ${event['name']}')),
               );
             },
-            child: Text('保存'),
+            child: const Text('保存'),
           ),
         ],
       ),
@@ -436,14 +436,14 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('删除旅行事件'),
+        title: const Text('删除旅行事件'),
         content: Text(
           '确定要删除旅行事件"${event['name']}"吗？\n这将删除相关的所有记录。',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           TextButton(
             onPressed: () {
@@ -453,7 +453,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
               );
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text('删除'),
+            child: const Text('删除'),
           ),
         ],
       ),
@@ -481,7 +481,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
                     color: event['color'] as Color,
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.flight,
                     color: Colors.white,
                     size: 30,
@@ -511,7 +511,7 @@ class _TravelEventManagementPageState extends State<TravelEventManagementPage>
               ],
             ),
             const SizedBox(height: 20),
-            Text(
+            const Text(
               '事件详情',
               style: TextStyle(
                 fontSize: 16,

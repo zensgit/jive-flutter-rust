@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import '../../utils/logger.dart';
+import 'package:jive_money/core/utils/logger.dart';
 
 /// 日志拦截器
 class LoggingInterceptor extends Interceptor {

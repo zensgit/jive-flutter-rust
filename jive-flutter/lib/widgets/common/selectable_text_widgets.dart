@@ -49,7 +49,7 @@ class SelectableTextWidget extends StatelessWidget {
                 editableTextState.copySelection(SelectionChangedCause.toolbar);
                 editableTextState.hideToolbar();
               },
-              child: Text('复制'),
+              child: const Text('复制'),
             ),
             // 全选按钮
             TextSelectionToolbarTextButton(
@@ -57,7 +57,7 @@ class SelectableTextWidget extends StatelessWidget {
               onPressed: () {
                 editableTextState.selectAll(SelectionChangedCause.toolbar);
               },
-              child: Text('全选'),
+              child: const Text('全选'),
             ),
           ],
         );
@@ -133,7 +133,7 @@ class SelectableContainer extends StatelessWidget {
           child: const Row(
             children: [
               Icon(Icons.copy, size: 20),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text('复制'),
             ],
           ),

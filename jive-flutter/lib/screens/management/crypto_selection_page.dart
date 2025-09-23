@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/currency.dart' as model;
-import '../../providers/currency_provider.dart';
-import '../../widgets/source_badge.dart';
-import '../../providers/settings_provider.dart';
+import 'package:jive_money/models/currency.dart' as model;
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/widgets/source_badge.dart';
+import 'package:jive_money/providers/settings_provider.dart';
 
 /// 加密货币选择管理页面
 class CryptoSelectionPage extends ConsumerStatefulWidget {
@@ -310,7 +310,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                           Icon(Icons.trending_up,
                               size: 16, color: _getCryptoColor(crypto.code)),
                           const SizedBox(width: 8),
-                          Text(
+                          const Text(
                             '价格设置',
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
@@ -382,8 +382,8 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                                       .clearManualRate(crypto.code);
                                   await _fetchLatestPrices();
                                 },
-                                icon: Icon(Icons.refresh, size: 18),
-                                label: Text('自动'),
+                                icon: const Icon(Icons.refresh, size: 18),
+                                label: const Text('自动'),
                                 style: TextButton.styleFrom(
                                   foregroundColor: Colors.purple,
                                 ),
@@ -438,8 +438,8 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                                     _showSnackBar('手动价格已保存', Colors.green);
                                   }
                                 },
-                                icon: Icon(Icons.save, size: 18),
-                                label: Text('保存'),
+                                icon: const Icon(Icons.save, size: 18),
+                                label: const Text('保存'),
                                 style: TextButton.styleFrom(
                                   foregroundColor: Colors.green,
                                 ),
@@ -519,7 +519,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text('管理加密货币'),
+        title: const Text('管理加密货币'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0.5,
@@ -532,7 +532,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Icon(Icons.refresh),
+                : const Icon(Icons.refresh),
             tooltip: '更新价格',
           ),
         ],
@@ -552,10 +552,10 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
               },
               decoration: InputDecoration(
                 hintText: '搜索加密货币（代码、名称、符号）',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: Icon(Icons.clear),
+                        icon: const Icon(Icons.clear),
                         onPressed: () {
                           setState(() {
                             _searchController.clear();
@@ -636,8 +636,8 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  icon: Icon(Icons.check),
-                  label: Text('完成'),
+                  icon: const Icon(Icons.check),
+                  label: const Text('完成'),
                 ),
               ],
             ),

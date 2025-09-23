@@ -1,8 +1,8 @@
 // 确认对话框组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
-import '../buttons/primary_button.dart';
-import '../buttons/secondary_button.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/buttons/primary_button.dart';
+import 'package:jive_money/ui/components/buttons/secondary_button.dart';
 
 class ConfirmDialog extends StatelessWidget {
   final String title;

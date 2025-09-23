@@ -73,13 +73,13 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text('规则管理'),
+        title: const Text('规则管理'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () => _showAddRuleDialog(),
           ),
         ],
@@ -120,7 +120,7 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
               },
               decoration: InputDecoration(
                 hintText: '搜索规则...',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: Colors.grey[300]!),
@@ -139,8 +139,8 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddRuleDialog(),
-        icon: Icon(Icons.add),
-        label: Text('新建规则'),
+        icon: const Icon(Icons.add),
+        label: const Text('新建规则'),
       ),
     );
   }
@@ -201,8 +201,8 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
               const SizedBox(height: 8),
               TextButton.icon(
                 onPressed: () => _showAddRuleDialog(),
-                icon: Icon(Icons.add),
-                label: Text('创建第一个规则'),
+                icon: const Icon(Icons.add),
+                label: const Text('创建第一个规则'),
               ),
             ],
           ],
@@ -309,7 +309,7 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   '触发条件:',
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                 ),
@@ -332,7 +332,7 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
                   ),
                 )),
                 const SizedBox(height: 12),
-                Text(
+                const Text(
                   '执行动作:',
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                 ),
@@ -366,12 +366,12 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('新建规则'),
-        content: Text('这里是创建自动化规则的功能界面，基于maybe-main设计模式实现。'),
+        title: const Text('新建规则'),
+        content: const Text('这里是创建自动化规则的功能界面，基于maybe-main设计模式实现。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           TextButton(
             onPressed: () {
@@ -380,7 +380,7 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
                 const SnackBar(content: Text('规则创建功能演示')),
               );
             },
-            child: Text('创建'),
+            child: const Text('创建'),
           ),
         ],
       ),
@@ -392,11 +392,11 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text('编辑规则: ${rule['name']}'),
-        content: Text('这里是编辑规则的功能界面。'),
+        content: const Text('这里是编辑规则的功能界面。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           TextButton(
             onPressed: () {
@@ -405,7 +405,7 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
                 SnackBar(content: Text('已编辑规则: ${rule['name']}')),
               );
             },
-            child: Text('保存'),
+            child: const Text('保存'),
           ),
         ],
       ),
@@ -427,14 +427,14 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('删除规则'),
+        title: const Text('删除规则'),
         content: Text(
           '确定要删除规则"${rule['name']}"吗？\n这将影响未来的自动化处理。',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           TextButton(
             onPressed: () {
@@ -444,7 +444,7 @@ class _RulesManagementPageState extends State<RulesManagementPage> {
               );
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text('删除'),
+            child: const Text('删除'),
           ),
         ],
       ),

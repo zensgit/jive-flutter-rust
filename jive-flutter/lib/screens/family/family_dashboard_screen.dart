@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../utils/string_utils.dart';
+import 'package:jive_money/utils/string_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../models/ledger.dart';
-import '../../providers/ledger_provider.dart';
-import 'family_settings_screen.dart';
-import 'family_members_screen.dart';
+import 'package:jive_money/models/ledger.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
+import 'package:jive_money/screens/family/family_settings_screen.dart';
+import 'package:jive_money/screens/family/family_members_screen.dart';
 
 /// 家庭统计仪表板
 class FamilyDashboardScreen extends ConsumerStatefulWidget {
@@ -49,7 +49,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('家庭概览'),
+            const Text('家庭概览'),
             Text(
               widget.ledger.name,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -60,7 +60,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
         ),
         actions: [
           PopupMenuButton<String>(
-            icon: Icon(Icons.date_range),
+            icon: const Icon(Icons.date_range),
             onSelected: (value) {
               setState(() => _selectedPeriod = value);
             },
@@ -73,7 +73,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
             ],
           ),
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             onPressed: () {
               Navigator.push(
                 context,
@@ -167,7 +167,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
             Text('加载失败: $error'),
             const SizedBox(height: 16),
@@ -175,7 +175,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
               onPressed: () {
                 ref.invalidate(ledgerStatisticsProvider(widget.ledger.id!));
               },
-              child: Text('重试'),
+              child: const Text('重试'),
             ),
           ],
         ),
@@ -207,7 +207,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   '净资产',
                   style: TextStyle(
                     color: Colors.white,
@@ -315,7 +315,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               '账户分布',
               style: TextStyle(
                 fontSize: 16,
@@ -323,7 +323,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
               ),
             ),
             const SizedBox(height: 16),
-            const SizedBox(
+            SizedBox(
               height: 200,
               child: PieChart(
                 PieChartData(
@@ -415,7 +415,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               '快速统计',
               style: TextStyle(
                 fontSize: 16,
@@ -493,7 +493,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   '最近活动',
                   style: TextStyle(
                     fontSize: 16,
@@ -504,7 +504,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                   onPressed: () {
                     // TODO: 导航到活动日志
                   },
-                  child: Text('查看全部'),
+                  child: const Text('查看全部'),
                 ),
               ],
             ),
@@ -564,7 +564,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               '月度趋势',
               style: TextStyle(
                 fontSize: 16,
@@ -572,7 +572,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
               ),
             ),
             const SizedBox(height: 16),
-            const SizedBox(
+            SizedBox(
               height: 200,
               child: LineChart(
                 LineChartData(
@@ -588,13 +588,13 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                     },
                   ),
                   titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
+                    leftTitles: const AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
                     ),
-                    rightTitles: AxisTitles(
+                    rightTitles: const AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
                     ),
-                    topTitles: AxisTitles(
+                    topTitles: const AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
                     ),
                     bottomTitles: AxisTitles(
@@ -608,7 +608,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                               style: const TextStyle(fontSize: 10),
                             );
                           }
-                          return Text('');
+                          return const Text('');
                         },
                       ),
                     ),
@@ -626,7 +626,7 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                       isCurved: true,
                       color: Theme.of(context).primaryColor,
                       barWidth: 3,
-                      dotData: FlDotData(show: true),
+                      dotData: const FlDotData(show: true),
                       belowBarData: BarAreaData(
                         show: true,
                         color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
@@ -643,9 +643,9 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
   }
 
   Widget _buildIncomeExpenseComparison() {
-    return Card(
+    return const Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -656,9 +656,9 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             // TODO: 实现收支对比图表
-            const Center(
+            Center(
               child: Text('收支对比图表开发中'),
             ),
           ],
@@ -668,9 +668,9 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
   }
 
   Widget _buildCategoryTrends() {
-    return Card(
+    return const Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -681,9 +681,9 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             // TODO: 实现类别趋势图表
-            const Center(
+            Center(
               child: Text('类别趋势图表开发中'),
             ),
           ],
@@ -703,10 +703,10 @@ class _FamilyDashboardScreenState extends ConsumerState<FamilyDashboardScreen>
           if (index == 0) {
             return Card(
               child: ListTile(
-                leading: Icon(Icons.people, color: Colors.blue),
+                leading: const Icon(Icons.people, color: Colors.blue),
                 title: Text('共 ${members.length} 位成员'),
-                subtitle: Text('点击查看详情'),
-                trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                subtitle: const Text('点击查看详情'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () {
                   Navigator.push(
                     context,

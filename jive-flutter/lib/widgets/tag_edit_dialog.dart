@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/tag.dart';
-import '../providers/tag_provider.dart';
+import 'package:jive_money/models/tag.dart';
+import 'package:jive_money/providers/tag_provider.dart';
 
 class TagEditDialog extends ConsumerStatefulWidget {
   final Tag tag;
@@ -116,7 +116,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                 // 标题
                 Row(
                   children: [
-                    Text(
+                    const Text(
                       '编辑标签',
                       style: TextStyle(
                         fontSize: 20,
@@ -126,7 +126,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                     const Spacer(),
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: Icon(Icons.close),
+                      icon: const Icon(Icons.close),
                     ),
                   ],
                 ),
@@ -152,7 +152,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                 const SizedBox(height: 16),
 
                 // 选择颜色
-                Text('选择颜色',
+                const Text('选择颜色',
                     style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 Wrap(
@@ -173,7 +173,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                               : null,
                         ),
                         child: isSelected
-                            ? Icon(Icons.check, color: Colors.white)
+                            ? const Icon(Icons.check, color: Colors.white)
                             : null,
                       ),
                     );
@@ -182,10 +182,10 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                 const SizedBox(height: 16),
 
                 // 选择图标
-                Text('选择图标 (可选)',
+                const Text('选择图标 (可选)',
                     style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
-                Container(
+                SizedBox(
                   height: 80,
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -207,7 +207,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                               ),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Icon(Icons.cancel, color: Colors.grey),
+                            child: const Icon(Icons.cancel, color: Colors.grey),
                           ),
                         ),
                         // 图标选项
@@ -232,7 +232,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                               child: Icon(entry.value, color: Colors.grey[700]),
                             ),
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                   ),
@@ -240,7 +240,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                 const SizedBox(height: 16),
 
                 // 分组选择
-                Text('选择分组 (可选)',
+                const Text('选择分组 (可选)',
                     style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 _buildGroupSelector(tagGroups),
@@ -248,7 +248,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
 
                 // 预览
                 if (_nameController.text.isNotEmpty) ...[
-                  Text('预览',
+                  const Text('预览',
                       style: TextStyle(fontWeight: FontWeight.w500)),
                   const SizedBox(height: 8),
                   Container(
@@ -298,7 +298,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text('取消'),
+                      child: const Text('取消'),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
@@ -309,7 +309,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                               height: 16,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : Text('保存'),
+                          : const Text('保存'),
                     ),
                   ],
                 ),
@@ -340,7 +340,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
               children: [
                 if (_groupController.text.isNotEmpty)
                   IconButton(
-                    icon: Icon(Icons.clear, size: 18),
+                    icon: const Icon(Icons.clear, size: 18),
                     onPressed: () {
                       _groupController.clear();
                       setState(() {
@@ -519,7 +519,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
 
         setState(() {
           _isLoading = false;
-          _errorMessage = '标签"$name"已存在于${groupInfo}中';
+          _errorMessage = '标签"$name"已存在于$groupInfo中';
         });
         return;
       }

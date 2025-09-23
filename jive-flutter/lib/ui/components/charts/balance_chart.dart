@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../providers/currency_provider.dart';
+import 'package:jive_money/providers/currency_provider.dart';
 
 class BalanceChart extends ConsumerWidget {
   final List<BalancePoint> data;
@@ -311,7 +311,7 @@ class BalanceChart extends ConsumerWidget {
         );
       }
 
-      return LineTooltipItem('', textStyle);
+      return const LineTooltipItem('', textStyle);
     }).toList();
   }
 }
@@ -340,7 +340,7 @@ class BalancePoint {
     } else if (difference == 1) {
       return '昨天';
     } else if (difference <= 7) {
-      return '${difference}天前';
+      return '$difference天前';
     } else {
       return '${date.month}/${date.day}';
     }

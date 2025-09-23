@@ -1,5 +1,5 @@
 import 'dart:async';
-import '../models/audit_log.dart';
+import 'package:jive_money/models/audit_log.dart';
 export '../models/audit_log.dart';
 
 /// Stub audit service with minimal implementations
@@ -18,6 +18,7 @@ class AuditService {
     DateTime? startDate,
     DateTime? endDate,
     String? filter,
+    AuditLogFilter? filterObj,
     int? page,
     int? pageSize,
     int limit = 100,

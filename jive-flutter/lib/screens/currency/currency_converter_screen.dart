@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/currency_provider.dart';
+import 'package:jive_money/providers/currency_provider.dart';
 
 /// Simple Currency Converter Screen
 class CurrencyConverterScreen extends ConsumerStatefulWidget {
@@ -79,7 +79,7 @@ class _CurrencyConverterScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('汇率转换'),
+        title: const Text('汇率转换'),
         centerTitle: true,
       ),
       body: Padding(
@@ -111,7 +111,7 @@ class _CurrencyConverterScreenState
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('从货币:'),
+                  const Text('从货币:'),
                   DropdownButton<String>(
                     value: _fromCurrency,
                     underline: const SizedBox(),
@@ -138,7 +138,7 @@ class _CurrencyConverterScreenState
 
             // Swap button
             IconButton(
-              icon: Icon(Icons.swap_vert, size: 32),
+              icon: const Icon(Icons.swap_vert, size: 32),
               onPressed: () {
                 setState(() {
                   final temp = _fromCurrency;
@@ -161,7 +161,7 @@ class _CurrencyConverterScreenState
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('到货币:'),
+                  const Text('到货币:'),
                   DropdownButton<String>(
                     value: _toCurrency,
                     underline: const SizedBox(),
@@ -204,7 +204,7 @@ class _CurrencyConverterScreenState
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 10),
-                      Icon(Icons.arrow_downward, size: 24),
+                      const Icon(Icons.arrow_downward, size: 24),
                       const SizedBox(height: 10),
                       Text(
                         formatter.formatCurrency(_result ?? 0, _toCurrency),
@@ -231,8 +231,8 @@ class _CurrencyConverterScreenState
             // Refresh button
             ElevatedButton.icon(
               onPressed: _isLoading ? null : _refreshAndConvert,
-              icon: Icon(Icons.refresh),
-              label: Text('刷新汇率'),
+              icon: const Icon(Icons.refresh),
+              label: const Text('刷新汇率'),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 48),
               ),

@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../providers/currency_provider.dart';
-import '../../../core/constants/app_constants.dart';
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
 
 class AccountCard extends ConsumerWidget {
   final String id;
@@ -35,7 +35,31 @@ class AccountCard extends ConsumerWidget {
     this.lastSyncAt,
     this.onTap,
     this.onSync,
+    // Additional compatibility parameters
+    dynamic account,
+    VoidCallback? onLongPress,
+    EdgeInsets? margin,
   });
+
+  // Factory constructor that accepts Account object
+  factory AccountCard.fromAccount({
+    Key? key,
+    required dynamic account,
+    VoidCallback? onTap,
+    VoidCallback? onLongPress,
+  }) {
+    return AccountCard(
+      key: key,
+      id: account.id ?? '',
+      name: account.name ?? 'Unknown Account',
+      type: account.type ?? 'unknown',
+      balance: account.balance ?? 0.0,
+      currency: account.currency ?? 'CNY',
+      color: account.color,
+      onTap: onTap,
+      onSync: onLongPress,
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

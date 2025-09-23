@@ -49,8 +49,9 @@ if [ "$SKIP_BUILD" != "true" ]; then
 fi
 
 # 设置环境变量（减少不必要的功能）
-export DATABASE_URL="postgresql://postgres:postgres@localhost:5433/jive_money"
-export REDIS_URL="redis://localhost:6380"
+DB_PORT=${DB_PORT:-5433}
+export DATABASE_URL=${DATABASE_URL:-"postgresql://postgres:postgres@localhost:$DB_PORT/jive_money"}
+export REDIS_URL=${REDIS_URL:-"redis://localhost:6380"}
 export API_PORT=$PORT
 export JWT_SECRET="your-secret-key-here"
 export RUST_LOG="warn,jive_api=info"  # 减少日志输出

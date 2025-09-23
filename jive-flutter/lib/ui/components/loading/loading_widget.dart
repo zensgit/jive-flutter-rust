@@ -1,6 +1,6 @@
 // 加载状态组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
 
 class LoadingWidget extends StatelessWidget {
   final String? message;
@@ -23,7 +23,7 @@ class LoadingWidget extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(
+        SizedBox(
           width: size,
           height: size,
           child: CircularProgressIndicator(

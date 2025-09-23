@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/currency_provider.dart';
-import '../../models/currency.dart' as model;
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/models/currency.dart' as model;
 
 /// 用户端：统一浏览与管理（启用/禁用）法币+加密币
 class UserCurrencyBrowser extends ConsumerStatefulWidget {
@@ -44,7 +44,7 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
-        title: Text('币种管理（用户）'),
+        title: const Text('币种管理（用户）'),
         actions: [
           IconButton(
             onPressed: () => setState(() => _showCrypto = !_showCrypto),
@@ -73,19 +73,19 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
             child: Row(
               children: [
                 ChoiceChip(
-                  label: Text('全部'),
+                  label: const Text('全部'),
                   selected: _filter == 'all',
                   onSelected: (_) => setState(() => _filter = 'all'),
                 ),
                 const SizedBox(width: 8),
                 ChoiceChip(
-                  label: Text('仅启用'),
+                  label: const Text('仅启用'),
                   selected: _filter == 'enabled',
                   onSelected: (_) => setState(() => _filter = 'enabled'),
                 ),
                 const SizedBox(width: 8),
                 ChoiceChip(
-                  label: Text('仅下线'),
+                  label: const Text('仅下线'),
                   selected: _filter == 'down',
                   onSelected: (_) => setState(() => _filter = 'down'),
                 ),
@@ -107,10 +107,12 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
 
   Widget _row(model.Currency c, bool isSelected, String base, ColorScheme cs) {
     // 过滤逻辑应用在构造行前
-    if (_filter == 'enabled' && c.isEnabled == false)
+    if (_filter == 'enabled' && c.isEnabled == false) {
       return const SizedBox.shrink();
-    if (_filter == 'down' && c.isEnabled != false)
+    }
+    if (_filter == 'down' && c.isEnabled != false) {
       return const SizedBox.shrink();
+    }
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       child: ListTile(
@@ -118,7 +120,7 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: cs.surfaceVariant,
+            color: cs.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: cs.outlineVariant),
           ),
@@ -147,7 +149,7 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                  color: cs.surfaceVariant,
+                  color: cs.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(4)),
               child: Text(c.symbol,
                   style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12)),
@@ -215,7 +217,7 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
                           SnackBar(content: Text('基础货币已设为 ${c.code}')));
                     }
                   },
-            child: Text('设为基础'),
+            child: const Text('设为基础'),
           ),
       ],
     );

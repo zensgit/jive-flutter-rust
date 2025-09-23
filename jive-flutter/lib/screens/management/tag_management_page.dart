@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/tag.dart';
-import '../../providers/tag_provider.dart';
-import '../../widgets/tag_create_dialog.dart';
-import '../../widgets/tag_edit_dialog.dart';
-import '../../widgets/tag_deletion_dialog.dart';
-import '../../widgets/tag_group_dialog.dart';
+import 'package:jive_money/models/tag.dart';
+import 'package:jive_money/providers/tag_provider.dart';
+import 'package:jive_money/widgets/tag_create_dialog.dart';
+import 'package:jive_money/widgets/tag_edit_dialog.dart';
+import 'package:jive_money/widgets/tag_deletion_dialog.dart';
+import 'package:jive_money/widgets/tag_group_dialog.dart';
 
 /// 标签管理页面 - 完整版
 class TagManagementPage extends ConsumerStatefulWidget {
@@ -74,7 +74,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     '标签管理',
                     style: TextStyle(
                       color: Colors.black87,
@@ -115,10 +115,10 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                     controller: _searchController,
                     decoration: InputDecoration(
                       hintText: '搜索标签...',
-                      prefixIcon: Icon(Icons.search, color: Colors.grey),
+                      prefixIcon: const Icon(Icons.search, color: Colors.grey),
                       suffixIcon: _searchController.text.isNotEmpty
                           ? IconButton(
-                              icon: Icon(Icons.clear, color: Colors.grey),
+                              icon: const Icon(Icons.clear, color: Colors.grey),
                               onPressed: () {
                                 setState(() {
                                   _searchController.clear();
@@ -144,7 +144,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                   Row(
                     children: [
                       FilterChip(
-                        label: Text('显示归档'),
+                        label: const Text('显示归档'),
                         selected: _showArchived,
                         onSelected: (value) {
                           setState(() {
@@ -234,7 +234,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                   final groupTags = tagsByGroup[group.id] ?? [];
                   // 显示所有分组，即使是空的分组也显示
                   return _buildGroupSection(group, groupTags);
-                }).toList(),
+                }),
 
                 // 归档标签
                 if (_showArchived && archivedTags.isNotEmpty) ...[
@@ -309,7 +309,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
             ),
           ],
         ),
-        child: Row(
+        child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
@@ -317,7 +317,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
               color: Colors.blue,
               size: 24,
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               '新建分组',
               style: TextStyle(
@@ -421,7 +421,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
               // 添加快速创建标签按钮
               if (!isArchived)
                 IconButton(
-                  icon: Icon(Icons.add_circle_outline, size: 20),
+                  icon: const Icon(Icons.add_circle_outline, size: 20),
                   color: Colors.blue,
                   tooltip: '快速添加标签',
                   onPressed: () => _showAddTagDialog(),
@@ -534,13 +534,13 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                     children: [
                       // 快速添加标签到分组
                       IconButton(
-                        icon: Icon(Icons.add_circle_outline, size: 18),
+                        icon: const Icon(Icons.add_circle_outline, size: 18),
                         color: Colors.blue,
                         onPressed: () => _showAddTagDialog(groupId: group.id),
                         tooltip: '在此分组中添加标签',
                       ),
                       IconButton(
-                        icon: Icon(Icons.edit, size: 18),
+                        icon: const Icon(Icons.edit, size: 18),
                         onPressed: () => _showEditGroupDialog(group),
                         tooltip: '编辑分组',
                       ),
@@ -759,8 +759,8 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
             const SizedBox(height: 16),
             // 操作选项
             ListTile(
-              leading: Icon(Icons.edit),
-              title: Text('编辑标签'),
+              leading: const Icon(Icons.edit),
+              title: const Text('编辑标签'),
               onTap: () {
                 Navigator.pop(context);
                 _showEditTagDialog(tag);
@@ -777,8 +777,8 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.delete, color: Colors.red),
-              title: Text('删除标签', style: TextStyle(color: Colors.red)),
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('删除标签', style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(context);
                 _showDeleteTagDialog(tag);
@@ -891,17 +891,18 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('删除分组'),
+        title: const Text('删除分组'),
         content: Text('确定要删除分组"${group.name}"吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: const Text('取消'),
           ),
           ElevatedButton(
             onPressed: () async {
               final groupNotifier = ref.read(tagGroupsProvider.notifier);
               await groupNotifier.deleteTagGroup(group.id!);
+              if (!context.mounted) return;
               Navigator.pop(context);
               setState(() {});
               ScaffoldMessenger.of(context).showSnackBar(
@@ -915,7 +916,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: Text('删除'),
+            child: const Text('删除'),
           ),
         ],
       ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/ledger.dart';
-import '../../providers/ledger_provider.dart';
-import '../../utils/string_utils.dart';
+import 'package:jive_money/models/ledger.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
+import 'package:jive_money/utils/string_utils.dart';
 
 /// 邀请成员对话框
 class InviteMemberDialog extends ConsumerStatefulWidget {
@@ -144,7 +144,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         '邀请成员',
                         style: TextStyle(
                           fontSize: 20,
@@ -183,7 +183,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                               decoration: InputDecoration(
                                 labelText: '邮箱地址',
                                 hintText: '输入邮箱地址',
-                                prefixIcon: Icon(Icons.email),
+                                prefixIcon: const Icon(Icons.email),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -207,7 +207,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                                 _addEmail();
                               }
                             },
-                            icon: Icon(Icons.add),
+                            icon: const Icon(Icons.add),
                           ),
                         ],
                       ),
@@ -251,7 +251,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                                 ),
                                 title: Text(email),
                                 trailing: IconButton(
-                                  icon: Icon(Icons.close, size: 18),
+                                  icon: const Icon(Icons.close, size: 18),
                                   onPressed: () => _removeEmail(email),
                                 ),
                               );
@@ -263,10 +263,10 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
 
                       // 角色选择
                       DropdownButtonFormField<LedgerRole>(
-                        value: _selectedRole,
+                        initialValue: _selectedRole,
                         decoration: InputDecoration(
                           labelText: '成员角色',
-                          prefixIcon: Icon(Icons.security),
+                          prefixIcon: const Icon(Icons.security),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -392,7 +392,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                   TextButton(
                     onPressed:
                         _isLoading ? null : () => Navigator.of(context).pop(),
-                    child: Text('取消'),
+                    child: const Text('取消'),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton.icon(
@@ -406,7 +406,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                               color: Colors.white,
                             ),
                           )
-                        : Icon(Icons.send),
+                        : const Icon(Icons.send),
                     label: Text(_isLoading ? '发送中...' : '发送邀请'),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
@@ -432,7 +432,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          const SizedBox(
+          SizedBox(
             width: 80,
             child: Text(
               permission,
@@ -453,7 +453,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                 color: hasPermission ? Colors.green : Colors.grey[400],
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );

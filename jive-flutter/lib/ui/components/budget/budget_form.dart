@@ -1,9 +1,9 @@
 // 预算表单组件
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../core/constants/app_constants.dart';
-import '../buttons/primary_button.dart';
-import '../buttons/secondary_button.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/buttons/primary_button.dart';
+import 'package:jive_money/ui/components/buttons/secondary_button.dart';
 
 class BudgetForm extends StatefulWidget {
   final BudgetFormData? initialData;
@@ -287,7 +287,7 @@ class _BudgetFormState extends State<BudgetForm> {
                   borderRadius:
                       BorderRadius.circular(AppConstants.borderRadius),
                 ),
-                suffixIcon: Icon(Icons.calendar_today),
+                suffixIcon: const Icon(Icons.calendar_today),
               ),
               child: Text(
                 _formatDate(_startDate),
@@ -309,7 +309,7 @@ class _BudgetFormState extends State<BudgetForm> {
                     borderRadius:
                         BorderRadius.circular(AppConstants.borderRadius),
                   ),
-                  suffixIcon: Icon(Icons.calendar_today),
+                  suffixIcon: const Icon(Icons.calendar_today),
                 ),
                 child: Text(
                   _endDate != null ? _formatDate(_endDate!) : '选择日期',
@@ -335,16 +335,16 @@ class _BudgetFormState extends State<BudgetForm> {
 
         // 余额滚动
         SwitchListTile(
-          title: Text('余额滚动'),
-          subtitle: Text('未使用的预算滚动到下一周期'),
+          title: const Text('余额滚动'),
+          subtitle: const Text('未使用的预算滚动到下一周期'),
           value: _rollover,
           onChanged: (value) => setState(() => _rollover = value),
         ),
 
         // 通知设置
         SwitchListTile(
-          title: Text('预算提醒'),
-          subtitle: Text('接近预算上限时发送通知'),
+          title: const Text('预算提醒'),
+          subtitle: const Text('接近预算上限时发送通知'),
           value: _notifyOnThreshold,
           onChanged: (value) => setState(() => _notifyOnThreshold = value),
         ),
@@ -355,7 +355,7 @@ class _BudgetFormState extends State<BudgetForm> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                Text('提醒阈值'),
+                const Text('提醒阈值'),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Slider(

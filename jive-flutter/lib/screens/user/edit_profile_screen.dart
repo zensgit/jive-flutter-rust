@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../services/auth_service.dart';
+import 'package:jive_money/services/auth_service.dart';
 
 /// 编辑用户资料页面
 class EditProfileScreen extends StatefulWidget {
@@ -95,7 +95,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('编辑资料'),
+        title: const Text('编辑资料'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         actions: [
@@ -147,7 +147,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.camera_alt,
                                 color: Colors.white,
                                 size: 20,
@@ -184,7 +184,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         '用户名',
                         style: TextStyle(
                           fontSize: 16,
@@ -249,7 +249,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         '真实姓名',
                         style: TextStyle(
                           fontSize: 16,
@@ -288,7 +288,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         '邮箱地址',
                         style: TextStyle(
                           fontSize: 16,
@@ -335,7 +335,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     foregroundColor: Colors.white,
                   ),
                   child: _isLoading
-                      ? const CircularProgressIndicator(
+                      ? CircularProgressIndicator(
                           valueColor:
                               AlwaysStoppedAnimation<Color>(Colors.white),
                         )
