@@ -19,15 +19,15 @@ pub struct Family {
 
 impl Entity for Family {
     type Id = Uuid;
-    
+
     fn id(&self) -> Self::Id {
         self.id
     }
-    
+
     fn created_at(&self) -> DateTime<Utc> {
         self.created_at
     }
-    
+
     fn updated_at(&self) -> DateTime<Utc> {
         self.updated_at
     }
@@ -51,12 +51,12 @@ impl Family {
             updated_at: now,
         }
     }
-    
+
     pub fn with_timezone(mut self, timezone: String) -> Self {
         self.timezone = Some(timezone);
         self
     }
-    
+
     pub fn with_payees_enabled(mut self, enabled: bool) -> Self {
         self.enable_payees = enabled;
         self

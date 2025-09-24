@@ -1,18 +1,18 @@
 //! Rules Engine - 自定义规则引擎
-//! 
+//!
 //! 基于 Maybe 的规则系统实现，提供自动交易分类、标记和处理
 
-use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
-use chrono::{DateTime, Utc, NaiveDate};
-use rust_decimal::Decimal;
-use uuid::Uuid;
-use regex::Regex;
 use async_trait::async_trait;
+use chrono::{DateTime, NaiveDate, Utc};
+use regex::Regex;
+use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use uuid::Uuid;
 
-use crate::domain::{Transaction, TransactionType, Category, Account, Payee};
-use crate::error::{JiveError, Result};
 use crate::application::{ServiceContext, ServiceResponse};
+use crate::domain::{Account, Category, Payee, Transaction, TransactionType};
+use crate::error::{JiveError, Result};
 
 /// 规则
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -22,7 +22,7 @@ pub struct Rule {
     pub name: String,
     pub description: Option<String>,
     pub resource_type: ResourceType,
-    pub priority: i32,  // 规则优先级，数字越小优先级越高
+    pub priority: i32, // 规则优先级，数字越小优先级越高
     pub active: bool,
     pub conditions: Vec<Condition>,
     pub actions: Vec<Action>,
@@ -65,7 +65,7 @@ pub enum ConditionType {
     Date,
     TransactionType,
     Tag,
-    
+
     // 复合条件
     Compound,
 }
@@ -81,18 +81,18 @@ pub enum Operator {
     LessThan,
     LessThanOrEqual,
     Between,
-    
+
     // 字符串操作符
     Contains,
     NotContains,
     StartsWith,
     EndsWith,
-    Matches,  // 正则表达式
-    
+    Matches, // 正则表达式
+
     // 列表操作符
     In,
     NotIn,
-    
+
     // 日期操作符
     Before,
     After,
@@ -100,7 +100,7 @@ pub enum Operator {
     OnOrAfter,
     LastNDays,
     NextNDays,
-    
+
     // 布尔操作符
     IsTrue,
     IsFalse,
@@ -140,31 +140,31 @@ pub struct Action {
 pub enum ActionType {
     // 分类动作
     SetCategory,
-    
+
     // 标签动作
     AddTag,
     RemoveTag,
     SetTags,
-    
+
     // 商户动作
     SetPayee,
-    
+
     // 备注动作
     SetNote,
     AppendNote,
-    
+
     // 标记动作
     MarkAsReimbursable,
     MarkAsTransfer,
     MarkAsIgnored,
-    
+
     // 通知动作
     SendNotification,
     SendEmail,
-    
+
     // Webhook
     CallWebhook,
-    
+
     // 自定义字段
     SetCustomField,
 }
@@ -225,7 +225,7 @@ impl RuleService {
     pub fn new() -> Self {
         Self {}
     }
-    
+
     /// 创建规则
     pub async fn create_rule(
         &self,
@@ -236,7 +236,7 @@ impl RuleService {
         if !context.has_permission_str("manage_rules") {
             return Err(JiveError::Forbidden("No permission to manage rules".into()));
         }
-        
+
         let rule = Rule {
             id: Uuid::new_v4().to_string(),
             family_id: context.family_id.clone(),
@@ -244,7 +244,7 @@ impl RuleService {
             description: request.description,
             resource_type: request.resource_type,
             priority: request.priority.unwrap_or(100),
-            active: false,  // 默认不激活
+            active: false, // 默认不激活
             conditions: request.conditions,
             actions: request.actions,
             created_at: Utc::now(),
@@ -253,18 +253,18 @@ impl RuleService {
             run_count: 0,
             match_count: 0,
         };
-        
+
         // 验证规则
         self.validate_rule(&rule)?;
-        
+
         // TODO: 保存到数据库
-        
+
         Ok(ServiceResponse::success_with_message(
             rule,
-            "Rule created successfully".to_string()
+            "Rule created successfully".to_string(),
         ))
     }
-    
+
     /// 执行规则
     pub async fn execute_rule(
         &self,
@@ -273,27 +273,34 @@ impl RuleService {
     ) -> Result<RuleExecutionResult> {
         // 获取规则
         let rule = self.get_rule(&context.family_id, &rule_id).await?;
-        
+
         if !rule.active {
             return Err(JiveError::ValidationError("Rule is not active".into()));
         }
-        
+
         let start_time = std::time::Instant::now();
         let batch_id = Uuid::new_v4().to_string();
-        
+
         // 获取匹配的资源
         let resources = self.get_matching_resources(&context, &rule).await?;
         let matched_count = resources.len();
-        
+
         let mut action_results = Vec::new();
         let mut errors = Vec::new();
-        
+
         // 执行动作
         for action in &rule.actions {
-            match self.execute_action(&context, &rule, &action, &resources, &batch_id).await {
+            match self
+                .execute_action(&context, &rule, &action, &resources, &batch_id)
+                .await
+            {
                 Ok(result) => action_results.push(result),
                 Err(e) => {
-                    errors.push(format!("Action {} failed: {}", action.action_type.to_string(), e));
+                    errors.push(format!(
+                        "Action {} failed: {}",
+                        action.action_type.to_string(),
+                        e
+                    ));
                     action_results.push(ActionResult {
                         action_type: action.action_type.clone(),
                         success: false,
@@ -303,10 +310,10 @@ impl RuleService {
                 }
             }
         }
-        
+
         // 更新规则统计
         self.update_rule_stats(&rule_id, matched_count).await?;
-        
+
         Ok(RuleExecutionResult {
             rule_id: rule.id,
             rule_name: rule.name,
@@ -317,7 +324,7 @@ impl RuleService {
             errors,
         })
     }
-    
+
     /// 批量执行规则
     pub async fn execute_all_rules(
         &self,
@@ -325,9 +332,9 @@ impl RuleService {
     ) -> Result<Vec<RuleExecutionResult>> {
         // 获取所有激活的规则，按优先级排序
         let rules = self.get_active_rules(&context.family_id).await?;
-        
+
         let mut results = Vec::new();
-        
+
         for rule in rules {
             match self.execute_rule(context.clone(), rule.id.clone()).await {
                 Ok(result) => results.push(result),
@@ -344,34 +351,30 @@ impl RuleService {
                 }
             }
         }
-        
+
         Ok(results)
     }
-    
+
     /// 测试规则（预览效果但不实际执行）
-    pub async fn test_rule(
-        &self,
-        context: ServiceContext,
-        rule: &Rule,
-    ) -> Result<RuleTestResult> {
+    pub async fn test_rule(&self, context: ServiceContext, rule: &Rule) -> Result<RuleTestResult> {
         // 获取匹配的资源
         let resources = self.get_matching_resources(&context, rule).await?;
-        
+
         // 预览每个动作的效果
         let mut previews = Vec::new();
-        
+
         for action in &rule.actions {
             let preview = self.preview_action(&context, action, &resources).await?;
             previews.push(preview);
         }
-        
+
         Ok(RuleTestResult {
             matched_resources: resources.len(),
             sample_resources: resources.into_iter().take(10).collect(),
             action_previews: previews,
         })
     }
-    
+
     /// 获取匹配的资源
     async fn get_matching_resources(
         &self,
@@ -380,17 +383,14 @@ impl RuleService {
     ) -> Result<Vec<ResourceInfo>> {
         match rule.resource_type {
             ResourceType::Transaction => {
-                self.get_matching_transactions(context, &rule.conditions).await
+                self.get_matching_transactions(context, &rule.conditions)
+                    .await
             }
-            ResourceType::Account => {
-                self.get_matching_accounts(context, &rule.conditions).await
-            }
-            ResourceType::Budget => {
-                self.get_matching_budgets(context, &rule.conditions).await
-            }
+            ResourceType::Account => self.get_matching_accounts(context, &rule.conditions).await,
+            ResourceType::Budget => self.get_matching_budgets(context, &rule.conditions).await,
         }
     }
-    
+
     /// 获取匹配的交易
     async fn get_matching_transactions(
         &self,
@@ -399,15 +399,15 @@ impl RuleService {
     ) -> Result<Vec<ResourceInfo>> {
         // TODO: 从数据库查询交易
         // 这里应该构建查询条件并执行
-        
+
         let mut resources = Vec::new();
-        
+
         // 模拟数据
         // 实际应该根据条件查询数据库
-        
+
         Ok(resources)
     }
-    
+
     /// 获取匹配的账户
     async fn get_matching_accounts(
         &self,
@@ -416,7 +416,7 @@ impl RuleService {
     ) -> Result<Vec<ResourceInfo>> {
         Ok(Vec::new())
     }
-    
+
     /// 获取匹配的预算
     async fn get_matching_budgets(
         &self,
@@ -425,7 +425,7 @@ impl RuleService {
     ) -> Result<Vec<ResourceInfo>> {
         Ok(Vec::new())
     }
-    
+
     /// 执行动作
     async fn execute_action(
         &self,
@@ -436,7 +436,7 @@ impl RuleService {
         batch_id: &str,
     ) -> Result<ActionResult> {
         let mut affected_count = 0;
-        
+
         for resource in resources {
             // 记录日志
             self.log_action(
@@ -446,10 +446,11 @@ impl RuleService {
                 &rule.resource_type,
                 &resource.id,
                 &action.action_type,
-                None,  // old_value
-                None,  // new_value
-            ).await?;
-            
+                None, // old_value
+                None, // new_value
+            )
+            .await?;
+
             // 执行具体动作
             match &action.action_type {
                 ActionType::SetCategory => {
@@ -473,7 +474,7 @@ impl RuleService {
                 }
             }
         }
-        
+
         Ok(ActionResult {
             action_type: action.action_type.clone(),
             success: true,
@@ -481,7 +482,7 @@ impl RuleService {
             error: None,
         })
     }
-    
+
     /// 预览动作效果
     async fn preview_action(
         &self,
@@ -495,95 +496,109 @@ impl RuleService {
             sample_changes: vec![],
         })
     }
-    
+
     /// 验证规则
     fn validate_rule(&self, rule: &Rule) -> Result<()> {
         // 验证至少有一个条件
         if rule.conditions.is_empty() {
-            return Err(JiveError::ValidationError("Rule must have at least one condition".into()));
+            return Err(JiveError::ValidationError(
+                "Rule must have at least one condition".into(),
+            ));
         }
-        
+
         // 验证至少有一个动作
         if rule.actions.is_empty() {
-            return Err(JiveError::ValidationError("Rule must have at least one action".into()));
+            return Err(JiveError::ValidationError(
+                "Rule must have at least one action".into(),
+            ));
         }
-        
+
         // 验证条件
         for condition in &rule.conditions {
             self.validate_condition(condition)?;
         }
-        
+
         // 验证动作
         for action in &rule.actions {
             self.validate_action(action)?;
         }
-        
+
         Ok(())
     }
-    
+
     /// 验证条件
     fn validate_condition(&self, condition: &Condition) -> Result<()> {
         // 如果是复合条件，验证子条件
         if condition.is_compound {
             if condition.sub_conditions.is_empty() {
-                return Err(JiveError::ValidationError("Compound condition must have sub-conditions".into()));
+                return Err(JiveError::ValidationError(
+                    "Compound condition must have sub-conditions".into(),
+                ));
             }
-            
+
             // 递归验证子条件，但不允许嵌套复合条件
             for sub in &condition.sub_conditions {
                 if sub.is_compound {
-                    return Err(JiveError::ValidationError("Nested compound conditions are not allowed".into()));
+                    return Err(JiveError::ValidationError(
+                        "Nested compound conditions are not allowed".into(),
+                    ));
                 }
                 self.validate_condition(sub)?;
             }
         }
-        
+
         Ok(())
     }
-    
+
     /// 验证动作
     fn validate_action(&self, action: &Action) -> Result<()> {
         // 验证动作值与动作类型匹配
         match &action.action_type {
             ActionType::SetCategory | ActionType::SetPayee | ActionType::SetNote => {
                 if !matches!(&action.value, ActionValue::String(_)) {
-                    return Err(JiveError::ValidationError("Action value type mismatch".into()));
+                    return Err(JiveError::ValidationError(
+                        "Action value type mismatch".into(),
+                    ));
                 }
             }
             ActionType::AddTag | ActionType::RemoveTag => {
                 if !matches!(&action.value, ActionValue::String(_)) {
-                    return Err(JiveError::ValidationError("Tag action requires string value".into()));
+                    return Err(JiveError::ValidationError(
+                        "Tag action requires string value".into(),
+                    ));
                 }
             }
             ActionType::SetTags => {
                 if !matches!(&action.value, ActionValue::List(_)) {
-                    return Err(JiveError::ValidationError("SetTags action requires list value".into()));
+                    return Err(JiveError::ValidationError(
+                        "SetTags action requires list value".into(),
+                    ));
                 }
             }
             _ => {}
         }
-        
+
         Ok(())
     }
-    
+
     /// 获取规则
     async fn get_rule(&self, family_id: &str, rule_id: &str) -> Result<Rule> {
         // TODO: 从数据库获取规则
         Err(JiveError::NotImplemented("get_rule".into()))
     }
-    
+
     /// 获取激活的规则
     async fn get_active_rules(&self, family_id: &str) -> Result<Vec<Rule>> {
         // TODO: 从数据库获取激活的规则，按优先级排序
         Ok(Vec::new())
     }
-    
+
     /// 更新规则统计
     async fn update_rule_stats(&self, rule_id: &str, matched_count: usize) -> Result<()> {
         // TODO: 更新数据库中的规则统计
         Ok(())
     }
-    
+
     /// 记录动作日志
     async fn log_action(
         &self,
@@ -608,12 +623,12 @@ impl RuleService {
             new_value,
             created_at: Utc::now(),
         };
-        
+
         // TODO: 保存到数据库
-        
+
         Ok(())
     }
-    
+
     /// 撤销规则执行
     pub async fn undo_rule_execution(
         &self,
@@ -624,24 +639,26 @@ impl RuleService {
         if !context.has_permission_str("manage_rules") {
             return Err(JiveError::Forbidden("No permission to manage rules".into()));
         }
-        
+
         // 获取批次的所有日志
-        let logs = self.get_logs_by_batch(&context.family_id, &batch_id).await?;
-        
+        let logs = self
+            .get_logs_by_batch(&context.family_id, &batch_id)
+            .await?;
+
         // 按时间倒序撤销每个动作
         for log in logs.iter().rev() {
             self.undo_action(&log).await?;
         }
-        
+
         Ok(())
     }
-    
+
     /// 撤销单个动作
     async fn undo_action(&self, log: &RuleLog) -> Result<()> {
         // TODO: 根据日志恢复原值
         Ok(())
     }
-    
+
     /// 获取批次日志
     async fn get_logs_by_batch(&self, family_id: &str, batch_id: &str) -> Result<Vec<RuleLog>> {
         // TODO: 从数据库获取日志
@@ -712,7 +729,8 @@ impl ToString for ActionType {
             ActionType::SendEmail => "send_email",
             ActionType::CallWebhook => "call_webhook",
             ActionType::SetCustomField => "set_custom_field",
-        }.to_string()
+        }
+        .to_string()
     }
 }
 
@@ -737,17 +755,17 @@ impl RuleBuilder {
             actions: Vec::new(),
         }
     }
-    
+
     pub fn description(mut self, desc: impl Into<String>) -> Self {
         self.description = Some(desc.into());
         self
     }
-    
+
     pub fn priority(mut self, priority: i32) -> Self {
         self.priority = Some(priority);
         self
     }
-    
+
     pub fn when_amount_greater_than(mut self, amount: Decimal) -> Self {
         self.conditions.push(Condition {
             id: Uuid::new_v4().to_string(),
@@ -760,7 +778,7 @@ impl RuleBuilder {
         });
         self
     }
-    
+
     pub fn when_description_contains(mut self, text: impl Into<String>) -> Self {
         self.conditions.push(Condition {
             id: Uuid::new_v4().to_string(),
@@ -773,7 +791,7 @@ impl RuleBuilder {
         });
         self
     }
-    
+
     pub fn when_payee_is(mut self, payee: impl Into<String>) -> Self {
         self.conditions.push(Condition {
             id: Uuid::new_v4().to_string(),
@@ -786,7 +804,7 @@ impl RuleBuilder {
         });
         self
     }
-    
+
     pub fn then_set_category(mut self, category_id: impl Into<String>) -> Self {
         self.actions.push(Action {
             id: Uuid::new_v4().to_string(),
@@ -795,7 +813,7 @@ impl RuleBuilder {
         });
         self
     }
-    
+
     pub fn then_add_tag(mut self, tag: impl Into<String>) -> Self {
         self.actions.push(Action {
             id: Uuid::new_v4().to_string(),
@@ -804,7 +822,7 @@ impl RuleBuilder {
         });
         self
     }
-    
+
     pub fn then_mark_as_reimbursable(mut self) -> Self {
         self.actions.push(Action {
             id: Uuid::new_v4().to_string(),
@@ -813,7 +831,7 @@ impl RuleBuilder {
         });
         self
     }
-    
+
     pub fn build(self) -> CreateRuleRequest {
         CreateRuleRequest {
             name: self.name,
@@ -830,7 +848,7 @@ impl RuleBuilder {
 mod tests {
     use super::*;
     use rust_decimal_macros::dec;
-    
+
     #[test]
     fn test_rule_builder() {
         let rule = RuleBuilder::new("Large Expense Alert", ResourceType::Transaction)
@@ -840,12 +858,12 @@ mod tests {
             .then_add_tag("large-expense")
             .then_mark_as_reimbursable()
             .build();
-        
+
         assert_eq!(rule.name, "Large Expense Alert");
         assert_eq!(rule.conditions.len(), 1);
         assert_eq!(rule.actions.len(), 2);
     }
-    
+
     #[test]
     fn test_starbucks_rule() {
         let rule = RuleBuilder::new("Starbucks Coffee", ResourceType::Transaction)
@@ -853,7 +871,7 @@ mod tests {
             .then_set_category("food_dining")
             .then_add_tag("coffee")
             .build();
-        
+
         assert_eq!(rule.conditions.len(), 1);
         assert_eq!(rule.actions.len(), 2);
     }

@@ -1,16 +1,16 @@
 //! Quick Transaction Service - 快速记账服务
-//! 
+//!
 //! 基于 Maybe 的 QuickTransaction 实现，提供便捷的记账入口
 
-use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
-use chrono::{DateTime, Utc, NaiveDate};
+use chrono::{DateTime, NaiveDate, Utc};
 use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use uuid::Uuid;
 
-use crate::domain::{Transaction, TransactionType, Account, Category, Payee};
-use crate::error::{JiveError, Result};
 use crate::application::{ServiceContext, ServiceResponse};
+use crate::domain::{Account, Category, Payee, Transaction, TransactionType};
+use crate::error::{JiveError, Result};
 
 /// 快速交易
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -23,30 +23,30 @@ pub struct QuickTransaction {
     pub date: NaiveDate,
     pub description: String,
     pub transaction_type: QuickTransactionType,
-    
+
     // 智能分类
     pub category_name: Option<String>,
     pub category_id: Option<String>,
     pub suggested_category_id: Option<String>,
-    
+
     // 商户/收款人
     pub payee_name: Option<String>,
     pub payee_id: Option<String>,
     pub suggested_payee_id: Option<String>,
-    
+
     // 标签
     pub tags: Vec<String>,
-    
+
     // 附件
     pub attachments: Vec<String>,
     pub receipt_url: Option<String>,
-    
+
     // 增强字段
     pub location: Option<String>,
     pub notes: Option<String>,
     pub is_reimbursable: bool,
     pub reimbursement_status: Option<String>,
-    
+
     // 元数据
     pub created_at: DateTime<Utc>,
     pub converted_at: Option<DateTime<Utc>>,
@@ -67,11 +67,11 @@ pub struct QuickRecordRequest {
     pub amount: String,
     pub description: String,
     pub transaction_type: QuickTransactionType,
-    pub date: Option<String>,  // 默认今天
+    pub date: Option<String>, // 默认今天
     pub category_name: Option<String>,
     pub payee_name: Option<String>,
     pub tags: Option<Vec<String>>,
-    pub account_id: Option<String>,  // 默认使用最常用账户
+    pub account_id: Option<String>, // 默认使用最常用账户
     pub notes: Option<String>,
     pub location: Option<String>,
     pub is_reimbursable: Option<bool>,
@@ -92,7 +92,7 @@ pub struct SmartSuggestions {
 pub struct CategorySuggestion {
     pub category_id: String,
     pub category_name: String,
-    pub confidence: f32,  // 0.0 - 1.0
+    pub confidence: f32, // 0.0 - 1.0
     pub reason: String,
 }
 
@@ -129,7 +129,7 @@ impl QuickTransactionService {
     pub fn new() -> Self {
         Self {}
     }
-    
+
     /// 快速记录交易
     pub async fn quick_record(
         &self,
@@ -139,28 +139,41 @@ impl QuickTransactionService {
         // 1. 解析金额
         let amount = Decimal::from_str_exact(&request.amount)
             .map_err(|_| JiveError::ValidationError("Invalid amount format".into()))?;
-        
+
         // 2. 获取智能建议
         let suggestions = self.get_smart_suggestions(&context, &request).await?;
-        
+
         // 3. 创建快速交易记录
         let quick_tx = QuickTransaction {
             id: Uuid::new_v4().to_string(),
             family_id: context.family_id.clone(),
             user_id: context.user_id.clone(),
             amount,
-            currency: "USD".to_string(),  // TODO: 从 Family 设置获取
-            date: request.date
+            currency: "USD".to_string(), // TODO: 从 Family 设置获取
+            date: request
+                .date
                 .and_then(|d| NaiveDate::parse_from_str(&d, "%Y-%m-%d").ok())
                 .unwrap_or_else(|| Utc::now().date_naive()),
             description: request.description.clone(),
             transaction_type: request.transaction_type,
             category_name: request.category_name.clone(),
-            category_id: suggestions.suggested_category.as_ref().map(|c| c.category_id.clone()),
-            suggested_category_id: suggestions.suggested_category.as_ref().map(|c| c.category_id.clone()),
+            category_id: suggestions
+                .suggested_category
+                .as_ref()
+                .map(|c| c.category_id.clone()),
+            suggested_category_id: suggestions
+                .suggested_category
+                .as_ref()
+                .map(|c| c.category_id.clone()),
             payee_name: request.payee_name.clone(),
-            payee_id: suggestions.suggested_payee.as_ref().map(|p| p.payee_id.clone()),
-            suggested_payee_id: suggestions.suggested_payee.as_ref().map(|p| p.payee_id.clone()),
+            payee_id: suggestions
+                .suggested_payee
+                .as_ref()
+                .map(|p| p.payee_id.clone()),
+            suggested_payee_id: suggestions
+                .suggested_payee
+                .as_ref()
+                .map(|p| p.payee_id.clone()),
             tags: request.tags.unwrap_or_default(),
             attachments: request.attachment_urls.unwrap_or_default(),
             receipt_url: None,
@@ -172,21 +185,21 @@ impl QuickTransactionService {
             converted_at: None,
             is_converted: false,
         };
-        
+
         // 4. 保存快速交易
         // TODO: 保存到数据库
-        
+
         // 5. 自动转换为正式交易（如果启用）
         if self.should_auto_convert(&context).await? {
             self.convert_to_transaction(&context, &quick_tx).await?;
         }
-        
+
         Ok(ServiceResponse::success_with_message(
             quick_tx,
-            "Transaction recorded successfully".to_string()
+            "Transaction recorded successfully".to_string(),
         ))
     }
-    
+
     /// 获取智能建议
     async fn get_smart_suggestions(
         &self,
@@ -195,16 +208,15 @@ impl QuickTransactionService {
     ) -> Result<SmartSuggestions> {
         // 1. 基于描述文本分析
         let text_analysis = self.analyze_description(&request.description).await?;
-        
+
         // 2. 基于历史交易模式
-        let history_patterns = self.analyze_history_patterns(
-            &context.family_id,
-            &request.description,
-        ).await?;
-        
+        let history_patterns = self
+            .analyze_history_patterns(&context.family_id, &request.description)
+            .await?;
+
         // 3. 基于规则匹配
         let rule_matches = self.match_rules(context, request).await?;
-        
+
         // 4. 综合建议
         Ok(SmartSuggestions {
             suggested_category: self.suggest_category(
@@ -212,23 +224,23 @@ impl QuickTransactionService {
                 &history_patterns,
                 &rule_matches,
             ),
-            suggested_payee: self.suggest_payee(&request.description, &context.family_id).await?,
+            suggested_payee: self
+                .suggest_payee(&request.description, &context.family_id)
+                .await?,
             suggested_account: self.suggest_account(&context.user_id).await?,
             suggested_tags: self.suggest_tags(&request.description).await?,
-            recent_similar_transactions: self.find_similar_transactions(
-                &context.family_id,
-                &request.description,
-                5,
-            ).await?,
+            recent_similar_transactions: self
+                .find_similar_transactions(&context.family_id, &request.description, 5)
+                .await?,
         })
     }
-    
+
     /// 分析描述文本
     async fn analyze_description(&self, description: &str) -> Result<TextAnalysis> {
         let keywords = self.extract_keywords(description);
         let merchant = self.detect_merchant(description);
         let location = self.detect_location(description);
-        
+
         Ok(TextAnalysis {
             keywords,
             merchant,
@@ -236,7 +248,7 @@ impl QuickTransactionService {
             category_hints: self.get_category_hints(&keywords),
         })
     }
-    
+
     /// 提取关键词
     fn extract_keywords(&self, text: &str) -> Vec<String> {
         // 简单的关键词提取
@@ -246,21 +258,30 @@ impl QuickTransactionService {
             .map(|w| w.to_string())
             .collect()
     }
-    
+
     /// 检测商户
     fn detect_merchant(&self, text: &str) -> Option<String> {
         // 常见商户模式匹配
         let merchants = vec![
-            "starbucks", "amazon", "walmart", "target", "costco",
-            "uber", "lyft", "netflix", "spotify", "apple",
+            "starbucks",
+            "amazon",
+            "walmart",
+            "target",
+            "costco",
+            "uber",
+            "lyft",
+            "netflix",
+            "spotify",
+            "apple",
         ];
-        
+
         let text_lower = text.to_lowercase();
-        merchants.into_iter()
+        merchants
+            .into_iter()
             .find(|m| text_lower.contains(m))
             .map(|m| m.to_string())
     }
-    
+
     /// 检测位置
     fn detect_location(&self, text: &str) -> Option<String> {
         // 简单的位置检测
@@ -270,32 +291,45 @@ impl QuickTransactionService {
             None
         }
     }
-    
+
     /// 获取分类提示
     fn get_category_hints(&self, keywords: &[String]) -> Vec<String> {
         let mut hints = Vec::new();
-        
+
         // 餐饮关键词
-        let food_keywords = ["lunch", "dinner", "breakfast", "coffee", "restaurant", "food"];
+        let food_keywords = [
+            "lunch",
+            "dinner",
+            "breakfast",
+            "coffee",
+            "restaurant",
+            "food",
+        ];
         if keywords.iter().any(|k| food_keywords.contains(&k.as_str())) {
             hints.push("Food & Dining".to_string());
         }
-        
+
         // 交通关键词
         let transport_keywords = ["uber", "lyft", "taxi", "bus", "train", "gas", "parking"];
-        if keywords.iter().any(|k| transport_keywords.contains(&k.as_str())) {
+        if keywords
+            .iter()
+            .any(|k| transport_keywords.contains(&k.as_str()))
+        {
             hints.push("Transportation".to_string());
         }
-        
+
         // 购物关键词
         let shopping_keywords = ["amazon", "walmart", "target", "store", "shop", "buy"];
-        if keywords.iter().any(|k| shopping_keywords.contains(&k.as_str())) {
+        if keywords
+            .iter()
+            .any(|k| shopping_keywords.contains(&k.as_str()))
+        {
             hints.push("Shopping".to_string());
         }
-        
+
         hints
     }
-    
+
     /// 转换为正式交易
     pub async fn convert_to_transaction(
         &self,
@@ -307,10 +341,10 @@ impl QuickTransactionService {
         // 2. 确定分类
         // 3. 创建交易
         // 4. 标记快速交易为已转换
-        
+
         Err(JiveError::NotImplemented("convert_to_transaction".into()))
     }
-    
+
     /// 批量转换快速交易
     pub async fn batch_convert(
         &self,
@@ -320,7 +354,7 @@ impl QuickTransactionService {
         let mut successful = 0;
         let mut failed = 0;
         let mut errors = Vec::new();
-        
+
         for id in quick_tx_ids {
             match self.convert_quick_transaction(&context, &id).await {
                 Ok(_) => successful += 1,
@@ -330,7 +364,7 @@ impl QuickTransactionService {
                 }
             }
         }
-        
+
         Ok(BatchConvertResult {
             total: successful + failed,
             successful,
@@ -338,7 +372,7 @@ impl QuickTransactionService {
             errors,
         })
     }
-    
+
     /// 转换单个快速交易
     async fn convert_quick_transaction(
         &self,
@@ -346,15 +380,17 @@ impl QuickTransactionService {
         quick_tx_id: &str,
     ) -> Result<Transaction> {
         // TODO: 实现转换逻辑
-        Err(JiveError::NotImplemented("convert_quick_transaction".into()))
+        Err(JiveError::NotImplemented(
+            "convert_quick_transaction".into(),
+        ))
     }
-    
+
     /// 是否应该自动转换
     async fn should_auto_convert(&self, context: &ServiceContext) -> Result<bool> {
         // TODO: 从用户设置或 Family 设置获取
         Ok(false)
     }
-    
+
     /// 建议分类
     fn suggest_category(
         &self,
@@ -365,7 +401,7 @@ impl QuickTransactionService {
         // TODO: 实现分类建议逻辑
         None
     }
-    
+
     /// 建议收款人
     async fn suggest_payee(
         &self,
@@ -375,19 +411,19 @@ impl QuickTransactionService {
         // TODO: 基于描述和历史记录建议收款人
         Ok(None)
     }
-    
+
     /// 建议账户
     async fn suggest_account(&self, user_id: &str) -> Result<Option<AccountSuggestion>> {
         // TODO: 基于使用频率建议账户
         Ok(None)
     }
-    
+
     /// 建议标签
     async fn suggest_tags(&self, description: &str) -> Result<Vec<String>> {
         // TODO: 基于描述建议标签
         Ok(Vec::new())
     }
-    
+
     /// 查找相似交易
     async fn find_similar_transactions(
         &self,
@@ -398,7 +434,7 @@ impl QuickTransactionService {
         // TODO: 实现相似交易查找
         Ok(Vec::new())
     }
-    
+
     /// 分析历史模式
     async fn analyze_history_patterns(
         &self,
@@ -407,7 +443,7 @@ impl QuickTransactionService {
     ) -> Result<HistoryPatterns> {
         Ok(HistoryPatterns::default())
     }
-    
+
     /// 匹配规则
     async fn match_rules(
         &self,
@@ -498,10 +534,7 @@ mod tests {
             service.detect_merchant("Order from Amazon"),
             Some("amazon".to_string())
         );
-        assert_eq!(
-            service.detect_merchant("Random text"),
-            None
-        );
+        assert_eq!(service.detect_merchant("Random text"), None);
     }
 
     #[test]

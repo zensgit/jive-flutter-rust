@@ -1,20 +1,18 @@
 //! TagService - 标签管理服务
-//! 
+//!
 //! 处理标签的创建、管理、分组以及标签与各种实体的关联
 //! 支持标签层级、颜色、图标、使用统计等功能
 
-use serde::{Serialize, Deserialize};
 use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
-use crate::{
-    error::{JiveError, Result},
-};
+use crate::error::{JiveError, Result};
 
-use super::{ServiceContext, ServiceResponse, PaginationParams};
+use super::{PaginationParams, ServiceContext, ServiceResponse};
 
 /// 标签管理服务
 #[derive(Debug, Clone)]
@@ -41,7 +39,7 @@ impl TagService {
             tag_associations: std::sync::Arc::new(std::sync::Mutex::new(Vec::new())),
             tag_statistics: std::sync::Arc::new(std::sync::Mutex::new(HashMap::new())),
         };
-        
+
         // 初始化默认标签组
         service.init_default_groups();
         service
@@ -57,26 +55,29 @@ impl TagService {
     ) -> ServiceResponse<Tag> {
         // 验证请求
         if request.name.is_empty() {
-            return ServiceResponse::error(
-                JiveError::ValidationError { message: "Tag name is required".to_string() }
-            );
+            return ServiceResponse::error(JiveError::ValidationError {
+                message: "Tag name is required".to_string(),
+            });
         }
 
         // 检查重复
         let storage = self.tags.lock().unwrap();
-        if storage.iter().any(|t| t.name == request.name && t.user_id == context.user_id) {
-            return ServiceResponse::error(
-                JiveError::ValidationError { message: format!("Tag '{}' already exists", request.name) }
-            );
+        if storage
+            .iter()
+            .any(|t| t.name == request.name && t.user_id == context.user_id)
+        {
+            return ServiceResponse::error(JiveError::ValidationError {
+                message: format!("Tag '{}' already exists", request.name),
+            });
         }
         drop(storage);
 
         // 验证颜色格式
         if let Some(ref color) = request.color {
             if !self.is_valid_color(color) {
-                return ServiceResponse::error(
-                    JiveError::ValidationError { message: "Invalid color format".to_string() }
-                );
+                return ServiceResponse::error(JiveError::ValidationError {
+                    message: "Invalid color format".to_string(),
+                });
             }
         }
 
@@ -109,10 +110,7 @@ impl TagService {
         let mut stats = self.tag_statistics.lock().unwrap();
         stats.insert(tag.id.clone(), TagStatistics::default());
 
-        ServiceResponse::success_with_message(
-            tag,
-            "Tag created successfully".to_string()
-        )
+        ServiceResponse::success_with_message(tag, "Tag created successfully".to_string())
     }
 
     /// 更新标签
@@ -123,61 +121,67 @@ impl TagService {
         context: ServiceContext,
     ) -> ServiceResponse<Tag> {
         let mut storage = self.tags.lock().unwrap();
-        
-        if let Some(tag) = storage.iter_mut().find(|t| t.id == id && t.user_id == context.user_id) {
+
+        if let Some(tag) = storage
+            .iter_mut()
+            .find(|t| t.id == id && t.user_id == context.user_id)
+        {
             // 系统标签不能修改
             if tag.is_system {
-                return ServiceResponse::error(
-                    JiveError::ValidationError { message: "System tags cannot be modified".to_string() }
-                );
+                return ServiceResponse::error(JiveError::ValidationError {
+                    message: "System tags cannot be modified".to_string(),
+                });
             }
 
             // 更新字段
             if let Some(name) = request.name {
                 // 检查重复
-                if storage.iter().any(|t| t.id != id && t.name == name && t.user_id == context.user_id) {
-                    return ServiceResponse::error(
-                        JiveError::ValidationError { message: format!("Tag '{}' already exists", name) }
-                    );
+                if storage
+                    .iter()
+                    .any(|t| t.id != id && t.name == name && t.user_id == context.user_id)
+                {
+                    return ServiceResponse::error(JiveError::ValidationError {
+                        message: format!("Tag '{}' already exists", name),
+                    });
                 }
                 tag.name = name;
             }
-            
+
             if let Some(display_name) = request.display_name {
                 tag.display_name = Some(display_name);
             }
-            
+
             if let Some(description) = request.description {
                 tag.description = Some(description);
             }
-            
+
             if let Some(color) = request.color {
                 if !self.is_valid_color(&color) {
-                    return ServiceResponse::error(
-                        JiveError::ValidationError { message: "Invalid color format".to_string() }
-                    );
+                    return ServiceResponse::error(JiveError::ValidationError {
+                        message: "Invalid color format".to_string(),
+                    });
                 }
                 tag.color = color;
             }
-            
+
             if let Some(icon) = request.icon {
                 tag.icon = Some(icon);
             }
-            
+
             if let Some(group_id) = request.group_id {
                 tag.group_id = Some(group_id);
             }
-            
+
             if let Some(parent_id) = request.parent_id {
                 // 防止循环引用
                 if parent_id == tag.id {
-                    return ServiceResponse::error(
-                        JiveError::ValidationError { message: "Tag cannot be its own parent".to_string() }
-                    );
+                    return ServiceResponse::error(JiveError::ValidationError {
+                        message: "Tag cannot be its own parent".to_string(),
+                    });
                 }
                 tag.parent_id = Some(parent_id);
             }
-            
+
             if let Some(order_index) = request.order_index {
                 tag.order_index = order_index;
             }
@@ -186,26 +190,22 @@ impl TagService {
 
             ServiceResponse::success(tag.clone())
         } else {
-            ServiceResponse::error(
-                JiveError::NotFound { message: format!("Tag {} not found", id) }
-            )
+            ServiceResponse::error(JiveError::NotFound {
+                message: format!("Tag {} not found", id),
+            })
         }
     }
 
     /// 删除标签
-    pub async fn delete_tag(
-        &self,
-        id: String,
-        context: ServiceContext,
-    ) -> ServiceResponse<bool> {
+    pub async fn delete_tag(&self, id: String, context: ServiceContext) -> ServiceResponse<bool> {
         let mut storage = self.tags.lock().unwrap();
-        
+
         // 检查是否是系统标签
         if let Some(tag) = storage.iter().find(|t| t.id == id) {
             if tag.is_system {
-                return ServiceResponse::error(
-                    JiveError::ValidationError { message: "System tags cannot be deleted".to_string() }
-                );
+                return ServiceResponse::error(JiveError::ValidationError {
+                    message: "System tags cannot be deleted".to_string(),
+                });
             }
         }
 
@@ -223,9 +223,9 @@ impl TagService {
 
             ServiceResponse::success(true)
         } else {
-            ServiceResponse::error(
-                JiveError::NotFound { message: format!("Tag {} not found", id) }
-            )
+            ServiceResponse::error(JiveError::NotFound {
+                message: format!("Tag {} not found", id),
+            })
         }
     }
 
@@ -237,8 +237,9 @@ impl TagService {
         context: ServiceContext,
     ) -> ServiceResponse<Vec<Tag>> {
         let storage = self.tags.lock().unwrap();
-        
-        let mut results: Vec<_> = storage.iter()
+
+        let mut results: Vec<_> = storage
+            .iter()
             .filter(|t| t.user_id == context.user_id)
             .filter(|t| {
                 // 应用过滤器
@@ -247,28 +248,31 @@ impl TagService {
                         return false;
                     }
                 }
-                
+
                 if let Some(ref parent_id) = filter.parent_id {
                     if t.parent_id.as_ref() != Some(parent_id) {
                         return false;
                     }
                 }
-                
+
                 if let Some(is_archived) = filter.is_archived {
                     if t.is_archived != is_archived {
                         return false;
                     }
                 }
-                
+
                 if let Some(ref search) = filter.search {
                     let search_lower = search.to_lowercase();
-                    if !t.name.to_lowercase().contains(&search_lower) &&
-                       !t.display_name.as_ref().map_or(false, |d| 
-                           d.to_lowercase().contains(&search_lower)) {
+                    if !t.name.to_lowercase().contains(&search_lower)
+                        && !t
+                            .display_name
+                            .as_ref()
+                            .map_or(false, |d| d.to_lowercase().contains(&search_lower))
+                    {
                         return false;
                     }
                 }
-                
+
                 true
             })
             .cloned()
@@ -286,19 +290,18 @@ impl TagService {
     }
 
     /// 获取标签详情
-    pub async fn get_tag(
-        &self,
-        id: String,
-        context: ServiceContext,
-    ) -> ServiceResponse<Tag> {
+    pub async fn get_tag(&self, id: String, context: ServiceContext) -> ServiceResponse<Tag> {
         let storage = self.tags.lock().unwrap();
-        
-        if let Some(tag) = storage.iter().find(|t| t.id == id && t.user_id == context.user_id) {
+
+        if let Some(tag) = storage
+            .iter()
+            .find(|t| t.id == id && t.user_id == context.user_id)
+        {
             ServiceResponse::success(tag.clone())
         } else {
-            ServiceResponse::error(
-                JiveError::NotFound { message: format!("Tag {} not found", id) }
-            )
+            ServiceResponse::error(JiveError::NotFound {
+                message: format!("Tag {} not found", id),
+            })
         }
     }
 
@@ -309,9 +312,10 @@ impl TagService {
         context: ServiceContext,
     ) -> ServiceResponse<Vec<TagNode>> {
         let storage = self.tags.lock().unwrap();
-        
+
         // 过滤标签
-        let tags: Vec<_> = storage.iter()
+        let tags: Vec<_> = storage
+            .iter()
             .filter(|t| t.user_id == context.user_id)
             .filter(|t| {
                 if let Some(ref gid) = group_id {
@@ -337,17 +341,20 @@ impl TagService {
     ) -> ServiceResponse<TagGroup> {
         // 验证请求
         if request.name.is_empty() {
-            return ServiceResponse::error(
-                JiveError::ValidationError { message: "Group name is required".to_string() }
-            );
+            return ServiceResponse::error(JiveError::ValidationError {
+                message: "Group name is required".to_string(),
+            });
         }
 
         // 检查重复
         let storage = self.tag_groups.lock().unwrap();
-        if storage.iter().any(|g| g.name == request.name && g.user_id == context.user_id) {
-            return ServiceResponse::error(
-                JiveError::ValidationError { message: format!("Group '{}' already exists", request.name) }
-            );
+        if storage
+            .iter()
+            .any(|g| g.name == request.name && g.user_id == context.user_id)
+        {
+            return ServiceResponse::error(JiveError::ValidationError {
+                message: format!("Group '{}' already exists", request.name),
+            });
         }
         drop(storage);
 
@@ -370,28 +377,24 @@ impl TagService {
         let mut storage = self.tag_groups.lock().unwrap();
         storage.push(group.clone());
 
-        ServiceResponse::success_with_message(
-            group,
-            "Tag group created successfully".to_string()
-        )
+        ServiceResponse::success_with_message(group, "Tag group created successfully".to_string())
     }
 
     /// 获取标签组列表
-    pub async fn list_tag_groups(
-        &self,
-        context: ServiceContext,
-    ) -> ServiceResponse<Vec<TagGroup>> {
+    pub async fn list_tag_groups(&self, context: ServiceContext) -> ServiceResponse<Vec<TagGroup>> {
         let mut groups = self.tag_groups.lock().unwrap();
-        
+
         // 更新标签计数
         let tags = self.tags.lock().unwrap();
         for group in groups.iter_mut() {
-            group.tag_count = tags.iter()
+            group.tag_count = tags
+                .iter()
                 .filter(|t| t.group_id.as_ref() == Some(&group.id))
                 .count() as u32;
         }
 
-        let results: Vec<_> = groups.iter()
+        let results: Vec<_> = groups
+            .iter()
             .filter(|g| g.user_id == context.user_id)
             .cloned()
             .collect();
@@ -413,16 +416,18 @@ impl TagService {
         for tag_id in tag_ids {
             // 检查标签是否存在
             let tags = self.tags.lock().unwrap();
-            if !tags.iter().any(|t| t.id == tag_id && t.user_id == context.user_id) {
+            if !tags
+                .iter()
+                .any(|t| t.id == tag_id && t.user_id == context.user_id)
+            {
                 continue;
             }
             drop(tags);
 
             // 检查是否已关联
-            if associations.iter().any(|a| 
-                a.tag_id == tag_id && 
-                a.entity_id == entity_id && 
-                a.entity_type == entity_type) {
+            if associations.iter().any(|a| {
+                a.tag_id == tag_id && a.entity_id == entity_id && a.entity_type == entity_type
+            }) {
                 continue;
             }
 
@@ -445,7 +450,7 @@ impl TagService {
 
         ServiceResponse::success_with_message(
             new_associations,
-            format!("Added {} tags to entity", new_associations.len())
+            format!("Added {} tags to entity", new_associations.len()),
         )
     }
 
@@ -461,12 +466,12 @@ impl TagService {
         let original_len = associations.len();
 
         for tag_id in &tag_ids {
-            associations.retain(|a| 
-                !(a.tag_id == *tag_id && 
-                  a.entity_id == entity_id && 
-                  a.entity_type == entity_type &&
-                  a.user_id == context.user_id)
-            );
+            associations.retain(|a| {
+                !(a.tag_id == *tag_id
+                    && a.entity_id == entity_id
+                    && a.entity_type == entity_type
+                    && a.user_id == context.user_id)
+            });
 
             // 更新使用统计
             self.update_tag_usage(tag_id, false);
@@ -485,15 +490,18 @@ impl TagService {
         let associations = self.tag_associations.lock().unwrap();
         let tags = self.tags.lock().unwrap();
 
-        let tag_ids: HashSet<_> = associations.iter()
-            .filter(|a| 
-                a.entity_type == entity_type && 
-                a.entity_id == entity_id &&
-                a.user_id == context.user_id)
+        let tag_ids: HashSet<_> = associations
+            .iter()
+            .filter(|a| {
+                a.entity_type == entity_type
+                    && a.entity_id == entity_id
+                    && a.user_id == context.user_id
+            })
             .map(|a| a.tag_id.clone())
             .collect();
 
-        let entity_tags: Vec<_> = tags.iter()
+        let entity_tags: Vec<_> = tags
+            .iter()
             .filter(|t| tag_ids.contains(&t.id))
             .cloned()
             .collect();
@@ -511,7 +519,8 @@ impl TagService {
     ) -> ServiceResponse<Vec<TaggedEntity>> {
         let associations = self.tag_associations.lock().unwrap();
 
-        let mut entities: Vec<_> = associations.iter()
+        let mut entities: Vec<_> = associations
+            .iter()
             .filter(|a| a.tag_id == tag_id && a.user_id == context.user_id)
             .filter(|a| {
                 if let Some(ref et) = entity_type {
@@ -543,10 +552,13 @@ impl TagService {
     ) -> ServiceResponse<MergeResult> {
         // 验证目标标签存在
         let tags = self.tags.lock().unwrap();
-        if !tags.iter().any(|t| t.id == target_tag_id && t.user_id == context.user_id) {
-            return ServiceResponse::error(
-                JiveError::NotFound { message: format!("Target tag {} not found", target_tag_id) }
-            );
+        if !tags
+            .iter()
+            .any(|t| t.id == target_tag_id && t.user_id == context.user_id)
+        {
+            return ServiceResponse::error(JiveError::NotFound {
+                message: format!("Target tag {} not found", target_tag_id),
+            });
         }
         drop(tags);
 
@@ -560,17 +572,19 @@ impl TagService {
             }
 
             // 移动所有关联到目标标签
-            let source_associations: Vec<_> = associations.iter()
+            let source_associations: Vec<_> = associations
+                .iter()
                 .filter(|a| a.tag_id == *source_id)
                 .cloned()
                 .collect();
 
             for assoc in source_associations {
                 // 检查冲突
-                if associations.iter().any(|a| 
-                    a.tag_id == target_tag_id && 
-                    a.entity_id == assoc.entity_id && 
-                    a.entity_type == assoc.entity_type) {
+                if associations.iter().any(|a| {
+                    a.tag_id == target_tag_id
+                        && a.entity_id == assoc.entity_id
+                        && a.entity_type == assoc.entity_type
+                }) {
                     conflict_count += 1;
                     continue;
                 }
@@ -610,15 +624,13 @@ impl TagService {
         context: ServiceContext,
     ) -> ServiceResponse<TagStatistics> {
         let stats = self.tag_statistics.lock().unwrap();
-        
+
         if let Some(stat) = stats.get(&tag_id) {
             ServiceResponse::success(stat.clone())
         } else {
             // 计算统计
             let associations = self.tag_associations.lock().unwrap();
-            let usage_count = associations.iter()
-                .filter(|a| a.tag_id == tag_id)
-                .count() as u32;
+            let usage_count = associations.iter().filter(|a| a.tag_id == tag_id).count() as u32;
 
             let mut by_type = HashMap::new();
             for assoc in associations.iter().filter(|a| a.tag_id == tag_id) {
@@ -645,7 +657,8 @@ impl TagService {
         context: ServiceContext,
     ) -> ServiceResponse<Vec<PopularTag>> {
         let tags = self.tags.lock().unwrap();
-        let mut popular: Vec<_> = tags.iter()
+        let mut popular: Vec<_> = tags
+            .iter()
             .filter(|t| t.user_id == context.user_id)
             .map(|t| PopularTag {
                 tag: t.clone(),
@@ -671,12 +684,14 @@ impl TagService {
         let storage = self.tags.lock().unwrap();
         let query_lower = query.to_lowercase();
 
-        let mut results: Vec<_> = storage.iter()
+        let mut results: Vec<_> = storage
+            .iter()
             .filter(|t| t.user_id == context.user_id)
             .filter(|t| {
-                t.name.to_lowercase().contains(&query_lower) ||
-                t.display_name.as_ref().map_or(false, |d| 
-                    d.to_lowercase().contains(&query_lower))
+                t.name.to_lowercase().contains(&query_lower)
+                    || t.display_name
+                        .as_ref()
+                        .map_or(false, |d| d.to_lowercase().contains(&query_lower))
             })
             .cloned()
             .collect();
@@ -717,10 +732,7 @@ impl TagService {
             }
         }
 
-        ServiceResponse::success_with_message(
-            updated,
-            format!("Updated {} tags", updated.len())
-        )
+        ServiceResponse::success_with_message(updated, format!("Updated {} tags", updated.len()))
     }
 
     /// 导入标签
@@ -736,7 +748,10 @@ impl TagService {
         for data in tags_data {
             // 检查是否已存在
             let storage = self.tags.lock().unwrap();
-            if storage.iter().any(|t| t.name == data.name && t.user_id == context.user_id) {
+            if storage
+                .iter()
+                .any(|t| t.name == data.name && t.user_id == context.user_id)
+            {
                 skipped += 1;
                 continue;
             }
@@ -777,8 +792,9 @@ impl TagService {
         context: ServiceContext,
     ) -> ServiceResponse<Vec<ExportTagData>> {
         let storage = self.tags.lock().unwrap();
-        
-        let export_data: Vec<ExportTagData> = storage.iter()
+
+        let export_data: Vec<ExportTagData> = storage
+            .iter()
             .filter(|t| t.user_id == context.user_id)
             .filter(|t| {
                 if let Some(ref gid) = group_id {
@@ -793,7 +809,7 @@ impl TagService {
                 description: t.description.clone(),
                 color: t.color.clone(),
                 icon: t.icon.clone(),
-                group_name: None, // 可以通过group_id查找
+                group_name: None,  // 可以通过group_id查找
                 parent_name: None, // 可以通过parent_id查找
             })
             .collect();
@@ -804,18 +820,19 @@ impl TagService {
     // 辅助方法：验证颜色格式
     fn is_valid_color(&self, color: &str) -> bool {
         // 简单的十六进制颜色验证
-        color.starts_with('#') && color.len() == 7 &&
-        color[1..].chars().all(|c| c.is_ascii_hexdigit())
+        color.starts_with('#')
+            && color.len() == 7
+            && color[1..].chars().all(|c| c.is_ascii_hexdigit())
     }
 
     // 辅助方法：生成颜色
     fn generate_color(&self) -> String {
         // 预定义颜色列表
         let colors = vec![
-            "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7",
-            "#DDA0DD", "#98D8C8", "#FFD700", "#FF69B4", "#87CEEB",
+            "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7", "#DDA0DD", "#98D8C8", "#FFD700",
+            "#FF69B4", "#87CEEB",
         ];
-        
+
         let index = (chrono::Utc::now().timestamp() % colors.len() as i64) as usize;
         colors[index].to_string()
     }
@@ -844,17 +861,14 @@ impl TagService {
     // 辅助方法：构建标签节点
     fn build_tag_node(&self, tag: Tag, tag_map: &HashMap<String, Vec<Tag>>) -> TagNode {
         let mut children = Vec::new();
-        
+
         if let Some(child_tags) = tag_map.get(&tag.id) {
             for child in child_tags {
                 children.push(self.build_tag_node(child.clone(), tag_map));
             }
         }
 
-        TagNode {
-            tag,
-            children,
-        }
+        TagNode { tag, children }
     }
 
     // 辅助方法：更新标签使用统计
@@ -871,7 +885,9 @@ impl TagService {
 
         // 更新统计缓存
         let mut stats = self.tag_statistics.lock().unwrap();
-        let stat = stats.entry(tag_id.to_string()).or_insert_with(TagStatistics::default);
+        let stat = stats
+            .entry(tag_id.to_string())
+            .or_insert_with(TagStatistics::default);
         if increment {
             stat.total_usage += 1;
         } else if stat.total_usage > 0 {
@@ -882,7 +898,7 @@ impl TagService {
     // 初始化默认标签组
     fn init_default_groups(&mut self) {
         let mut groups = self.tag_groups.lock().unwrap();
-        
+
         groups.push(TagGroup {
             id: "group_general".to_string(),
             name: "General".to_string(),
@@ -1130,7 +1146,7 @@ mod tests {
         let result = service.create_tag(request, context).await;
         assert!(result.success);
         assert!(result.data.is_some());
-        
+
         let tag = result.data.unwrap();
         assert_eq!(tag.name, "Important");
         assert_eq!(tag.color, "#FF6B6B");
@@ -1157,23 +1173,23 @@ mod tests {
         let tag_id = tag.data.unwrap().id;
 
         // Add tag to entity
-        let associations = service.add_tags_to_entity(
-            EntityType::Transaction,
-            "txn_123".to_string(),
-            vec![tag_id.clone()],
-            context.clone()
-        ).await;
-        
+        let associations = service
+            .add_tags_to_entity(
+                EntityType::Transaction,
+                "txn_123".to_string(),
+                vec![tag_id.clone()],
+                context.clone(),
+            )
+            .await;
+
         assert!(associations.success);
         assert_eq!(associations.data.unwrap().len(), 1);
 
         // Get entity tags
-        let entity_tags = service.get_entity_tags(
-            EntityType::Transaction,
-            "txn_123".to_string(),
-            context
-        ).await;
-        
+        let entity_tags = service
+            .get_entity_tags(EntityType::Transaction, "txn_123".to_string(), context)
+            .await;
+
         assert!(entity_tags.success);
         assert_eq!(entity_tags.data.unwrap().len(), 1);
     }
@@ -1191,7 +1207,7 @@ mod tests {
     #[test]
     fn test_color_validation() {
         let service = TagService::new();
-        
+
         assert!(service.is_valid_color("#FF6B6B"));
         assert!(service.is_valid_color("#000000"));
         assert!(!service.is_valid_color("FF6B6B")); // Missing #

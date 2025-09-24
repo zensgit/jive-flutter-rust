@@ -1,21 +1,20 @@
 //! Multi-Family Service - 多 Family 管理服务
-//! 
+//!
 //! 支持用户创建和管理多个 Family，在不同 Family 间切换
 
-use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use uuid::Uuid;
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
+use crate::application::{FamilyService, ServiceContext, ServiceResponse};
 use crate::domain::{
-    User, Family, FamilyMembership, FamilyRole, Permission,
-    FamilySettings, FamilyInvitation
+    Family, FamilyInvitation, FamilyMembership, FamilyRole, FamilySettings, Permission, User,
 };
 use crate::error::{JiveError, Result};
-use crate::application::{ServiceContext, ServiceResponse, FamilyService};
 use crate::infrastructure::repositories::FamilyRepository;
 
 /// 用户的 Family 信息（包含角色）
@@ -28,7 +27,7 @@ pub struct UserFamilyInfo {
     pub joined_at: DateTime<Utc>,
     pub last_accessed_at: Option<DateTime<Utc>>,
     pub is_current: bool,
-    pub can_delete: bool,  // 只有 Owner 且只有一个成员时可删除
+    pub can_delete: bool, // 只有 Owner 且只有一个成员时可删除
 }
 
 /// Family 切换请求
@@ -69,7 +68,7 @@ impl<R: FamilyRepository> MultiFamilyService<R> {
     ) -> Result<ServiceResponse<UserFamilyInfo>> {
         // 1. 验证用户存在
         // TODO: 验证用户
-        
+
         // 2. 创建新 Family
         let family = Family::new(
             request.name.clone(),
@@ -85,7 +84,7 @@ impl<R: FamilyRepository> MultiFamilyService<R> {
             id: Uuid::new_v4().to_string(),
             family_id: saved_family.id.clone(),
             user_id: user_id.clone(),
-            role: FamilyRole::Owner,  // ⭐ 创建者成为 Owner
+            role: FamilyRole::Owner, // ⭐ 创建者成为 Owner
             permissions: FamilyRole::Owner.default_permissions(),
             joined_at: Utc::now(),
             invited_by: None,
@@ -106,13 +105,13 @@ impl<R: FamilyRepository> MultiFamilyService<R> {
             member_count: 1,
             joined_at: saved_membership.joined_at,
             last_accessed_at: saved_membership.last_accessed_at,
-            is_current: false,  // 新创建的不自动切换
-            can_delete: true,   // 只有自己一个人，可以删除
+            is_current: false, // 新创建的不自动切换
+            can_delete: true,  // 只有自己一个人，可以删除
         };
 
         Ok(ServiceResponse::success_with_message(
             info,
-            format!("Family '{}' created successfully", request.name)
+            format!("Family '{}' created successfully", request.name),
         ))
     }
 
@@ -124,28 +123,28 @@ impl<R: FamilyRepository> MultiFamilyService<R> {
     ) -> Result<ServiceResponse<Vec<UserFamilyInfo>>> {
         // 1. 获取用户的所有 Family
         let families = self.repository.list_user_families(&user_id).await?;
-        
+
         // 2. 获取每个 Family 的详细信息
         let mut result = Vec::new();
         for family in families {
             // 获取成员关系
-            let membership = self.repository
+            let membership = self
+                .repository
                 .get_membership_by_user(&user_id, &family.id)
                 .await?;
-            
+
             // 获取成员数量
-            let member_count = self.repository
-                .count_family_members(&family.id)
-                .await?;
-            
+            let member_count = self.repository.count_family_members(&family.id).await?;
+
             // 判断是否可以删除（Owner 且只有一个成员）
             let can_delete = membership.role == FamilyRole::Owner && member_count == 1;
-            
+
             // 判断是否是当前 Family
-            let is_current = current_family_id.as_ref()
+            let is_current = current_family_id
+                .as_ref()
                 .map(|id| id == &family.id)
                 .unwrap_or(false);
-            
+
             result.push(UserFamilyInfo {
                 family,
                 role: membership.role.clone(),
@@ -159,9 +158,7 @@ impl<R: FamilyRepository> MultiFamilyService<R> {
         }
 
         // 3. 按最近访问时间排序
-        result.sort_by(|a, b| {
-            b.last_accessed_at.cmp(&a.last_accessed_at)
-        });
+        result.sort_by(|a, b| b.last_accessed_at.cmp(&a.last_accessed_at));
 
         Ok(ServiceResponse::success(result))
     }
@@ -172,7 +169,8 @@ impl<R: FamilyRepository> MultiFamilyService<R> {
         request: SwitchFamilyRequest,
     ) -> Result<ServiceResponse<SwitchFamilyResponse>> {
         // 1. 验证用户是目标 Family 的成员
-        let membership = self.repository
+        let membership = self
+            .repository
             .get_membership_by_user(&request.user_id, &request.target_family_id)
             .await
             .map_err(|_| JiveError::Forbidden("Not a member of this family".into()))?;
@@ -182,24 +180,25 @@ impl<R: FamilyRepository> MultiFamilyService<R> {
         }
 
         // 2. 获取 Family 信息
-        let family = self.repository
+        let family = self
+            .repository
             .get_family(&request.target_family_id)
             .await?;
 
         // 3. 更新用户的当前 Family
         // TODO: 更新 user.current_family_id
-        
+
         // 4. 更新最后访问时间
         let mut updated_membership = membership.clone();
         updated_membership.last_accessed_at = Some(Utc::now());
-        self.repository.update_membership(&updated_membership).await?;
+        self.repository
+            .update_membership(&updated_membership)
+            .await?;
 
         // 5. 创建新的服务上下文
-        let context = ServiceContext::new(
-            request.user_id.clone(),
-            request.target_family_id.clone(),
-        )
-        .with_permissions(membership.permissions.clone());
+        let context =
+            ServiceContext::new(request.user_id.clone(), request.target_family_id.clone())
+                .with_permissions(membership.permissions.clone());
 
         // 6. 构建响应
         let response = SwitchFamilyResponse {
@@ -211,7 +210,7 @@ impl<R: FamilyRepository> MultiFamilyService<R> {
 
         Ok(ServiceResponse::success_with_message(
             response,
-            "Switched family successfully".to_string()
+            "Switched family successfully".to_string(),
         ))
     }
 
@@ -222,23 +221,22 @@ impl<R: FamilyRepository> MultiFamilyService<R> {
         family_id: String,
     ) -> Result<ServiceResponse<()>> {
         // 1. 获取成员关系
-        let membership = self.repository
+        let membership = self
+            .repository
             .get_membership_by_user(&user_id, &family_id)
             .await?;
 
         // 2. Owner 不能直接离开（需要转让或删除）
         if membership.role == FamilyRole::Owner {
-            let member_count = self.repository
-                .count_family_members(&family_id)
-                .await?;
-            
+            let member_count = self.repository.count_family_members(&family_id).await?;
+
             if member_count > 1 {
                 return Err(JiveError::BadRequest(
-                    "Owner must transfer ownership before leaving".into()
+                    "Owner must transfer ownership before leaving".into(),
                 ));
             } else {
                 return Err(JiveError::BadRequest(
-                    "Use delete_family to remove a family with only one member".into()
+                    "Use delete_family to remove a family with only one member".into(),
                 ));
             }
         }
@@ -248,7 +246,7 @@ impl<R: FamilyRepository> MultiFamilyService<R> {
 
         Ok(ServiceResponse::success_with_message(
             (),
-            "Left family successfully".to_string()
+            "Left family successfully".to_string(),
         ))
     }
 
@@ -259,7 +257,8 @@ impl<R: FamilyRepository> MultiFamilyService<R> {
         family_id: String,
     ) -> Result<ServiceResponse<()>> {
         // 1. 验证用户是 Owner
-        let membership = self.repository
+        let membership = self
+            .repository
             .get_membership_by_user(&context.user_id, &family_id)
             .await?;
 
@@ -268,13 +267,11 @@ impl<R: FamilyRepository> MultiFamilyService<R> {
         }
 
         // 2. 验证只有一个成员
-        let member_count = self.repository
-            .count_family_members(&family_id)
-            .await?;
+        let member_count = self.repository.count_family_members(&family_id).await?;
 
         if member_count > 1 {
             return Err(JiveError::BadRequest(
-                "Cannot delete family with multiple members".into()
+                "Cannot delete family with multiple members".into(),
             ));
         }
 
@@ -286,7 +283,7 @@ impl<R: FamilyRepository> MultiFamilyService<R> {
 
         Ok(ServiceResponse::success_with_message(
             (),
-            "Family deleted successfully".to_string()
+            "Family deleted successfully".to_string(),
         ))
     }
 
@@ -295,16 +292,19 @@ impl<R: FamilyRepository> MultiFamilyService<R> {
         &self,
         user_id: String,
     ) -> Result<ServiceResponse<FamilySuggestions>> {
-        let families = self.get_user_families_with_roles(user_id.clone(), None)
+        let families = self
+            .get_user_families_with_roles(user_id.clone(), None)
             .await?
             .data
             .unwrap_or_default();
 
         let suggestions = FamilySuggestions {
-            personal_family: families.iter()
+            personal_family: families
+                .iter()
                 .find(|f| f.role == FamilyRole::Owner && f.member_count == 1)
                 .cloned(),
-            shared_families: families.iter()
+            shared_families: families
+                .iter()
                 .filter(|f| f.member_count > 1)
                 .cloned()
                 .collect(),
@@ -320,10 +320,10 @@ impl<R: FamilyRepository> MultiFamilyService<R> {
         // TODO: 创建默认分类
         // - 收入：工资、奖金、投资收益、其他收入
         // - 支出：餐饮、交通、购物、娱乐、教育、医疗、住房、其他
-        
+
         // TODO: 创建默认标签
         // - 必需、可选、紧急、计划中
-        
+
         Ok(())
     }
 }
@@ -331,22 +331,22 @@ impl<R: FamilyRepository> MultiFamilyService<R> {
 /// Family 切换建议
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FamilySuggestions {
-    pub personal_family: Option<UserFamilyInfo>,  // 个人 Family（单人 Owner）
-    pub shared_families: Vec<UserFamilyInfo>,     // 共享 Family（多人）
-    pub recent_family: Option<UserFamilyInfo>,    // 最近使用的 Family
+    pub personal_family: Option<UserFamilyInfo>, // 个人 Family（单人 Owner）
+    pub shared_families: Vec<UserFamilyInfo>,    // 共享 Family（多人）
+    pub recent_family: Option<UserFamilyInfo>,   // 最近使用的 Family
     pub total_families: usize,
 }
 
 /// Family 快速创建模板
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum FamilyTemplate {
-    Personal,       // 个人理财
-    Couple,         // 夫妻共同
-    Family,         // 家庭账本
-    Roommates,      // 室友 AA
-    Travel,         // 旅行基金
-    Business,       // 小生意
-    Custom,         // 自定义
+    Personal,  // 个人理财
+    Couple,    // 夫妻共同
+    Family,    // 家庭账本
+    Roommates, // 室友 AA
+    Travel,    // 旅行基金
+    Business,  // 小生意
+    Custom,    // 自定义
 }
 
 impl FamilyTemplate {
@@ -373,8 +373,8 @@ impl FamilyTemplate {
                 shared_categories: true,
                 shared_tags: true,
                 shared_payees: true,
-                shared_budgets: false,  // 各自预算
-                show_member_transactions: false,  // 隐私
+                shared_budgets: false,           // 各自预算
+                show_member_transactions: false, // 隐私
                 ..Default::default()
             },
             _ => FamilySettings::default(),
@@ -411,7 +411,7 @@ mod tests {
 
         let roommates = FamilyTemplate::Roommates.to_settings();
         assert!(roommates.shared_categories);
-        assert!(!roommates.show_member_transactions);  // 隐私
+        assert!(!roommates.show_member_transactions); // 隐私
     }
 
     #[test]

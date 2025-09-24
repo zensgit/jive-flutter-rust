@@ -27,8 +27,8 @@ pub struct RateLimitConfig {
 impl Default for RateLimitConfig {
     fn default() -> Self {
         Self {
-            window_seconds: 60,  // 1分钟
-            max_requests: 100,    // 100个请求
+            window_seconds: 60, // 1分钟
+            max_requests: 100,  // 100个请求
         }
     }
 }
@@ -89,9 +89,7 @@ impl RateLimiter {
         }
 
         // 清理过期记录（可选，防止内存泄漏）
-        records.retain(|_, record| {
-            now.duration_since(record.window_start) < window_duration * 2
-        });
+        records.retain(|_, record| now.duration_since(record.window_start) < window_duration * 2);
 
         false
     }

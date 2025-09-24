@@ -21,7 +21,7 @@ pub struct Import {
     pub row_count: i32,
     pub processed_count: i32,
     pub failed_count: i32,
-    
+
     // Column mappings
     pub date_col_label: Option<String>,
     pub amount_col_label: Option<String>,
@@ -32,12 +32,12 @@ pub struct Import {
     pub notes_col_label: Option<String>,
     pub currency_col_label: Option<String>,
     pub payee_col_label: Option<String>,
-    
+
     // For investment imports
     pub ticker_col_label: Option<String>,
     pub qty_col_label: Option<String>,
     pub price_col_label: Option<String>,
-    
+
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -84,7 +84,7 @@ pub struct ImportRow {
     pub row_number: i32,
     pub status: ImportRowStatus,
     pub error: Option<String>,
-    
+
     // Parsed data
     pub date: Option<NaiveDate>,
     pub amount: Option<Decimal>,
@@ -95,19 +95,19 @@ pub struct ImportRow {
     pub notes: Option<String>,
     pub currency: Option<String>,
     pub payee: Option<String>,
-    
+
     // For investment imports
     pub ticker: Option<String>,
     pub qty: Option<Decimal>,
     pub price: Option<Decimal>,
-    
+
     // Raw data
     pub raw_data: serde_json::Value, // JSONB of original row
-    
+
     // Generated entries/transactions
     pub entry_id: Option<Uuid>,
     pub transaction_id: Option<Uuid>,
-    
+
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -127,11 +127,11 @@ pub enum ImportRowStatus {
 pub struct ImportMapping {
     pub id: Uuid,
     pub import_id: Uuid,
-    pub mappable_type: String, // 'Account', 'Category', 'Tag', 'Payee'
+    pub mappable_type: String,     // 'Account', 'Category', 'Tag', 'Payee'
     pub mappable_id: Option<Uuid>, // Existing entity ID
-    pub imported_value: String, // Value from CSV
-    pub mapped_name: String, // Name to use
-    pub is_new: bool, // Whether to create new entity
+    pub imported_value: String,    // Value from CSV
+    pub mapped_name: String,       // Name to use
+    pub is_new: bool,              // Whether to create new entity
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -209,21 +209,21 @@ impl Import {
             updated_at: now,
         }
     }
-    
+
     pub fn is_publishable(&self) -> bool {
         matches!(self.status, ImportStatus::Pending) && self.row_count > 0
     }
-    
+
     pub fn is_revertable(&self) -> bool {
         matches!(self.status, ImportStatus::Complete)
     }
-    
+
     // Parse number based on format settings
     pub fn parse_number(&self, value: &str) -> Option<Decimal> {
         if value.is_empty() {
             return None;
         }
-        
+
         // Remove currency symbols and whitespace
         let cleaned = value
             .replace("$", "")
@@ -232,7 +232,7 @@ impl Import {
             .replace("¥", "")
             .trim()
             .to_string();
-        
+
         // Handle different number formats
         let normalized = match self.number_format.as_str() {
             "1,234.56" => cleaned.replace(",", ""),
@@ -241,10 +241,10 @@ impl Import {
             "1,234" => cleaned.replace(",", ""),
             _ => cleaned,
         };
-        
+
         normalized.parse::<Decimal>().ok()
     }
-    
+
     // Apply signage convention
     pub fn apply_signage(&self, amount: Decimal, is_expense: bool) -> Decimal {
         match self.signage_convention {

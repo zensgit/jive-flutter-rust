@@ -1,30 +1,30 @@
 //! 系统分类模板领域模型
-//! 
+//!
 //! 实现三层分类架构中的第一层：系统预设分类模板
 
 use chrono::{DateTime, Utc};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
+use super::{AccountClassification, Entity};
 use crate::error::{JiveError, Result};
-use super::{Entity, AccountClassification};
 
 /// 分类组
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum CategoryGroup {
-    Income,                // 收入类别
-    DailyExpense,         // 日常消费
-    Housing,              // 居住相关
-    Transportation,       // 交通出行
-    HealthEducation,      // 健康教育
-    EntertainmentSocial,  // 娱乐社交
-    Financial,            // 金融理财
-    Business,             // 商务办公
-    Other,                // 其他
+    Income,              // 收入类别
+    DailyExpense,        // 日常消费
+    Housing,             // 居住相关
+    Transportation,      // 交通出行
+    HealthEducation,     // 健康教育
+    EntertainmentSocial, // 娱乐社交
+    Financial,           // 金融理财
+    Business,            // 商务办公
+    Other,               // 其他
 }
 
 impl CategoryGroup {
@@ -110,20 +110,20 @@ pub struct SystemCategoryTemplate {
     name_en: Option<String>,
     name_zh: Option<String>,
     description: Option<String>,
-    
+
     // 分类属性
     classification: AccountClassification,
     color: String,
     icon: Option<String>,
     category_group: CategoryGroup,
-    
+
     // 元数据
     version: String,
     is_active: bool,
     is_featured: bool,
     global_usage_count: u32,
     tags: Vec<String>,
-    
+
     // 审计字段
     created_by: Option<String>,
     created_at: DateTime<Utc>,
@@ -298,28 +298,28 @@ impl SystemCategoryTemplate {
     /// 获取所有预设模板
     pub fn get_all_templates() -> Vec<SystemCategoryTemplate> {
         let mut templates = Vec::new();
-        
+
         // 收入类模板
         templates.extend(Self::get_income_templates());
-        
+
         // 日常消费模板
         templates.extend(Self::get_daily_expense_templates());
-        
+
         // 交通出行模板
         templates.extend(Self::get_transportation_templates());
-        
+
         // 居住相关模板
         templates.extend(Self::get_housing_templates());
-        
+
         // 健康教育模板
         templates.extend(Self::get_health_education_templates());
-        
+
         // 娱乐社交模板
         templates.extend(Self::get_entertainment_templates());
-        
+
         // 金融理财模板
         templates.extend(Self::get_financial_templates());
-        
+
         templates
     }
 
@@ -335,8 +335,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::Income)
                 .is_featured(true)
                 .tags(vec!["必备".to_string(), "常用".to_string()])
-                .build().unwrap(),
-            
+                .build()
+                .unwrap(),
             Self::builder()
                 .name("奖金收入".to_string())
                 .name_en("Bonus".to_string())
@@ -346,8 +346,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::Income)
                 .is_featured(true)
                 .tags(vec!["常用".to_string()])
-                .build().unwrap(),
-            
+                .build()
+                .unwrap(),
             Self::builder()
                 .name("投资收益".to_string())
                 .name_en("Investment Income".to_string())
@@ -356,8 +356,8 @@ impl SystemCategoryTemplate {
                 .icon("📈".to_string())
                 .category_group(CategoryGroup::Income)
                 .tags(vec!["理财".to_string()])
-                .build().unwrap(),
-            
+                .build()
+                .unwrap(),
             Self::builder()
                 .name("副业收入".to_string())
                 .name_en("Side Income".to_string())
@@ -366,8 +366,8 @@ impl SystemCategoryTemplate {
                 .icon("💼".to_string())
                 .category_group(CategoryGroup::Income)
                 .tags(vec!["兼职".to_string()])
-                .build().unwrap(),
-            
+                .build()
+                .unwrap(),
             Self::builder()
                 .name("其他收入".to_string())
                 .name_en("Other Income".to_string())
@@ -376,7 +376,8 @@ impl SystemCategoryTemplate {
                 .icon("📥".to_string())
                 .category_group(CategoryGroup::Income)
                 .tags(vec!["其他".to_string()])
-                .build().unwrap(),
+                .build()
+                .unwrap(),
         ]
     }
 
@@ -392,8 +393,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::DailyExpense)
                 .is_featured(true)
                 .tags(vec!["热门".to_string(), "必备".to_string()])
-                .build().unwrap(),
-            
+                .build()
+                .unwrap(),
             Self::builder()
                 .name("买菜".to_string())
                 .name_en("Groceries".to_string())
@@ -403,8 +404,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::DailyExpense)
                 .is_featured(true)
                 .tags(vec!["必备".to_string()])
-                .build().unwrap(),
-            
+                .build()
+                .unwrap(),
             Self::builder()
                 .name("日用品".to_string())
                 .name_en("Daily Necessities".to_string())
@@ -414,8 +415,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::DailyExpense)
                 .is_featured(true)
                 .tags(vec!["必备".to_string()])
-                .build().unwrap(),
-            
+                .build()
+                .unwrap(),
             Self::builder()
                 .name("服装鞋包".to_string())
                 .name_en("Clothing & Shoes".to_string())
@@ -425,7 +426,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::DailyExpense)
                 .is_featured(true)
                 .tags(vec!["购物".to_string()])
-                .build().unwrap(),
+                .build()
+                .unwrap(),
         ]
     }
 
@@ -441,8 +443,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::Transportation)
                 .is_featured(true)
                 .tags(vec!["必备".to_string()])
-                .build().unwrap(),
-            
+                .build()
+                .unwrap(),
             Self::builder()
                 .name("打车".to_string())
                 .name_en("Taxi/Ride".to_string())
@@ -452,8 +454,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::Transportation)
                 .is_featured(true)
                 .tags(vec!["热门".to_string()])
-                .build().unwrap(),
-            
+                .build()
+                .unwrap(),
             Self::builder()
                 .name("加油".to_string())
                 .name_en("Gas/Fuel".to_string())
@@ -463,7 +465,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::Transportation)
                 .is_featured(true)
                 .tags(vec!["车辆".to_string()])
-                .build().unwrap(),
+                .build()
+                .unwrap(),
         ]
     }
 
@@ -479,8 +482,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::Housing)
                 .is_featured(true)
                 .tags(vec!["必备".to_string()])
-                .build().unwrap(),
-            
+                .build()
+                .unwrap(),
             Self::builder()
                 .name("水电费".to_string())
                 .name_en("Utilities".to_string())
@@ -490,8 +493,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::Housing)
                 .is_featured(true)
                 .tags(vec!["必备".to_string()])
-                .build().unwrap(),
-            
+                .build()
+                .unwrap(),
             Self::builder()
                 .name("网费".to_string())
                 .name_en("Internet".to_string())
@@ -501,7 +504,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::Housing)
                 .is_featured(true)
                 .tags(vec!["必备".to_string()])
-                .build().unwrap(),
+                .build()
+                .unwrap(),
         ]
     }
 
@@ -517,8 +521,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::HealthEducation)
                 .is_featured(true)
                 .tags(vec!["重要".to_string()])
-                .build().unwrap(),
-            
+                .build()
+                .unwrap(),
             Self::builder()
                 .name("教育培训".to_string())
                 .name_en("Education".to_string())
@@ -528,7 +532,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::HealthEducation)
                 .is_featured(true)
                 .tags(vec!["学习".to_string()])
-                .build().unwrap(),
+                .build()
+                .unwrap(),
         ]
     }
 
@@ -544,8 +549,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::EntertainmentSocial)
                 .is_featured(true)
                 .tags(vec!["热门".to_string()])
-                .build().unwrap(),
-            
+                .build()
+                .unwrap(),
             Self::builder()
                 .name("旅游".to_string())
                 .name_en("Travel".to_string())
@@ -555,7 +560,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::EntertainmentSocial)
                 .is_featured(true)
                 .tags(vec!["热门".to_string()])
-                .build().unwrap(),
+                .build()
+                .unwrap(),
         ]
     }
 
@@ -571,8 +577,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::Financial)
                 .is_featured(true)
                 .tags(vec!["理财".to_string()])
-                .build().unwrap(),
-            
+                .build()
+                .unwrap(),
             Self::builder()
                 .name("保险".to_string())
                 .name_en("Insurance".to_string())
@@ -582,7 +588,8 @@ impl SystemCategoryTemplate {
                 .category_group(CategoryGroup::Financial)
                 .is_featured(true)
                 .tags(vec!["保障".to_string()])
-                .build().unwrap(),
+                .build()
+                .unwrap(),
         ]
     }
 
@@ -595,7 +602,9 @@ impl SystemCategoryTemplate {
     }
 
     /// 根据分类类型获取模板
-    pub fn get_templates_by_classification(classification: AccountClassification) -> Vec<SystemCategoryTemplate> {
+    pub fn get_templates_by_classification(
+        classification: AccountClassification,
+    ) -> Vec<SystemCategoryTemplate> {
         Self::get_all_templates()
             .into_iter()
             .filter(|t| t.classification == classification)
@@ -616,9 +625,13 @@ impl SystemCategoryTemplate {
         Self::get_all_templates()
             .into_iter()
             .filter(|t| {
-                t.name.to_lowercase().contains(&query_lower) ||
-                t.name_en.as_ref().map_or(false, |n| n.to_lowercase().contains(&query_lower)) ||
-                t.tags.iter().any(|tag| tag.to_lowercase().contains(&query_lower))
+                t.name.to_lowercase().contains(&query_lower)
+                    || t.name_en
+                        .as_ref()
+                        .map_or(false, |n| n.to_lowercase().contains(&query_lower))
+                    || t.tags
+                        .iter()
+                        .any(|tag| tag.to_lowercase().contains(&query_lower))
             })
             .collect()
     }
@@ -732,18 +745,22 @@ impl TemplateBuilder {
             message: "Template name is required".to_string(),
         })?;
 
-        let classification = self.classification.ok_or_else(|| JiveError::ValidationError {
-            message: "Classification is required".to_string(),
-        })?;
+        let classification = self
+            .classification
+            .ok_or_else(|| JiveError::ValidationError {
+                message: "Classification is required".to_string(),
+            })?;
 
         let color = self.color.unwrap_or_else(|| "#6B7280".to_string());
 
-        let category_group = self.category_group.ok_or_else(|| JiveError::ValidationError {
-            message: "Category group is required".to_string(),
-        })?;
+        let category_group = self
+            .category_group
+            .ok_or_else(|| JiveError::ValidationError {
+                message: "Category group is required".to_string(),
+            })?;
 
         let template = SystemCategoryTemplate::new(name, classification, color, category_group)?;
-        
+
         Ok(SystemCategoryTemplate {
             name_en: self.name_en,
             name_zh: self.name_zh.or_else(|| Some(template.name.clone())),
@@ -768,11 +785,15 @@ mod tests {
             AccountClassification::Expense,
             "#FF0000".to_string(),
             CategoryGroup::DailyExpense,
-        ).unwrap();
+        )
+        .unwrap();
 
         assert_eq!(template.name(), "Test Template");
         assert_eq!(template.color(), "#FF0000");
-        assert!(matches!(template.category_group(), CategoryGroup::DailyExpense));
+        assert!(matches!(
+            template.category_group(),
+            CategoryGroup::DailyExpense
+        ));
     }
 
     #[test]
@@ -799,20 +820,25 @@ mod tests {
     fn test_get_all_templates() {
         let templates = SystemCategoryTemplate::get_all_templates();
         assert!(!templates.is_empty());
-        
+
         // 验证包含各种类型的模板
-        let has_income = templates.iter().any(|t| matches!(t.classification, AccountClassification::Income));
-        let has_expense = templates.iter().any(|t| matches!(t.classification, AccountClassification::Expense));
-        
+        let has_income = templates
+            .iter()
+            .any(|t| matches!(t.classification, AccountClassification::Income));
+        let has_expense = templates
+            .iter()
+            .any(|t| matches!(t.classification, AccountClassification::Expense));
+
         assert!(has_income);
         assert!(has_expense);
     }
 
     #[test]
     fn test_get_templates_by_group() {
-        let income_templates = SystemCategoryTemplate::get_templates_by_group(CategoryGroup::Income);
+        let income_templates =
+            SystemCategoryTemplate::get_templates_by_group(CategoryGroup::Income);
         assert!(!income_templates.is_empty());
-        
+
         for template in income_templates {
             assert!(matches!(template.category_group, CategoryGroup::Income));
         }
@@ -822,7 +848,7 @@ mod tests {
     fn test_search_templates() {
         let results = SystemCategoryTemplate::search_templates("餐饮");
         assert!(!results.is_empty());
-        
+
         let results_en = SystemCategoryTemplate::search_templates("food");
         assert!(!results_en.is_empty());
     }
@@ -831,7 +857,7 @@ mod tests {
     fn test_featured_templates() {
         let featured = SystemCategoryTemplate::get_featured_templates();
         assert!(!featured.is_empty());
-        
+
         for template in featured {
             assert!(template.is_featured());
         }
@@ -841,7 +867,7 @@ mod tests {
     fn test_category_group_conversion() {
         let group = CategoryGroup::from_string("income");
         assert!(matches!(group, Some(CategoryGroup::Income)));
-        
+
         let group = CategoryGroup::from_string("invalid");
         assert!(group.is_none());
     }

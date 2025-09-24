@@ -26,6 +26,54 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  rustfmt-check:
+    name: Rustfmt Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: false
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: ${{ env.RUST_VERSION }}
+        components: rustfmt
+    - name: Check formatting (jive-api)
+      working-directory: jive-api
+      run: |
+        cargo fmt --all -- --check
+
+    - name: Check formatting (jive-core)
+      working-directory: jive-core
+      run: |
+        cargo fmt --all -- --check
+
+  cargo-deny:
+    name: Cargo Deny Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install cargo-deny
+      run: |
+        curl -sSfL https://github.com/EmbarkStudios/cargo-deny/releases/download/0.14.24/cargo-deny-0.14.24-x86_64-unknown-linux-musl.tar.gz | tar xz
+        sudo mv cargo-deny*/cargo-deny /usr/local/bin/cargo-deny
+        cargo-deny --version
+    - name: Run cargo-deny (API)
+      working-directory: jive-api
+      run: |
+        set -o pipefail
+        cargo-deny check -c ../deny.toml 2>&1 | tee ../cargo-deny-output.txt || true
+
+    - name: Upload cargo-deny output
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: cargo-deny-output
+        path: cargo-deny-output.txt
   flutter-test:
     name: Flutter Tests
     runs-on: ubuntu-latest
@@ -511,54 +559,7 @@ jobs:
         path: field-compare-report.md
         if-no-files-found: ignore
 
-  cargo-deny:
-    name: Cargo Deny Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    continue-on-error: true  # Non-blocking initially
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Install cargo-deny
-      run: cargo install cargo-deny --locked
-
-    - name: Run cargo-deny
-      working-directory: jive-api
-      run: |
-        cargo deny check 2>&1 | tee ../cargo-deny-output.txt || true
-
-    - name: Upload cargo-deny output
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: cargo-deny-output
-        path: cargo-deny-output.txt
-
-  rustfmt-check:
-    name: Rustfmt Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    continue-on-error: true  # Non-blocking initially
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Setup Rust
-      uses: dtolnay/rust-toolchain@stable
-      with:
-        toolchain: ${{ env.RUST_VERSION }}
-        components: rustfmt
-
-    - name: Run rustfmt check
-      run: |
-        cd jive-api && cargo fmt --all -- --check 2>&1 | tee ../rustfmt-output.txt || true
-        cd ../jive-core && cargo fmt --all -- --check 2>&1 | tee -a ../rustfmt-output.txt || true
-
-    - name: Upload rustfmt output
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: rustfmt-output
-        path: rustfmt-output.txt
+  
 
   rust-api-clippy:
     name: Rust API Clippy (blocking)
@@ -626,9 +627,10 @@ jobs:
         echo "- Flutter Tests: ${{ needs.flutter-test.result }}" >> ci-summary.md
         echo "- Rust Tests: ${{ needs.rust-test.result }}" >> ci-summary.md
         echo "- Rust Core Check: ${{ needs.rust-core-check.result }}" >> ci-summary.md
-        echo "- Field Comparison: ${{ needs.field-compare.result }}" >> ci-summary.md
+        echo "- Rust API Clippy: ${{ needs.rust-api-clippy.result }}" >> ci-summary.md
         echo "- Cargo Deny: ${{ needs.cargo-deny.result }}" >> ci-summary.md
         echo "- Rustfmt Check: ${{ needs.rustfmt-check.result }}" >> ci-summary.md
+        echo "- Field Comparison: ${{ needs.field-compare.result }}" >> ci-summary.md
         echo "" >> ci-summary.md
 
         if [ -f test-report/test-report.md ]; then
@@ -668,7 +670,7 @@ jobs:
 
         # Rust API Clippy 结果
         echo "" >> ci-summary.md
-        echo "## Rust API Clippy (Non-blocking)" >> ci-summary.md
+        echo "## Rust API Clippy" >> ci-summary.md
         echo "- Status: ${{ needs.rust-api-clippy.result }}" >> ci-summary.md
         echo "- Artifact: api-clippy-output.txt" >> ci-summary.md
 

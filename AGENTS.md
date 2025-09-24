@@ -88,6 +88,12 @@ Link related issue IDs. Request review from a Rust + a Flutter reviewer for cros
 ## Security & Configuration
 Never commit real secrets—use `.env.example` for new vars. Run `make check` before pushing (ensures ports & env). Validate input at service boundary (API layer) and keep domain invariants enforced in constructors or smart methods. Log sensitive data only in anonymized form.
 
+### CSV Export
+- Transactions CSV endpoints accept `include_header` to control header row output.
+  - POST `/api/v1/transactions/export` body: `{ "format":"csv", ..., "include_header": true|false }`
+  - GET  `/api/v1/transactions/export.csv?include_header=true|false`
+- Defaults to `true`. Clients can pass `include_header=false` for programmatic appends.
+
 ### CORS Modes
 - Development: `make api-dev` (sets `CORS_DEV=1`) allows any origin/headers for rapid iteration.
 - Secure: `make api-safe` enforces origin whitelist & explicit header list. Add new custom headers in `middleware/cors.rs`.

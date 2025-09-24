@@ -1,17 +1,17 @@
 //! Family domain model - 多用户协作核心模型
-//! 
+//!
 //! 基于 Maybe 的 Family 模型设计，支持多用户共享财务数据
 
 use chrono::{DateTime, Utc};
-use serde::{Serialize, Deserialize};
-use uuid::Uuid;
 use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
-use crate::error::{JiveError, Result};
 use super::{Entity, SoftDeletable};
+use crate::error::{JiveError, Result};
 
 /// Family - 多用户协作的核心实体
 /// 对应 Maybe 的 Family 模型
@@ -37,24 +37,24 @@ pub struct FamilySettings {
     pub smart_defaults_enabled: bool,
     pub auto_detect_merchants: bool,
     pub use_last_selected_category: bool,
-    
+
     // 审批设置
     pub require_approval_for_large_transactions: bool,
     pub large_transaction_threshold: Option<Decimal>,
-    
+
     // 共享设置
     pub shared_categories: bool,
     pub shared_tags: bool,
     pub shared_payees: bool,
     pub shared_budgets: bool,
-    
+
     // 通知设置
     pub notification_preferences: NotificationPreferences,
-    
+
     // 货币设置
     pub multi_currency_enabled: bool,
     pub auto_update_exchange_rates: bool,
-    
+
     // 隐私设置
     pub show_member_transactions: bool,
     pub allow_member_exports: bool,
@@ -128,10 +128,10 @@ pub struct FamilyMembership {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum FamilyRole {
-    Owner,    // 创建者，拥有所有权限（类似 Maybe 的第一个用户）
-    Admin,    // 管理员，可以管理成员和设置（对应 Maybe 的 admin role）
-    Member,   // 普通成员，可以查看和编辑数据（对应 Maybe 的 member role）
-    Viewer,   // 只读成员，只能查看数据（扩展功能）
+    Owner,  // 创建者，拥有所有权限（类似 Maybe 的第一个用户）
+    Admin,  // 管理员，可以管理成员和设置（对应 Maybe 的 admin role）
+    Member, // 普通成员，可以查看和编辑数据（对应 Maybe 的 member role）
+    Viewer, // 只读成员，只能查看数据（扩展功能）
 }
 
 #[cfg(feature = "wasm")]
@@ -167,8 +167,8 @@ pub enum Permission {
     CreateAccounts,
     EditAccounts,
     DeleteAccounts,
-    ConnectBankAccounts,  // 对应 Maybe 的 Plaid 连接
-    
+    ConnectBankAccounts, // 对应 Maybe 的 Plaid 连接
+
     // 交易权限
     ViewTransactions,
     CreateTransactions,
@@ -177,33 +177,33 @@ pub enum Permission {
     BulkEditTransactions,
     ImportTransactions,
     ExportTransactions,
-    
+
     // 分类权限
     ViewCategories,
     ManageCategories,
-    
+
     // 商户/收款人权限
     ViewPayees,
     ManagePayees,
-    
+
     // 标签权限
     ViewTags,
     ManageTags,
-    
+
     // 预算权限
     ViewBudgets,
     CreateBudgets,
     EditBudgets,
     DeleteBudgets,
-    
+
     // 报表权限
     ViewReports,
     ExportReports,
-    
+
     // 规则权限
     ViewRules,
     ManageRules,
-    
+
     // 管理权限
     InviteMembers,
     RemoveMembers,
@@ -211,11 +211,11 @@ pub enum Permission {
     ManageFamilySettings,
     ManageLedgers,
     ManageIntegrations,
-    
+
     // 高级权限
     ViewAuditLog,
     ManageSubscription,
-    ImpersonateMembers,  // 对应 Maybe 的 impersonation
+    ImpersonateMembers, // 对应 Maybe 的 impersonation
 }
 
 impl FamilyRole {
@@ -226,47 +226,97 @@ impl FamilyRole {
             FamilyRole::Owner => {
                 // Owner 拥有所有权限
                 vec![
-                    ViewAccounts, CreateAccounts, EditAccounts, DeleteAccounts, ConnectBankAccounts,
-                    ViewTransactions, CreateTransactions, EditTransactions, DeleteTransactions,
-                    BulkEditTransactions, ImportTransactions, ExportTransactions,
-                    ViewCategories, ManageCategories,
-                    ViewPayees, ManagePayees,
-                    ViewTags, ManageTags,
-                    ViewBudgets, CreateBudgets, EditBudgets, DeleteBudgets,
-                    ViewReports, ExportReports,
-                    ViewRules, ManageRules,
-                    InviteMembers, RemoveMembers, ManageRoles, ManageFamilySettings,
-                    ManageLedgers, ManageIntegrations,
-                    ViewAuditLog, ManageSubscription, ImpersonateMembers,
+                    ViewAccounts,
+                    CreateAccounts,
+                    EditAccounts,
+                    DeleteAccounts,
+                    ConnectBankAccounts,
+                    ViewTransactions,
+                    CreateTransactions,
+                    EditTransactions,
+                    DeleteTransactions,
+                    BulkEditTransactions,
+                    ImportTransactions,
+                    ExportTransactions,
+                    ViewCategories,
+                    ManageCategories,
+                    ViewPayees,
+                    ManagePayees,
+                    ViewTags,
+                    ManageTags,
+                    ViewBudgets,
+                    CreateBudgets,
+                    EditBudgets,
+                    DeleteBudgets,
+                    ViewReports,
+                    ExportReports,
+                    ViewRules,
+                    ManageRules,
+                    InviteMembers,
+                    RemoveMembers,
+                    ManageRoles,
+                    ManageFamilySettings,
+                    ManageLedgers,
+                    ManageIntegrations,
+                    ViewAuditLog,
+                    ManageSubscription,
+                    ImpersonateMembers,
                 ]
             }
             FamilyRole::Admin => {
                 // Admin 拥有管理权限，但不能管理订阅和模拟用户
                 vec![
-                    ViewAccounts, CreateAccounts, EditAccounts, DeleteAccounts, ConnectBankAccounts,
-                    ViewTransactions, CreateTransactions, EditTransactions, DeleteTransactions,
-                    BulkEditTransactions, ImportTransactions, ExportTransactions,
-                    ViewCategories, ManageCategories,
-                    ViewPayees, ManagePayees,
-                    ViewTags, ManageTags,
-                    ViewBudgets, CreateBudgets, EditBudgets, DeleteBudgets,
-                    ViewReports, ExportReports,
-                    ViewRules, ManageRules,
-                    InviteMembers, RemoveMembers, ManageFamilySettings, ManageLedgers,
-                    ManageIntegrations, ViewAuditLog,
+                    ViewAccounts,
+                    CreateAccounts,
+                    EditAccounts,
+                    DeleteAccounts,
+                    ConnectBankAccounts,
+                    ViewTransactions,
+                    CreateTransactions,
+                    EditTransactions,
+                    DeleteTransactions,
+                    BulkEditTransactions,
+                    ImportTransactions,
+                    ExportTransactions,
+                    ViewCategories,
+                    ManageCategories,
+                    ViewPayees,
+                    ManagePayees,
+                    ViewTags,
+                    ManageTags,
+                    ViewBudgets,
+                    CreateBudgets,
+                    EditBudgets,
+                    DeleteBudgets,
+                    ViewReports,
+                    ExportReports,
+                    ViewRules,
+                    ManageRules,
+                    InviteMembers,
+                    RemoveMembers,
+                    ManageFamilySettings,
+                    ManageLedgers,
+                    ManageIntegrations,
+                    ViewAuditLog,
                 ]
             }
             FamilyRole::Member => {
                 // Member 可以查看和编辑数据，但不能管理
                 vec![
-                    ViewAccounts, CreateAccounts, EditAccounts,
-                    ViewTransactions, CreateTransactions, EditTransactions,
-                    ImportTransactions, ExportTransactions,
+                    ViewAccounts,
+                    CreateAccounts,
+                    EditAccounts,
+                    ViewTransactions,
+                    CreateTransactions,
+                    EditTransactions,
+                    ImportTransactions,
+                    ExportTransactions,
                     ViewCategories,
                     ViewPayees,
                     ViewTags,
                     ViewBudgets,
-                    ViewReports, ExportReports,
+                    ViewReports,
+                    ExportReports,
                     ViewRules,
                 ]
             }
@@ -298,7 +348,10 @@ impl FamilyRole {
 
     /// 检查是否可以导出数据
     pub fn can_export(&self) -> bool {
-        matches!(self, FamilyRole::Owner | FamilyRole::Admin | FamilyRole::Member)
+        matches!(
+            self,
+            FamilyRole::Owner | FamilyRole::Admin | FamilyRole::Member
+        )
     }
 }
 
@@ -363,9 +416,11 @@ impl FamilyInvitation {
     /// 接受邀请
     pub fn accept(&mut self) -> Result<()> {
         if !self.is_valid() {
-            return Err(JiveError::ValidationError { message: "Invalid or expired invitation".into() });
+            return Err(JiveError::ValidationError {
+                message: "Invalid or expired invitation".into(),
+            });
         }
-        
+
         self.status = InvitationStatus::Accepted;
         self.accepted_at = Some(Utc::now());
         Ok(())
@@ -400,18 +455,18 @@ pub enum AuditAction {
     MemberJoined,
     MemberRemoved,
     MemberRoleChanged,
-    
+
     // 数据操作
     DataCreated,
     DataUpdated,
     DataDeleted,
     DataImported,
     DataExported,
-    
+
     // 设置变更
     SettingsUpdated,
     PermissionsChanged,
-    
+
     // 安全事件
     LoginAttempt,
     LoginSuccess,
@@ -419,7 +474,7 @@ pub enum AuditAction {
     PasswordChanged,
     MfaEnabled,
     MfaDisabled,
-    
+
     // 集成操作
     IntegrationConnected,
     IntegrationDisconnected,
@@ -464,16 +519,30 @@ impl Family {
 impl Entity for Family {
     type Id = String;
 
-    fn id(&self) -> &Self::Id { &self.id }
-    fn created_at(&self) -> DateTime<Utc> { self.created_at }
-    fn updated_at(&self) -> DateTime<Utc> { self.updated_at }
+    fn id(&self) -> &Self::Id {
+        &self.id
+    }
+    fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+    fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
 }
 
 impl SoftDeletable for Family {
-    fn is_deleted(&self) -> bool { self.deleted_at.is_some() }
-    fn deleted_at(&self) -> Option<DateTime<Utc>> { self.deleted_at }
-    fn soft_delete(&mut self) { self.deleted_at = Some(Utc::now()); }
-    fn restore(&mut self) { self.deleted_at = None; }
+    fn is_deleted(&self) -> bool {
+        self.deleted_at.is_some()
+    }
+    fn deleted_at(&self) -> Option<DateTime<Utc>> {
+        self.deleted_at
+    }
+    fn soft_delete(&mut self) {
+        self.deleted_at = Some(Utc::now());
+    }
+    fn restore(&mut self) {
+        self.deleted_at = None;
+    }
 }
 
 #[cfg(test)]
@@ -534,11 +603,11 @@ mod tests {
         );
 
         assert!(family.is_feature_enabled("auto_categorize"));
-        
+
         let mut settings = family.settings.clone();
         settings.auto_categorize_enabled = false;
         family.update_settings(settings);
-        
+
         assert!(!family.is_feature_enabled("auto_categorize"));
     }
 }
