@@ -30,7 +30,7 @@ jobs:
     name: Rustfmt Check
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    continue-on-error: true
+    continue-on-error: false
 
     steps:
     - uses: actions/checkout@v4
@@ -65,7 +65,15 @@ jobs:
     - name: Run cargo-deny (API)
       working-directory: jive-api
       run: |
-        cargo-deny check -c ../deny.toml
+        set -o pipefail
+        cargo-deny check -c ../deny.toml 2>&1 | tee ../cargo-deny-output.txt || true
+
+    - name: Upload cargo-deny output
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: cargo-deny-output
+        path: cargo-deny-output.txt
   flutter-test:
     name: Flutter Tests
     runs-on: ubuntu-latest
