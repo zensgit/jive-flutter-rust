@@ -21,6 +21,23 @@ Primary commands (see `Makefile`):
 - `make test` Run Rust + Flutter test suites
 - `make build` Release build (Rust `--release` + `flutter build web`)
 - `make format` / `make lint` Auto‑format & static analysis
+
+CI required checks (main):
+- `Flutter Tests`, `Rust API Tests`
+- `Rust API Clippy (blocking)` (`-D warnings`)
+- `Rustfmt Check` (blocking)
+- `Cargo Deny Check`
+
+SQLx offline policy:
+- API jobs validate `.sqlx` strictly; on mismatch:
+  - Uploads `api-sqlx-diff` artifact (old/new cache + patch)
+  - Adds PR comment with first 80 lines of diff when PR originates from same repo
+  - Fails the job to force cache refresh commit
+
+Local helpers:
+- `make api-lint` runs strict SQLx check + clippy
+- `make api-sqlx-prepare-local` migrates DB (DB_PORT=5433) and refreshes `.sqlx`
+- `make hooks` configures pre-commit hook to run `make api-lint`
 - `make docker-up` / `make docker-down` Run via Docker Compose
 Backend only: `cargo test -p jive-core`; Flutter only: `cd jive-flutter && flutter test`.
 

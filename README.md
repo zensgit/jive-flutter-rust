@@ -179,8 +179,8 @@ make api-lint
 CI 策略：
 - 严格检查 `.sqlx` 与查询是否一致；若不一致：
   - 上传 `api-sqlx-diff` 工件（含新旧缓存与 diff patch）
-  - 在 PR 自动评论首 80 行 diff 预览，便于定位
-  - 失败退出，提示开发者提交更新后的 `.sqlx/`
+  - 在 PR 自动评论首 80 行 diff 预览（仓库内 PR；Fork PR 仅 artifact）
+  - 失败退出，提示提交更新后的 `.sqlx/`
 
 该脚本会：
 - 尝试用 Docker 启动本地 Postgres/Redis（如已安装）
@@ -198,6 +198,20 @@ docker compose -f jive-api/docker-compose.db.yml up -d postgres
 cd jive-api && ./prepare-sqlx.sh && cd ..
 git add jive-api/.sqlx
 git commit -m "chore(sqlx): update offline cache"
+
+### CI 必要检查（main 分支保护）
+
+当前 main 的 Required checks：
+
+- `Flutter Tests`
+- `Rust API Tests`
+- `Rust API Clippy (blocking)`（`-D warnings`）
+- `Rustfmt Check`（阻塞）
+- `Cargo Deny Check`（安全与许可）
+
+注意：
+- PR 首次不稳定阶段，可将 `Cargo Deny` 保持非阻塞，但推荐尽快修复并转为阻塞。
+- 本地建议：启用 git hooks（一次性）：`make hooks`，自动在提交前执行 `make api-lint`。
 ```
 ```
 
