@@ -357,15 +357,10 @@ jobs:
       env:
         SQLX_OFFLINE: 'true'
       run: |
-<<<<<<< HEAD
-        cargo check --all-features
-        cargo clippy --all-features -- -D warnings
-=======
         # Ensure default build compiles (demo_endpoints on, but not core_export)
         cargo check --no-default-features --features demo_endpoints
         # Run strict clippy without default features to exclude demo endpoints
         cargo clippy --no-default-features -- -D warnings
->>>>>>> origin/main
 
     - name: Generate schema report
       if: always()
@@ -552,54 +547,7 @@ jobs:
         path: field-compare-report.md
         if-no-files-found: ignore
 
-  cargo-deny:
-    name: Cargo Deny Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    continue-on-error: true  # Non-blocking initially
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Install cargo-deny
-      run: cargo install cargo-deny --locked
-
-    - name: Run cargo-deny
-      working-directory: jive-api
-      run: |
-        cargo deny check 2>&1 | tee ../cargo-deny-output.txt || true
-
-    - name: Upload cargo-deny output
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: cargo-deny-output
-        path: cargo-deny-output.txt
-
-  rustfmt-check:
-    name: Rustfmt Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    continue-on-error: true  # Non-blocking initially
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Setup Rust
-      uses: dtolnay/rust-toolchain@stable
-      with:
-        toolchain: ${{ env.RUST_VERSION }}
-        components: rustfmt
-
-    - name: Run rustfmt check
-      run: |
-        cd jive-api && cargo fmt --all -- --check 2>&1 | tee ../rustfmt-output.txt || true
-        cd ../jive-core && cargo fmt --all -- --check 2>&1 | tee -a ../rustfmt-output.txt || true
-
-    - name: Upload rustfmt output
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: rustfmt-output
-        path: rustfmt-output.txt
+  
 
   rust-api-clippy:
     name: Rust API Clippy (blocking)
@@ -646,12 +594,8 @@ jobs:
   summary:
     name: CI Summary
     runs-on: ubuntu-latest
-<<<<<<< HEAD
-    needs: [flutter-test, rust-test, field-compare, rustfmt-check, cargo-deny]
-=======
     timeout-minutes: 10
     needs: [flutter-test, rust-test, rust-core-check, field-compare, rust-api-clippy, cargo-deny, rustfmt-check]
->>>>>>> origin/main
     if: always()
 
     steps:
@@ -670,15 +614,11 @@ jobs:
         echo "## Test Results" >> ci-summary.md
         echo "- Flutter Tests: ${{ needs.flutter-test.result }}" >> ci-summary.md
         echo "- Rust Tests: ${{ needs.rust-test.result }}" >> ci-summary.md
-<<<<<<< HEAD
-        echo "- Rustfmt Check: ${{ needs.rustfmt-check.result }}" >> ci-summary.md
-        echo "- Cargo Deny: ${{ needs.cargo-deny.result }}" >> ci-summary.md
-=======
         echo "- Rust Core Check: ${{ needs.rust-core-check.result }}" >> ci-summary.md
->>>>>>> origin/main
-        echo "- Field Comparison: ${{ needs.field-compare.result }}" >> ci-summary.md
+        echo "- Rust API Clippy: ${{ needs.rust-api-clippy.result }}" >> ci-summary.md
         echo "- Cargo Deny: ${{ needs.cargo-deny.result }}" >> ci-summary.md
         echo "- Rustfmt Check: ${{ needs.rustfmt-check.result }}" >> ci-summary.md
+        echo "- Field Comparison: ${{ needs.field-compare.result }}" >> ci-summary.md
         echo "" >> ci-summary.md
 
         if [ -f test-report/test-report.md ]; then
@@ -718,7 +658,7 @@ jobs:
 
         # Rust API Clippy 结果
         echo "" >> ci-summary.md
-        echo "## Rust API Clippy (Non-blocking)" >> ci-summary.md
+        echo "## Rust API Clippy" >> ci-summary.md
         echo "- Status: ${{ needs.rust-api-clippy.result }}" >> ci-summary.md
         echo "- Artifact: api-clippy-output.txt" >> ci-summary.md
 
