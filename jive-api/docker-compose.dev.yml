@@ -10,7 +10,7 @@ services:
       POSTGRES_DB: jive_money
       POSTGRES_HOST_AUTH_METHOD: md5
     ports:
-      - "15432:5432"  # 修改为15432避免与本地5433冲突
+      - "5433:5432"  # 对齐本地开发默认端口 5433（jive-manager）
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d:ro
@@ -28,7 +28,7 @@ services:
     container_name: jive-redis-dev
     restart: unless-stopped
     ports:
-      - "16379:6379"  # 修改为16379避免与本地6380冲突
+      - "6380:6379"  # 对齐本地开发默认端口 6380（jive-manager）
     volumes:
       - redis_dev_data:/data
     networks:
@@ -69,7 +69,7 @@ services:
     container_name: jive-adminer-dev
     restart: unless-stopped
     ports:
-      - "19080:8080"  # 修改为19080避免与本地8080冲突
+      - "9080:8080"  # 对齐管理脚本使用的 Adminer 端口 9080
     environment:
       ADMINER_DEFAULT_SERVER: postgres
       ADMINER_DESIGN: pepa-linha

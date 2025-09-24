@@ -59,6 +59,7 @@ Cargo.lock
 # 日志文件
 *.log
 logs/
+/.pids/
 *.pid
 *.seed
 *.pid.lock
