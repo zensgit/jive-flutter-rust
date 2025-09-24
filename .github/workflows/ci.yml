@@ -12,6 +12,11 @@ on:
         description: 'Enable debug mode'
         required: false
         default: false
+      full_run:
+        type: boolean
+        description: 'Run all heavy jobs on manual dispatch'
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -22,7 +27,7 @@ env:
   RUST_VERSION: '1.89.0'
 
 concurrency:
-  group: core-ci-${{ github.ref }}
+  group: core-ci-${{ github.ref }}-${{ github.event_name }}
   cancel-in-progress: true
 
 jobs:
@@ -78,13 +83,13 @@ jobs:
         toolchain: ${{ env.RUST_VERSION }}
         components: rustfmt
     - name: Check formatting (jive-api)
-      if: env.DOCS_ONLY != 'true'
+      if: env.DOCS_ONLY != 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
       working-directory: jive-api
       run: |
         cargo fmt --all -- --check
 
     - name: Check formatting (jive-core)
-      if: env.DOCS_ONLY != 'true'
+      if: env.DOCS_ONLY != 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
       working-directory: jive-core
       run: |
         cargo fmt --all -- --check
@@ -101,13 +106,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install cargo-deny
-      if: env.DOCS_ONLY != 'true'
+      if: env.DOCS_ONLY != 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
       run: |
         curl -sSfL https://github.com/EmbarkStudios/cargo-deny/releases/download/0.14.24/cargo-deny-0.14.24-x86_64-unknown-linux-musl.tar.gz | tar xz
         sudo mv cargo-deny*/cargo-deny /usr/local/bin/cargo-deny
         cargo-deny --version
     - name: Run cargo-deny (API)
-      if: env.DOCS_ONLY != 'true'
+      if: env.DOCS_ONLY != 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
       working-directory: jive-api
       run: |
         set -o pipefail
@@ -138,14 +143,14 @@ jobs:
         echo "No Flutter changes; skipping analysis/tests to keep pipeline efficient."
 
     - name: Setup Flutter
-      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true'
+      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
       uses: subosito/flutter-action@v2
       with:
         flutter-version: ${{ env.FLUTTER_VERSION }}
         channel: 'stable'
 
     - name: Cache Flutter dependencies
-      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true'
+      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
       uses: actions/cache@v4
       with:
         path: |
@@ -157,18 +162,18 @@ jobs:
           ${{ runner.os }}-flutter-
 
     - name: Install dependencies
-      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true'
+      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
       working-directory: jive-flutter
       run: flutter pub get
 
     - name: Generate code (build_runner)
-      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true'
+      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
       working-directory: jive-flutter
       run: |
         flutter pub run build_runner build --delete-conflicting-outputs || true
 
     - name: Analyze code (non-fatal for now)
-      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true'
+      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
       working-directory: jive-flutter
       run: |
         set -o pipefail
@@ -183,7 +188,7 @@ jobs:
         path: flutter-analyze-output.txt
 
     - name: Run tests
-      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true'
+      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
       working-directory: jive-flutter
       run: |
         # Generate machine-readable test results (non-fatal for reporting)
