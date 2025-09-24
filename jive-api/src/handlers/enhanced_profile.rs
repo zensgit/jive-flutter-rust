@@ -112,17 +112,18 @@ pub async fn register_with_preferences(
     sqlx::query(
         r#"
         INSERT INTO users (
-            id, email, full_name, password_hash, 
+            id, email, name, full_name, password_hash, 
             country, preferred_currency, preferred_language, 
             preferred_timezone, preferred_date_format,
             avatar_url, avatar_style, avatar_color, avatar_background,
             created_at, updated_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
         "#,
     )
     .bind(user_id)
     .bind(&req.email)
+    .bind(&req.name)
     .bind(&req.name)
     .bind(&password_hash)
     .bind(&req.country)
