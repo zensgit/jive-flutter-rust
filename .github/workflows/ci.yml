@@ -661,8 +661,10 @@ jobs:
     name: CI Summary
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [flutter-test, rust-test, rust-core-check, field-compare, rust-api-clippy, cargo-deny, rustfmt-check]
+    needs: [changes, flutter-test, rust-test, rust-core-check, field-compare, rust-api-clippy, cargo-deny, rustfmt-check]
     if: always()
+    env:
+      DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
 
     steps:
     - name: Download all artifacts
@@ -675,6 +677,9 @@ jobs:
         echo "- Date: $(date)" >> ci-summary.md
         echo "- Branch: ${{ github.ref_name }}" >> ci-summary.md
         echo "- Commit: ${{ github.sha }}" >> ci-summary.md
+        echo "" >> ci-summary.md
+        echo "## Optimization" >> ci-summary.md
+        echo "- Docs-only fast path: ${DOCS_ONLY}" >> ci-summary.md
         echo "" >> ci-summary.md
 
         echo "## Test Results" >> ci-summary.md
