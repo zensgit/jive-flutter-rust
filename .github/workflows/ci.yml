@@ -681,6 +681,9 @@ jobs:
         echo "## Optimization" >> ci-summary.md
         echo "- Docs-only fast path: ${DOCS_ONLY}" >> ci-summary.md
         echo "" >> ci-summary.md
+        echo "## Optimization" >> ci-summary.md
+        echo "- Docs-only fast path: ${DOCS_ONLY}" >> ci-summary.md
+        echo "" >> ci-summary.md
 
         echo "## Test Results" >> ci-summary.md
         echo "- Flutter Tests: ${{ needs.flutter-test.result }}" >> ci-summary.md
@@ -703,6 +706,15 @@ jobs:
           tail -50 rust-test-results/rust-test-results.txt >> ci-summary.md
           echo '```' >> ci-summary.md
         fi
+
+        echo "" >> ci-summary.md
+        echo "## Job Durations (approx)" >> ci-summary.md
+        echo "- Flutter Tests: ${{ needs.flutter-test.result }}" >> ci-summary.md
+        echo "- Rust API Tests: ${{ needs.rust-test.result }}" >> ci-summary.md
+        echo "- Rust Core Check: ${{ needs.rust-core-check.result }}" >> ci-summary.md
+        echo "- Rust API Clippy: ${{ needs.rust-api-clippy.result }}" >> ci-summary.md
+        echo "- Cargo Deny: ${{ needs.cargo-deny.result }}" >> ci-summary.md
+        echo "- Rustfmt Check: ${{ needs.rustfmt-check.result }}" >> ci-summary.md
 
         # Manual overrides tests summary
         echo "" >> ci-summary.md
