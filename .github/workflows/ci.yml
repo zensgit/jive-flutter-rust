@@ -26,11 +26,44 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      docs_only: ${{ steps.out.outputs.docs_only }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Paths filter
+      id: filter
+      uses: dorny/paths-filter@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        filters: |
+          docs:
+            - '**/*.md'
+            - 'docs/**'
+            - 'README.md'
+            - 'AGENTS.md'
+            - '.github/*.md'
+            - 'PR_DESCRIPTIONS/**'
+          code:
+            - '!**/*.md'
+    - name: Set outputs
+      id: out
+      run: |
+        if [ "${{ steps.filter.outputs.docs }}" = "true" ] && [ "${{ steps.filter.outputs.code }}" != "true" ]; then
+          echo "docs_only=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "docs_only=false" >> "$GITHUB_OUTPUT"
+        fi
   rustfmt-check:
     name: Rustfmt Check
     runs-on: ubuntu-latest
     timeout-minutes: 10
     continue-on-error: false
+    needs: [changes]
+    env:
+      DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
 
     steps:
     - uses: actions/checkout@v4
@@ -40,11 +73,13 @@ jobs:
         toolchain: ${{ env.RUST_VERSION }}
         components: rustfmt
     - name: Check formatting (jive-api)
+      if: env.DOCS_ONLY != 'true'
       working-directory: jive-api
       run: |
         cargo fmt --all -- --check
 
     - name: Check formatting (jive-core)
+      if: env.DOCS_ONLY != 'true'
       working-directory: jive-core
       run: |
         cargo fmt --all -- --check
@@ -54,15 +89,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     continue-on-error: false
+    needs: [changes]
+    env:
+      DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
 
     steps:
     - uses: actions/checkout@v4
     - name: Install cargo-deny
+      if: env.DOCS_ONLY != 'true'
       run: |
         curl -sSfL https://github.com/EmbarkStudios/cargo-deny/releases/download/0.14.24/cargo-deny-0.14.24-x86_64-unknown-linux-musl.tar.gz | tar xz
         sudo mv cargo-deny*/cargo-deny /usr/local/bin/cargo-deny
         cargo-deny --version
     - name: Run cargo-deny (API)
+      if: env.DOCS_ONLY != 'true'
       working-directory: jive-api
       run: |
         set -o pipefail
@@ -79,17 +119,22 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     continue-on-error: false
+    needs: [changes]
+    env:
+      DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
 
     steps:
     - uses: actions/checkout@v4
 
     - name: Setup Flutter
+      if: env.DOCS_ONLY != 'true'
       uses: subosito/flutter-action@v2
       with:
         flutter-version: ${{ env.FLUTTER_VERSION }}
         channel: 'stable'
 
     - name: Cache Flutter dependencies
+      if: env.DOCS_ONLY != 'true'
       uses: actions/cache@v4
       with:
         path: |
@@ -101,15 +146,18 @@ jobs:
           ${{ runner.os }}-flutter-
 
     - name: Install dependencies
+      if: env.DOCS_ONLY != 'true'
       working-directory: jive-flutter
       run: flutter pub get
 
     - name: Generate code (build_runner)
+      if: env.DOCS_ONLY != 'true'
       working-directory: jive-flutter
       run: |
         flutter pub run build_runner build --delete-conflicting-outputs || true
 
     - name: Analyze code (non-fatal for now)
+      if: env.DOCS_ONLY != 'true'
       working-directory: jive-flutter
       run: |
         set -o pipefail
@@ -124,6 +172,7 @@ jobs:
         path: flutter-analyze-output.txt
 
     - name: Run tests
+      if: env.DOCS_ONLY != 'true'
       working-directory: jive-flutter
       run: |
         # Generate machine-readable test results (non-fatal for reporting)
@@ -178,6 +227,9 @@ jobs:
     name: Rust API Tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    needs: [changes]
+    env:
+      DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
 
     services:
       postgres:
@@ -208,12 +260,14 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Setup Rust
+      if: env.DOCS_ONLY != 'true'
       uses: dtolnay/rust-toolchain@stable
       with:
         toolchain: ${{ env.RUST_VERSION }}
         components: rustfmt, clippy
 
     - name: Cache Rust dependencies
+      if: env.DOCS_ONLY != 'true'
       uses: actions/cache@v4
       with:
         path: |
