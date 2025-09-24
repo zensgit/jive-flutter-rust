@@ -549,7 +549,9 @@ jobs:
     name: Field Comparison Check
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [flutter-test, rust-test]
+    needs: [changes, flutter-test, rust-test]
+    env:
+      FLUTTER_CHANGED: ${{ needs.changes.outputs.flutter_changed }}
 
     steps:
     - uses: actions/checkout@v4
@@ -559,15 +561,17 @@ jobs:
       with:
         name: test-report
         path: .
+        if-no-files-found: ignore
 
     - name: Download Flutter analyzer output
       uses: actions/download-artifact@v4
       with:
         name: flutter-analyze-output
         path: .
+        if-no-files-found: ignore
 
     - name: Upload analyzer output for comparison
-      if: always()
+      if: always() && env.FLUTTER_CHANGED == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: flutter-analyze-output-comparison
@@ -579,6 +583,7 @@ jobs:
         sudo apt-get install -y jq
 
     - name: Compare Flutter and Rust fields
+      if: env.FLUTTER_CHANGED == 'true'
       run: |
         echo "# Field Comparison Report" > field-compare-report.md
         echo "## Flutter vs Rust Model Comparison" >> field-compare-report.md
@@ -617,7 +622,7 @@ jobs:
         fi
 
     - name: Upload field comparison report
-      if: always()
+      if: always() && env.FLUTTER_CHANGED == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: field-compare-report
