@@ -681,9 +681,6 @@ jobs:
         echo "## Optimization" >> ci-summary.md
         echo "- Docs-only fast path: ${DOCS_ONLY}" >> ci-summary.md
         echo "" >> ci-summary.md
-        echo "## Optimization" >> ci-summary.md
-        echo "- Docs-only fast path: ${DOCS_ONLY}" >> ci-summary.md
-        echo "" >> ci-summary.md
 
         echo "## Test Results" >> ci-summary.md
         echo "- Flutter Tests: ${{ needs.flutter-test.result }}" >> ci-summary.md
