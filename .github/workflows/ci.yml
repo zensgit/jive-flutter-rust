@@ -53,7 +53,7 @@ jobs:
     name: Cargo Deny Check
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    continue-on-error: true
+    continue-on-error: false
 
     steps:
     - uses: actions/checkout@v4
@@ -78,7 +78,7 @@ jobs:
     name: Flutter Tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    continue-on-error: true
+    continue-on-error: false
 
     steps:
     - uses: actions/checkout@v4
