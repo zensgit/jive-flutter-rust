@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/wechat_service.dart';
-import '../screens/auth/wechat_qr_screen.dart';
+import 'package:jive_money/services/wechat_service.dart';
+import 'package:jive_money/screens/auth/wechat_qr_screen.dart';
 
 /// 微信登录按钮组件
 class WeChatLoginButton extends StatefulWidget {
@@ -135,11 +135,11 @@ class WeChatBindingCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
-                const Icon(Icons.wechat, color: Color(0xFF07C160)),
-                const SizedBox(width: 8),
-                const Text(
+                Icon(Icons.wechat, color: Color(0xFF07C160)),
+                SizedBox(width: 8),
+                Text(
                   '微信账户',
                   style: TextStyle(
                     fontSize: 16,

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/theme_models.dart' as models;
-import '../services/theme_service.dart';
-import '../widgets/theme_preview_card.dart';
-import '../widgets/custom_theme_editor.dart';
-import '../widgets/theme_share_dialog.dart';
+import 'package:jive_money/models/theme_models.dart' as models;
+import 'package:jive_money/services/theme_service.dart';
+import 'package:jive_money/widgets/theme_preview_card.dart';
+import 'package:jive_money/widgets/theme_share_dialog.dart';
 
 /// 主题管理页面
 class ThemeManagementScreen extends StatefulWidget {
@@ -461,6 +460,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
         builder: (context) => const CustomThemeEditor(),
       ),
     );
+    if (!mounted) return;
 
     if (result != null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -478,6 +478,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
         builder: (context) => CustomThemeEditor(theme: theme),
       ),
     );
+    if (!mounted) return;
 
     if (result != null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -504,6 +505,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
         description: theme.description,
         baseTheme: theme,
       );
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -524,6 +526,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
   Future<void> _exportTheme(models.CustomThemeData theme) async {
     try {
       await _themeService.copyThemeToClipboard(theme.id);
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('主题已复制到剪贴板'),
@@ -566,6 +569,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
     if (confirmed == true) {
       try {
         await _themeService.deleteCustomTheme(theme.id);
+        if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('主题"${theme.name}"已删除'),
@@ -586,6 +590,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
   Future<void> _importFromClipboard() async {
     try {
       final theme = await _themeService.importThemeFromClipboard();
+      if (!context.mounted) return;
       if (theme != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -668,6 +673,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
       } else {
         // 从分享码导入
         theme = await _themeService.importSharedTheme(input);
+        if (!context.mounted) return;
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -711,6 +717,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
 
     if (confirmed == true) {
       await _themeService.resetToSystemTheme();
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('已重置为系统默认主题'),

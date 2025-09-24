@@ -1,11 +1,11 @@
 // 仪表板概览组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
-import '../charts/balance_chart.dart';
-import 'summary_card.dart';
-import 'quick_actions.dart';
-import 'recent_transactions.dart';
-import '../cards/transaction_card.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/charts/balance_chart.dart';
+import 'package:jive_money/ui/components/dashboard/summary_card.dart';
+import 'package:jive_money/ui/components/dashboard/quick_actions.dart';
+import 'package:jive_money/ui/components/dashboard/recent_transactions.dart';
+import 'package:jive_money/ui/components/cards/transaction_card.dart';
 
 class DashboardOverview extends StatelessWidget {
   final DashboardData data;
@@ -93,7 +93,7 @@ class DashboardOverview extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-            SizedBox(
+            const SizedBox(
               height: 200,
               child: BalanceChart(
                 data: data.balanceData,
@@ -111,7 +111,7 @@ class DashboardOverview extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.1),
+        color: Colors.grey.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -165,7 +165,7 @@ class DashboardOverview extends StatelessWidget {
                 const Spacer(),
                 TextButton(
                   onPressed: data.onViewAllAccounts,
-                  child: Text('查看全部'),
+                  child: const Text('查看全部'),
                 ),
               ],
             ),
@@ -188,7 +188,7 @@ class DashboardOverview extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: account.color.withOpacity(0.1),
+              color: account.color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
@@ -253,7 +253,7 @@ class DashboardOverview extends StatelessWidget {
                 const Spacer(),
                 TextButton(
                   onPressed: data.onViewAllBudgets,
-                  child: Text('查看全部'),
+                  child: const Text('查看全部'),
                 ),
               ],
             ),
@@ -291,7 +291,7 @@ class DashboardOverview extends StatelessWidget {
           const SizedBox(height: 8),
           LinearProgressIndicator(
             value: budget.progress,
-            backgroundColor: Colors.grey.withOpacity(0.2),
+            backgroundColor: Colors.grey.withValues(alpha: 0.2),
             valueColor: AlwaysStoppedAnimation<Color>(
               budget.progress > 0.9
                   ? AppConstants.errorColor

@@ -292,7 +292,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                           child: Container(
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? category['color'].withOpacity(0.2)
+                                  ? category['color'].withValues(alpha: 0.2)
                                   : Colors.white,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(

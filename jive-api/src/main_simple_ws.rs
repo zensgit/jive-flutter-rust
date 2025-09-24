@@ -1,12 +1,7 @@
 //! 简化的主程序，用于测试基础功能
 //! 不包含WebSocket，仅包含核心API
 
-use axum::{
-    http::{header, Method, StatusCode},
-    response::Json,
-    routing::{get, post, put, delete},
-    Router,
-};
+use axum::{http::StatusCode, response::Json, routing::{get, post, put, delete}, Router};
 use serde_json::json;
 use sqlx::postgres::PgPoolOptions;
 use std::net::SocketAddr;
@@ -19,11 +14,7 @@ use jive_money_api::middleware::cors::create_cors_layer;
 use tracing::{info, warn, error};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-mod handlers;
-mod error;
-mod auth;
-mod services;
-mod models;
+use jive_money_api::handlers;
 // WebSocket模块暂时不包含，避免编译错误
 
 use handlers::template_handler::*;

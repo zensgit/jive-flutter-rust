@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
 /// Utility class for handling image loading with fallbacks
 class ImageUtils {

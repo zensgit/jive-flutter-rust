@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../utils/constants.dart';
-import 'auth_service.dart';
+import 'package:flutter/material.dart';
+import 'package:jive_money/utils/constants.dart';
+import 'package:jive_money/services/auth_service.dart';
 
 /// Social login provider types
 enum SocialProvider {

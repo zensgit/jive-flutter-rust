@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import '../../storage/token_storage.dart';
-import '../../auth/auth_events.dart';
-import '../../../services/api/auth_service.dart';
+import 'package:jive_money/core/storage/token_storage.dart';
+import 'package:jive_money/core/auth/auth_events.dart';
+import 'package:jive_money/services/api/auth_service.dart';
 
 /// 认证拦截器
 class AuthInterceptor extends Interceptor {

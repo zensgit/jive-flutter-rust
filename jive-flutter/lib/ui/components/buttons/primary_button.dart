@@ -1,6 +1,6 @@
 // 主要按钮组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String text;
@@ -46,7 +46,7 @@ class PrimaryButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
           ),
           elevation: isEnabled ? 2 : 0,
-          shadowColor: theme.primaryColor.withOpacity(0.3),
+          shadowColor: theme.primaryColor.withValues(alpha: 0.3),
         ),
         icon: _buildIcon(),
         label: _buildLabel(),

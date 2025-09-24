@@ -1,6 +1,6 @@
-import '../../core/network/http_client.dart';
-import '../../core/config/api_config.dart';
-import '../../models/ledger.dart';
+import 'package:jive_money/core/network/http_client.dart';
+import 'package:jive_money/core/config/api_config.dart';
+import 'package:jive_money/models/ledger.dart';
 
 /// 账本API服务
 class LedgerService {

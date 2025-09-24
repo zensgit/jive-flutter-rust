@@ -1,8 +1,12 @@
 // 账户列表组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
-import '../cards/account_card.dart';
-import '../loading/loading_widget.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/cards/account_card.dart';
+import 'package:jive_money/ui/components/loading/loading_widget.dart';
+import 'package:jive_money/models/account.dart';
+
+// 类型别名以兼容现有代码
+typedef AccountData = Account;
 
 class AccountList extends StatelessWidget {
   final List<AccountData> accounts;
@@ -59,20 +63,20 @@ class AccountList extends StatelessWidget {
           Icon(
             Icons.account_balance_wallet_outlined,
             size: 64,
-            color: theme.colorScheme.onSurface.withOpacity(0.3),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
           Text(
             '暂无账户',
             style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
           const SizedBox(height: 8),
           Text(
             '添加您的第一个账户开始管理财务',
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.4),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
             ),
           ),
           if (onAddAccount != null) ...[
@@ -164,7 +168,7 @@ class AccountList extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             theme.primaryColor,
-            theme.primaryColor.withOpacity(0.8),
+            theme.primaryColor.withValues(alpha: 0.8),
           ],
         ),
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
@@ -175,7 +179,7 @@ class AccountList extends StatelessWidget {
           Text(
             '净资产',
             style: theme.textTheme.titleMedium?.copyWith(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
             ),
           ),
           const SizedBox(height: 8),
@@ -196,7 +200,7 @@ class AccountList extends StatelessWidget {
                     Text(
                       '总资产',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                       ),
                     ),
                     Text(
@@ -212,7 +216,7 @@ class AccountList extends StatelessWidget {
               Container(
                 width: 1,
                 height: 40,
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
               ),
               Expanded(
                 child: Column(
@@ -221,7 +225,7 @@ class AccountList extends StatelessWidget {
                     Text(
                       '总负债',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                       ),
                     ),
                     Text(
@@ -394,7 +398,7 @@ class GroupedAccountList extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: theme.primaryColor.withOpacity(0.1),
+                  color: theme.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -411,7 +415,7 @@ class GroupedAccountList extends StatelessWidget {
               ? Text(
                   '总计: ${_formatGroupTotal(accounts)}',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 )
               : null,

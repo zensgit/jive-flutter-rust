@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/tag.dart';
-import '../services/storage_service.dart';
+import 'package:jive_money/models/tag.dart';
+import 'package:jive_money/services/storage_service.dart';
 
 /// 标签状态管理 - 基于Riverpod
 class TagNotifier extends StateNotifier<List<Tag>> {

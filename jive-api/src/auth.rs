@@ -198,6 +198,7 @@ pub fn generate_jwt(user_id: Uuid, family_id: Option<Uuid>) -> Result<String, Au
 }
 
 /// 解码JWT令牌
+#[allow(dead_code)]
 pub fn decode_jwt(token: &str) -> Result<Claims, AuthError> {
     Claims::from_token(token)
 }

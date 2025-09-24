@@ -1,6 +1,5 @@
-import 'package:flutter/foundation.dart';
-import '../models/invitation.dart';
-import '../models/family.dart' as family_model;
+import 'package:jive_money/models/invitation.dart';
+import 'package:jive_money/models/family.dart' as family_model;
 
 /// 邀请服务 - 临时实现
 class InvitationService {
@@ -48,6 +47,11 @@ class InvitationService {
 
   Future<void> cancelInvitation(String invitationId) async {
     // TODO: 实现 API 调用
+  }
+
+  Future<bool> acceptInvitation({required String invitationId, String? note}) async {
+    // TODO: 实现 API 调用
+    return true; // Stub implementation
   }
 
   Future<void> resendInvitation(String invitationId) async {

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/tag.dart';
-import '../../providers/tag_provider.dart';
-import '../../widgets/tag_create_dialog.dart';
-import '../../widgets/tag_edit_dialog.dart';
-import '../../widgets/tag_deletion_dialog.dart';
-import '../../widgets/tag_group_dialog.dart';
+import 'package:jive_money/models/tag.dart';
+import 'package:jive_money/providers/tag_provider.dart';
+import 'package:jive_money/widgets/tag_create_dialog.dart';
+import 'package:jive_money/widgets/tag_edit_dialog.dart';
+import 'package:jive_money/widgets/tag_deletion_dialog.dart';
+import 'package:jive_money/widgets/tag_group_dialog.dart';
 
 /// 标签管理页面 - 完整版
 class TagManagementPage extends ConsumerStatefulWidget {
@@ -151,7 +151,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                             _showArchived = value;
                           });
                         },
-                        selectedColor: Colors.blue.withOpacity(0.2),
+                        selectedColor: Colors.blue.withValues(alpha: 0.2),
                         checkmarkColor: Colors.blue,
                       ),
                       const SizedBox(width: 16),
@@ -176,7 +176,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -234,7 +234,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                   final groupTags = tagsByGroup[group.id] ?? [];
                   // 显示所有分组，即使是空的分组也显示
                   return _buildGroupSection(group, groupTags);
-                }).toList(),
+                }),
 
                 // 归档标签
                 if (_showArchived && archivedTags.isNotEmpty) ...[
@@ -260,7 +260,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
     required VoidCallback onPressed,
   }) {
     return Material(
-      color: Colors.blue.withOpacity(0.1),
+      color: Colors.blue.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onPressed,
@@ -297,19 +297,19 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: Colors.blue.withOpacity(0.3),
+            color: Colors.blue.withValues(alpha: 0.3),
             width: 1.5,
             style: BorderStyle.solid,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
           ],
         ),
-        child: Row(
+        child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
@@ -317,7 +317,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
               color: Colors.blue,
               size: 24,
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               '新建分组',
               style: TextStyle(
@@ -344,7 +344,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Icon(icon, color: color, size: 20),
@@ -382,7 +382,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -455,7 +455,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -487,7 +487,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: groupColor.withOpacity(0.15),
+                      color: groupColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
@@ -600,10 +600,10 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -623,7 +623,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
             child: Text(
               tag.name,
               style: TextStyle(
-                color: isArchived ? color.withOpacity(0.6) : color,
+                color: isArchived ? color.withValues(alpha: 0.6) : color,
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 decoration: isArchived ? TextDecoration.lineThrough : null,
@@ -634,7 +634,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
@@ -722,7 +722,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
                     decoration: BoxDecoration(
                       color: Color(int.parse((tag.color ?? '#6471eb')
                               .replaceFirst('#', '0xff')))
-                          .withOpacity(0.2),
+                          .withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Icon(
@@ -902,6 +902,7 @@ class _TagManagementPageState extends ConsumerState<TagManagementPage> {
             onPressed: () async {
               final groupNotifier = ref.read(tagGroupsProvider.notifier);
               await groupNotifier.deleteTagGroup(group.id!);
+              if (!context.mounted) return;
               Navigator.pop(context);
               setState(() {});
               ScaffoldMessenger.of(context).showSnackBar(

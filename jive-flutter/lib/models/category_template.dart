@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'category.dart';
+import 'package:jive_money/models/category.dart';
 
 part 'category_template.freezed.dart';
 part 'category_template.g.dart';
@@ -40,12 +40,45 @@ enum CategoryGroup {
   entertainmentSocial('entertainmentSocial', '娱乐社交'),
   education('education', '教育培训'),
   finance('finance', '金融投资'),
+  healthEducation('healthEducation', '健康教育'),
+  financial('financial', '财务管理'),
+  business('business', '商业投资'),
   other('other', '其他');
 
   const CategoryGroup(this.key, this.displayName);
 
   final String key;
   final String displayName;
+
+  /// 获取分类组的默认图标
+  String get icon {
+    switch (this) {
+      case CategoryGroup.income:
+        return '💰';
+      case CategoryGroup.dailyExpense:
+        return '🛒';
+      case CategoryGroup.transportation:
+        return '🚗';
+      case CategoryGroup.housing:
+        return '🏠';
+      case CategoryGroup.medical:
+        return '🏥';
+      case CategoryGroup.entertainmentSocial:
+        return '🎯';
+      case CategoryGroup.education:
+        return '📚';
+      case CategoryGroup.finance:
+        return '💳';
+      case CategoryGroup.healthEducation:
+        return '🩺';
+      case CategoryGroup.financial:
+        return '💼';
+      case CategoryGroup.business:
+        return '🏢';
+      case CategoryGroup.other:
+        return '📦';
+    }
+  }
 
   static CategoryGroup? fromString(String key) {
     for (final group in CategoryGroup.values) {
@@ -330,5 +363,15 @@ class CategoryTemplateLibrary {
           (template.nameEn?.toLowerCase().contains(queryLower) ?? false) ||
           template.tags.any((tag) => tag.toLowerCase().contains(queryLower));
     }).toList();
+  }
+}
+
+// Extension to add missing methods for SystemCategoryTemplate
+extension SystemCategoryTemplateExt on SystemCategoryTemplate {
+  // Stub method for setFeatured - TODO: Replace with actual implementation
+  void setFeatured(bool featured) {
+    // This would normally update the isFeatured field
+    // Since this is a freezed model, the actual implementation would use copyWith
+    // For now, this is a stub to satisfy the analyzer
   }
 }

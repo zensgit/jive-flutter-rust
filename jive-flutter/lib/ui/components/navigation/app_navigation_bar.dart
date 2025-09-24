@@ -1,6 +1,6 @@
 // 应用导航栏组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
 
 class AppNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -23,7 +23,7 @@ class AppNavigationBar extends StatelessWidget {
         color: theme.scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
-            color: theme.shadowColor.withOpacity(0.1),
+            color: theme.shadowColor.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -83,7 +83,7 @@ class _NavigationBarItem extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? theme.primaryColor.withOpacity(0.1)
+                        ? theme.primaryColor.withValues(alpha: 0.1)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -91,7 +91,7 @@ class _NavigationBarItem extends StatelessWidget {
                     isSelected ? item.selectedIcon : item.icon,
                     color: isSelected
                         ? theme.primaryColor
-                        : theme.colorScheme.onSurface.withOpacity(0.6),
+                        : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     size: 24,
                   ),
                 ),
@@ -101,7 +101,7 @@ class _NavigationBarItem extends StatelessWidget {
                   style: theme.textTheme.bodySmall!.copyWith(
                     color: isSelected
                         ? theme.primaryColor
-                        : theme.colorScheme.onSurface.withOpacity(0.6),
+                        : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     fontWeight:
                         isSelected ? FontWeight.w600 : FontWeight.normal,
                     fontSize: 12,

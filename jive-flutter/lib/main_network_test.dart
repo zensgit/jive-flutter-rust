@@ -1,8 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'providers/category_provider.dart';
-import 'models/category_template.dart';
+import 'package:jive_money/providers/category_provider.dart';
+import 'package:jive_money/models/category_template.dart';
 
 void main() {
   runApp(

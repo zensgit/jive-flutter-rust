@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../services/api/category_service.dart';
+import 'package:jive_money/services/api/category_service.dart';
 
 class ImportDetailsSheet {
   static Future<void> show(BuildContext context, ImportResult result) async {
@@ -54,7 +54,7 @@ class ImportDetailsSheet {
                   ],
                 ),
                 Text('新增: ${result.imported}  跳过: ${result.skipped}  失败: ${result.failed}',
-                    style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface.withOpacity(.8))),
+                    style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface.withValues(alpha: .8))),
                 const SizedBox(height: 8),
                 Expanded(
                   child: ListView(
@@ -67,7 +67,7 @@ class ImportDetailsSheet {
                         title: Text('$action (${items.length})', style: TextStyle(color: color, fontWeight: FontWeight.w600)),
                         children: items.map((d) => ListTile(
                               dense: true,
-                              title: Text(d.finalName ?? d.originalName),
+                              title: Text(d.predictedName ?? d.finalName ?? d.originalName),
                               subtitle: Text(d.reason != null ? d.reason! : ''),
                               trailing: Icon(
                                 action == 'failed'

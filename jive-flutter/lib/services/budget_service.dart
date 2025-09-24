@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/budget.dart';
-import '../core/config/api_config.dart';
+import 'package:jive_money/models/budget.dart';
+import 'package:jive_money/core/config/api_config.dart';
 
 /// 预算服务
 class BudgetService {

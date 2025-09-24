@@ -5,6 +5,7 @@ use uuid::Uuid;
 
 use super::permission::{MemberRole, Permission};
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct FamilyMember {
     pub family_id: Uuid,
@@ -108,7 +109,7 @@ impl TryFrom<String> for MemberRole {
     type Error = String;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
-        MemberRole::from_str(&value)
+        MemberRole::from_str_name(&value)
             .ok_or_else(|| format!("Invalid role: {}", value))
     }
 }

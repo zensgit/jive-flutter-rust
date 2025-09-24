@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../../models/audit_log.dart';
-import '../../services/audit_service.dart';
-import '../../utils/date_utils.dart' as date_utils;
+import 'package:jive_money/services/audit_service.dart';
+import 'package:jive_money/utils/date_utils.dart' as date_utils;
 
 /// 家庭活动日志页面
 class FamilyActivityLogScreen extends ConsumerStatefulWidget {
@@ -11,10 +10,10 @@ class FamilyActivityLogScreen extends ConsumerStatefulWidget {
   final String familyName;
 
   const FamilyActivityLogScreen({
-    Key? key,
+    super.key,
     required this.familyId,
     required this.familyName,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<FamilyActivityLogScreen> createState() =>
@@ -28,7 +27,7 @@ class _FamilyActivityLogScreenState
   final _searchController = TextEditingController();
 
   List<AuditLog> _logs = [];
-  Map<String, List<AuditLog>> _groupedLogs = {};
+  final Map<String, List<AuditLog>> _groupedLogs = {};
   bool _isLoading = true;
   bool _hasMore = true;
   int _currentPage = 1;
@@ -83,7 +82,7 @@ class _FamilyActivityLogScreenState
       );
 
       final logs = await _auditService.getAuditLogs(
-        filter: filter,
+        filterObj: filter,
         page: _currentPage,
         pageSize: 20,
       );
@@ -168,7 +167,7 @@ class _FamilyActivityLogScreenState
           // 搜索栏
           Container(
             padding: const EdgeInsets.all(16),
-            color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
@@ -246,7 +245,7 @@ class _FamilyActivityLogScreenState
         label: Text(label),
         selected: isSelected,
         onSelected: (_) => onTap(),
-        backgroundColor: theme.colorScheme.surfaceVariant,
+        backgroundColor: theme.colorScheme.surfaceContainerHighest,
         selectedColor: theme.colorScheme.primaryContainer,
       ),
     );
@@ -373,7 +372,7 @@ class _FamilyActivityLogScreenState
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: theme.colorScheme.surfaceVariant,
+            color: theme.colorScheme.surfaceContainerHighest,
             width: 1,
           ),
         ),
@@ -394,7 +393,7 @@ class _FamilyActivityLogScreenState
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: _getActionColor(log.actionType).withOpacity(0.1),
+                    color: _getActionColor(log.actionType).withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -432,7 +431,7 @@ class _FamilyActivityLogScreenState
                   if (log.details != null && log.details!.isNotEmpty) ...[
                     const SizedBox(height: 4),
                     Text(
-                      log.details!,
+                      log.details!.toString(),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -446,7 +445,7 @@ class _FamilyActivityLogScreenState
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceVariant,
+                        color: theme.colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -526,7 +525,7 @@ class _FamilyActivityLogScreenState
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: color, width: 0.5),
       ),
@@ -648,7 +647,7 @@ class _ActivityDetailSheet extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -679,20 +678,20 @@ class _ActivityDetailSheet extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceVariant,
+                          color: theme.colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(log.details!),
+                        child: Text(log.details!.toString()),
                       ),
                     ],
-                    if (log.ipAddress != null) ...[
-                      const SizedBox(height: 16),
-                      Text('技术信息', style: theme.textTheme.titleMedium),
-                      const SizedBox(height: 8),
-                      _buildDetailRow('IP地址', log.ipAddress!),
-                      if (log.userAgent != null)
-                        _buildDetailRow('用户代理', log.userAgent!),
-                    ],
+                    ...[
+                    const SizedBox(height: 16),
+                    Text('技术信息', style: theme.textTheme.titleMedium),
+                    const SizedBox(height: 8),
+                    _buildDetailRow('IP地址', log.ipAddress),
+                    if (log.userAgent != null)
+                      _buildDetailRow('用户代理', log.userAgent!),
+                  ],
                   ],
                 ),
               ),
@@ -713,7 +712,7 @@ class _ActivityDetailSheet extends StatelessWidget {
             width: 100,
             child: Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w500,
                 color: Colors.grey,
               ),
@@ -773,7 +772,7 @@ class _FilterDialogState extends State<_FilterDialog> {
           Text('操作类型', style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),
           DropdownButtonFormField<AuditActionType?>(
-            value: _actionType,
+            initialValue: _actionType,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -879,7 +878,7 @@ class _StatisticsDialog extends StatelessWidget {
           _buildStatItem('最常操作', statistics.mostFrequentAction),
           const Divider(),
           _buildStatItem(
-              '平均每日', '${statistics.dailyAverage.toStringAsFixed(1)}'),
+              '平均每日', statistics.dailyAverage.toStringAsFixed(1)),
         ],
       ),
       actions: [

@@ -1,5 +1,7 @@
 # Jive Money - 集腋记账
 
+[![Core CI (Strict)](https://github.com/zensgit/jive-flutter-rust/actions/workflows/ci.yml/badge.svg)](https://github.com/zensgit/jive-flutter-rust/actions/workflows/ci.yml)
+
 一个全功能的个人财务管理系统，采用 Flutter 前端和 Rust 后端架构。
 
 > **集腋成裘，细水长流** - 用心记录每一笔收支，积小成大，理财从记账开始。
@@ -44,6 +46,10 @@ make dev
 
 # 查看更多命令
 make help
+
+首次建议：
+- 启用本地 pre-commit 钩子：`make hooks`
+- 如涉及数据库迁移：`make api-sqlx-prepare-local`（迁移 + 刷新 `.sqlx/`）
 ```
 
 ### 方法 3: 使用 Docker Compose
@@ -151,6 +157,30 @@ make logs
 chmod +x scripts/ci_local.sh
 ./scripts/ci_local.sh
 ```
+
+### SQLx 离线校验（开发者速记）
+
+- 离线校验用途：在不依赖在线数据库的情况下，编译期验证 SQL 宏的类型与签名。
+- 何时需要更新 `.sqlx/`：任何迁移或查询签名变动后。
+
+常用命令：
+
+```bash
+# 1) 跑迁移（确保 DB 最新）
+cd jive-api && ./scripts/migrate_local.sh --force
+
+# 2) 刷新离线缓存
+SQLX_OFFLINE=false cargo sqlx prepare
+
+# 3) 本地严格校验 + Clippy
+make api-lint
+```
+
+CI 策略：
+- 严格检查 `.sqlx` 与查询是否一致；若不一致：
+  - 上传 `api-sqlx-diff` 工件（含新旧缓存与 diff patch）
+  - 在 PR 自动评论首 80 行 diff 预览，便于定位
+  - 失败退出，提示开发者提交更新后的 `.sqlx/`
 
 该脚本会：
 - 尝试用 Docker 启动本地 Postgres/Redis（如已安装）
@@ -273,6 +303,116 @@ tail -f logs/*.log
 tail -f logs/rust_server.log
 tail -f logs/flutter_web.log
 ```
+
+## 🚨 CI 故障排查
+
+### SQLx 离线缓存不匹配
+
+CI 中最常见的失败是 SQLx 离线缓存不匹配。当你修改了数据库查询或模型时，需要更新 SQLx 缓存：
+
+#### 三步修复法：
+```bash
+# 1. 确保数据库是最新的
+cd jive-api && ./scripts/migrate_local.sh --force
+
+# 2. 重新生成离线缓存
+SQLX_OFFLINE=false cargo sqlx prepare
+
+# 3. 提交更新后的缓存
+git add .sqlx && git commit -m "chore(sqlx): update offline cache"
+```
+
+#### 端口配置说明：
+- **开发环境**: PostgreSQL 运行在 `5433` 端口（避免与系统数据库冲突）
+- **CI 环境**: PostgreSQL 运行在 `5432` 端口（标准端口）
+- **API 服务**: 统一使用 `8012` 端口
+- **Flutter Web**: 使用 `3021` 端口
+
+#### 常见 CI 错误及解决方案：
+
+**1. SQLx 缓存不匹配**
+```
+Error: SQLx offline cache mismatch detected
+```
+解决：按照上述三步修复法更新缓存
+
+**2. 端口冲突**
+```
+Error: Address already in use (os error 98)
+```
+解决：检查端口占用或修改配置文件中的端口
+
+**3. 数据库连接失败**
+```
+Error: Failed to connect to database
+```
+解决：
+- 检查数据库服务是否启动
+- 验证连接字符串格式
+- 确认防火墙设置
+
+**4. Rust Core 双模式检查失败**
+```
+Error: jive-core server mode failed
+```
+解决：
+- 检查 `jive-core/Cargo.toml` 中的 feature 配置
+- 确保所有依赖都支持指定的 feature
+- 运行 `cd jive-core && cargo check --features server`
+
+**5. Flutter 分析器警告**
+```
+Warning: flutter analyze found issues
+```
+解决：
+- 运行 `cd jive-flutter && flutter analyze`
+- 修复所有报告的问题
+- 考虑在 `analysis_options.yaml` 中调整规则
+
+**6. Cargo Deny 检查失败**
+```
+Error: cargo deny check failed
+```
+解决：
+- 检查 `deny.toml` 配置
+- 更新有问题的依赖版本
+- 在必要时添加例外规则
+
+**7. Rustfmt 格式检查失败**
+```
+Error: rustfmt check failed
+```
+解决：
+- 运行 `cargo fmt --all`
+- 提交格式化后的代码
+
+#### 本地 CI 测试
+
+在推送代码前，可以运行本地 CI 检查：
+
+```bash
+# 完整的本地 CI 流程
+chmod +x scripts/ci_local.sh
+./scripts/ci_local.sh
+
+# 单独测试 SQLx
+cd jive-api
+SQLX_OFFLINE=true cargo sqlx prepare --check
+
+# 单独测试格式化
+cargo fmt --all -- --check
+
+# 单独测试 Clippy
+cargo clippy --all-features -- -D warnings
+```
+
+#### CI 配置概览
+
+- **Rust Core Check**: 恢复为阻断模式（fail-fast: true）
+- **Cargo Deny**: 非阻断模式（初期警告，后期可改为阻断）
+- **Rustfmt Check**: 非阻断模式（初期警告，后期可改为阻断）
+- **Flutter Tests**: 继续进行模式（允许部分测试失败）
+- **SQLx Check**: 严格阻断模式（必须通过）
 
 ## 📄 许可证
 

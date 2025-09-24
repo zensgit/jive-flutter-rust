@@ -94,7 +94,7 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: SvgPicture.asset(
@@ -137,12 +137,12 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
           ),
           if (isUser) ...[
             const SizedBox(width: 12),
-            CircleAvatar(
+            const CircleAvatar(
               radius: 20,
               backgroundColor: Colors.blue,
               child: Text(
                 '我',
-                style: const TextStyle(color: Colors.white, fontSize: 14),
+                style: TextStyle(color: Colors.white, fontSize: 14),
               ),
             ),
           ],
@@ -208,7 +208,7 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: Colors.blue.withOpacity(0.1),
+                              color: Colors.blue.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: SvgPicture.asset(
@@ -224,7 +224,7 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
                               color: Colors.grey[100],
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            child: Row(
+                            child: const Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 SizedBox(
@@ -236,8 +236,8 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
                                         Colors.blue),
                                   ),
                                 ),
-                                const SizedBox(width: 12),
-                                const Text('正在思考...'),
+                                SizedBox(width: 12),
+                                Text('正在思考...'),
                               ],
                             ),
                           ),

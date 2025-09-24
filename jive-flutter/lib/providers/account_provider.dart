@@ -1,7 +1,7 @@
 // 账户状态管理
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/api/account_service.dart';
-import '../models/account.dart';
+import 'package:jive_money/services/api/account_service.dart';
+import 'package:jive_money/models/account.dart';
 
 /// 账户状态
 class AccountState {

@@ -202,7 +202,7 @@ impl AuthService {
             .map(|f| FamilyInfo {
                 family_id: f.family_id,
                 family_name: f.family_name,
-                role: MemberRole::from_str(&f.role).unwrap_or(MemberRole::Member),
+                role: MemberRole::from_str_name(&f.role).unwrap_or(MemberRole::Member),
             })
             .collect();
         
@@ -267,7 +267,7 @@ impl AuthService {
             .map(|f| FamilyInfo {
                 family_id: f.family_id,
                 family_name: f.family_name,
-                role: MemberRole::from_str(&f.role).unwrap_or(MemberRole::Member),
+                role: MemberRole::from_str_name(&f.role).unwrap_or(MemberRole::Member),
             })
             .collect();
         
@@ -311,7 +311,7 @@ impl AuthService {
         .await?
         .ok_or(ServiceError::PermissionDenied)?;
         
-        let role = MemberRole::from_str(&row.role)
+        let role = MemberRole::from_str_name(&row.role)
             .ok_or_else(|| ServiceError::ValidationError("Invalid role".to_string()))?;
         
         let permissions = serde_json::from_value(row.permissions)?;

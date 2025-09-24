@@ -1,10 +1,11 @@
 // Web-only implementation with quick dev actions
-// ignore: avoid_web_libraries_in_flutter
+// Prefer package:web/js_interop, but keep minimal usage behind kIsWeb and dev-only
+// ignore: deprecated_member_use, avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../core/storage/token_storage.dart';
-import '../core/storage/hive_config.dart';
+import 'package:jive_money/core/storage/token_storage.dart';
+import 'package:jive_money/core/storage/hive_config.dart';
 
 class DevQuickActions extends StatefulWidget {
   final Widget child;
@@ -39,7 +40,7 @@ class _DevQuickActionsState extends State<DevQuickActions> {
                   margin: const EdgeInsets.only(top: 8),
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.8),
+                    color: Colors.black.withValues(alpha: 0.8),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   width: 220,

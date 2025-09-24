@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'screens/management/currency_management_page_v2.dart';
-import 'screens/currency_converter_page.dart';
-import 'widgets/currency_converter.dart';
+import 'package:jive_money/screens/management/currency_management_page_v2.dart';
+import 'package:jive_money/screens/currency_converter_page.dart';
+import 'package:jive_money/widgets/currency_converter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

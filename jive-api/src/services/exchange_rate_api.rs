@@ -14,6 +14,7 @@ use super::ServiceError;
 
 // Frankfurter API 响应
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct FrankfurterResponse {
     amount: f64,
     base: String,
@@ -23,6 +24,7 @@ struct FrankfurterResponse {
 
 // ExchangeRate-API 响应
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct ExchangeRateApiResponse {
     result: String,
     base: String,
@@ -32,6 +34,7 @@ struct ExchangeRateApiResponse {
 
 // FXRatesAPI 响应
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct FxRatesApiResponse {
     base: String,
     rates: HashMap<String, f64>,
@@ -40,12 +43,14 @@ struct FxRatesApiResponse {
 
 // CoinGecko API 响应
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct CoinGeckoResponse {
     #[serde(flatten)]
     prices: HashMap<String, CoinGeckoPriceData>,
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct CoinGeckoPriceData {
     usd: f64,
     eur: Option<f64>,
@@ -65,6 +70,7 @@ struct CoinCapResponse {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
 struct CoinCapData {
     id: String,
     symbol: String,
@@ -76,6 +82,7 @@ struct CoinCapData {
 
 // Binance ticker response
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct BinanceTicker {
     symbol: String,
     price: String,
@@ -596,7 +603,7 @@ impl ExchangeRateApiService {
         // 计算相对汇率
         for (currency, usd_rate) in usd_rates.iter() {
             if *currency != base_currency {
-                let rate = *usd_rate as f64 / base_to_usd;
+                let rate = *usd_rate / base_to_usd;
                 if let Ok(decimal_rate) = Decimal::from_str(&rate.to_string()) {
                     rates.insert((*currency).to_string(), decimal_rate);
                 }
@@ -636,6 +643,10 @@ impl ExchangeRateApiService {
         
         result
     }
+}
+
+impl Default for ExchangeRateApiService {
+    fn default() -> Self { Self::new() }
 }
 
 // 单例模式的全局服务实例

@@ -1,0 +1,135 @@
+# CODEOWNERS file for Jive Money project
+# This file defines code review assignments for different parts of the codebase
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global fallback - all files require review from project maintainer
+* @huazhou
+
+# Rust API backend code
+/jive-api/ @huazhou
+/jive-core/ @huazhou
+
+# Rust specific configurations
+*.toml @huazhou
+Cargo.lock @huazhou
+/deny.toml @huazhou
+
+# Flutter frontend code
+/jive-flutter/ @huazhou
+/jive-flutter/lib/ @huazhou
+/jive-flutter/pubspec.yaml @huazhou
+/jive-flutter/pubspec.lock @huazhou
+
+# Database and migration files
+/database/ @huazhou
+**/migrations/ @huazhou
+*.sql @huazhou
+
+# CI/CD and deployment configuration
+/.github/ @huazhou
+/.github/workflows/ @huazhou
+/.github/dependabot.yml @huazhou
+/docker-compose*.yml @huazhou
+/Dockerfile* @huazhou
+*.dockerfile @huazhou
+
+# Documentation files (require careful review)
+*.md @huazhou
+/docs/ @huazhou
+/README.md @huazhou
+/CLAUDE.md @huazhou
+
+# Security-sensitive files
+/jive-api/src/auth/ @huazhou
+/jive-api/src/middleware/ @huazhou
+/jive-api/src/security/ @huazhou
+**/auth_* @huazhou
+**/security_* @huazhou
+
+# Configuration files
+*.env* @huazhou
+*.config.* @huazhou
+/config/ @huazhou
+
+# Test files (require review to ensure proper coverage)
+**/tests/ @huazhou
+**/*_test.* @huazhou
+**/*_test_* @huazhou
+/jive-flutter/test/ @huazhou
+/jive-api/tests/ @huazhou
+
+# Build and deployment scripts
+*.sh @huazhou
+*.py @huazhou
+/scripts/ @huazhou
+/Makefile @huazhou
+**/Makefile @huazhou
+
+# Package management files
+/package*.json @huazhou
+/yarn.lock @huazhou
+/pnpm-lock.yaml @huazhou
+
+# Git configuration and workflow files
+/.gitignore @huazhou
+/.gitattributes @huazhou
+/.git* @huazhou
+
+# IDE and editor configurations
+/.vscode/ @huazhou
+/.idea/ @huazhou
+*.code-workspace @huazhou
+
+# Docker and containerization
+/*docker* @huazhou
+/docker/ @huazhou
+
+# API routes and handlers (critical for security)
+/jive-api/src/routes/ @huazhou
+/jive-api/src/handlers/ @huazhou
+/jive-api/src/controllers/ @huazhou
+
+# Database models and schema
+/jive-api/src/models/ @huazhou
+/jive-api/src/schema/ @huazhou
+/jive-flutter/lib/models/ @huazhou
+
+# Service layer (business logic)
+/jive-api/src/services/ @huazhou
+/jive-flutter/lib/services/ @huazhou
+
+# Provider layer (state management)
+/jive-flutter/lib/providers/ @huazhou
+
+# UI components and screens (require UX review)
+/jive-flutter/lib/screens/ @huazhou
+/jive-flutter/lib/widgets/ @huazhou
+/jive-flutter/lib/ui/ @huazhou
+
+# Theme and styling
+/jive-flutter/lib/theme/ @huazhou
+/jive-flutter/lib/core/theme/ @huazhou
+
+# Networking and API client code
+/jive-flutter/lib/core/network/ @huazhou
+/jive-api/src/client/ @huazhou
+
+# Storage and database adapters
+/jive-flutter/lib/core/storage/ @huazhou
+/jive-api/src/db/ @huazhou
+
+# External integrations and third-party code
+/jive-api/src/integrations/ @huazhou
+/jive-flutter/lib/integrations/ @huazhou
+
+# Utility and helper functions
+/jive-api/src/utils/ @huazhou
+/jive-flutter/lib/utils/ @huazhou
+
+# Localization and internationalization
+/jive-flutter/lib/l10n/ @huazhou
+/jive-flutter/assets/i18n/ @huazhou
+
+# Assets and static files
+/jive-flutter/assets/ @huazhou
+/jive-flutter/web/ @huazhou

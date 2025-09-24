@@ -1,11 +1,15 @@
 // 交易列表组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
-import '../cards/transaction_card.dart';
-import '../loading/loading_widget.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/cards/transaction_card.dart';
+import 'package:jive_money/ui/components/loading/loading_widget.dart';
+import 'package:jive_money/models/transaction.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../providers/currency_provider.dart';
+import 'package:jive_money/providers/currency_provider.dart';
+
+// 类型别名以兼容现有代码
+typedef TransactionData = Transaction;
 
 class TransactionList extends ConsumerWidget {
   final List<TransactionData> transactions;
@@ -65,20 +69,20 @@ class TransactionList extends ConsumerWidget {
           Icon(
             Icons.receipt_long_outlined,
             size: 64,
-            color: theme.colorScheme.onSurface.withOpacity(0.3),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
           Text(
             emptyMessage ?? '暂无交易记录',
             style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
           const SizedBox(height: 8),
           Text(
             '添加您的第一笔交易开始记账',
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.4),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
             ),
           ),
         ],
@@ -162,7 +166,7 @@ class TransactionList extends ConsumerWidget {
               Text(
                 _formatWeekday(date),
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -177,7 +181,7 @@ class TransactionList extends ConsumerWidget {
               Text(
                 '${transactions.length} 笔交易',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
               Text(

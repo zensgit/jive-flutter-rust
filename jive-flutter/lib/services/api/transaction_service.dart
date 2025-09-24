@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import '../../core/network/http_client.dart';
-import '../../core/config/api_config.dart';
-import '../../models/transaction.dart';
+import 'package:jive_money/core/network/http_client.dart';
+import 'package:jive_money/core/config/api_config.dart';
+import 'package:jive_money/models/transaction.dart';
 
 /// 交易API服务
 class TransactionService {
@@ -261,7 +261,7 @@ class TransactionService {
 
   /// 导出交易
   Future<String> exportTransactions({
-    required String format, // csv, excel, pdf
+    required String format, // excel, pdf, json（CSV 已禁用）
     DateTime? startDate,
     DateTime? endDate,
     String? accountId,

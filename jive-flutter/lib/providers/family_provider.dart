@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/family.dart' as family_model;
-import '../models/user.dart';
-import '../services/api/family_service.dart';
-import 'auth_provider.dart';
+import 'package:jive_money/models/family.dart' as family_model;
+import 'package:jive_money/services/api/family_service.dart';
+import 'package:jive_money/providers/auth_provider.dart';
 
 /// Family状态
 class FamilyState {
@@ -334,4 +333,10 @@ final canManageFamilyProvider = Provider<bool>((ref) {
 final canWriteInFamilyProvider = Provider<bool>((ref) {
   final familyState = ref.watch(familyControllerProvider);
   return familyState.canWrite;
+});
+
+/// Family Provider - 为了兼容性
+final familyProvider = Provider<family_model.Family?>((ref) {
+  final familyState = ref.watch(familyControllerProvider);
+  return familyState.currentFamily;
 });

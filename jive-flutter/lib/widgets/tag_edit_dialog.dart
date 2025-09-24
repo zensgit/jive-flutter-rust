@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/tag.dart';
-import '../providers/tag_provider.dart';
+import 'package:jive_money/models/tag.dart';
+import 'package:jive_money/providers/tag_provider.dart';
 
 class TagEditDialog extends ConsumerStatefulWidget {
   final Tag tag;
@@ -185,7 +185,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                 const Text('选择图标 (可选)',
                     style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
-                Container(
+                SizedBox(
                   height: 80,
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -232,7 +232,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                               child: Icon(entry.value, color: Colors.grey[700]),
                             ),
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                   ),
@@ -257,12 +257,12 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                     decoration: BoxDecoration(
                       color: Color(int.parse((_selectedColor ?? '#6471eb')
                               .replaceFirst('#', '0xff')))
-                          .withOpacity(0.15),
+                          .withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: Color(int.parse((_selectedColor ?? '#6471eb')
                                 .replaceFirst('#', '0xff')))
-                            .withOpacity(0.3),
+                            .withValues(alpha: 0.3),
                       ),
                     ),
                     child: Row(
@@ -401,7 +401,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
               border: Border.all(color: Colors.grey[300]!),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -416,7 +416,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                     radius: 12,
                     backgroundColor: Color(int.parse((group.color ?? '#6471eb')
                             .replaceFirst('#', '0xff')))
-                        .withOpacity(0.2),
+                        .withValues(alpha: 0.2),
                     child: Icon(
                       _getGroupIcon(group.icon),
                       size: 16,
@@ -519,7 +519,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
 
         setState(() {
           _isLoading = false;
-          _errorMessage = '标签"$name"已存在于${groupInfo}中';
+          _errorMessage = '标签"$name"已存在于$groupInfo中';
         });
         return;
       }
