@@ -555,6 +555,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [changes, flutter-test, rust-test]
+    if: needs.changes.outputs.flutter_changed == 'true'
     env:
       FLUTTER_CHANGED: ${{ needs.changes.outputs.flutter_changed }}
 
