@@ -21,6 +21,9 @@ help:
 	@echo "  make api-safe     - 启动完整版 API (安全CORS模式)"
 	@echo "  make sqlx-prepare-core - 准备 jive-core (server,db) 的 SQLx 元数据"
 	@echo "  make api-dev-core-export - 启动 API 并启用 core_export（走核心导出路径）"
+	@echo "  make db-dev-up    - 启动 Docker 开发数据库/Redis/Adminer (15432/16379/19080)"
+	@echo "  make db-dev-down  - 停止 Docker 开发数据库/Redis/Adminer"
+	@echo "  make api-dev-docker-db - 本地 API 连接 Docker 开发数据库 (15432)"
 
 # 安装依赖
 install:
@@ -167,17 +170,33 @@ api-dev:
 api-safe:
 	@echo "启动完整版 API (安全 CORS 模式, 端口 $${API_PORT:-8012})..."
 	@cd jive-api && unset CORS_DEV && API_PORT=$${API_PORT:-8012} cargo run --bin jive-api
-
 # 启动完整版 API（宽松 CORS + 启用 core_export，导出走 jive-core Service）
 api-dev-core-export:
 	@echo "启动 API (CORS_DEV=1, 启用 core_export, 端口 $${API_PORT:-8012})..."
 	@cd jive-api && CORS_DEV=1 API_PORT=$${API_PORT:-8012} cargo run --features core_export --bin jive-api
 
-# Enable local git hooks (pre-commit runs make api-lint)
-.PHONY: hooks
-hooks:
-	@git config core.hooksPath .githooks
-	@echo "✅ Git hooks enabled (pre-commit runs make api-lint)"
+# ---- Docker DB + Local API (Dev) ----
+db-dev-up:
+	@echo "启动 Docker 开发数据库/Redis/Adminer (端口: PG=15432, Redis=16379, Adminer=19080)..."
+	@cd jive-api && docker-compose -f docker-compose.dev.yml up -d postgres redis adminer
+	@echo "✅ Postgres: postgresql://postgres:postgres@localhost:15432/jive_money"
+	@echo "✅ Redis:    redis://localhost:16379"
+	@echo "✅ Adminer:  http://localhost:19080"
+
+db-dev-down:
+	@echo "停止 Docker 开发数据库/Redis/Adminer..."
+	@cd jive-api && docker-compose -f docker-compose.dev.yml down
+	@echo "✅ 已停止"
+
+api-dev-docker-db:
+	@echo "本地运行 API (连接 Docker 开发数据库 15432; CORS_DEV=1, SQLX_OFFLINE=true)..."
+	@cd jive-api && \
+		CORS_DEV=1 \
+		API_PORT=$${API_PORT:-8012} \
+		SQLX_OFFLINE=true \
+		RUST_LOG=$${RUST_LOG:-info} \
+		DATABASE_URL=$${DATABASE_URL:-postgresql://postgres:postgres@localhost:15432/jive_money} \
+		cargo run --bin jive-api
 
 # 代码格式化
 format:
