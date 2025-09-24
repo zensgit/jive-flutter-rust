@@ -54,7 +54,7 @@ impl Claims {
             &EncodingKey::from_secret(JWT_SECRET.as_ref()),
         )
         .map_err(|_| AuthError::TokenCreation)?;
-        
+
         Ok(token)
     }
 
@@ -66,7 +66,7 @@ impl Claims {
             &Validation::default(),
         )
         .map_err(|_| AuthError::InvalidToken)?;
-        
+
         Ok(token_data.claims)
     }
 
@@ -94,11 +94,11 @@ impl IntoResponse for AuthError {
             AuthError::TokenCreation => (StatusCode::INTERNAL_SERVER_ERROR, "Token creation error"),
             AuthError::InvalidToken => (StatusCode::UNAUTHORIZED, "Invalid token"),
         };
-        
+
         let body = Json(serde_json::json!({
             "error": error_message,
         }));
-        
+
         (status, body).into_response()
     }
 }
@@ -126,18 +126,18 @@ where
             .get("Authorization")
             .and_then(|value| value.to_str().ok())
             .ok_or(AuthError::MissingCredentials)?;
-        
+
         // 检查Bearer前缀
         if !auth_header.starts_with("Bearer ") {
             return Err(AuthError::InvalidToken);
         }
-        
+
         // 提取token
         let token = &auth_header[7..];
-        
+
         // 验证令牌并提取claims
         let claims = Claims::from_token(token)?;
-        
+
         Ok(claims)
     }
 }
@@ -177,11 +177,21 @@ pub struct RegisterRequest {
 }
 
 // Default values for registration
-fn default_country() -> String { "CN".to_string() }
-fn default_currency() -> String { "CNY".to_string() }
-fn default_language() -> String { "zh-CN".to_string() }
-fn default_timezone() -> String { "Asia/Shanghai".to_string() }
-fn default_date_format() -> String { "YYYY-MM-DD".to_string() }
+fn default_country() -> String {
+    "CN".to_string()
+}
+fn default_currency() -> String {
+    "CNY".to_string()
+}
+fn default_language() -> String {
+    "zh-CN".to_string()
+}
+fn default_timezone() -> String {
+    "Asia/Shanghai".to_string()
+}
+fn default_date_format() -> String {
+    "YYYY-MM-DD".to_string()
+}
 
 /// 注册响应
 #[derive(Debug, Serialize)]

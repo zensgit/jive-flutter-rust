@@ -1,21 +1,21 @@
 #![allow(dead_code, unused_imports)]
 
-pub mod handlers;
-pub mod error;
 pub mod auth;
+pub mod error;
+pub mod handlers;
+pub mod middleware;
 pub mod models;
 pub mod services;
-pub mod middleware;
 pub mod ws;
 
-use sqlx::PgPool;
 use axum::extract::FromRef;
+use sqlx::PgPool;
 
 /// 应用状态
 #[derive(Clone)]
 pub struct AppState {
     pub pool: PgPool,
-    pub ws_manager: Option<std::sync::Arc<crate::ws::WsConnectionManager>>,  // Optional WebSocket manager
+    pub ws_manager: Option<std::sync::Arc<crate::ws::WsConnectionManager>>, // Optional WebSocket manager
     pub redis: Option<redis::aio::ConnectionManager>,
 }
 
@@ -36,5 +36,3 @@ impl FromRef<AppState> for Option<redis::aio::ConnectionManager> {
 // Re-export commonly used types
 pub use error::{ApiError, ApiResult};
 pub use services::{ServiceContext, ServiceError};
-
-

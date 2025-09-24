@@ -13,4 +13,3 @@ use wasm_bindgen::prelude::*;
 pub fn ping() -> String {
     "ok".to_string()
 }
-

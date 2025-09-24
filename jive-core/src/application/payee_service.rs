@@ -1,5 +1,5 @@
 //! PayeeService - 收款方/商家管理服务
-//! 
+//!
 //! 提供全面的收款方管理功能，包括：
 //! - 收款方信息管理
 //! - 智能合并和去重
@@ -7,17 +7,17 @@
 //! - 使用统计和分析
 //! - 批量操作支持
 
-use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 use chrono::{NaiveDateTime, Utc};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use uuid::Uuid;
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
 use crate::{
     error::{JiveError, Result},
-    models::{ServiceContext, ServiceResponse, PaginationParams, PaginatedResult}
+    models::{PaginatedResult, PaginationParams, ServiceContext, ServiceResponse},
 };
 
 /// 收款方信息
@@ -46,39 +46,51 @@ pub struct Payee {
 #[wasm_bindgen]
 impl Payee {
     #[wasm_bindgen(getter)]
-    pub fn id(&self) -> String { self.id.clone() }
-    
+    pub fn id(&self) -> String {
+        self.id.clone()
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn name(&self) -> String { self.name.clone() }
-    
+    pub fn name(&self) -> String {
+        self.name.clone()
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn display_name(&self) -> Option<String> { self.display_name.clone() }
-    
+    pub fn display_name(&self) -> Option<String> {
+        self.display_name.clone()
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn category(&self) -> Option<String> { self.category.clone() }
-    
+    pub fn category(&self) -> Option<String> {
+        self.category.clone()
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn is_active(&self) -> bool { self.is_active }
-    
+    pub fn is_active(&self) -> bool {
+        self.is_active
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn usage_count(&self) -> u32 { self.usage_count }
+    pub fn usage_count(&self) -> u32 {
+        self.usage_count
+    }
 }
 
 /// 收款方类别枚举
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum PayeeCategory {
-    Restaurant,    // 餐厅
-    Retail,       // 零售
-    Utility,      // 公用事业
-    Insurance,    // 保险
-    Healthcare,   // 医疗
-    Education,    // 教育
+    Restaurant,     // 餐厅
+    Retail,         // 零售
+    Utility,        // 公用事业
+    Insurance,      // 保险
+    Healthcare,     // 医疗
+    Education,      // 教育
     Transportation, // 交通
-    Entertainment, // 娱乐
-    Finance,      // 金融
-    Government,   // 政府
-    Other,        // 其他
+    Entertainment,  // 娱乐
+    Finance,        // 金融
+    Government,     // 政府
+    Other,          // 其他
 }
 
 #[cfg(feature = "wasm")]
@@ -134,12 +146,12 @@ impl CreatePayeeRequest {
             logo_url: None,
         }
     }
-    
+
     #[wasm_bindgen(setter)]
     pub fn set_display_name(&mut self, display_name: Option<String>) {
         self.display_name = display_name;
     }
-    
+
     #[wasm_bindgen(setter)]
     pub fn set_category(&mut self, category: Option<String>) {
         self.category = category;
@@ -217,16 +229,24 @@ pub struct PayeeStats {
 #[wasm_bindgen]
 impl PayeeStats {
     #[wasm_bindgen(getter)]
-    pub fn payee_id(&self) -> String { self.payee_id.clone() }
-    
+    pub fn payee_id(&self) -> String {
+        self.payee_id.clone()
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn name(&self) -> String { self.name.clone() }
-    
+    pub fn name(&self) -> String {
+        self.name.clone()
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn total_transactions(&self) -> u32 { self.total_transactions }
-    
+    pub fn total_transactions(&self) -> u32 {
+        self.total_transactions
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn frequency_score(&self) -> f64 { self.frequency_score }
+    pub fn frequency_score(&self) -> f64 {
+        self.frequency_score
+    }
 }
 
 /// 收款方合并请求
@@ -249,7 +269,7 @@ impl MergePayeesRequest {
             keep_source_data: false,
         }
     }
-    
+
     #[wasm_bindgen]
     pub fn add_source_payee(&mut self, payee_id: String) {
         self.source_payee_ids.push(payee_id);
@@ -271,16 +291,24 @@ pub struct PayeeSuggestion {
 #[wasm_bindgen]
 impl PayeeSuggestion {
     #[wasm_bindgen(getter)]
-    pub fn payee_id(&self) -> String { self.payee_id.clone() }
-    
+    pub fn payee_id(&self) -> String {
+        self.payee_id.clone()
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn name(&self) -> String { self.name.clone() }
-    
+    pub fn name(&self) -> String {
+        self.name.clone()
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn confidence_score(&self) -> f64 { self.confidence_score }
-    
+    pub fn confidence_score(&self) -> f64 {
+        self.confidence_score
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn match_reason(&self) -> String { self.match_reason.clone() }
+    pub fn match_reason(&self) -> String {
+        self.match_reason.clone()
+    }
 }
 
 /// 收款方管理服务
@@ -312,7 +340,11 @@ impl PayeeService {
         }
 
         // 检查重复名称
-        if self.payees.values().any(|p| p.name.to_lowercase() == request.name.to_lowercase()) {
+        if self
+            .payees
+            .values()
+            .any(|p| p.name.to_lowercase() == request.name.to_lowercase())
+        {
             return Err(JiveError::ValidationError {
                 message: format!("收款方 '{}' 已存在", request.name),
             });
@@ -367,7 +399,9 @@ impl PayeeService {
         request: UpdatePayeeRequest,
         _context: &ServiceContext,
     ) -> Result<Payee> {
-        let payee = self.payees.get_mut(payee_id)
+        let payee = self
+            .payees
+            .get_mut(payee_id)
             .ok_or_else(|| JiveError::NotFound {
                 message: format!("收款方 {} 不存在", payee_id),
             })?;
@@ -379,15 +413,18 @@ impl PayeeService {
                     message: "收款方名称不能为空".to_string(),
                 });
             }
-            
+
             // 检查重复名称（排除自己）
-            if self.payees.values()
-                .any(|p| p.id != payee_id && p.name.to_lowercase() == name.to_lowercase()) {
+            if self
+                .payees
+                .values()
+                .any(|p| p.id != payee_id && p.name.to_lowercase() == name.to_lowercase())
+            {
                 return Err(JiveError::ValidationError {
                     message: format!("收款方 '{}' 已存在", name),
                 });
             }
-            
+
             payee.name = name.trim().to_string();
         }
 
@@ -443,12 +480,9 @@ impl PayeeService {
     }
 
     /// 获取收款方详情
-    pub async fn get_payee(
-        &self,
-        payee_id: &str,
-        _context: &ServiceContext,
-    ) -> Result<Payee> {
-        self.payees.get(payee_id)
+    pub async fn get_payee(&self, payee_id: &str, _context: &ServiceContext) -> Result<Payee> {
+        self.payees
+            .get(payee_id)
             .cloned()
             .ok_or_else(|| JiveError::NotFound {
                 message: format!("收款方 {} 不存在", payee_id),
@@ -486,7 +520,11 @@ impl PayeeService {
                 }
 
                 if let Some(name_contains) = &filter.name_contains {
-                    if !payee.name.to_lowercase().contains(&name_contains.to_lowercase()) {
+                    if !payee
+                        .name
+                        .to_lowercase()
+                        .contains(&name_contains.to_lowercase())
+                    {
                         return false;
                     }
                 }
@@ -519,18 +557,14 @@ impl PayeeService {
         let total_count = payees.len() as u32;
         let start = pagination.offset as usize;
         let end = (start + pagination.per_page as usize).min(payees.len());
-        
+
         let page_items = payees[start..end].iter().map(|p| (*p).clone()).collect();
 
         Ok(PaginatedResult::new(page_items, total_count, &pagination))
     }
 
     /// 删除收款方
-    pub async fn delete_payee(
-        &mut self,
-        payee_id: &str,
-        _context: &ServiceContext,
-    ) -> Result<()> {
+    pub async fn delete_payee(&mut self, payee_id: &str, _context: &ServiceContext) -> Result<()> {
         if !self.payees.contains_key(payee_id) {
             return Err(JiveError::NotFound {
                 message: format!("收款方 {} 不存在", payee_id),
@@ -562,10 +596,14 @@ impl PayeeService {
         }
 
         let query_lower = query.to_lowercase();
-        let mut matches: Vec<_> = self.payees.values()
+        let mut matches: Vec<_> = self
+            .payees
+            .values()
             .filter_map(|payee| {
                 let name_match = payee.name.to_lowercase().contains(&query_lower);
-                let display_name_match = payee.display_name.as_ref()
+                let display_name_match = payee
+                    .display_name
+                    .as_ref()
                     .map(|dn| dn.to_lowercase().contains(&query_lower))
                     .unwrap_or(false);
 
@@ -586,11 +624,13 @@ impl PayeeService {
 
         // 按相关性和使用次数排序
         matches.sort_by(|a, b| {
-            b.1.partial_cmp(&a.1).unwrap()
+            b.1.partial_cmp(&a.1)
+                .unwrap()
                 .then_with(|| b.0.usage_count.cmp(&a.0.usage_count))
         });
 
-        Ok(matches.into_iter()
+        Ok(matches
+            .into_iter()
             .map(|(payee, _)| payee)
             .take(limit as usize)
             .collect())
@@ -603,10 +643,13 @@ impl PayeeService {
         _context: &ServiceContext,
     ) -> Result<Payee> {
         // 验证目标收款方存在
-        let target_payee = self.payees.get(&request.target_payee_id)
+        let target_payee = self
+            .payees
+            .get(&request.target_payee_id)
             .ok_or_else(|| JiveError::NotFound {
                 message: format!("目标收款方 {} 不存在", request.target_payee_id),
-            })?.clone();
+            })?
+            .clone();
 
         // 验证源收款方都存在
         for source_id in &request.source_payee_ids {
@@ -624,10 +667,12 @@ impl PayeeService {
         for source_id in &request.source_payee_ids {
             if let Some(source_payee) = self.payees.get(source_id) {
                 total_usage += source_payee.usage_count;
-                
+
                 match (earliest_last_used, source_payee.last_used_at) {
                     (None, Some(date)) => earliest_last_used = Some(date),
-                    (Some(current), Some(date)) if date > current => earliest_last_used = Some(date),
+                    (Some(current), Some(date)) if date > current => {
+                        earliest_last_used = Some(date)
+                    }
                     _ => {}
                 }
             }
@@ -657,7 +702,9 @@ impl PayeeService {
         payee_id: &str,
         _context: &ServiceContext,
     ) -> Result<PayeeStats> {
-        let payee = self.payees.get(payee_id)
+        let payee = self
+            .payees
+            .get(payee_id)
             .ok_or_else(|| JiveError::NotFound {
                 message: format!("收款方 {} 不存在", payee_id),
             })?;
@@ -684,13 +731,16 @@ impl PayeeService {
         limit: u32,
         _context: &ServiceContext,
     ) -> Result<Vec<Payee>> {
-        let mut payees: Vec<_> = self.payees.values()
+        let mut payees: Vec<_> = self
+            .payees
+            .values()
             .filter(|p| p.is_active && p.usage_count > 0)
             .cloned()
             .collect();
 
         payees.sort_by(|a, b| {
-            b.usage_count.cmp(&a.usage_count)
+            b.usage_count
+                .cmp(&a.usage_count)
                 .then_with(|| b.last_used_at.cmp(&a.last_used_at))
         });
 
@@ -709,13 +759,17 @@ impl PayeeService {
         }
 
         let desc_lower = transaction_description.to_lowercase();
-        let mut suggestions: Vec<_> = self.payees.values()
+        let mut suggestions: Vec<_> = self
+            .payees
+            .values()
             .filter_map(|payee| {
-                let name_similarity = self.calculate_similarity(&payee.name.to_lowercase(), &desc_lower);
-                
+                let name_similarity =
+                    self.calculate_similarity(&payee.name.to_lowercase(), &desc_lower);
+
                 if name_similarity > 0.3 {
-                    let confidence = name_similarity * 0.7 + (payee.usage_count as f64 * 0.01).min(0.3);
-                    
+                    let confidence =
+                        name_similarity * 0.7 + (payee.usage_count as f64 * 0.01).min(0.3);
+
                     let suggestion = PayeeSuggestion {
                         payee_id: payee.id.clone(),
                         name: payee.name.clone(),
@@ -729,7 +783,7 @@ impl PayeeService {
                         },
                         similar_payees: Vec::new(),
                     };
-                    
+
                     Some(suggestion)
                 } else {
                     None
@@ -763,12 +817,10 @@ impl PayeeService {
     }
 
     /// 记录收款方使用
-    pub async fn record_usage(
-        &mut self,
-        payee_id: &str,
-        _context: &ServiceContext,
-    ) -> Result<()> {
-        let payee = self.payees.get_mut(payee_id)
+    pub async fn record_usage(&mut self, payee_id: &str, _context: &ServiceContext) -> Result<()> {
+        let payee = self
+            .payees
+            .get_mut(payee_id)
             .ok_or_else(|| JiveError::NotFound {
                 message: format!("收款方 {} 不存在", payee_id),
             })?;
@@ -785,7 +837,7 @@ impl PayeeService {
         // 简单的相似度计算（基于公共子串）
         let s1_words: Vec<&str> = s1.split_whitespace().collect();
         let s2_words: Vec<&str> = s2.split_whitespace().collect();
-        
+
         if s1_words.is_empty() || s2_words.is_empty() {
             return 0.0;
         }
@@ -960,7 +1012,9 @@ mod tests {
             logo_url: None,
         };
 
-        let result = service.create_payee(invalid_website_request, &context).await;
+        let result = service
+            .create_payee(invalid_website_request, &context)
+            .await;
         assert!(result.is_err());
         assert!(result.unwrap_err().to_string().contains("网站URL必须"));
     }
@@ -997,7 +1051,10 @@ mod tests {
         let results = service.search_payees("星", 10, &context).await.unwrap();
         assert_eq!(results.len(), 2); // 星巴克 和 星期天超市
 
-        let results = service.search_payees("Starbucks", 10, &context).await.unwrap();
+        let results = service
+            .search_payees("Starbucks", 10, &context)
+            .await
+            .unwrap();
         assert_eq!(results.len(), 1);
         assert_eq!(results[0].name, "星巴克");
 
@@ -1023,7 +1080,10 @@ mod tests {
             address: None,
             logo_url: None,
         };
-        let target_payee = service.create_payee(target_request, &context).await.unwrap();
+        let target_payee = service
+            .create_payee(target_request, &context)
+            .await
+            .unwrap();
 
         // 创建源收款方
         let source_request1 = CreatePayeeRequest {
@@ -1037,7 +1097,10 @@ mod tests {
             address: None,
             logo_url: None,
         };
-        let source_payee1 = service.create_payee(source_request1, &context).await.unwrap();
+        let source_payee1 = service
+            .create_payee(source_request1, &context)
+            .await
+            .unwrap();
 
         let source_request2 = CreatePayeeRequest {
             name: "星巴克咖啡".to_string(),
@@ -1050,12 +1113,24 @@ mod tests {
             address: None,
             logo_url: None,
         };
-        let source_payee2 = service.create_payee(source_request2, &context).await.unwrap();
+        let source_payee2 = service
+            .create_payee(source_request2, &context)
+            .await
+            .unwrap();
 
         // 记录一些使用次数
-        service.record_usage(&source_payee1.id, &context).await.unwrap();
-        service.record_usage(&source_payee2.id, &context).await.unwrap();
-        service.record_usage(&source_payee2.id, &context).await.unwrap();
+        service
+            .record_usage(&source_payee1.id, &context)
+            .await
+            .unwrap();
+        service
+            .record_usage(&source_payee2.id, &context)
+            .await
+            .unwrap();
+        service
+            .record_usage(&source_payee2.id, &context)
+            .await
+            .unwrap();
 
         // 合并收款方
         let merge_request = MergePayeesRequest {
@@ -1068,8 +1143,14 @@ mod tests {
         assert_eq!(merged_payee.usage_count, 3); // 0 + 1 + 2
 
         // 验证源收款方已被删除
-        assert!(service.get_payee(&source_payee1.id, &context).await.is_err());
-        assert!(service.get_payee(&source_payee2.id, &context).await.is_err());
+        assert!(service
+            .get_payee(&source_payee1.id, &context)
+            .await
+            .is_err());
+        assert!(service
+            .get_payee(&source_payee2.id, &context)
+            .await
+            .is_err());
 
         // 验证目标收款方仍存在
         assert!(service.get_payee(&target_payee.id, &context).await.is_ok());

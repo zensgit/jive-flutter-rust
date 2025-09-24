@@ -1,17 +1,17 @@
 //! Transaction service - 交易管理服务
-//! 
+//!
 //! 基于 Maybe 的交易功能转换而来，包括交易CRUD、分类、标签、搜索等功能
 
+use chrono::{DateTime, NaiveDate, Utc};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
-use chrono::{DateTime, Utc, NaiveDate};
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
-use crate::domain::{Transaction, TransactionType, TransactionStatus};
+use super::{BatchResult, PaginatedResult, PaginationParams, ServiceContext, ServiceResponse};
+use crate::domain::{Transaction, TransactionStatus, TransactionType};
 use crate::error::{JiveError, Result};
-use super::{ServiceContext, ServiceResponse, PaginationParams, PaginatedResult, BatchResult};
 
 /// 交易创建请求
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -151,7 +151,12 @@ impl CreateTransactionRequest {
     }
 
     #[wasm_bindgen]
-    pub fn set_multi_currency(&mut self, original_amount: String, original_currency: String, exchange_rate: String) {
+    pub fn set_multi_currency(
+        &mut self,
+        original_amount: String,
+        original_currency: String,
+        exchange_rate: String,
+    ) {
         self.original_amount = Some(original_amount);
         self.original_currency = Some(original_currency);
         self.exchange_rate = Some(exchange_rate);
@@ -427,7 +432,9 @@ impl TransactionService {
         request: UpdateTransactionRequest,
         context: ServiceContext,
     ) -> ServiceResponse<Transaction> {
-        let result = self._update_transaction(transaction_id, request, context).await;
+        let result = self
+            ._update_transaction(transaction_id, request, context)
+            .await;
         result.into()
     }
 
@@ -495,7 +502,9 @@ impl TransactionService {
         new_date: Option<String>,
         context: ServiceContext,
     ) -> ServiceResponse<Transaction> {
-        let result = self._duplicate_transaction(transaction_id, new_date, context).await;
+        let result = self
+            ._duplicate_transaction(transaction_id, new_date, context)
+            .await;
         result.into()
     }
 
@@ -581,9 +590,13 @@ impl TransactionService {
             .name(request.name)
             .amount(request.amount)
             .currency(request.currency)
-            .date(NaiveDate::parse_from_str(&request.date, "%Y-%m-%d").map_err(|_| {
-                JiveError::InvalidDate { date: request.date.clone() }
-            })?)
+            .date(
+                NaiveDate::parse_from_str(&request.date, "%Y-%m-%d").map_err(|_| {
+                    JiveError::InvalidDate {
+                        date: request.date.clone(),
+                    }
+                })?,
+            )
             .transaction_type(request.transaction_type)
             .build()?;
 
@@ -614,8 +627,11 @@ impl TransactionService {
         }
 
         // 设置多货币信息
-        if let (Some(original_amount), Some(original_currency), Some(exchange_rate)) = 
-            (request.original_amount, request.original_currency, request.exchange_rate) {
+        if let (Some(original_amount), Some(original_currency), Some(exchange_rate)) = (
+            request.original_amount,
+            request.original_currency,
+            request.exchange_rate,
+        ) {
             transaction.set_multi_currency(original_amount, original_currency, exchange_rate)?;
         }
 
@@ -738,12 +754,19 @@ impl TransactionService {
         for i in 1..=5 {
             let transaction = Transaction::new(
                 format!("account-{}", i),
-                filter.ledger_id.clone().unwrap_or_else(|| "ledger-default".to_string()),
+                filter
+                    .ledger_id
+                    .clone()
+                    .unwrap_or_else(|| "ledger-default".to_string()),
                 format!("Transaction {}", i),
                 format!("{}.00", i * 100),
                 "USD".to_string(),
                 "2023-12-25".to_string(),
-                if i % 2 == 0 { TransactionType::Income } else { TransactionType::Expense },
+                if i % 2 == 0 {
+                    TransactionType::Income
+                } else {
+                    TransactionType::Expense
+                },
             )?;
             transactions.push(transaction);
         }
@@ -781,7 +804,10 @@ impl TransactionService {
         let mut result = BatchResult::new();
 
         for transaction_id in request.transaction_ids {
-            match self._apply_bulk_operation(&transaction_id, &request, &context).await {
+            match self
+                ._apply_bulk_operation(&transaction_id, &request, &context)
+                .await
+            {
                 Ok(_) => result.add_success(),
                 Err(error) => result.add_error(error.to_string()),
             }
@@ -797,7 +823,9 @@ impl TransactionService {
         request: &BulkTransactionRequest,
         context: &ServiceContext,
     ) -> Result<()> {
-        let mut transaction = self._get_transaction(transaction_id.to_string(), context.clone()).await?;
+        let mut transaction = self
+            ._get_transaction(transaction_id.to_string(), context.clone())
+            .await?;
 
         match request.operation {
             BulkOperation::UpdateCategory => {
@@ -857,12 +885,17 @@ impl TransactionService {
         filter: TransactionFilter,
         context: ServiceContext,
     ) -> Result<HashMap<String, Vec<Transaction>>> {
-        let transactions = self._search_transactions(filter, PaginationParams::new(1, 1000), context).await?;
+        let transactions = self
+            ._search_transactions(filter, PaginationParams::new(1, 1000), context)
+            .await?;
 
         let mut grouped = HashMap::new();
         for transaction in transactions {
             let month_key = transaction.month_key();
-            grouped.entry(month_key).or_insert_with(Vec::new).push(transaction);
+            grouped
+                .entry(month_key)
+                .or_insert_with(Vec::new)
+                .push(transaction);
         }
 
         Ok(grouped)
@@ -874,13 +907,19 @@ impl TransactionService {
         filter: TransactionFilter,
         context: ServiceContext,
     ) -> Result<HashMap<String, Vec<Transaction>>> {
-        let transactions = self._search_transactions(filter, PaginationParams::new(1, 1000), context).await?;
+        let transactions = self
+            ._search_transactions(filter, PaginationParams::new(1, 1000), context)
+            .await?;
 
         let mut grouped = HashMap::new();
         for transaction in transactions {
-            let category_key = transaction.category_id()
+            let category_key = transaction
+                .category_id()
                 .unwrap_or_else(|| "uncategorized".to_string());
-            grouped.entry(category_key).or_insert_with(Vec::new).push(transaction);
+            grouped
+                .entry(category_key)
+                .or_insert_with(Vec::new)
+                .push(transaction);
         }
 
         Ok(grouped)
@@ -960,7 +999,7 @@ mod tests {
     async fn test_create_transaction() {
         let service = TransactionService::new();
         let context = ServiceContext::new("user-123".to_string());
-        
+
         let request = CreateTransactionRequest::new(
             "account-123".to_string(),
             "ledger-456".to_string(),
@@ -983,11 +1022,13 @@ mod tests {
     async fn test_search_transactions() {
         let service = TransactionService::new();
         let context = ServiceContext::new("user-123".to_string());
-        
+
         let filter = TransactionFilter::new();
         let pagination = PaginationParams::new(1, 10);
 
-        let result = service._search_transactions(filter, pagination, context).await;
+        let result = service
+            ._search_transactions(filter, pagination, context)
+            .await;
         assert!(result.is_ok());
 
         let transactions = result.unwrap();
@@ -998,7 +1039,7 @@ mod tests {
     async fn test_transaction_validation() {
         let service = TransactionService::new();
         let context = ServiceContext::new("user-123".to_string());
-        
+
         let request = CreateTransactionRequest::new(
             "account-123".to_string(),
             "ledger-456".to_string(),

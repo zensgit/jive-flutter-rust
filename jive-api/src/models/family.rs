@@ -86,7 +86,7 @@ impl Family {
         use rand::Rng;
         const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         let mut rng = rand::thread_rng();
-        
+
         (0..8)
             .map(|_| {
                 let idx = rng.gen_range(0..CHARSET.len());
@@ -119,7 +119,7 @@ mod tests {
     #[test]
     fn test_new_family() {
         let family = Family::new("Test Family".to_string());
-        
+
         assert_eq!(family.name, "Test Family");
         assert_eq!(family.currency, "CNY");
         assert_eq!(family.timezone, "Asia/Shanghai");
