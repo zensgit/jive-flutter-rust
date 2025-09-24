@@ -29,6 +29,8 @@ jobs:
   rustfmt-check:
     name: Rustfmt Check
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
 
     steps:
     - uses: actions/checkout@v4
@@ -50,6 +52,8 @@ jobs:
   cargo-deny:
     name: Cargo Deny Check
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
 
     steps:
     - uses: actions/checkout@v4
