@@ -214,8 +214,7 @@ pub async fn login(
     if cfg!(debug_assertions) {
         println!(
             "DEBUG[login]: query_by_email={}, input={}",
-            query_by_email,
-            &login_input
+            query_by_email, &login_input
         );
     }
     let row = if query_by_email {
@@ -289,14 +288,13 @@ pub async fn login(
     // 验证密码（调试信息仅在 debug 构建下输出）
     #[cfg(debug_assertions)]
     {
-        println!("DEBUG[login]: attempting password verify for {}", user.email);
+        println!(
+            "DEBUG[login]: attempting password verify for {}",
+            user.email
+        );
         // 避免泄露完整哈希，仅打印前缀长度信息
         let hash_len = user.password_hash.len();
-        let prefix: String = user
-            .password_hash
-            .chars()
-            .take(7)
-            .collect();
+        let prefix: String = user.password_hash.chars().take(7).collect();
         println!("DEBUG[login]: hash prefix={} (len={})", prefix, hash_len);
     }
 
