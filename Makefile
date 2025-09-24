@@ -19,6 +19,8 @@ help:
 	@echo "  make logs         - 查看日志"
 	@echo "  make api-dev      - 启动完整版 API (CORS_DEV=1)"
 	@echo "  make api-safe     - 启动完整版 API (安全CORS模式)"
+	@echo "  make sqlx-prepare-core - 准备 jive-core (server,db) 的 SQLx 元数据"
+	@echo "  make api-dev-core-export - 启动 API 并启用 core_export（走核心导出路径）"
 
 # 安装依赖
 install:
@@ -65,8 +67,8 @@ build-flutter:
 test: test-rust test-flutter
 
 test-rust:
-	@echo "运行 Rust 测试..."
-	@cd jive-core && cargo test --no-default-features --features server
+	@echo "运行 Rust API 测试 (SQLX_OFFLINE=true)..."
+	@cd jive-api && SQLX_OFFLINE=true cargo test --tests
 
 test-flutter:
 	@echo "运行 Flutter 测试..."
@@ -144,10 +146,17 @@ api-sqlx-prepare-local:
 	@cd jive-api && cargo install sqlx-cli --no-default-features --features postgres || true
 	@cd jive-api && SQLX_OFFLINE=false cargo sqlx prepare
 
-# Enable local git hooks once per clone
-hooks:
-	@git config core.hooksPath .githooks
-	@echo "✅ Git hooks enabled (pre-commit runs make api-lint)"
+# Prepare SQLx metadata for jive-core (server,db)
+sqlx-prepare-core:
+	@echo "准备 jive-core SQLx 元数据 (features=server,db)..."
+	@echo "确保数据库与迁移就绪 (优先 5433)..."
+	@cd jive-api && DB_PORT=$${DB_PORT:-5433} ./scripts/migrate_local.sh --force || true
+	@cd jive-core && cargo install sqlx-cli --no-default-features --features postgres || true
+	@cd jive-core && \
+		DATABASE_URL=$${DATABASE_URL:-postgresql://postgres:postgres@localhost:$${DB_PORT:-5433}/jive_money} \
+		SQLX_OFFLINE=false cargo sqlx prepare -- --features "server,db"
+	@echo "✅ 已生成 jive-core/.sqlx 元数据"
+
 
 # 启动完整版 API（宽松 CORS 开发模式，支持自定义端口 API_PORT）
 api-dev:
@@ -159,11 +168,16 @@ api-safe:
 	@echo "启动完整版 API (安全 CORS 模式, 端口 $${API_PORT:-8012})..."
 	@cd jive-api && unset CORS_DEV && API_PORT=$${API_PORT:-8012} cargo run --bin jive-api
 
-# Enable local git hooks to run pre-commit (api-lint)
+# 启动完整版 API（宽松 CORS + 启用 core_export，导出走 jive-core Service）
+api-dev-core-export:
+	@echo "启动 API (CORS_DEV=1, 启用 core_export, 端口 $${API_PORT:-8012})..."
+	@cd jive-api && CORS_DEV=1 API_PORT=$${API_PORT:-8012} cargo run --features core_export --bin jive-api
+
+# Enable local git hooks (pre-commit runs make api-lint)
 .PHONY: hooks
 hooks:
 	@git config core.hooksPath .githooks
-	@echo "Git hooks enabled (pre-commit will run make api-lint)"
+	@echo "✅ Git hooks enabled (pre-commit runs make api-lint)"
 
 # 代码格式化
 format:
