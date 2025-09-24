@@ -211,6 +211,13 @@ pub async fn login(
 
     // 查找用户
     let query_by_email = login_input.contains('@');
+    if cfg!(debug_assertions) {
+        println!(
+            "DEBUG[login]: query_by_email={}, input={}",
+            query_by_email,
+            &login_input
+        );
+    }
     let row = if query_by_email {
         sqlx::query(
             r#"
@@ -240,7 +247,12 @@ pub async fn login(
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     }
-    .ok_or(ApiError::Unauthorized)?;
+    .ok_or_else(|| {
+        if cfg!(debug_assertions) {
+            println!("DEBUG[login]: user not found for input={}", &login_input);
+        }
+        ApiError::Unauthorized
+    })?;
 
     use sqlx::Row;
     let user = User {
@@ -268,31 +280,57 @@ pub async fn login(
 
     // 检查用户状态
     if !user.is_active {
+        if cfg!(debug_assertions) {
+            println!("DEBUG[login]: user inactive: {}", user.email);
+        }
         return Err(ApiError::Forbidden);
     }
 
-    // 验证密码
-    println!(
-        "DEBUG: Attempting to verify password for user: {}",
-        user.email
-    );
-    println!(
-        "DEBUG: Password hash from DB: {}",
-        &user.password_hash[..50.min(user.password_hash.len())]
-    );
+    // 验证密码（调试信息仅在 debug 构建下输出）
+    #[cfg(debug_assertions)]
+    {
+        println!("DEBUG[login]: attempting password verify for {}", user.email);
+        // 避免泄露完整哈希，仅打印前缀长度信息
+        let hash_len = user.password_hash.len();
+        let prefix: String = user
+            .password_hash
+            .chars()
+            .take(7)
+            .collect();
+        println!("DEBUG[login]: hash prefix={} (len={})", prefix, hash_len);
+    }
 
-    let parsed_hash = PasswordHash::new(&user.password_hash).map_err(|e| {
-        println!("DEBUG: Failed to parse password hash: {:?}", e);
-        ApiError::InternalServerError
-    })?;
-
-    let argon2 = Argon2::default();
-    argon2
-        .verify_password(req.password.as_bytes(), &parsed_hash)
-        .map_err(|e| {
-            println!("DEBUG: Password verification failed: {:?}", e);
-            ApiError::Unauthorized
+    let hash = user.password_hash.as_str();
+    // 其余详细哈希打印已在上方受限
+    // Support Argon2 (preferred) and bcrypt (legacy) hashes
+    if hash.starts_with("$argon2") {
+        let parsed_hash = PasswordHash::new(hash).map_err(|e| {
+            #[cfg(debug_assertions)]
+            println!("DEBUG[login]: failed to parse Argon2 hash: {:?}", e);
+            ApiError::InternalServerError
         })?;
+        let argon2 = Argon2::default();
+        argon2
+            .verify_password(req.password.as_bytes(), &parsed_hash)
+            .map_err(|_| ApiError::Unauthorized)?;
+    } else if hash.starts_with("$2") {
+        // bcrypt format ($2a$, $2b$, $2y$)
+        let ok = bcrypt::verify(&req.password, hash).unwrap_or(false);
+        if !ok {
+            return Err(ApiError::Unauthorized);
+        }
+    } else {
+        // Unknown format: try Argon2 parse as best-effort, otherwise unauthorized
+        match PasswordHash::new(hash) {
+            Ok(parsed) => {
+                let argon2 = Argon2::default();
+                argon2
+                    .verify_password(req.password.as_bytes(), &parsed)
+                    .map_err(|_| ApiError::Unauthorized)?;
+            }
+            Err(_) => return Err(ApiError::Unauthorized),
+        }
+    }
 
     // 获取用户的family_id（如果有）
     let family_row = sqlx::query("SELECT family_id FROM family_members WHERE user_id = $1 LIMIT 1")
