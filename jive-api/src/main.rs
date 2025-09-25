@@ -628,6 +628,13 @@ async fn health_check(State(state): State<AppState>) -> Json<serde_json::Value> 
      .and_then(|row| row.try_get::<i64, _>("c").ok())
      .unwrap_or(0);
 
+    // Optional hash distribution (best-effort; ignore errors)
+    let (bcrypt_count, argon2_count) = if let Ok(row) = sqlx::query(
+        "SELECT COUNT(*) FILTER (WHERE password_hash LIKE '$2%') AS b,\n                COUNT(*) FILTER (WHERE password_hash LIKE '$argon2%') AS a FROM users"
+    ).fetch_one(&state.pool).await {
+        use sqlx::Row; (row.try_get("b").unwrap_or(0), row.try_get("a").unwrap_or(0))
+    } else { (0,0) };
+
     Json(json!({
         "status": "healthy",
         "service": "jive-money-api",
@@ -637,7 +644,8 @@ async fn health_check(State(state): State<AppState>) -> Json<serde_json::Value> 
             "database": true,
             "auth": true,
             "ledgers": true,
-            "redis": state.redis.is_some()
+            "redis": state.redis.is_some(),
+            "export_stream": cfg!(feature = "export_stream")
         },
         "metrics": {
             "exchange_rates": {
@@ -645,6 +653,10 @@ async fn health_check(State(state): State<AppState>) -> Json<serde_json::Value> 
                 "todays_rows": todays_rows,
                 "manual_overrides_active": manual_active,
                 "manual_overrides_expired": manual_expired
+            },
+            "hash_distribution": {
+                "bcrypt": bcrypt_count,
+                "argon2": argon2_count
             }
         },
         "timestamp": chrono::Utc::now().to_rfc3339()
