@@ -1,4 +1,4 @@
-use chrono::{NaiveDate, Utc};
+use chrono::NaiveDate;
 use rand::Rng;
 use rust_decimal::prelude::FromPrimitive;
 use rust_decimal::Decimal;
@@ -88,7 +88,7 @@ async fn seed(pool: &PgPool, rows: i64) -> anyhow::Result<()> {
     let batch_size = 1000;
     let mut inserted = 0;
     while inserted < rows {
-        let take = std::cmp::min(batch_size, (rows - inserted) as i64);
+        let take = std::cmp::min(batch_size, rows - inserted);
         let mut qb = sqlx::QueryBuilder::new("INSERT INTO transactions (id,ledger_id,account_id,transaction_type,amount,currency,transaction_date,description,created_at,updated_at) VALUES ");
         let mut sep = qb.separated(",");
         for _ in 0..take {
