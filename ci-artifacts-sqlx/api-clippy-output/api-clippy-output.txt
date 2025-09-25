@@ -1,4 +1,0 @@
-[1m[32m    Checking[0m jive-money-api v1.0.0 (/home/runner/work/jive-flutter-rust/jive-flutter-rust/jive-api)
-[1m[32m    Finished[0m `dev` profile [optimized + debuginfo] target(s) in 9.76s
-[1m[33mwarning[0m[1m:[0m the following packages contain code that will be rejected by a future version of Rust: sqlx-postgres v0.7.4
-[1m[36mnote[0m[1m:[0m to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 12`
