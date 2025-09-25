@@ -24,6 +24,7 @@ help:
 	@echo "  make db-dev-up    - 启动 Docker 开发数据库/Redis/Adminer (15432/16379/19080)"
 	@echo "  make db-dev-down  - 停止 Docker 开发数据库/Redis/Adminer"
 	@echo "  make api-dev-docker-db - 本地 API 连接 Docker 开发数据库 (15432)"
+	@echo "  make db-dev-status - 显示 Docker 开发数据库/Redis/Adminer 与 API 端口状态"
 
 # 安装依赖
 install:
@@ -196,8 +197,22 @@ api-dev-docker-db:
 		SQLX_OFFLINE=true \
 		RUST_LOG=$${RUST_LOG:-info} \
 		DATABASE_URL=$${DATABASE_URL:-postgresql://postgres:postgres@localhost:5433/jive_money} \
-		REDIS_URL=$${REDIS_URL:-redis://localhost:6380} \
 		cargo run --bin jive-api
+
+db-dev-status:
+	@echo "🔎 Docker 开发栈容器状态 (postgres/redis/adminer):"
+	@docker ps --format '{{.Names}}\t{{.Status}}\t{{.Ports}}' | grep -E 'jive-(postgres|redis|adminer)-dev' || echo "(未启动)"
+	@echo ""
+	@echo "📡 建议的连接信息:"
+	@echo "  - Postgres: postgresql://postgres:postgres@localhost:5433/jive_money"
+	@echo "  - Redis:    redis://localhost:6380"
+	@echo "  - Adminer:  http://localhost:9080"
+	@echo ""
+	@echo "🩺 API (本地) 端口状态:"
+	@lsof -iTCP:$${API_PORT:-8012} -sTCP:LISTEN 2>/dev/null || echo "(端口 $${API_PORT:-8012} 未监听)"
+	@echo ""
+	@echo "🌿 /health:"
+	@curl -fsS http://localhost:$${API_PORT:-8012}/health 2>/dev/null || echo "(API 未响应)"
 
 # 代码格式化
 format:
