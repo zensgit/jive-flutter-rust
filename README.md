@@ -176,6 +176,25 @@ curl -s http://localhost:8012/health
 make db-dev-down
 ```
 
+### 超级管理员默认密码说明
+
+迁移脚本会为内置超级管理员（`superadmin@jive.money`）设置一个固定 Argon2 哈希，对应初始密码：`SuperAdmin@123`。
+
+注意事项：
+- 如在本地手动用工具（例如 `cargo run --bin hash_password`）更新了该账号密码，再次重建 / 重新应用迁移（或使用全新数据库）时会回退到默认密码。
+- CI / 新开发环境请按默认密码尝试首次登录后立即修改。
+- 不要在仓库提交真实生产密码；如需变更默认策略，可新增迁移修改哈希值并在安全文档中注明。
+
+本地若需要快速验证超级管理员登录，可：
+
+```bash
+curl -s -X POST http://localhost:8012/api/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"superadmin@jive.money","password":"SuperAdmin@123"}'
+```
+
+返回中包含 `token` 即表示成功；请在生产部署中更换为安全随机密码并限制暴露。 
+
 ## 🧪 本地CI（不占用GitHub Actions分钟）
 
 当你的GitHub Actions分钟不足时，可以使用本地CI脚本模拟CI流程：
