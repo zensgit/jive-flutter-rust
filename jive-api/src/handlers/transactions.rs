@@ -13,6 +13,8 @@ use futures_util::{stream, StreamExt};
 use rust_decimal::prelude::ToPrimitive;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "export_stream")]
+use sqlx::Execute;
 use sqlx::{Executor, PgPool, QueryBuilder, Row};
 use std::convert::Infallible;
 use std::pin::Pin;
@@ -454,10 +456,13 @@ pub async fn export_transactions_csv_stream(
         use tokio_stream::wrappers::ReceiverStream;
         let include_header = q.include_header.unwrap_or(true);
         let (tx, rx) = mpsc::channel::<Result<bytes::Bytes, ApiError>>(8);
-        let built = query.build();
+        // Build the query and extract the SQL string as owned
+        let built_query = query.build();
+        let sql = built_query.sql().to_owned();
         let pool_clone = pool.clone();
         tokio::spawn(async move {
-            let mut stream = built.fetch_many(&pool_clone);
+            // Execute the raw SQL query using sqlx::raw_sql
+            let mut stream = sqlx::raw_sql(&sql).fetch(&pool_clone);
             // Header
             if include_header {
                 if tx
@@ -472,7 +477,7 @@ pub async fn export_transactions_csv_stream(
             }
             while let Some(item) = stream.next().await {
                 match item {
-                    Ok(sqlx::Either::Right(row)) => {
+                    Ok(row) => {
                         use sqlx::Row;
                         let date: NaiveDate = row.get("transaction_date");
                         let desc: String =
@@ -502,7 +507,6 @@ pub async fn export_transactions_csv_stream(
                             return;
                         }
                     }
-                    Ok(sqlx::Either::Left(_)) => { /* ignore query result count */ }
                     Err(e) => {
                         let _ = tx.send(Err(ApiError::DatabaseError(e.to_string()))).await;
                         return;
