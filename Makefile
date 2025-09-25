@@ -177,11 +177,11 @@ api-dev-core-export:
 
 # ---- Docker DB + Local API (Dev) ----
 db-dev-up:
-	@echo "启动 Docker 开发数据库/Redis/Adminer (端口: PG=15432, Redis=16379, Adminer=19080)..."
+	@echo "启动 Docker 开发数据库/Redis/Adminer (端口: PG=5433, Redis=6380, Adminer=9080)..."
 	@cd jive-api && docker-compose -f docker-compose.dev.yml up -d postgres redis adminer
-	@echo "✅ Postgres: postgresql://postgres:postgres@localhost:15432/jive_money"
-	@echo "✅ Redis:    redis://localhost:16379"
-	@echo "✅ Adminer:  http://localhost:19080"
+	@echo "✅ Postgres: postgresql://postgres:postgres@localhost:5433/jive_money"
+	@echo "✅ Redis:    redis://localhost:6380"
+	@echo "✅ Adminer:  http://localhost:9080"
 
 db-dev-down:
 	@echo "停止 Docker 开发数据库/Redis/Adminer..."
@@ -189,13 +189,14 @@ db-dev-down:
 	@echo "✅ 已停止"
 
 api-dev-docker-db:
-	@echo "本地运行 API (连接 Docker 开发数据库 15432; CORS_DEV=1, SQLX_OFFLINE=true)..."
+	@echo "本地运行 API (连接 Docker 开发数据库 5433; CORS_DEV=1, SQLX_OFFLINE=true)..."
 	@cd jive-api && \
 		CORS_DEV=1 \
 		API_PORT=$${API_PORT:-8012} \
 		SQLX_OFFLINE=true \
 		RUST_LOG=$${RUST_LOG:-info} \
-		DATABASE_URL=$${DATABASE_URL:-postgresql://postgres:postgres@localhost:15432/jive_money} \
+		DATABASE_URL=$${DATABASE_URL:-postgresql://postgres:postgres@localhost:5433/jive_money} \
+		REDIS_URL=$${REDIS_URL:-redis://localhost:6380} \
 		cargo run --bin jive-api
 
 # 代码格式化
