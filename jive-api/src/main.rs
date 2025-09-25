@@ -55,7 +55,7 @@ use handlers::template_handler::*;
 use handlers::transactions::*;
 
 // 使用库中的 AppState
-use jive_money_api::AppState;
+use jive_money_api::{AppState, AppMetrics};
 
 /// WebSocket 查询参数
 #[derive(Debug, Deserialize)]
@@ -220,6 +220,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         pool: pool.clone(),
         ws_manager: Some(ws_manager.clone()),
         redis: redis_manager,
+        metrics: AppMetrics::new(),
     };
 
     // 启动定时任务（汇率更新等）
@@ -628,12 +629,23 @@ async fn health_check(State(state): State<AppState>) -> Json<serde_json::Value> 
      .and_then(|row| row.try_get::<i64, _>("c").ok())
      .unwrap_or(0);
 
-    // Optional hash distribution (best-effort; ignore errors)
-    let (bcrypt_count, argon2_count) = if let Ok(row) = sqlx::query(
-        "SELECT COUNT(*) FILTER (WHERE password_hash LIKE '$2%') AS b,\n                COUNT(*) FILTER (WHERE password_hash LIKE '$argon2%') AS a FROM users"
+    // Detailed hash distribution (best-effort; ignore errors)
+    let (b2a, b2b, b2y, a2id) = if let Ok(row) = sqlx::query(
+        "SELECT \
+            COUNT(*) FILTER (WHERE password_hash LIKE '$2a$%') AS b2a,\
+            COUNT(*) FILTER (WHERE password_hash LIKE '$2b$%') AS b2b,\
+            COUNT(*) FILTER (WHERE password_hash LIKE '$2y$%') AS b2y,\
+            COUNT(*) FILTER (WHERE password_hash LIKE '$argon2id$%') AS a2id\
+         FROM users"
     ).fetch_one(&state.pool).await {
-        use sqlx::Row; (row.try_get("b").unwrap_or(0), row.try_get("a").unwrap_or(0))
-    } else { (0,0) };
+        use sqlx::Row;
+        (
+            row.try_get::<i64, _>("b2a").unwrap_or(0),
+            row.try_get::<i64, _>("b2b").unwrap_or(0),
+            row.try_get::<i64, _>("b2y").unwrap_or(0),
+            row.try_get::<i64, _>("a2id").unwrap_or(0)
+        )
+    } else { (0,0,0,0) };
 
     Json(json!({
         "status": "healthy",
@@ -655,8 +667,12 @@ async fn health_check(State(state): State<AppState>) -> Json<serde_json::Value> 
                 "manual_overrides_expired": manual_expired
             },
             "hash_distribution": {
-                "bcrypt": bcrypt_count,
-                "argon2": argon2_count
+                "bcrypt": {"2a": b2a, "2b": b2b, "2y": b2y},
+                "argon2id": a2id
+            },
+            "rehash": {
+                "enabled": std::env::var("REHASH_ON_LOGIN").map(|v| !matches!(v.as_str(), "0" | "false" | "FALSE")).unwrap_or(true),
+                "count": state.metrics.get_rehash_count()
             }
         },
         "timestamp": chrono::Utc::now().to_rfc3339()

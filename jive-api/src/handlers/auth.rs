@@ -199,9 +199,10 @@ pub async fn register(
 
 /// 用户登录
 pub async fn login(
-    State(pool): State<PgPool>,
+    State(state): State<crate::AppState>,
     Json(req): Json<LoginRequest>,
 ) -> ApiResult<Json<Value>> {
+    let pool = &state.pool;
     // 允许在输入为“superadmin”时映射为统一邮箱（便于本地/测试环境）
     // 不影响密码校验，仅做标识规范化
     let mut login_input = req.email.trim().to_string();
@@ -228,7 +229,7 @@ pub async fn login(
             "#,
         )
         .bind(&login_input)
-        .fetch_optional(&pool)
+        .fetch_optional(&state.pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     } else {
@@ -242,7 +243,7 @@ pub async fn login(
             "#,
         )
         .bind(&login_input)
-        .fetch_optional(&pool)
+                .fetch_optional(&state.pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     }
@@ -333,12 +334,14 @@ pub async fn login(
                     if let Err(e) = sqlx::query("UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2")
                         .bind(new_hash.to_string())
                         .bind(user.id)
-                        .execute(&pool)
+                        .execute(pool)
                         .await
                     {
                         tracing::warn!(user_id=%user.id, error=?e, "password rehash failed");
                     } else {
                         tracing::debug!(user_id=%user.id, "password rehash succeeded: bcrypt→argon2id");
+                        // Increment rehash metrics
+                        state.metrics.increment_rehash();
                     }
                 }
                 Err(e) => tracing::warn!(user_id=%user.id, error=?e, "failed to generate Argon2id hash"),
@@ -360,7 +363,7 @@ pub async fn login(
     // 获取用户的family_id（如果有）
     let family_row = sqlx::query("SELECT family_id FROM family_members WHERE user_id = $1 LIMIT 1")
         .bind(user.id)
-        .fetch_optional(&pool)
+        .fetch_optional(pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
@@ -373,7 +376,7 @@ pub async fn login(
     // 更新最后登录时间
     sqlx::query("UPDATE users SET last_login_at = NOW() WHERE id = $1")
         .bind(user.id)
-        .execute(&pool)
+        .execute(pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
