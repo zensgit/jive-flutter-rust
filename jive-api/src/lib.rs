@@ -28,6 +28,12 @@ pub struct AppMetrics {
     pub rehash_count: Arc<AtomicU64>,
 }
 
+impl Default for AppMetrics {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AppMetrics {
     pub fn new() -> Self {
         Self {
