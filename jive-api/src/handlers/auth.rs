@@ -301,6 +301,11 @@ pub async fn login(
     let hash = user.password_hash.as_str();
     // 其余详细哈希打印已在上方受限
     // Support Argon2 (preferred) and bcrypt (legacy) hashes
+    // Allow disabling opportunistic rehash via REHASH_ON_LOGIN=0
+    let enable_rehash = std::env::var("REHASH_ON_LOGIN")
+        .map(|v| matches!(v.as_str(), "1" | "true" | "TRUE"))
+        .unwrap_or(true);
+
     if hash.starts_with("$argon2") {
         let parsed_hash = PasswordHash::new(hash).map_err(|e| {
             #[cfg(debug_assertions)]
@@ -316,6 +321,28 @@ pub async fn login(
         let ok = bcrypt::verify(&req.password, hash).unwrap_or(false);
         if !ok {
             return Err(ApiError::Unauthorized);
+        }
+
+        if enable_rehash {
+            // Password rehash: transparently upgrade bcrypt to Argon2id on successful login
+            // Non-blocking: failures only logged.
+            let argon2 = Argon2::default();
+            let salt = SaltString::generate(&mut OsRng);
+            match argon2.hash_password(req.password.as_bytes(), &salt) {
+                Ok(new_hash) => {
+                    if let Err(e) = sqlx::query("UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2")
+                        .bind(new_hash.to_string())
+                        .bind(user.id)
+                        .execute(&pool)
+                        .await
+                    {
+                        tracing::warn!(user_id=%user.id, error=?e, "password rehash failed");
+                    } else {
+                        tracing::debug!(user_id=%user.id, "password rehash succeeded: bcrypt→argon2id");
+                    }
+                }
+                Err(e) => tracing::warn!(user_id=%user.id, error=?e, "failed to generate Argon2id hash"),
+            }
         }
     } else {
         // Unknown format: try Argon2 parse as best-effort, otherwise unauthorized
