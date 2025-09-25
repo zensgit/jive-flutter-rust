@@ -85,32 +85,20 @@ async fn seed(pool: &PgPool, rows: i64) -> anyhow::Result<()> {
             .await?;
 
     let mut rng = rand::thread_rng();
-    let batch_size = 1000;
-    let mut inserted = 0;
-    while inserted < rows {
-        let take = std::cmp::min(batch_size, rows - inserted);
-        let mut qb = sqlx::QueryBuilder::new("INSERT INTO transactions (id,ledger_id,account_id,transaction_type,amount,currency,transaction_date,description,created_at,updated_at) VALUES ");
-        let mut sep = qb.separated(",");
-        for _ in 0..take {
-            let id = uuid::Uuid::new_v4();
-            let amount = Decimal::from_f64(rng.gen_range(1.0..500.0)).unwrap();
-            let date = NaiveDate::from_ymd_opt(2025, 9, rng.gen_range(1..=25)).unwrap();
-            sep.push("(")
-                .push_bind(id)
-                .push(",")
-                .push_bind(ledger_id)
-                .push(",")
-                .push_bind(account_id.0)
-                .push(",'expense',")
-                .push_bind(amount)
-                .push(",'CNY',")
-                .push_bind(date)
-                .push(",")
-                .push_bind(format!("Bench txn {}", inserted))
-                .push(",NOW(),NOW())");
-            inserted += 1;
-        }
-        qb.build().execute(pool).await?;
+    for i in 0..rows {
+        let id = uuid::Uuid::new_v4();
+        let amount = Decimal::from_f64(rng.gen_range(1.0..500.0)).unwrap();
+        let date = NaiveDate::from_ymd_opt(2025, 9, rng.gen_range(1..=25)).unwrap();
+
+        sqlx::query("INSERT INTO transactions (id,ledger_id,account_id,transaction_type,amount,currency,transaction_date,description,created_by,created_at,updated_at) VALUES ($1,$2,$3,'expense',$4,'CNY',$5,$6,$7,NOW(),NOW())")
+            .bind(id)
+            .bind(ledger_id)
+            .bind(account_id.0)
+            .bind(amount)
+            .bind(date)
+            .bind(format!("Bench txn {}", i))
+            .bind(user_id)
+            .execute(pool).await?;
     }
     println!(
         "Seeded {} transactions (ledger_id={}, user_id={})",

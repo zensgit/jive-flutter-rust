@@ -243,7 +243,7 @@ pub async fn login(
             "#,
         )
         .bind(&login_input)
-                .fetch_optional(&state.pool)
+        .fetch_optional(&state.pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     }
@@ -331,11 +331,13 @@ pub async fn login(
             let salt = SaltString::generate(&mut OsRng);
             match argon2.hash_password(req.password.as_bytes(), &salt) {
                 Ok(new_hash) => {
-                    if let Err(e) = sqlx::query("UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2")
-                        .bind(new_hash.to_string())
-                        .bind(user.id)
-                        .execute(pool)
-                        .await
+                    if let Err(e) = sqlx::query(
+                        "UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2",
+                    )
+                    .bind(new_hash.to_string())
+                    .bind(user.id)
+                    .execute(pool)
+                    .await
                     {
                         tracing::warn!(user_id=%user.id, error=?e, "password rehash failed");
                     } else {
@@ -344,7 +346,9 @@ pub async fn login(
                         state.metrics.increment_rehash();
                     }
                 }
-                Err(e) => tracing::warn!(user_id=%user.id, error=?e, "failed to generate Argon2id hash"),
+                Err(e) => {
+                    tracing::warn!(user_id=%user.id, error=?e, "failed to generate Argon2id hash")
+                }
             }
         }
     } else {

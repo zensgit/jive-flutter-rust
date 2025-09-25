@@ -149,7 +149,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .layer(TraceLayer::new_for_http())
                 .layer(cors),
         )
-        .with_state(AppState { pool: pool.clone(), ws_manager: None, redis: None, metrics: AppMetrics::new() });
+        .with_state(AppState {
+            pool: pool.clone(),
+            ws_manager: None,
+            redis: None,
+            metrics: AppMetrics::new(),
+        });
 
     // 启动服务器
     let port = std::env::var("API_PORT").unwrap_or_else(|_| "8012".to_string());

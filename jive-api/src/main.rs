@@ -55,7 +55,7 @@ use handlers::template_handler::*;
 use handlers::transactions::*;
 
 // 使用库中的 AppState
-use jive_money_api::{AppState, AppMetrics};
+use jive_money_api::{AppMetrics, AppState};
 
 /// WebSocket 查询参数
 #[derive(Debug, Deserialize)]
@@ -636,16 +636,21 @@ async fn health_check(State(state): State<AppState>) -> Json<serde_json::Value> 
             COUNT(*) FILTER (WHERE password_hash LIKE '$2b$%') AS b2b,\
             COUNT(*) FILTER (WHERE password_hash LIKE '$2y$%') AS b2y,\
             COUNT(*) FILTER (WHERE password_hash LIKE '$argon2id$%') AS a2id\
-         FROM users"
-    ).fetch_one(&state.pool).await {
+         FROM users",
+    )
+    .fetch_one(&state.pool)
+    .await
+    {
         use sqlx::Row;
         (
             row.try_get::<i64, _>("b2a").unwrap_or(0),
             row.try_get::<i64, _>("b2b").unwrap_or(0),
             row.try_get::<i64, _>("b2y").unwrap_or(0),
-            row.try_get::<i64, _>("a2id").unwrap_or(0)
+            row.try_get::<i64, _>("a2id").unwrap_or(0),
         )
-    } else { (0,0,0,0) };
+    } else {
+        (0, 0, 0, 0)
+    };
 
     Json(json!({
         "status": "healthy",
