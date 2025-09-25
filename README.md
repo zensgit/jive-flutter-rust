@@ -157,6 +157,25 @@ make db-migrate
 # 查看日志
 make logs
 
+### Docker 数据库 + 本地 API（推荐开发流程）
+
+```bash
+# 1) 启动 Docker 开发数据库/Redis/Adminer（端口：PG=5433, Redis=6380, Adminer=9080）
+make db-dev-up
+
+# 2) 本地运行 API，连接 Docker 数据库（CORS_DEV=1, SQLX_OFFLINE=true, API 默认 8012）
+make api-dev-docker-db
+
+# 3) 健康检查
+curl -s http://localhost:8012/health
+
+# 4) 管理数据库（Adminer）
+# 打开 http://localhost:9080 ，使用 postgres/postgres 登录，数据库 jive_money
+
+# 5) 停止 Docker 开发栈
+make db-dev-down
+```
+
 ## 🧪 本地CI（不占用GitHub Actions分钟）
 
 当你的GitHub Actions分钟不足时，可以使用本地CI脚本模拟CI流程：
@@ -193,6 +212,8 @@ CI 策略：
 该脚本会：
 - 尝试用 Docker 启动本地 Postgres/Redis（如已安装）
 - 运行迁移、校验 SQLx 离线缓存（仅校验，不生成）
+  - 可选：配置 Docker Hub 认证以避免镜像拉取限流（公共镜像 postgres/redis 等）
+    - 参见 `.github/DOCKER_AUTH_SETUP.md`（添加 DOCKERHUB_USERNAME / DOCKERHUB_TOKEN Secrets）
 - 运行 Rust 测试 + Clippy（警告视为错误）
 - 运行 Flutter analyze（告警致命）与测试
 - 将结果保存到 `./local-artifacts`
