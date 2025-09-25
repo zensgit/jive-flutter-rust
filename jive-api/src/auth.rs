@@ -12,8 +12,24 @@ use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 use uuid::Uuid;
 
-/// JWT密钥（实际生产中应该从环境变量读取）
-const JWT_SECRET: &str = "your-secret-key-change-this-in-production";
+/// 获取 JWT 密钥（优先环境变量 JWT_SECRET；未设置时使用不安全占位并在非测试模式下警告）
+fn jwt_secret() -> &'static str {
+    // Use once_cell to cache environment lookup
+    use std::sync::OnceLock;
+    static SECRET: OnceLock<String> = OnceLock::new();
+    SECRET.get_or_init(|| {
+        match std::env::var("JWT_SECRET") {
+            Ok(v) if !v.trim().is_empty() => v,
+            _ => {
+                // Fallback (dev/test only). In production this should be set; emit warning.
+                if !cfg!(test) {
+                    eprintln!("WARNING: JWT_SECRET not set; using insecure default key");
+                }
+                "insecure-dev-jwt-secret-change-me".to_string()
+            }
+        }
+    })
+}
 
 /// JWT Claims
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -51,7 +67,7 @@ impl Claims {
         let token = encode(
             &Header::default(),
             self,
-            &EncodingKey::from_secret(JWT_SECRET.as_ref()),
+            &EncodingKey::from_secret(jwt_secret().as_bytes()),
         )
         .map_err(|_| AuthError::TokenCreation)?;
 
@@ -62,7 +78,7 @@ impl Claims {
     pub fn from_token(token: &str) -> Result<Self, AuthError> {
         let token_data = decode::<Claims>(
             token,
-            &DecodingKey::from_secret(JWT_SECRET.as_ref()),
+            &DecodingKey::from_secret(jwt_secret().as_bytes()),
             &Validation::default(),
         )
         .map_err(|_| AuthError::InvalidToken)?;

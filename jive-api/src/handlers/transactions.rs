@@ -446,13 +446,60 @@ pub async fn export_transactions_csv_stream(
     }
     query.push(" ORDER BY t.transaction_date DESC, t.id DESC");
 
-    // Execute fully and build CSV body (simple, reliable)
-    let rows_all = query
-        .build()
-        .fetch_all(&pool)
-        .await
-        .map_err(|e| ApiError::DatabaseError(format!("查询交易失败: {}", e)))?;
-    // Build response body bytes depending on feature flag
+    // When export_stream feature enabled, stream rows instead of buffering entire CSV
+    #[cfg(feature = "export_stream")]
+    {
+        use futures::{StreamExt};
+        use tokio_stream::wrappers::ReceiverStream;
+        use tokio::sync::mpsc;
+        let include_header = q.include_header.unwrap_or(true);
+        let (tx, rx) = mpsc::channel::<Result<bytes::Bytes, ApiError>>(8);
+        let built = query.build();
+        let pool_clone = pool.clone();
+        tokio::spawn(async move {
+            let mut stream = built.fetch_many(&pool_clone);
+            // Header
+            if include_header {
+                if tx.send(Ok(bytes::Bytes::from_static(b"Date,Description,Amount,Category,Account,Payee,Type\n"))).await.is_err() { return; }
+            }
+            while let Some(item) = stream.next().await {
+                match item {
+                    Ok(sqlx::Either::Right(row)) => {
+                        use sqlx::Row;
+                        let date: NaiveDate = row.get("transaction_date");
+                        let desc: String = row.try_get::<String,_>("description").unwrap_or_default();
+                        let amount: Decimal = row.get("amount");
+                        let category: Option<String> = row.try_get::<String,_>("category_name").ok().filter(|s| !s.is_empty());
+                        let account_id: Uuid = row.get("account_id");
+                        let payee: Option<String> = row.try_get::<String,_>("payee_name").ok().filter(|s| !s.is_empty());
+                        let ttype: String = row.get("transaction_type");
+                        let line = format!("{},{},{},{},{},{},{}\n", 
+                            date,
+                            csv_escape_cell(desc, ','),
+                            amount,
+                            csv_escape_cell(category.clone().unwrap_or_default(), ','),
+                            account_id,
+                            csv_escape_cell(payee.clone().unwrap_or_default(), ','),
+                            csv_escape_cell(ttype, ','));
+                        if tx.send(Ok(bytes::Bytes::from(line))).await.is_err() { return; }
+                    }
+                    Ok(sqlx::Either::Left(_)) => { /* ignore query result count */ }
+                    Err(e) => { let _ = tx.send(Err(ApiError::DatabaseError(e.to_string()))).await; return; }
+                }
+            }
+        });
+        let byte_stream = ReceiverStream::new(rx).map(|r| match r { Ok(b)=>Ok::<_,ApiError>(b), Err(e)=>Err(e) });
+        let body = Body::from_stream(byte_stream.map(|res| res.map_err(|_| std::io::Error::new(std::io::ErrorKind::Other, "stream error"))));
+        // Build headers & return early (skip buffered path below)
+        let mut headers_map = header::HeaderMap::new();
+        headers_map.insert(header::CONTENT_TYPE, "text/csv; charset=utf-8".parse().unwrap());
+        let filename = format!("transactions_export_{}.csv", Utc::now().format("%Y%m%d%H%M%S"));
+        headers_map.insert(header::CONTENT_DISPOSITION, format!("attachment; filename=\"{}\"", filename).parse().unwrap());
+        return Ok((headers_map, body));
+    }
+
+    // Execute fully and build CSV body when streaming disabled
+    let rows_all = query.build().fetch_all(&pool).await.map_err(|e| ApiError::DatabaseError(format!("查询交易失败: {}", e)))?;
     #[cfg(feature = "core_export")]
     let body_bytes: Vec<u8> = {
         let include_header = q.include_header.unwrap_or(true);
