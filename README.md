@@ -176,6 +176,16 @@ curl -s http://localhost:8012/health
 make db-dev-down
 ```
 
+### JWT 密钥配置
+
+环境变量 `JWT_SECRET` 用于签发与验证访问令牌：
+
+```bash
+export JWT_SECRET=$(openssl rand -hex 32)
+```
+
+未设置时（或留空）API 会在开发 / 测试自动使用一个不安全的占位并打印警告，不可在生产依赖该默认值。
+
 ### 超级管理员默认密码说明
 
 仓库历史存在两个默认密码基线：

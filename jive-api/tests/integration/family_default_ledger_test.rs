@@ -18,7 +18,7 @@ mod tests {
         let user_id = uc.user_id;
         let family_id = uc.current_family_id.expect("family id");
 
-        // Query ledger(s)
+        // Query ledger(s) – should be exactly one default
         #[derive(sqlx::FromRow, Debug)]
         struct LedgerRow { id: uuid::Uuid, family_id: uuid::Uuid, is_default: Option<bool>, created_by: Option<uuid::Uuid>, name: String }
         let ledgers = sqlx::query_as::<_, LedgerRow>(
@@ -34,6 +34,19 @@ mod tests {
         assert_eq!(ledger.created_by.unwrap(), user_id, "created_by should be owner user_id");
         assert_eq!(ledger.name, "默认账本");
 
+        // Attempt to manually insert a second default ledger to ensure DB uniqueness is enforced
+        let second_id = uuid::Uuid::new_v4();
+        let dup = sqlx::query(
+            "INSERT INTO ledgers (id, family_id, name, currency, created_by, is_default, created_at, updated_at) VALUES ($1,$2,$3,'CNY',$4,true,NOW(),NOW())"
+        )
+        .bind(second_id)
+        .bind(family_id)
+        .bind("竞争默认账本")
+        .bind(user_id)
+        .execute(&pool)
+        .await;
+        assert!(dup.is_err(), "second default ledger insertion should fail due to unique index");
+
         // Also ensure service context can fetch families list for sanity
         let fam_service = FamilyService::new(pool.clone());
         let families = fam_service.get_user_families(user_id).await.expect("user families");
@@ -46,4 +59,3 @@ mod tests {
             .ok();
     }
 }
-
