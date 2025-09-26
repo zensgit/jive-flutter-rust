@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../ui/components/dashboard/quick_actions.dart';
-import '../../ui/components/dashboard/account_overview.dart';
-import '../../ui/components/dashboard/recent_transactions.dart';
-import '../../ui/components/dashboard/budget_summary.dart';
-import '../../providers/ledger_provider.dart';
-import '../../providers/currency_provider.dart';
-import '../../providers/account_provider.dart';
-import '../../providers/transaction_provider.dart';
-import '../../models/account.dart';
-import '../../widgets/family_switcher.dart';
+import 'package:jive_money/ui/components/dashboard/quick_actions.dart';
+import 'package:jive_money/ui/components/dashboard/account_overview.dart';
+import 'package:jive_money/ui/components/dashboard/recent_transactions.dart';
+import 'package:jive_money/ui/components/dashboard/budget_summary.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/providers/account_provider.dart';
+import 'package:jive_money/providers/transaction_provider.dart';
+import 'package:jive_money/models/account.dart';
+import 'package:jive_money/widgets/family_switcher.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -104,7 +104,7 @@ class DashboardScreen extends ConsumerWidget {
           gradient: LinearGradient(
             colors: [
               Theme.of(context).primaryColor,
-              Theme.of(context).primaryColor.withOpacity(0.8),
+              Theme.of(context).primaryColor.withValues(alpha: 0.8),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -123,7 +123,7 @@ class DashboardScreen extends ConsumerWidget {
                         color: Colors.white70,
                       ),
                 ),
-                Icon(
+                const Icon(
                   Icons.trending_up,
                   color: Colors.white70,
                 ),
@@ -187,7 +187,7 @@ class DashboardScreen extends ConsumerWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white60,
             fontSize: 12,
           ),

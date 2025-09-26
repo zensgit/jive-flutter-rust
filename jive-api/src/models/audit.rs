@@ -4,6 +4,7 @@ use serde_json::Value;
 use sqlx::FromRow;
 use uuid::Uuid;
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct AuditLog {
     pub id: Uuid,
@@ -63,9 +64,9 @@ impl TryFrom<String> for AuditAction {
     }
 }
 
-impl ToString for AuditAction {
-    fn to_string(&self) -> String {
-        match self {
+impl std::fmt::Display for AuditAction {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
             AuditAction::Create => "CREATE",
             AuditAction::Update => "UPDATE",
             AuditAction::Delete => "DELETE",
@@ -80,7 +81,8 @@ impl ToString for AuditAction {
             AuditAction::MemberRemoved => "MEMBER_REMOVED",
             AuditAction::RoleChanged => "ROLE_CHANGED",
             AuditAction::PermissionChanged => "PERMISSION_CHANGED",
-        }.to_string()
+        };
+        write!(f, "{}", s)
     }
 }
 
@@ -134,7 +136,11 @@ impl AuditLog {
         self
     }
 
-    pub fn with_request_info(mut self, ip_address: Option<String>, user_agent: Option<String>) -> Self {
+    pub fn with_request_info(
+        mut self,
+        ip_address: Option<String>,
+        user_agent: Option<String>,
+    ) -> Self {
         self.ip_address = ip_address;
         self.user_agent = user_agent;
         self
@@ -147,28 +153,19 @@ impl AuditLog {
             AuditAction::Create,
             "family".to_string(),
             Some(family_id),
-        ).with_values(
-            None,
-            Some(serde_json::json!({ "name": family_name })),
         )
+        .with_values(None, Some(serde_json::json!({ "name": family_name })))
     }
 
-    pub fn log_member_added(
-        family_id: Uuid,
-        actor_id: Uuid,
-        member_id: Uuid,
-        role: &str,
-    ) -> Self {
+    pub fn log_member_added(family_id: Uuid, actor_id: Uuid, member_id: Uuid, role: &str) -> Self {
         Self::new(
             family_id,
             actor_id,
             AuditAction::MemberAdded,
             "member".to_string(),
             Some(member_id),
-        ).with_values(
-            None,
-            Some(serde_json::json!({ "role": role })),
         )
+        .with_values(None, Some(serde_json::json!({ "role": role })))
     }
 
     pub fn log_role_changed(
@@ -184,7 +181,8 @@ impl AuditLog {
             AuditAction::RoleChanged,
             "member".to_string(),
             Some(member_id),
-        ).with_values(
+        )
+        .with_values(
             Some(serde_json::json!({ "role": old_role })),
             Some(serde_json::json!({ "role": new_role })),
         )
@@ -202,7 +200,8 @@ impl AuditLog {
             AuditAction::InviteSent,
             "invitation".to_string(),
             Some(invitation_id),
-        ).with_values(
+        )
+        .with_values(
             None,
             Some(serde_json::json!({ "invitee_email": invitee_email })),
         )
@@ -224,7 +223,7 @@ mod tests {
             "test_entity".to_string(),
             None,
         );
-        
+
         assert_eq!(log.family_id, family_id);
         assert_eq!(log.user_id, user_id);
         assert_eq!(log.action, AuditAction::Create);
@@ -248,12 +247,12 @@ mod tests {
     fn test_log_builders() {
         let family_id = Uuid::new_v4();
         let user_id = Uuid::new_v4();
-        
+
         let log = AuditLog::log_family_created(family_id, user_id, "Test Family");
         assert_eq!(log.action, AuditAction::Create);
         assert_eq!(log.entity_type, "family");
         assert!(log.new_values.is_some());
-        
+
         let member_id = Uuid::new_v4();
         let log = AuditLog::log_member_added(family_id, user_id, member_id, "member");
         assert_eq!(log.action, AuditAction::MemberAdded);

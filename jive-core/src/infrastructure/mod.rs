@@ -4,4 +4,6 @@
 #[cfg(feature = "server")]
 pub mod database;
 
+// 仅在服务端构建暴露 entities（大量依赖 sqlx::FromRow/sqlx::Type）
+#[cfg(feature = "server")]
 pub mod entities;

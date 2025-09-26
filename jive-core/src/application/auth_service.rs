@@ -1,17 +1,17 @@
 //! Auth service - 认证授权服务
-//! 
+//!
 //! 基于 Maybe 的认证系统转换而来，包括登录、注册、JWT管理、MFA等功能
 
+use chrono::{DateTime, Duration, Utc};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
-use chrono::{DateTime, Utc, Duration};
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
-use crate::domain::{User, UserStatus, UserRole};
-use crate::error::{JiveError, Result};
 use super::{ServiceContext, ServiceResponse};
+use crate::domain::{User, UserRole, UserStatus};
+use crate::error::{JiveError, Result};
 
 /// 登录请求
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -342,30 +342,21 @@ impl AuthService {
 
     /// 用户登录
     #[wasm_bindgen]
-    pub async fn login(
-        &self,
-        request: LoginRequest,
-    ) -> ServiceResponse<AuthResponse> {
+    pub async fn login(&self, request: LoginRequest) -> ServiceResponse<AuthResponse> {
         let result = self._login(request).await;
         result.into()
     }
 
     /// 用户注册
     #[wasm_bindgen]
-    pub async fn register(
-        &self,
-        request: RegisterRequest,
-    ) -> ServiceResponse<AuthResponse> {
+    pub async fn register(&self, request: RegisterRequest) -> ServiceResponse<AuthResponse> {
         let result = self._register(request).await;
         result.into()
     }
 
     /// 退出登录
     #[wasm_bindgen]
-    pub async fn logout(
-        &self,
-        access_token: String,
-    ) -> ServiceResponse<bool> {
+    pub async fn logout(&self, access_token: String) -> ServiceResponse<bool> {
         let result = self._logout(access_token).await;
         result.into()
     }
@@ -382,20 +373,14 @@ impl AuthService {
 
     /// 验证访问令牌
     #[wasm_bindgen]
-    pub async fn verify_token(
-        &self,
-        access_token: String,
-    ) -> ServiceResponse<User> {
+    pub async fn verify_token(&self, access_token: String) -> ServiceResponse<User> {
         let result = self._verify_token(access_token).await;
         result.into()
     }
 
     /// 重置密码请求
     #[wasm_bindgen]
-    pub async fn request_password_reset(
-        &self,
-        email: String,
-    ) -> ServiceResponse<bool> {
+    pub async fn request_password_reset(&self, email: String) -> ServiceResponse<bool> {
         let result = self._request_password_reset(email).await;
         result.into()
     }
@@ -425,10 +410,7 @@ impl AuthService {
 
     /// 验证MFA
     #[wasm_bindgen]
-    pub async fn verify_mfa(
-        &self,
-        request: MfaVerifyRequest,
-    ) -> ServiceResponse<AuthResponse> {
+    pub async fn verify_mfa(&self, request: MfaVerifyRequest) -> ServiceResponse<AuthResponse> {
         let result = self._verify_mfa(request).await;
         result.into()
     }
@@ -475,7 +457,9 @@ impl AuthService {
         except_current: bool,
         context: ServiceContext,
     ) -> ServiceResponse<bool> {
-        let result = self._revoke_all_sessions(user_id, except_current, context).await;
+        let result = self
+            ._revoke_all_sessions(user_id, except_current, context)
+            .await;
         result.into()
     }
 
@@ -488,7 +472,9 @@ impl AuthService {
         action: String,
         context: ServiceContext,
     ) -> ServiceResponse<bool> {
-        let result = self._check_permission(user_id, resource, action, context).await;
+        let result = self
+            ._check_permission(user_id, resource, action, context)
+            .await;
         result.into()
     }
 
@@ -543,11 +529,11 @@ impl AuthService {
 
         // 检查是否需要MFA
         let requires_mfa = false; // 从用户设置获取
-        
+
         if requires_mfa && request.mfa_code.is_none() {
             // 生成临时令牌用于MFA验证
             let temp_token = self.generate_temp_token(&user.id())?;
-            
+
             return Ok(AuthResponse {
                 user,
                 access_token: temp_token,
@@ -599,7 +585,7 @@ impl AuthService {
     async fn _register(&self, request: RegisterRequest) -> Result<AuthResponse> {
         // 验证输入
         crate::utils::Validator::validate_email(&request.email)?;
-        
+
         if request.name.trim().is_empty() {
             return Err(JiveError::ValidationError {
                 message: "Name is required".to_string(),
@@ -937,11 +923,7 @@ impl AuthService {
     }
 
     /// 撤销会话的内部实现
-    async fn _revoke_session(
-        &self,
-        session_id: String,
-        context: ServiceContext,
-    ) -> Result<bool> {
+    async fn _revoke_session(&self, session_id: String, context: ServiceContext) -> Result<bool> {
         // 在实际实现中，这里会：
         // 1. 验证会话属于当前用户
         // 2. 撤销会话
@@ -1005,8 +987,12 @@ impl AuthService {
                 match resource.as_str() {
                     "ledgers" => ["read", "create", "update"].contains(&action.as_str()),
                     "accounts" => ["read", "create", "update", "delete"].contains(&action.as_str()),
-                    "transactions" => ["read", "create", "update", "delete"].contains(&action.as_str()),
-                    "categories" => ["read", "create", "update", "delete"].contains(&action.as_str()),
+                    "transactions" => {
+                        ["read", "create", "update", "delete"].contains(&action.as_str())
+                    }
+                    "categories" => {
+                        ["read", "create", "update", "delete"].contains(&action.as_str())
+                    }
                     "reports" => ["read"].contains(&action.as_str()),
                     _ => false,
                 }
@@ -1136,10 +1122,7 @@ mod tests {
     #[tokio::test]
     async fn test_login_success() {
         let auth_service = AuthService::new();
-        let request = LoginRequest::new(
-            "test@example.com".to_string(),
-            "password123".to_string(),
-        );
+        let request = LoginRequest::new("test@example.com".to_string(), "password123".to_string());
 
         let result = auth_service._login(request).await;
         assert!(result.is_ok());
@@ -1154,10 +1137,8 @@ mod tests {
     #[tokio::test]
     async fn test_login_invalid_credentials() {
         let auth_service = AuthService::new();
-        let request = LoginRequest::new(
-            "wrong@example.com".to_string(),
-            "wrongpassword".to_string(),
-        );
+        let request =
+            LoginRequest::new("wrong@example.com".to_string(), "wrongpassword".to_string());
 
         let result = auth_service._login(request).await;
         assert!(result.is_err());
@@ -1208,12 +1189,14 @@ mod tests {
         let context = ServiceContext::new("user-123".to_string());
 
         // 测试普通用户权限
-        let result = auth_service._check_permission(
-            "user-123".to_string(),
-            "accounts".to_string(),
-            "read".to_string(),
-            context,
-        ).await;
+        let result = auth_service
+            ._check_permission(
+                "user-123".to_string(),
+                "accounts".to_string(),
+                "read".to_string(),
+                context,
+            )
+            .await;
         assert!(result.is_ok());
         assert!(result.unwrap());
     }

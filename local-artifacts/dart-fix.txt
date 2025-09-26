@@ -1,0 +1,552 @@
+Computing fixes in jive-flutter (dry run)...
+
+1618 proposed fixes in 134 files.
+
+lib/app.dart
+  prefer_const_constructors - 4 fixes
+
+lib/core/app.dart
+  await_only_futures - 2 fixes
+
+lib/core/constants/app_constants.dart
+  dangling_library_doc_comments - 1 fix
+
+lib/core/network/http_client.dart
+  use_super_parameters - 6 fixes
+
+lib/core/router/app_router.dart
+  prefer_const_constructors - 7 fixes
+
+lib/core/storage/token_storage.dart
+  prefer_interpolation_to_compose_strings - 1 fix
+
+lib/devtools/dev_quick_actions_web.dart
+  prefer_const_constructors - 1 fix
+
+lib/main.dart
+  prefer_const_constructors - 3 fixes
+
+lib/main_currency_test.dart
+  prefer_const_constructors - 5 fixes
+
+lib/main_network_test.dart
+  prefer_const_constructors - 7 fixes
+  unnecessary_const - 1 fix
+  unnecessary_import - 1 fix
+
+lib/main_simple.dart
+  prefer_const_constructors - 200 fixes
+  unnecessary_const - 7 fixes
+  unnecessary_to_list_in_spreads - 1 fix
+
+lib/main_temp.dart
+  prefer_const_constructors - 7 fixes
+  unnecessary_const - 5 fixes
+
+lib/models/admin_currency.dart
+  unnecessary_this - 2 fixes
+
+lib/models/audit_log.dart
+  dangling_library_doc_comments - 1 fix
+
+lib/models/category.dart
+  prefer_const_constructors - 38 fixes
+
+lib/models/currency_api.dart
+  curly_braces_in_flow_control_structures - 2 fixes
+
+lib/models/family.dart
+  dangling_library_doc_comments - 1 fix
+
+lib/models/invitation.dart
+  dangling_library_doc_comments - 1 fix
+
+lib/models/travel_event.dart
+  prefer_const_constructors - 5 fixes
+
+lib/providers/auth_provider.dart
+  invalid_null_aware_operator - 2 fixes
+
+lib/providers/currency_provider.dart
+  prefer_final_fields - 1 fix
+
+lib/providers/rule_provider.dart
+  prefer_const_constructors - 12 fixes
+
+lib/screens/accounts/account_add_screen.dart
+  prefer_const_constructors - 13 fixes
+  unnecessary_const - 7 fixes
+
+lib/screens/accounts/account_detail_screen.dart
+  prefer_const_constructors - 1 fix
+
+lib/screens/accounts/accounts_screen.dart
+  prefer_const_constructors - 18 fixes
+  prefer_final_fields - 1 fix
+
+lib/screens/add_transaction_page.dart
+  prefer_const_constructors - 8 fixes
+
+lib/screens/admin/currency_admin_screen.dart
+  deprecated_member_use - 2 fixes
+  prefer_const_constructors - 14 fixes
+
+lib/screens/admin/super_admin_screen.dart
+  prefer_const_constructors - 23 fixes
+  unnecessary_const - 2 fixes
+
+lib/screens/admin/template_admin_page.dart
+  prefer_const_constructors - 18 fixes
+  unused_import - 3 fixes
+  use_super_parameters - 1 fix
+
+lib/screens/ai_assistant_page.dart
+  prefer_const_constructors - 5 fixes
+
+lib/screens/audit/audit_logs_screen.dart
+  deprecated_member_use - 2 fixes
+  prefer_const_constructors - 17 fixes
+  unnecessary_const - 1 fix
+  unnecessary_import - 1 fix
+
+lib/screens/auth/admin_login_screen.dart
+  prefer_const_constructors - 7 fixes
+  unnecessary_const - 2 fixes
+  unnecessary_import - 1 fix
+
+lib/screens/auth/login_page.dart
+  prefer_const_constructors - 2 fixes
+
+lib/screens/auth/login_screen.dart
+  prefer_const_constructors - 11 fixes
+
+lib/screens/auth/register_screen.dart
+  prefer_const_constructors - 7 fixes
+
+lib/screens/auth/registration_wizard.dart
+  deprecated_member_use - 7 fixes
+  prefer_const_constructors - 5 fixes
+  prefer_interpolation_to_compose_strings - 1 fix
+  unnecessary_import - 2 fixes
+
+lib/screens/auth/wechat_qr_screen.dart
+  prefer_const_constructors - 7 fixes
+
+lib/screens/auth/wechat_register_form_screen.dart
+  prefer_const_constructors - 9 fixes
+  unnecessary_const - 1 fix
+
+lib/screens/budgets/budgets_screen.dart
+  prefer_const_constructors - 14 fixes
+  prefer_interpolation_to_compose_strings - 2 fixes
+
+lib/screens/currency/currency_converter_screen.dart
+  prefer_const_constructors - 7 fixes
+
+lib/screens/currency/exchange_rate_screen.dart
+  deprecated_member_use - 2 fixes
+  prefer_const_constructors - 9 fixes
+  unnecessary_import - 1 fix
+
+lib/screens/currency_converter_page.dart
+  prefer_const_constructors - 4 fixes
+  unnecessary_import - 1 fix
+
+lib/screens/dashboard/dashboard_screen.dart
+  prefer_const_constructors - 7 fixes
+
+lib/screens/family/family_activity_log_screen.dart
+  deprecated_member_use - 6 fixes
+  prefer_const_constructors - 12 fixes
+  prefer_final_fields - 1 fix
+  unnecessary_const - 1 fix
+  unnecessary_import - 1 fix
+  unnecessary_non_null_assertion - 1 fix
+  unnecessary_null_comparison - 1 fix
+  unnecessary_string_interpolations - 1 fix
+  use_super_parameters - 1 fix
+
+lib/screens/family/family_dashboard_screen.dart
+  prefer_const_constructors - 17 fixes
+
+lib/screens/family/family_members_screen.dart
+  duplicate_import - 1 fix
+  prefer_const_constructors - 16 fixes
+  unnecessary_const - 3 fixes
+  unnecessary_to_list_in_spreads - 1 fix
+
+lib/screens/family/family_permissions_audit_screen.dart
+  deprecated_member_use - 1 fix
+  prefer_const_constructors - 27 fixes
+  unnecessary_const - 1 fix
+  unused_import - 1 fix
+  use_super_parameters - 1 fix
+
+lib/screens/family/family_permissions_editor_screen.dart
+  deprecated_member_use - 3 fixes
+  prefer_const_constructors - 37 fixes
+  unnecessary_null_comparison - 2 fixes
+  unused_import - 1 fix
+  use_super_parameters - 1 fix
+
+lib/screens/family/family_settings_screen.dart
+  deprecated_member_use - 1 fix
+  prefer_const_constructors - 48 fixes
+  unused_import - 2 fixes
+
+lib/screens/family/family_statistics_screen.dart
+  deprecated_member_use - 3 fixes
+  prefer_const_constructors - 5 fixes
+  prefer_final_fields - 1 fix
+  use_super_parameters - 1 fix
+
+lib/screens/home/home_screen.dart
+  prefer_const_constructors - 2 fixes
+  sort_child_properties_last - 1 fix
+
+lib/screens/invitations/invitation_management_screen.dart
+  prefer_const_constructors - 13 fixes
+
+lib/screens/invitations/pending_invitations_screen.dart
+  await_only_futures - 1 fix
+  prefer_const_constructors - 16 fixes
+  use_super_parameters - 1 fix
+
+lib/screens/management/category_list_page.dart
+  prefer_const_constructors - 4 fixes
+
+lib/screens/management/category_management_enhanced.dart
+  curly_braces_in_flow_control_structures - 1 fix
+  prefer_const_constructors - 7 fixes
+  prefer_interpolation_to_compose_strings - 3 fixes
+  unnecessary_const - 11 fixes
+
+lib/screens/management/category_template_library.dart
+  prefer_const_constructors - 19 fixes
+  prefer_final_fields - 1 fix
+  unused_import - 3 fixes
+  use_super_parameters - 1 fix
+
+lib/screens/management/crypto_selection_page.dart
+  prefer_const_constructors - 11 fixes
+
+lib/screens/management/currency_management_page_v2.dart
+  deprecated_member_use - 4 fixes
+  prefer_const_constructors - 44 fixes
+  unnecessary_const - 2 fixes
+  unnecessary_import - 1 fix
+
+lib/screens/management/currency_selection_page.dart
+  deprecated_member_use - 2 fixes
+  prefer_const_constructors - 12 fixes
+
+lib/screens/management/exchange_rate_converter_page.dart
+  prefer_const_constructors - 7 fixes
+
+lib/screens/management/payee_management_page.dart
+  prefer_const_constructors - 17 fixes
+
+lib/screens/management/payee_management_page_v2.dart
+  prefer_const_constructors - 10 fixes
+  unused_import - 2 fixes
+
+lib/screens/management/rules_management_page.dart
+  prefer_const_constructors - 19 fixes
+
+lib/screens/management/tag_management_page.dart
+  prefer_const_constructors - 15 fixes
+  unnecessary_to_list_in_spreads - 1 fix
+
+lib/screens/management/travel_event_management_page.dart
+  prefer_const_constructors - 20 fixes
+
+lib/screens/management/user_currency_browser.dart
+  curly_braces_in_flow_control_structures - 2 fixes
+  deprecated_member_use - 2 fixes
+  prefer_const_constructors - 5 fixes
+
+lib/screens/settings/profile_settings_screen.dart
+  deprecated_member_use - 4 fixes
+  prefer_const_constructors - 23 fixes
+  unnecessary_const - 1 fix
+  unnecessary_import - 1 fix
+
+lib/screens/settings/settings_screen.dart
+  prefer_const_constructors - 96 fixes
+  unnecessary_const - 1 fix
+  unused_import - 2 fixes
+
+lib/screens/settings/theme_settings_screen.dart
+  prefer_const_constructors - 7 fixes
+
+lib/screens/settings/wechat_binding_screen.dart
+  prefer_const_constructors - 13 fixes
+  unnecessary_const - 2 fixes
+
+lib/screens/splash_screen.dart
+  prefer_const_constructors - 3 fixes
+
+lib/screens/theme_management_screen.dart
+  prefer_const_constructors - 21 fixes
+  unnecessary_const - 11 fixes
+
+lib/screens/transactions/transaction_add_screen.dart
+  prefer_const_constructors - 13 fixes
+
+lib/screens/transactions/transaction_detail_screen.dart
+  prefer_const_constructors - 1 fix
+
+lib/screens/transactions/transactions_screen.dart
+  prefer_const_constructors - 30 fixes
+
+lib/screens/user/edit_profile_screen.dart
+  prefer_const_constructors - 5 fixes
+  unnecessary_const - 1 fix
+
+lib/screens/welcome_screen.dart
+  prefer_const_constructors - 4 fixes
+  unnecessary_const - 1 fix
+
+lib/services/admin/currency_admin_service.dart
+  prefer_final_fields - 1 fix
+
+lib/services/api/auth_service.dart
+  invalid_null_aware_operator - 1 fix
+  unnecessary_cast - 1 fix
+
+lib/services/api/family_service.dart
+  use_super_parameters - 1 fix
+
+lib/services/api_service.dart
+  curly_braces_in_flow_control_structures - 10 fixes
+  unnecessary_type_check - 21 fixes
+
+lib/services/crypto_price_service.dart
+  prefer_conditional_assignment - 1 fix
+
+lib/services/deep_link_service.dart
+  deprecated_member_use - 1 fix
+  prefer_const_constructors - 9 fixes
+  use_super_parameters - 2 fixes
+
+lib/services/email_notification_service.dart
+  annotate_overrides - 1 fix
+  use_rethrow_when_possible - 1 fix
+
+lib/services/share_service.dart
+  deprecated_member_use - 1 fix
+  prefer_const_constructors - 4 fixes
+  use_super_parameters - 1 fix
+
+lib/services/websocket_service.dart
+  prefer_const_constructors - 1 fix
+
+lib/ui/components/accounts/account_form.dart
+  prefer_const_constructors - 8 fixes
+
+lib/ui/components/accounts/account_list.dart
+  prefer_const_constructors - 2 fixes
+
+lib/ui/components/budget/budget_chart.dart
+  prefer_const_constructors - 2 fixes
+  sized_box_for_whitespace - 2 fixes
+
+lib/ui/components/budget/budget_form.dart
+  prefer_const_constructors - 7 fixes
+
+lib/ui/components/budget/budget_progress.dart
+  prefer_const_constructors - 1 fix
+
+lib/ui/components/buttons/secondary_button.dart
+  unnecessary_const - 1 fix
+
+lib/ui/components/charts/balance_chart.dart
+  prefer_const_constructors - 1 fix
+  unnecessary_brace_in_string_interps - 1 fix
+
+lib/ui/components/dashboard/account_overview.dart
+  prefer_const_constructors - 3 fixes
+  unnecessary_const - 2 fixes
+
+lib/ui/components/dashboard/budget_summary.dart
+  prefer_const_constructors - 3 fixes
+
+lib/ui/components/dashboard/dashboard_overview.dart
+  prefer_const_constructors - 2 fixes
+
+lib/ui/components/dashboard/quick_actions.dart
+  sized_box_for_whitespace - 1 fix
+
+lib/ui/components/dashboard/recent_transactions.dart
+  prefer_const_constructors - 1 fix
+
+lib/ui/components/transactions/transaction_filter.dart
+  prefer_const_constructors - 13 fixes
+
+lib/ui/components/transactions/transaction_form.dart
+  prefer_const_constructors - 6 fixes
+
+lib/ui/components/transactions/transaction_list.dart
+  prefer_const_constructors - 6 fixes
+
+lib/ui/components/transactions/transaction_list_item.dart
+  prefer_const_constructors - 1 fix
+
+lib/utils/constants.dart
+  dangling_library_doc_comments - 1 fix
+
+lib/utils/image_utils.dart
+  unnecessary_import - 1 fix
+
+lib/utils/string_utils.dart
+  prefer_is_empty - 1 fix
+
+lib/widgets/batch_operation_bar.dart
+  deprecated_member_use - 1 fix
+  prefer_const_constructors - 17 fixes
+  use_super_parameters - 3 fixes
+
+lib/widgets/bottom_sheets/import_details_sheet.dart
+  prefer_const_constructors - 3 fixes
+
+lib/widgets/color_picker_dialog.dart
+  prefer_const_constructors - 4 fixes
+  unnecessary_const - 7 fixes
+
+lib/widgets/common/refreshable_list.dart
+  prefer_const_constructors - 2 fixes
+
+lib/widgets/common/right_click_copy.dart
+  sort_child_properties_last - 1 fix
+  unnecessary_const - 1 fix
+
+lib/widgets/common/selectable_text_widgets.dart
+  prefer_const_constructors - 2 fixes
+  unnecessary_const - 1 fix
+
+lib/widgets/custom_theme_editor.dart
+  prefer_const_constructors - 16 fixes
+
+lib/widgets/data_source_info.dart
+  prefer_const_constructors - 2 fixes
+
+lib/widgets/dialogs/accept_invitation_dialog.dart
+  deprecated_member_use - 1 fix
+  prefer_const_constructors - 1 fix
+
+lib/widgets/dialogs/create_family_dialog.dart
+  deprecated_member_use - 2 fixes
+  prefer_const_constructors - 8 fixes
+
+lib/widgets/dialogs/delete_family_dialog.dart
+  await_only_futures - 2 fixes
+  prefer_const_constructors - 7 fixes
+  unnecessary_null_comparison - 1 fix
+
+lib/widgets/dialogs/invite_member_dialog.dart
+  deprecated_member_use - 1 fix
+  prefer_const_constructors - 7 fixes
+  unnecessary_const - 1 fix
+  unnecessary_to_list_in_spreads - 1 fix
+
+lib/widgets/family_switcher.dart
+  prefer_const_constructors - 5 fixes
+  unnecessary_to_list_in_spreads - 1 fix
+
+lib/widgets/invite_member_dialog.dart
+  prefer_const_constructors - 7 fixes
+  prefer_const_declarations - 2 fixes
+  unnecessary_brace_in_string_interps - 8 fixes
+  unnecessary_const - 3 fixes
+
+lib/widgets/qr_code_generator.dart
+  deprecated_member_use - 2 fixes
+  prefer_const_constructors - 6 fixes
+  unnecessary_const - 1 fix
+  use_super_parameters - 2 fixes
+
+lib/widgets/sheets/generate_invite_code_sheet.dart
+  deprecated_member_use - 3 fixes
+  prefer_const_constructors - 13 fixes
+  unnecessary_const - 1 fix
+
+lib/widgets/states/error_state.dart
+  prefer_const_constructors - 2 fixes
+
+lib/widgets/tag_create_dialog.dart
+  prefer_const_constructors - 12 fixes
+  sized_box_for_whitespace - 1 fix
+  unnecessary_to_list_in_spreads - 1 fix
+
+lib/widgets/tag_deletion_dialog.dart
+  prefer_const_constructors - 3 fixes
+
+lib/widgets/tag_edit_dialog.dart
+  prefer_const_constructors - 11 fixes
+  sized_box_for_whitespace - 1 fix
+  unnecessary_brace_in_string_interps - 1 fix
+  unnecessary_to_list_in_spreads - 1 fix
+
+lib/widgets/tag_group_dialog.dart
+  prefer_const_constructors - 3 fixes
+
+lib/widgets/theme_appearance.dart
+  deprecated_member_use - 1 fix
+  prefer_const_constructors - 5 fixes
+
+lib/widgets/theme_preview_card.dart
+  prefer_const_constructors - 2 fixes
+
+lib/widgets/theme_share_dialog.dart
+  prefer_const_constructors - 15 fixes
+
+lib/widgets/wechat_login_button.dart
+  prefer_const_constructors - 4 fixes
+  unnecessary_const - 4 fixes
+
+lib/widgets/wechat_qr_binding_dialog.dart
+  prefer_const_constructors - 9 fixes
+  unnecessary_brace_in_string_interps - 1 fix
+
+test/currency_notifier_meta_test.dart
+  unused_element_parameter - 1 fix
+
+test/currency_notifier_quiet_test.dart
+  unnecessary_import - 1 fix
+
+test/currency_preferences_sync_test.dart
+  unnecessary_import - 1 fix
+
+To fix an individual diagnostic, run one of:
+  dart fix --apply --code=annotate_overrides 
+  dart fix --apply --code=await_only_futures 
+  dart fix --apply --code=curly_braces_in_flow_control_structures 
+  dart fix --apply --code=dangling_library_doc_comments 
+  dart fix --apply --code=deprecated_member_use 
+  dart fix --apply --code=duplicate_import 
+  dart fix --apply --code=invalid_null_aware_operator 
+  dart fix --apply --code=prefer_conditional_assignment 
+  dart fix --apply --code=prefer_const_constructors 
+  dart fix --apply --code=prefer_const_declarations 
+  dart fix --apply --code=prefer_final_fields 
+  dart fix --apply --code=prefer_interpolation_to_compose_strings 
+  dart fix --apply --code=prefer_is_empty 
+  dart fix --apply --code=sized_box_for_whitespace 
+  dart fix --apply --code=sort_child_properties_last 
+  dart fix --apply --code=unnecessary_brace_in_string_interps 
+  dart fix --apply --code=unnecessary_cast 
+  dart fix --apply --code=unnecessary_const 
+  dart fix --apply --code=unnecessary_import 
+  dart fix --apply --code=unnecessary_non_null_assertion 
+  dart fix --apply --code=unnecessary_null_comparison 
+  dart fix --apply --code=unnecessary_string_interpolations 
+  dart fix --apply --code=unnecessary_this 
+  dart fix --apply --code=unnecessary_to_list_in_spreads 
+  dart fix --apply --code=unnecessary_type_check 
+  dart fix --apply --code=unused_element_parameter 
+  dart fix --apply --code=unused_import 
+  dart fix --apply --code=use_rethrow_when_possible 
+  dart fix --apply --code=use_super_parameters 
+
+To fix all diagnostics, run:
+  dart fix --apply 

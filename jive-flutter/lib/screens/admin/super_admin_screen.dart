@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../utils/string_utils.dart';
-import 'currency_admin_screen.dart';
+import 'package:jive_money/providers/current_user_provider.dart';
+import 'package:jive_money/utils/string_utils.dart';
+import 'package:jive_money/screens/admin/currency_admin_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SuperAdminScreen extends ConsumerStatefulWidget {
@@ -250,9 +251,9 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Expanded(
+              const Expanded(
                 child: TextField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: '搜索用户',
                     prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(),
@@ -349,7 +350,7 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
         _buildConfigSection('数据设置', [
           _buildConfigItem('自动备份', '每日'),
           _buildConfigItem('数据保留', '7年'),
-          _buildConfigItem('导出格式', 'CSV, PDF, Excel'),
+          _buildConfigItem('导出格式', 'JSON, PDF, Excel'),
         ]),
       ],
     );
@@ -392,9 +393,9 @@ class _SuperAdminScreenState extends ConsumerState<SuperAdminScreen>
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Expanded(
+              const Expanded(
                 child: TextField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: '搜索日志',
                     prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(),

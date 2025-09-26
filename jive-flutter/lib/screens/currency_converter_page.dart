@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/currency_converter.dart';
-import '../providers/currency_provider.dart';
-import '../models/currency.dart';
-import '../widgets/source_badge.dart';
+import 'package:jive_money/widgets/currency_converter.dart';
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/models/currency.dart';
+import 'package:jive_money/widgets/source_badge.dart';
 
 /// Standalone currency converter page
 class CurrencyConverterPage extends ConsumerStatefulWidget {

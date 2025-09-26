@@ -3,7 +3,7 @@
 
 use sqlx::{postgres::PgPoolOptions, PgPool};
 use std::time::Duration;
-use tracing::{info, error};
+use tracing::{error, info};
 
 /// 数据库配置
 #[derive(Debug, Clone)]
@@ -39,7 +39,7 @@ impl Database {
     /// 创建新的数据库连接池
     pub async fn new(config: DatabaseConfig) -> Result<Self, sqlx::Error> {
         info!("Initializing database connection pool...");
-        
+
         let pool = PgPoolOptions::new()
             .max_connections(config.max_connections)
             .min_connections(config.min_connections)
@@ -48,7 +48,7 @@ impl Database {
             .max_lifetime(Some(config.max_lifetime))
             .connect(&config.url)
             .await?;
-        
+
         info!("Database connection pool initialized successfully");
         Ok(Self { pool })
     }
@@ -60,24 +60,27 @@ impl Database {
 
     /// 健康检查
     pub async fn health_check(&self) -> Result<(), sqlx::Error> {
-        sqlx::query("SELECT 1")
-            .fetch_one(&self.pool)
-            .await?;
+        sqlx::query("SELECT 1").fetch_one(&self.pool).await?;
         Ok(())
     }
 
-    /// 执行数据库迁移
+    /// 执行数据库迁移（可选启用 embed_migrations 特性）
+    #[cfg(feature = "db")]
     pub async fn migrate(&self) -> Result<(), sqlx::migrate::MigrateError> {
-        info!("Running database migrations...");
-        sqlx::migrate!("../../migrations")
-            .run(&self.pool)
-            .await?;
-        info!("Database migrations completed");
+        #[cfg(feature = "embed_migrations")]
+        {
+            info!("Running database migrations (embedded)...");
+            sqlx::migrate!("../../migrations").run(&self.pool).await?;
+            info!("Database migrations completed");
+        }
+        // 默认情况下不执行嵌入式迁移，以避免构建期需要本地 migrations 目录
         Ok(())
     }
 
     /// 开始事务
-    pub async fn begin_transaction(&self) -> Result<sqlx::Transaction<'_, sqlx::Postgres>, sqlx::Error> {
+    pub async fn begin_transaction(
+        &self,
+    ) -> Result<sqlx::Transaction<'_, sqlx::Postgres>, sqlx::Error> {
         self.pool.begin().await
     }
 
@@ -106,10 +109,10 @@ impl HealthMonitor {
     pub async fn start_monitoring(self) {
         tokio::spawn(async move {
             let mut interval = tokio::time::interval(self.check_interval);
-            
+
             loop {
                 interval.tick().await;
-                
+
                 match self.database.health_check().await {
                     Ok(_) => {
                         info!("Database health check passed");
@@ -133,7 +136,7 @@ mod tests {
         let config = DatabaseConfig::default();
         let db = Database::new(config).await;
         assert!(db.is_ok());
-        
+
         if let Ok(database) = db {
             let health_check = database.health_check().await;
             assert!(health_check.is_ok());
@@ -144,17 +147,15 @@ mod tests {
     async fn test_transaction() {
         let config = DatabaseConfig::default();
         let db = Database::new(config).await.unwrap();
-        
+
         let tx = db.begin_transaction().await;
         assert!(tx.is_ok());
-        
+
         if let Ok(mut transaction) = tx {
             // 测试事务操作
-            let result = sqlx::query("SELECT 1")
-                .fetch_one(&mut *transaction)
-                .await;
+            let result = sqlx::query("SELECT 1").fetch_one(&mut *transaction).await;
             assert!(result.is_ok());
-            
+
             transaction.rollback().await.unwrap();
         }
     }

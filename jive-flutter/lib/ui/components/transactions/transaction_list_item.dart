@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../../../providers/currency_provider.dart';
+import 'package:jive_money/providers/currency_provider.dart';
 
 class TransactionListItem extends ConsumerWidget {
   final dynamic transaction;
@@ -41,7 +41,7 @@ class TransactionListItem extends ConsumerWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: _getIconColor().withOpacity(0.1),
+                  color: _getIconColor().withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -77,7 +77,7 @@ class TransactionListItem extends ConsumerWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.orange.withOpacity(0.2),
+                              color: Colors.orange.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: const Text(

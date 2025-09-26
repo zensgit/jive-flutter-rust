@@ -1,20 +1,15 @@
 //! Jive Money API Server - Simple Version
-//! 
+//!
 //! 测试版本，不连接数据库，返回模拟数据
 
-use axum::{
-    http::{header, Method},
-    response::Json,
-    routing::get,
-    Router,
-};
+use axum::{response::Json, routing::get, Router};
+use jive_money_api::middleware::cors::create_cors_layer;
 use serde_json::json;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
-use jive_money_api::middleware::cors::create_cors_layer;
 use tracing::info;
-use tracing_subscriber;
-use chrono;
+// tracing_subscriber is used via fully-qualified path below
+// chrono is referenced via fully-qualified path below
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -38,16 +33,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let port = std::env::var("API_PORT").unwrap_or_else(|_| "8012".to_string());
     let addr: SocketAddr = format!("127.0.0.1:{}", port).parse()?;
     let listener = TcpListener::bind(addr).await?;
-    
+
     info!("🌐 Server running at http://{}", addr);
     info!("📋 API Endpoints:");
     info!("  GET  /health                   - 健康检查");
     info!("  GET  /api/v1/templates/list    - 获取模板列表");
     info!("  GET  /api/v1/icons/list        - 获取图标列表");
     info!("💡 Test with: curl http://{}/api/v1/templates/list", addr);
-    
+
     axum::serve(listener, app).await?;
-    
+
     Ok(())
 }
 

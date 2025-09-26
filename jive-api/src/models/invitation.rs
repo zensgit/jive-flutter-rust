@@ -5,6 +5,7 @@ use uuid::Uuid;
 
 use super::permission::MemberRole;
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Invitation {
     pub id: Uuid,
@@ -46,14 +47,15 @@ impl TryFrom<String> for InvitationStatus {
     }
 }
 
-impl ToString for InvitationStatus {
-    fn to_string(&self) -> String {
-        match self {
+impl std::fmt::Display for InvitationStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
             InvitationStatus::Pending => "pending",
             InvitationStatus::Accepted => "accepted",
             InvitationStatus::Expired => "expired",
             InvitationStatus::Cancelled => "cancelled",
-        }.to_string()
+        };
+        write!(f, "{}", s)
     }
 }
 
@@ -96,7 +98,7 @@ impl Invitation {
     ) -> Self {
         let now = Utc::now();
         let expires_at = now + Duration::days(expires_in_days.unwrap_or(7));
-        
+
         Self {
             id: Uuid::new_v4(),
             family_id,
@@ -117,7 +119,7 @@ impl Invitation {
         use rand::Rng;
         const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         let mut rng = rand::thread_rng();
-        
+
         (0..8)
             .map(|_| {
                 let idx = rng.gen_range(0..CHARSET.len());
@@ -138,7 +140,7 @@ impl Invitation {
         if !self.is_valid() {
             return Err("Invitation is not valid".to_string());
         }
-        
+
         self.status = InvitationStatus::Accepted;
         self.accepted_at = Some(Utc::now());
         self.accepted_by = Some(user_id);
@@ -149,7 +151,7 @@ impl Invitation {
         if self.status != InvitationStatus::Pending {
             return Err("Can only cancel pending invitations".to_string());
         }
-        
+
         self.status = InvitationStatus::Cancelled;
         Ok(())
     }
@@ -176,7 +178,7 @@ mod tests {
             MemberRole::Member,
             None,
         );
-        
+
         assert_eq!(invitation.family_id, family_id);
         assert_eq!(invitation.inviter_id, inviter_id);
         assert_eq!(invitation.invitee_email, "test@example.com");
@@ -190,7 +192,7 @@ mod tests {
         let family_id = Uuid::new_v4();
         let inviter_id = Uuid::new_v4();
         let user_id = Uuid::new_v4();
-        
+
         let mut invitation = Invitation::new(
             family_id,
             inviter_id,
@@ -198,7 +200,7 @@ mod tests {
             MemberRole::Member,
             None,
         );
-        
+
         assert!(invitation.accept(user_id).is_ok());
         assert_eq!(invitation.status, InvitationStatus::Accepted);
         assert_eq!(invitation.accepted_by, Some(user_id));
@@ -209,7 +211,7 @@ mod tests {
     fn test_cancel_invitation() {
         let family_id = Uuid::new_v4();
         let inviter_id = Uuid::new_v4();
-        
+
         let mut invitation = Invitation::new(
             family_id,
             inviter_id,
@@ -217,7 +219,7 @@ mod tests {
             MemberRole::Member,
             None,
         );
-        
+
         assert!(invitation.cancel().is_ok());
         assert_eq!(invitation.status, InvitationStatus::Cancelled);
         assert!(!invitation.is_valid());
@@ -227,7 +229,7 @@ mod tests {
     fn test_expired_invitation() {
         let family_id = Uuid::new_v4();
         let inviter_id = Uuid::new_v4();
-        
+
         let mut invitation = Invitation::new(
             family_id,
             inviter_id,
@@ -235,7 +237,7 @@ mod tests {
             MemberRole::Member,
             Some(-1), // Expired 1 day ago
         );
-        
+
         assert!(invitation.is_expired());
         invitation.mark_expired();
         assert_eq!(invitation.status, InvitationStatus::Expired);

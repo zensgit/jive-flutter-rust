@@ -12,19 +12,19 @@ pub struct User {
     pub full_name: Option<String>,
     pub phone: Option<String>,
     pub avatar_url: Option<String>,
-    
+
     // 认证相关
     pub email_verified: bool,
     pub mfa_enabled: bool,
     pub mfa_secret: Option<String>,
-    
+
     // 用户状态
     pub status: UserStatus,
     pub role: UserRole,
-    
+
     // 偏好设置
     pub preferences: UserPreferences,
-    
+
     // 时间戳
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
@@ -34,10 +34,10 @@ pub struct User {
 /// 用户状态
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum UserStatus {
-    Pending,    // 待激活
-    Active,     // 活跃
-    Suspended,  // 暂停
-    Deleted,    // 已删除
+    Pending,   // 待激活
+    Active,    // 活跃
+    Suspended, // 暂停
+    Deleted,   // 已删除
 }
 
 /// 用户角色
@@ -60,13 +60,13 @@ pub struct UserPreferences {
     pub number_format: String,
     pub first_day_of_week: u8, // 0=Sunday, 1=Monday
     pub fiscal_year_start: u8, // 1-12
-    
+
     // 通知设置
     pub email_notifications: bool,
     pub push_notifications: bool,
     pub budget_alerts: bool,
     pub transaction_alerts: bool,
-    
+
     // 界面设置
     pub sidebar_collapsed: bool,
     pub default_account_id: Option<Uuid>,
@@ -227,7 +227,7 @@ mod tests {
             "test@example.com".to_string(),
             "hashed_password".to_string(),
         );
-        
+
         assert_eq!(user.email, "test@example.com");
         assert_eq!(user.status, UserStatus::Pending);
         assert_eq!(user.role, UserRole::Member);
@@ -241,9 +241,9 @@ mod tests {
             "test@example.com".to_string(),
             "hashed_password".to_string(),
         );
-        
+
         user.activate();
-        
+
         assert_eq!(user.status, UserStatus::Active);
         assert!(user.email_verified);
     }
@@ -255,7 +255,7 @@ mod tests {
             "token".to_string(),
             -1, // 已过期
         );
-        
+
         assert!(session.is_expired());
     }
 }

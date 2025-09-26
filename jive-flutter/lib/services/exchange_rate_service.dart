@@ -1,12 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
-import '../models/exchange_rate.dart';
-import '../utils/constants.dart';
-import '../core/network/http_client.dart';
-import '../core/network/api_readiness.dart';
-import '../core/storage/token_storage.dart';
+import 'package:jive_money/models/exchange_rate.dart';
+import 'package:jive_money/core/network/http_client.dart';
+import 'package:jive_money/core/network/api_readiness.dart';
+import 'package:jive_money/core/storage/token_storage.dart';
 
 /// Service for fetching real exchange rates from backend API
 class ExchangeRateService {
@@ -83,12 +81,15 @@ class ExchangeRateService {
                 ? (item['rate'] as num).toDouble()
                 : double.tryParse(item['rate'].toString()) ?? 0.0;
             final source = item['source']?.toString();
+            // Map is_manual into source when manual for UI consistency
+            final isManual = (item['is_manual'] == true);
+            final mappedSource = isManual ? 'manual' : source;
             result[code] = ExchangeRate(
               fromCurrency: baseCurrency,
               toCurrency: code,
               rate: rate,
               date: now,
-              source: source,
+              source: mappedSource,
             );
           }
         });

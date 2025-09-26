@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
-import '../config/api_config.dart';
+import 'package:jive_money/core/config/api_config.dart';
 
 /// 简单的 API 就绪探测器：启动阶段在首次关键请求前调用
 class ApiReadiness {

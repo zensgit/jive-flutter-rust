@@ -8,36 +8,36 @@ pub enum Permission {
     ViewFamilyInfo,
     UpdateFamilyInfo,
     DeleteFamily,
-    
+
     // 成员管理权限
     ViewMembers,
     InviteMembers,
     RemoveMembers,
     UpdateMemberRoles,
-    
+
     // 账户管理权限
     ViewAccounts,
     CreateAccounts,
     EditAccounts,
     DeleteAccounts,
-    
+
     // 交易管理权限
     ViewTransactions,
     CreateTransactions,
     EditTransactions,
     DeleteTransactions,
     BulkEditTransactions,
-    
+
     // 分类和预算权限
     ViewCategories,
     ManageCategories,
     ViewBudgets,
     ManageBudgets,
-    
+
     // 报表和数据权限
     ViewReports,
     ExportData,
-    
+
     // 系统管理权限
     ViewAuditLog,
     ManageIntegrations,
@@ -45,6 +45,7 @@ pub enum Permission {
 }
 
 impl Permission {
+    #[allow(dead_code)]
     pub fn all() -> Vec<Permission> {
         vec![
             Permission::ViewFamilyInfo,
@@ -75,7 +76,8 @@ impl Permission {
         ]
     }
 
-    pub fn from_str(s: &str) -> Option<Permission> {
+    #[allow(dead_code)]
+    pub fn from_str_name(s: &str) -> Option<Permission> {
         match s {
             "ViewFamilyInfo" => Some(Permission::ViewFamilyInfo),
             "UpdateFamilyInfo" => Some(Permission::UpdateFamilyInfo),
@@ -150,6 +152,7 @@ pub enum MemberRole {
 }
 
 impl MemberRole {
+    #[allow(dead_code)]
     pub fn default_permissions(&self) -> Vec<Permission> {
         match self {
             MemberRole::Owner => Permission::all(),
@@ -205,7 +208,7 @@ impl MemberRole {
         }
     }
 
-    pub fn from_str(s: &str) -> Option<MemberRole> {
+    pub fn from_str_name(s: &str) -> Option<MemberRole> {
         match s.to_lowercase().as_str() {
             "owner" => Some(MemberRole::Owner),
             "admin" => Some(MemberRole::Admin),
@@ -234,15 +237,18 @@ mod tests {
 
     #[test]
     fn test_permission_from_str() {
-        assert_eq!(Permission::from_str("ViewFamilyInfo"), Some(Permission::ViewFamilyInfo));
-        assert_eq!(Permission::from_str("InvalidPermission"), None);
+        assert_eq!(
+            Permission::from_str_name("ViewFamilyInfo"),
+            Some(Permission::ViewFamilyInfo)
+        );
+        assert_eq!(Permission::from_str_name("InvalidPermission"), None);
     }
 
     #[test]
     fn test_role_from_str() {
-        assert_eq!(MemberRole::from_str("owner"), Some(MemberRole::Owner));
-        assert_eq!(MemberRole::from_str("Owner"), Some(MemberRole::Owner));
-        assert_eq!(MemberRole::from_str("invalid"), None);
+        assert_eq!(MemberRole::from_str_name("owner"), Some(MemberRole::Owner));
+        assert_eq!(MemberRole::from_str_name("Owner"), Some(MemberRole::Owner));
+        assert_eq!(MemberRole::from_str_name("invalid"), None);
     }
 
     #[test]

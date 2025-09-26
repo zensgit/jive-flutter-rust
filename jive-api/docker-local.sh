@@ -63,17 +63,21 @@ check_docker() {
     fi
 }
 
+# 端口与环境（优先支持外部覆盖）
+DB_PORT=${DB_PORT:-5433}
+API_PORT=${API_PORT:-8012}
+
 # 初始设置
 setup() {
     print_info "开始初始设置..."
     
     # 检查本地PostgreSQL是否运行
-    if ! pg_isready -h localhost -p 5432 -U postgres &> /dev/null; then
+    if ! pg_isready -h localhost -p "$DB_PORT" -U postgres &> /dev/null; then
         print_warning "本地PostgreSQL未运行，请先启动PostgreSQL服务"
         print_info "可以使用以下命令启动："
         echo "  sudo systemctl start postgresql"
         echo "  或"
-        echo "  docker run --name postgres-dev -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:15-alpine"
+        echo "  docker run --name postgres-dev -e POSTGRES_PASSWORD=postgres -p ${DB_PORT}:5432 -d postgres:15-alpine"
         exit 1
     fi
     
@@ -98,7 +102,7 @@ start_service() {
     docker-compose -f docker-compose.local.yml up -d
     
     print_success "服务启动完成！"
-    print_info "API服务地址: http://localhost:8012"
+    print_info "API服务地址: http://localhost:${API_PORT}"
     print_info "调试端口: 9229"
     print_info "查看日志: ./docker-local.sh logs"
 }

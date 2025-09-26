@@ -1,16 +1,16 @@
 //! Analytics Service - 报表分析服务
-//! 
+//!
 //! 基于 Maybe 的报表系统实现，提供财务分析、统计报表、图表数据等功能
 
-use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
-use chrono::{DateTime, Utc, NaiveDate, Datelike, Duration};
+use chrono::{DateTime, Datelike, Duration, NaiveDate, Utc};
 use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use uuid::Uuid;
 
-use crate::domain::{Transaction, TransactionType, Category, Account, Budget};
-use crate::error::{JiveError, Result};
 use crate::application::{ServiceContext, ServiceResponse};
+use crate::domain::{Account, Budget, Category, Transaction, TransactionType};
+use crate::error::{JiveError, Result};
 
 /// 报表服务
 pub struct AnalyticsService {
@@ -21,7 +21,7 @@ impl AnalyticsService {
     pub fn new() -> Self {
         Self {}
     }
-    
+
     /// 生成收支报表
     pub async fn generate_income_statement(
         &self,
@@ -32,26 +32,33 @@ impl AnalyticsService {
         if !context.has_permission_str("view_reports") {
             return Err(JiveError::Forbidden("No permission to view reports".into()));
         }
-        
+
         // 获取期间内的交易
-        let transactions = self.get_transactions_for_period(
-            &context.family_id,
-            &request.period,
-        ).await?;
-        
+        let transactions = self
+            .get_transactions_for_period(&context.family_id, &request.period)
+            .await?;
+
         // 计算收入和支出
         let income_total = self.calculate_income(&transactions);
         let expense_total = self.calculate_expense(&transactions);
         let net_income = income_total - expense_total;
-        
+
         // 按分类汇总
         let income_by_category = self.group_by_category(&transactions, TransactionType::Income);
         let expense_by_category = self.group_by_category(&transactions, TransactionType::Expense);
-        
+
         // 计算趋势
-        let income_trend = self.calculate_trend(&context.family_id, TransactionType::Income, &request.period).await?;
-        let expense_trend = self.calculate_trend(&context.family_id, TransactionType::Expense, &request.period).await?;
-        
+        let income_trend = self
+            .calculate_trend(&context.family_id, TransactionType::Income, &request.period)
+            .await?;
+        let expense_trend = self
+            .calculate_trend(
+                &context.family_id,
+                TransactionType::Expense,
+                &request.period,
+            )
+            .await?;
+
         let statement = IncomeStatement {
             period: request.period.clone(),
             currency: request.currency.unwrap_or("USD".to_string()),
@@ -65,10 +72,10 @@ impl AnalyticsService {
             transaction_count: transactions.len(),
             generated_at: Utc::now(),
         };
-        
+
         Ok(ServiceResponse::success(statement))
     }
-    
+
     /// 生成资产负债表
     pub async fn generate_balance_sheet(
         &self,
@@ -79,19 +86,19 @@ impl AnalyticsService {
         if !context.has_permission_str("view_reports") {
             return Err(JiveError::Forbidden("No permission to view reports".into()));
         }
-        
+
         // 获取所有账户
         let accounts = self.get_accounts(&context.family_id).await?;
-        
+
         // 分类账户
         let assets = self.filter_assets(&accounts);
         let liabilities = self.filter_liabilities(&accounts);
-        
+
         // 计算总额
         let total_assets = self.calculate_total_balance(&assets);
         let total_liabilities = self.calculate_total_balance(&liabilities);
         let net_worth = total_assets - total_liabilities;
-        
+
         // 资产细分
         let asset_breakdown = AssetBreakdown {
             cash_and_equivalents: self.calculate_cash_balance(&assets),
@@ -99,7 +106,7 @@ impl AnalyticsService {
             property: self.calculate_property_balance(&assets),
             other_assets: self.calculate_other_assets(&assets),
         };
-        
+
         // 负债细分
         let liability_breakdown = LiabilityBreakdown {
             credit_cards: self.calculate_credit_card_balance(&liabilities),
@@ -107,7 +114,7 @@ impl AnalyticsService {
             mortgages: self.calculate_mortgage_balance(&liabilities),
             other_liabilities: self.calculate_other_liabilities(&liabilities),
         };
-        
+
         let balance_sheet = BalanceSheet {
             as_of_date: request.as_of_date.unwrap_or(Utc::now().date_naive()),
             currency: request.currency.unwrap_or("USD".to_string()),
@@ -116,19 +123,22 @@ impl AnalyticsService {
             net_worth,
             asset_breakdown,
             liability_breakdown,
-            accounts: accounts.into_iter().map(|a| AccountSummary {
-                id: a.id,
-                name: a.name,
-                account_type: a.account_type,
-                balance: a.balance,
-                last_updated: a.last_updated,
-            }).collect(),
+            accounts: accounts
+                .into_iter()
+                .map(|a| AccountSummary {
+                    id: a.id,
+                    name: a.name,
+                    account_type: a.account_type,
+                    balance: a.balance,
+                    last_updated: a.last_updated,
+                })
+                .collect(),
             generated_at: Utc::now(),
         };
-        
+
         Ok(ServiceResponse::success(balance_sheet))
     }
-    
+
     /// 生成现金流报表
     pub async fn generate_cash_flow_statement(
         &self,
@@ -139,33 +149,31 @@ impl AnalyticsService {
         if !context.has_permission_str("view_reports") {
             return Err(JiveError::Forbidden("No permission to view reports".into()));
         }
-        
+
         // 获取期间内的交易
-        let transactions = self.get_transactions_for_period(
-            &context.family_id,
-            &request.period,
-        ).await?;
-        
+        let transactions = self
+            .get_transactions_for_period(&context.family_id, &request.period)
+            .await?;
+
         // 经营活动现金流
         let operating_activities = self.calculate_operating_cash_flow(&transactions);
-        
+
         // 投资活动现金流
         let investing_activities = self.calculate_investing_cash_flow(&transactions);
-        
+
         // 融资活动现金流
         let financing_activities = self.calculate_financing_cash_flow(&transactions);
-        
+
         // 净现金流
         let net_cash_flow = operating_activities + investing_activities + financing_activities;
-        
+
         // 期初和期末现金余额
-        let beginning_cash = self.get_cash_balance_at_date(
-            &context.family_id,
-            &request.period.start_date,
-        ).await?;
-        
+        let beginning_cash = self
+            .get_cash_balance_at_date(&context.family_id, &request.period.start_date)
+            .await?;
+
         let ending_cash = beginning_cash + net_cash_flow;
-        
+
         let statement = CashFlowStatement {
             period: request.period.clone(),
             currency: request.currency.unwrap_or("USD".to_string()),
@@ -177,10 +185,10 @@ impl AnalyticsService {
             ending_cash_balance: ending_cash,
             generated_at: Utc::now(),
         };
-        
+
         Ok(ServiceResponse::success(statement))
     }
-    
+
     /// 生成支出分析
     pub async fn generate_expense_analysis(
         &self,
@@ -188,20 +196,19 @@ impl AnalyticsService {
         request: ExpenseAnalysisRequest,
     ) -> Result<ServiceResponse<ExpenseAnalysis>> {
         // 获取支出交易
-        let expenses = self.get_expense_transactions(
-            &context.family_id,
-            &request.period,
-        ).await?;
-        
+        let expenses = self
+            .get_expense_transactions(&context.family_id, &request.period)
+            .await?;
+
         // 按分类分组
         let by_category = self.group_expenses_by_category(&expenses);
-        
+
         // 按商户分组
         let by_payee = self.group_expenses_by_payee(&expenses);
-        
+
         // 按时间分组（日/周/月）
         let by_time = self.group_expenses_by_time(&expenses, &request.group_by);
-        
+
         // 计算统计数据
         let total_expense = expenses.iter().map(|t| t.amount).sum();
         let average_expense = if !expenses.is_empty() {
@@ -209,15 +216,16 @@ impl AnalyticsService {
         } else {
             Decimal::ZERO
         };
-        
-        let median_expense = self.calculate_median(&expenses.iter().map(|t| t.amount).collect::<Vec<_>>());
-        
+
+        let median_expense =
+            self.calculate_median(&expenses.iter().map(|t| t.amount).collect::<Vec<_>>());
+
         // 找出最大支出
         let largest_expenses = self.find_largest_expenses(&expenses, 10);
-        
+
         // 异常支出检测
         let unusual_expenses = self.detect_unusual_expenses(&expenses);
-        
+
         let analysis = ExpenseAnalysis {
             period: request.period.clone(),
             total_expense,
@@ -231,10 +239,10 @@ impl AnalyticsService {
             unusual_expenses,
             generated_at: Utc::now(),
         };
-        
+
         Ok(ServiceResponse::success(analysis))
     }
-    
+
     /// 生成预算vs实际报表
     pub async fn generate_budget_comparison(
         &self,
@@ -242,16 +250,17 @@ impl AnalyticsService {
         request: BudgetComparisonRequest,
     ) -> Result<ServiceResponse<BudgetComparison>> {
         // 获取预算
-        let budgets = self.get_budgets(&context.family_id, &request.period).await?;
-        
+        let budgets = self
+            .get_budgets(&context.family_id, &request.period)
+            .await?;
+
         // 获取实际支出
-        let actual_expenses = self.get_expense_transactions(
-            &context.family_id,
-            &request.period,
-        ).await?;
-        
+        let actual_expenses = self
+            .get_expense_transactions(&context.family_id, &request.period)
+            .await?;
+
         let mut comparisons = Vec::new();
-        
+
         for budget in budgets {
             let actual = self.calculate_actual_for_budget(&budget, &actual_expenses);
             let variance = actual - budget.amount;
@@ -260,7 +269,7 @@ impl AnalyticsService {
             } else {
                 Decimal::ZERO
             };
-            
+
             comparisons.push(BudgetVsActual {
                 budget_id: budget.id.clone(),
                 budget_name: budget.name.clone(),
@@ -272,11 +281,11 @@ impl AnalyticsService {
                 is_over_budget: actual > budget.amount,
             });
         }
-        
+
         let total_budgeted: Decimal = comparisons.iter().map(|c| c.budgeted_amount).sum();
         let total_actual: Decimal = comparisons.iter().map(|c| c.actual_amount).sum();
         let total_variance = total_actual - total_budgeted;
-        
+
         let comparison = BudgetComparison {
             period: request.period.clone(),
             comparisons,
@@ -290,10 +299,10 @@ impl AnalyticsService {
             },
             generated_at: Utc::now(),
         };
-        
+
         Ok(ServiceResponse::success(comparison))
     }
-    
+
     /// 生成趋势分析
     pub async fn generate_trend_analysis(
         &self,
@@ -302,7 +311,7 @@ impl AnalyticsService {
     ) -> Result<ServiceResponse<TrendAnalysis>> {
         let mut data_points = Vec::new();
         let mut current_date = request.period.start_date;
-        
+
         while current_date <= request.period.end_date {
             let period_end = match request.interval {
                 TimeInterval::Daily => current_date,
@@ -314,21 +323,20 @@ impl AnalyticsService {
                 TimeInterval::Quarterly => current_date + Duration::days(89),
                 TimeInterval::Yearly => current_date + Duration::days(364),
             };
-            
+
             let period = Period {
                 start_date: current_date,
                 end_date: period_end.min(request.period.end_date),
             };
-            
-            let transactions = self.get_transactions_for_period(
-                &context.family_id,
-                &period,
-            ).await?;
-            
+
+            let transactions = self
+                .get_transactions_for_period(&context.family_id, &period)
+                .await?;
+
             let income = self.calculate_income(&transactions);
             let expense = self.calculate_expense(&transactions);
             let net = income - expense;
-            
+
             data_points.push(TrendDataPoint {
                 date: current_date,
                 income,
@@ -336,7 +344,7 @@ impl AnalyticsService {
                 net,
                 transaction_count: transactions.len(),
             });
-            
+
             // 移动到下一个周期
             current_date = match request.interval {
                 TimeInterval::Daily => current_date + Duration::days(1),
@@ -345,7 +353,10 @@ impl AnalyticsService {
                     let mut next = current_date;
                     next = next.with_day(1).unwrap();
                     if next.month() == 12 {
-                        next.with_year(next.year() + 1).unwrap().with_month(1).unwrap()
+                        next.with_year(next.year() + 1)
+                            .unwrap()
+                            .with_month(1)
+                            .unwrap()
                     } else {
                         next.with_month(next.month() + 1).unwrap()
                     }
@@ -354,11 +365,13 @@ impl AnalyticsService {
                 TimeInterval::Yearly => current_date + Duration::days(365),
             };
         }
-        
+
         // 计算趋势线（简单线性回归）
-        let income_trend = self.calculate_trend_line(&data_points.iter().map(|d| d.income).collect::<Vec<_>>());
-        let expense_trend = self.calculate_trend_line(&data_points.iter().map(|d| d.expense).collect::<Vec<_>>());
-        
+        let income_trend =
+            self.calculate_trend_line(&data_points.iter().map(|d| d.income).collect::<Vec<_>>());
+        let expense_trend =
+            self.calculate_trend_line(&data_points.iter().map(|d| d.expense).collect::<Vec<_>>());
+
         let analysis = TrendAnalysis {
             period: request.period.clone(),
             interval: request.interval.clone(),
@@ -367,39 +380,44 @@ impl AnalyticsService {
             expense_trend,
             generated_at: Utc::now(),
         };
-        
+
         Ok(ServiceResponse::success(analysis))
     }
-    
+
     /// 生成分类细分报表
     pub async fn generate_category_breakdown(
         &self,
         context: ServiceContext,
         request: CategoryBreakdownRequest,
     ) -> Result<ServiceResponse<CategoryBreakdown>> {
-        let transactions = self.get_transactions_for_period(
-            &context.family_id,
-            &request.period,
-        ).await?;
-        
+        let transactions = self
+            .get_transactions_for_period(&context.family_id, &request.period)
+            .await?;
+
         let mut categories_map: HashMap<String, CategorySummary> = HashMap::new();
-        
+
         for transaction in transactions {
-            let category_id = transaction.category_id.unwrap_or("uncategorized".to_string());
-            
-            let entry = categories_map.entry(category_id.clone()).or_insert(CategorySummary {
-                category_id: category_id.clone(),
-                category_name: transaction.category_name.unwrap_or("Uncategorized".to_string()),
-                total_amount: Decimal::ZERO,
-                transaction_count: 0,
-                percentage: 0.0,
-                subcategories: Vec::new(),
-            });
-            
+            let category_id = transaction
+                .category_id
+                .unwrap_or("uncategorized".to_string());
+
+            let entry = categories_map
+                .entry(category_id.clone())
+                .or_insert(CategorySummary {
+                    category_id: category_id.clone(),
+                    category_name: transaction
+                        .category_name
+                        .unwrap_or("Uncategorized".to_string()),
+                    total_amount: Decimal::ZERO,
+                    transaction_count: 0,
+                    percentage: 0.0,
+                    subcategories: Vec::new(),
+                });
+
             entry.total_amount += transaction.amount;
             entry.transaction_count += 1;
         }
-        
+
         // 计算百分比
         let total: Decimal = categories_map.values().map(|c| c.total_amount).sum();
         for category in categories_map.values_mut() {
@@ -409,10 +427,10 @@ impl AnalyticsService {
                     .unwrap_or(0.0);
             }
         }
-        
+
         let mut categories: Vec<CategorySummary> = categories_map.into_values().collect();
         categories.sort_by(|a, b| b.total_amount.cmp(&a.total_amount));
-        
+
         let breakdown = CategoryBreakdown {
             period: request.period.clone(),
             transaction_type: request.transaction_type.clone(),
@@ -420,12 +438,12 @@ impl AnalyticsService {
             total_amount: total,
             generated_at: Utc::now(),
         };
-        
+
         Ok(ServiceResponse::success(breakdown))
     }
-    
+
     // 辅助方法
-    
+
     async fn get_transactions_for_period(
         &self,
         family_id: &str,
@@ -434,37 +452,34 @@ impl AnalyticsService {
         // TODO: 从数据库获取交易
         Ok(Vec::new())
     }
-    
+
     async fn get_accounts(&self, family_id: &str) -> Result<Vec<AccountData>> {
         // TODO: 从数据库获取账户
         Ok(Vec::new())
     }
-    
+
     async fn get_budgets(&self, family_id: &str, period: &Period) -> Result<Vec<BudgetData>> {
         // TODO: 从数据库获取预算
         Ok(Vec::new())
     }
-    
+
     async fn get_expense_transactions(
         &self,
         family_id: &str,
         period: &Period,
     ) -> Result<Vec<TransactionData>> {
         let all_transactions = self.get_transactions_for_period(family_id, period).await?;
-        Ok(all_transactions.into_iter()
+        Ok(all_transactions
+            .into_iter()
             .filter(|t| t.transaction_type == TransactionType::Expense)
             .collect())
     }
-    
-    async fn get_cash_balance_at_date(
-        &self,
-        family_id: &str,
-        date: &NaiveDate,
-    ) -> Result<Decimal> {
+
+    async fn get_cash_balance_at_date(&self, family_id: &str, date: &NaiveDate) -> Result<Decimal> {
         // TODO: 从数据库获取特定日期的现金余额
         Ok(Decimal::ZERO)
     }
-    
+
     async fn calculate_trend(
         &self,
         family_id: &str,
@@ -478,269 +493,323 @@ impl AnalyticsService {
             change_percentage: 0.0,
         })
     }
-    
+
     fn calculate_income(&self, transactions: &[TransactionData]) -> Decimal {
-        transactions.iter()
+        transactions
+            .iter()
             .filter(|t| t.transaction_type == TransactionType::Income)
             .map(|t| t.amount)
             .sum()
     }
-    
+
     fn calculate_expense(&self, transactions: &[TransactionData]) -> Decimal {
-        transactions.iter()
+        transactions
+            .iter()
             .filter(|t| t.transaction_type == TransactionType::Expense)
             .map(|t| t.amount)
             .sum()
     }
-    
+
     fn group_by_category(
         &self,
         transactions: &[TransactionData],
         transaction_type: TransactionType,
     ) -> Vec<CategoryAmount> {
         let mut category_map: HashMap<String, Decimal> = HashMap::new();
-        
-        for transaction in transactions.iter().filter(|t| t.transaction_type == transaction_type) {
-            let category = transaction.category_name.clone().unwrap_or("Uncategorized".to_string());
+
+        for transaction in transactions
+            .iter()
+            .filter(|t| t.transaction_type == transaction_type)
+        {
+            let category = transaction
+                .category_name
+                .clone()
+                .unwrap_or("Uncategorized".to_string());
             *category_map.entry(category).or_insert(Decimal::ZERO) += transaction.amount;
         }
-        
-        category_map.into_iter()
+
+        category_map
+            .into_iter()
             .map(|(category, amount)| CategoryAmount { category, amount })
             .collect()
     }
-    
+
     fn filter_assets(&self, accounts: &[AccountData]) -> Vec<AccountData> {
-        accounts.iter()
+        accounts
+            .iter()
             .filter(|a| matches!(a.account_type, AccountType::Asset))
             .cloned()
             .collect()
     }
-    
+
     fn filter_liabilities(&self, accounts: &[AccountData]) -> Vec<AccountData> {
-        accounts.iter()
+        accounts
+            .iter()
             .filter(|a| matches!(a.account_type, AccountType::Liability))
             .cloned()
             .collect()
     }
-    
+
     fn calculate_total_balance(&self, accounts: &[AccountData]) -> Decimal {
         accounts.iter().map(|a| a.balance).sum()
     }
-    
+
     fn calculate_cash_balance(&self, accounts: &[AccountData]) -> Decimal {
-        accounts.iter()
-            .filter(|a| matches!(a.subtype, Some(AccountSubtype::Checking) | Some(AccountSubtype::Savings)))
+        accounts
+            .iter()
+            .filter(|a| {
+                matches!(
+                    a.subtype,
+                    Some(AccountSubtype::Checking) | Some(AccountSubtype::Savings)
+                )
+            })
             .map(|a| a.balance)
             .sum()
     }
-    
+
     fn calculate_investment_balance(&self, accounts: &[AccountData]) -> Decimal {
-        accounts.iter()
+        accounts
+            .iter()
             .filter(|a| matches!(a.subtype, Some(AccountSubtype::Investment)))
             .map(|a| a.balance)
             .sum()
     }
-    
+
     fn calculate_property_balance(&self, accounts: &[AccountData]) -> Decimal {
-        accounts.iter()
+        accounts
+            .iter()
             .filter(|a| matches!(a.subtype, Some(AccountSubtype::Property)))
             .map(|a| a.balance)
             .sum()
     }
-    
+
     fn calculate_other_assets(&self, accounts: &[AccountData]) -> Decimal {
-        accounts.iter()
-            .filter(|a| !matches!(a.subtype, 
-                Some(AccountSubtype::Checking) | 
-                Some(AccountSubtype::Savings) | 
-                Some(AccountSubtype::Investment) | 
-                Some(AccountSubtype::Property)
-            ))
+        accounts
+            .iter()
+            .filter(|a| {
+                !matches!(
+                    a.subtype,
+                    Some(AccountSubtype::Checking)
+                        | Some(AccountSubtype::Savings)
+                        | Some(AccountSubtype::Investment)
+                        | Some(AccountSubtype::Property)
+                )
+            })
             .map(|a| a.balance)
             .sum()
     }
-    
+
     fn calculate_credit_card_balance(&self, accounts: &[AccountData]) -> Decimal {
-        accounts.iter()
+        accounts
+            .iter()
             .filter(|a| matches!(a.subtype, Some(AccountSubtype::CreditCard)))
             .map(|a| a.balance)
             .sum()
     }
-    
+
     fn calculate_loan_balance(&self, accounts: &[AccountData]) -> Decimal {
-        accounts.iter()
+        accounts
+            .iter()
             .filter(|a| matches!(a.subtype, Some(AccountSubtype::Loan)))
             .map(|a| a.balance)
             .sum()
     }
-    
+
     fn calculate_mortgage_balance(&self, accounts: &[AccountData]) -> Decimal {
-        accounts.iter()
+        accounts
+            .iter()
             .filter(|a| matches!(a.subtype, Some(AccountSubtype::Mortgage)))
             .map(|a| a.balance)
             .sum()
     }
-    
+
     fn calculate_other_liabilities(&self, accounts: &[AccountData]) -> Decimal {
-        accounts.iter()
-            .filter(|a| !matches!(a.subtype, 
-                Some(AccountSubtype::CreditCard) | 
-                Some(AccountSubtype::Loan) | 
-                Some(AccountSubtype::Mortgage)
-            ))
+        accounts
+            .iter()
+            .filter(|a| {
+                !matches!(
+                    a.subtype,
+                    Some(AccountSubtype::CreditCard)
+                        | Some(AccountSubtype::Loan)
+                        | Some(AccountSubtype::Mortgage)
+                )
+            })
             .map(|a| a.balance)
             .sum()
     }
-    
+
     fn calculate_operating_cash_flow(&self, transactions: &[TransactionData]) -> Decimal {
         // 简化计算：收入 - 日常支出
         let income = self.calculate_income(transactions);
-        let operating_expense = transactions.iter()
-            .filter(|t| t.transaction_type == TransactionType::Expense && 
-                       !self.is_investing_activity(&t) && 
-                       !self.is_financing_activity(&t))
+        let operating_expense = transactions
+            .iter()
+            .filter(|t| {
+                t.transaction_type == TransactionType::Expense
+                    && !self.is_investing_activity(&t)
+                    && !self.is_financing_activity(&t)
+            })
             .map(|t| t.amount)
             .sum::<Decimal>();
-        
+
         income - operating_expense
     }
-    
+
     fn calculate_investing_cash_flow(&self, transactions: &[TransactionData]) -> Decimal {
-        transactions.iter()
+        transactions
+            .iter()
             .filter(|t| self.is_investing_activity(t))
-            .map(|t| if t.transaction_type == TransactionType::Income {
-                t.amount
-            } else {
-                -t.amount
+            .map(|t| {
+                if t.transaction_type == TransactionType::Income {
+                    t.amount
+                } else {
+                    -t.amount
+                }
             })
             .sum()
     }
-    
+
     fn calculate_financing_cash_flow(&self, transactions: &[TransactionData]) -> Decimal {
-        transactions.iter()
+        transactions
+            .iter()
             .filter(|t| self.is_financing_activity(t))
-            .map(|t| if t.transaction_type == TransactionType::Income {
-                t.amount
-            } else {
-                -t.amount
+            .map(|t| {
+                if t.transaction_type == TransactionType::Income {
+                    t.amount
+                } else {
+                    -t.amount
+                }
             })
             .sum()
     }
-    
+
     fn is_investing_activity(&self, transaction: &TransactionData) -> bool {
         // 判断是否为投资活动（买卖股票、房产等）
-        transaction.category_name.as_ref()
+        transaction
+            .category_name
+            .as_ref()
             .map(|c| c.contains("Investment") || c.contains("Property"))
             .unwrap_or(false)
     }
-    
+
     fn is_financing_activity(&self, transaction: &TransactionData) -> bool {
         // 判断是否为融资活动（贷款、还款等）
-        transaction.category_name.as_ref()
+        transaction
+            .category_name
+            .as_ref()
             .map(|c| c.contains("Loan") || c.contains("Credit") || c.contains("Mortgage"))
             .unwrap_or(false)
     }
-    
+
     fn group_expenses_by_category(&self, expenses: &[TransactionData]) -> Vec<CategoryAmount> {
         let mut category_map: HashMap<String, Decimal> = HashMap::new();
-        
+
         for expense in expenses {
-            let category = expense.category_name.clone().unwrap_or("Uncategorized".to_string());
+            let category = expense
+                .category_name
+                .clone()
+                .unwrap_or("Uncategorized".to_string());
             *category_map.entry(category).or_insert(Decimal::ZERO) += expense.amount;
         }
-        
-        let mut result: Vec<CategoryAmount> = category_map.into_iter()
+
+        let mut result: Vec<CategoryAmount> = category_map
+            .into_iter()
             .map(|(category, amount)| CategoryAmount { category, amount })
             .collect();
-        
+
         result.sort_by(|a, b| b.amount.cmp(&a.amount));
         result
     }
-    
+
     fn group_expenses_by_payee(&self, expenses: &[TransactionData]) -> Vec<PayeeAmount> {
         let mut payee_map: HashMap<String, Decimal> = HashMap::new();
-        
+
         for expense in expenses {
             let payee = expense.payee_name.clone().unwrap_or("Unknown".to_string());
             *payee_map.entry(payee).or_insert(Decimal::ZERO) += expense.amount;
         }
-        
-        let mut result: Vec<PayeeAmount> = payee_map.into_iter()
+
+        let mut result: Vec<PayeeAmount> = payee_map
+            .into_iter()
             .map(|(payee, amount)| PayeeAmount { payee, amount })
             .collect();
-        
+
         result.sort_by(|a, b| b.amount.cmp(&a.amount));
         result
     }
-    
+
     fn group_expenses_by_time(
         &self,
         expenses: &[TransactionData],
         interval: &TimeInterval,
     ) -> Vec<TimeAmount> {
         let mut time_map: HashMap<NaiveDate, Decimal> = HashMap::new();
-        
+
         for expense in expenses {
             let key = match interval {
                 TimeInterval::Daily => expense.date,
                 TimeInterval::Weekly => {
                     // 获取周的第一天
-                    expense.date - Duration::days(expense.date.weekday().num_days_from_monday() as i64)
+                    expense.date
+                        - Duration::days(expense.date.weekday().num_days_from_monday() as i64)
                 }
                 TimeInterval::Monthly => expense.date.with_day(1).unwrap(),
                 _ => expense.date,
             };
-            
+
             *time_map.entry(key).or_insert(Decimal::ZERO) += expense.amount;
         }
-        
-        let mut result: Vec<TimeAmount> = time_map.into_iter()
+
+        let mut result: Vec<TimeAmount> = time_map
+            .into_iter()
             .map(|(date, amount)| TimeAmount { date, amount })
             .collect();
-        
+
         result.sort_by_key(|t| t.date);
         result
     }
-    
-    fn find_largest_expenses(&self, expenses: &[TransactionData], limit: usize) -> Vec<TransactionData> {
+
+    fn find_largest_expenses(
+        &self,
+        expenses: &[TransactionData],
+        limit: usize,
+    ) -> Vec<TransactionData> {
         let mut sorted = expenses.to_vec();
         sorted.sort_by(|a, b| b.amount.cmp(&a.amount));
         sorted.into_iter().take(limit).collect()
     }
-    
+
     fn detect_unusual_expenses(&self, expenses: &[TransactionData]) -> Vec<TransactionData> {
         if expenses.is_empty() {
             return Vec::new();
         }
-        
+
         let amounts: Vec<Decimal> = expenses.iter().map(|e| e.amount).collect();
         let mean = amounts.iter().sum::<Decimal>() / Decimal::from(amounts.len());
-        
+
         // 计算标准差
-        let variance = amounts.iter()
-            .map(|a| (*a - mean).powi(2))
-            .sum::<Decimal>() / Decimal::from(amounts.len());
-        
+        let variance = amounts.iter().map(|a| (*a - mean).powi(2)).sum::<Decimal>()
+            / Decimal::from(amounts.len());
+
         let std_dev = variance.sqrt().unwrap_or(Decimal::ZERO);
-        
+
         // 找出超过2个标准差的支出
         let threshold = mean + std_dev * Decimal::from(2);
-        
-        expenses.iter()
+
+        expenses
+            .iter()
             .filter(|e| e.amount > threshold)
             .cloned()
             .collect()
     }
-    
+
     fn calculate_median(&self, values: &[Decimal]) -> Decimal {
         if values.is_empty() {
             return Decimal::ZERO;
         }
-        
+
         let mut sorted = values.to_vec();
         sorted.sort();
-        
+
         let len = sorted.len();
         if len % 2 == 0 {
             (sorted[len / 2 - 1] + sorted[len / 2]) / Decimal::from(2)
@@ -748,18 +817,19 @@ impl AnalyticsService {
             sorted[len / 2]
         }
     }
-    
+
     fn calculate_actual_for_budget(
         &self,
         budget: &BudgetData,
         expenses: &[TransactionData],
     ) -> Decimal {
-        expenses.iter()
+        expenses
+            .iter()
             .filter(|e| e.category_id.as_ref() == Some(&budget.category_id))
             .map(|e| e.amount)
             .sum()
     }
-    
+
     fn calculate_trend_line(&self, values: &[Decimal]) -> TrendLine {
         if values.len() < 2 {
             return TrendLine {
@@ -768,32 +838,34 @@ impl AnalyticsService {
                 r_squared: 0.0,
             };
         }
-        
+
         // 简单线性回归
         let n = Decimal::from(values.len());
         let x_values: Vec<Decimal> = (0..values.len()).map(|i| Decimal::from(i)).collect();
-        
+
         let sum_x: Decimal = x_values.iter().sum();
         let sum_y: Decimal = values.iter().sum();
         let sum_xy: Decimal = x_values.iter().zip(values.iter()).map(|(x, y)| x * y).sum();
         let sum_x2: Decimal = x_values.iter().map(|x| x * x).sum();
-        
+
         let slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x * sum_x);
         let intercept = (sum_y - slope * sum_x) / n;
-        
+
         // 计算 R²
         let mean_y = sum_y / n;
         let ss_tot: Decimal = values.iter().map(|y| (*y - mean_y).powi(2)).sum();
-        let ss_res: Decimal = x_values.iter().zip(values.iter())
+        let ss_res: Decimal = x_values
+            .iter()
+            .zip(values.iter())
             .map(|(x, y)| (*y - (slope * x + intercept)).powi(2))
             .sum();
-        
+
         let r_squared = if ss_tot != Decimal::ZERO {
             (Decimal::ONE - ss_res / ss_tot).to_f64().unwrap_or(0.0)
         } else {
             0.0
         };
-        
+
         TrendLine {
             slope,
             intercept,
@@ -819,7 +891,7 @@ impl Period {
             end_date: now,
         }
     }
-    
+
     pub fn last_30_days() -> Self {
         let now = Utc::now().date_naive();
         Self {
@@ -1163,18 +1235,18 @@ fn is_leap_year(year: i32) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_period_creation() {
         let period = Period::current_month();
         assert!(period.start_date.day() == 1);
         assert!(period.end_date <= Utc::now().date_naive());
-        
+
         let period = Period::last_30_days();
         let days_diff = (period.end_date - period.start_date).num_days();
         assert_eq!(days_diff, 30);
     }
-    
+
     #[test]
     fn test_days_in_month() {
         assert_eq!(days_in_month(2024, 2), 29); // Leap year

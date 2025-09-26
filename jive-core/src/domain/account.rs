@@ -1,10 +1,10 @@
 //! Account domain model - 账户领域模型
-//! 
+//!
 //! 基于 Maybe 的 Account 模型转换而来
 
-use serde::{Serialize, Deserialize};
 use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
@@ -15,22 +15,22 @@ use crate::error::{JiveError, Result};
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum AccountType {
-    Checking,        // 支票账户
-    Savings,         // 储蓄账户
-    CreditCard,      // 信用卡
-    Investment,      // 投资账户
-    Loan,           // 贷款
-    Cash,           // 现金
-    Other,          // 其他
+    Checking,   // 支票账户
+    Savings,    // 储蓄账户
+    CreditCard, // 信用卡
+    Investment, // 投资账户
+    Loan,       // 贷款
+    Cash,       // 现金
+    Other,      // 其他
 }
 
 /// 账户状态
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum AccountStatus {
-    Active,         // 活跃
-    Inactive,       // 不活跃
-    Closed,         // 关闭
+    Active,   // 活跃
+    Inactive, // 不活跃
+    Closed,   // 关闭
 }
 
 /// 账户实体
@@ -49,7 +49,12 @@ pub struct Account {
 }
 
 impl Account {
-    pub fn new(name: String, account_type: AccountType, currency: String, ledger_id: String) -> Result<Self> {
+    pub fn new(
+        name: String,
+        account_type: AccountType,
+        currency: String,
+        ledger_id: String,
+    ) -> Result<Self> {
         if name.trim().is_empty() {
             return Err(JiveError::ValidationError {
                 message: "Account name cannot be empty".to_string(),
@@ -57,7 +62,7 @@ impl Account {
         }
 
         let now = Utc::now();
-        
+
         Ok(Self {
             id: uuid::Uuid::new_v4().to_string(),
             name,
@@ -72,13 +77,27 @@ impl Account {
     }
 
     // Getters
-    pub fn id(&self) -> String { self.id.clone() }
-    pub fn name(&self) -> String { self.name.clone() }
-    pub fn account_type(&self) -> AccountType { self.account_type.clone() }
-    pub fn balance(&self) -> Decimal { self.balance }
-    pub fn currency(&self) -> String { self.currency.clone() }
-    pub fn status(&self) -> AccountStatus { self.status.clone() }
-    pub fn ledger_id(&self) -> String { self.ledger_id.clone() }
+    pub fn id(&self) -> String {
+        self.id.clone()
+    }
+    pub fn name(&self) -> String {
+        self.name.clone()
+    }
+    pub fn account_type(&self) -> AccountType {
+        self.account_type.clone()
+    }
+    pub fn balance(&self) -> Decimal {
+        self.balance
+    }
+    pub fn currency(&self) -> String {
+        self.currency.clone()
+    }
+    pub fn status(&self) -> AccountStatus {
+        self.status.clone()
+    }
+    pub fn ledger_id(&self) -> String {
+        self.ledger_id.clone()
+    }
 
     // Business methods
     pub fn update_balance(&mut self, new_balance: Decimal) -> Result<()> {
@@ -142,9 +161,11 @@ impl AccountBuilder {
             message: "Account name is required".to_string(),
         })?;
 
-        let account_type = self.account_type.ok_or_else(|| JiveError::ValidationError {
-            message: "Account type is required".to_string(),
-        })?;
+        let account_type = self
+            .account_type
+            .ok_or_else(|| JiveError::ValidationError {
+                message: "Account type is required".to_string(),
+            })?;
 
         let currency = self.currency.ok_or_else(|| JiveError::ValidationError {
             message: "Currency is required".to_string(),
@@ -155,7 +176,7 @@ impl AccountBuilder {
         })?;
 
         let mut account = Account::new(name, account_type, currency, ledger_id)?;
-        
+
         if let Some(balance) = self.balance {
             account.update_balance(balance)?;
         }

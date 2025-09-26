@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/currency.dart';
-import '../providers/currency_provider.dart';
-import 'source_badge.dart';
+import 'package:jive_money/models/currency.dart';
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/widgets/source_badge.dart';
 
 /// Currency converter widget with auto-fetch rates
 class CurrencyConverter extends ConsumerStatefulWidget {
@@ -175,7 +175,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                 ),
                 const Spacer(),
                 if (_isConverting)
-                  SizedBox(
+                  const SizedBox(
                     width: 16,
                     height: 16,
                     child: CircularProgressIndicator(

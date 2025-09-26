@@ -5,6 +5,7 @@ use uuid::Uuid;
 
 use super::permission::{MemberRole, Permission};
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct FamilyMember {
     pub family_id: Uuid,
@@ -108,8 +109,7 @@ impl TryFrom<String> for MemberRole {
     type Error = String;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
-        MemberRole::from_str(&value)
-            .ok_or_else(|| format!("Invalid role: {}", value))
+        MemberRole::from_str_name(&value).ok_or_else(|| format!("Invalid role: {}", value))
     }
 }
 
@@ -122,7 +122,7 @@ mod tests {
         let family_id = Uuid::new_v4();
         let user_id = Uuid::new_v4();
         let member = FamilyMember::new(family_id, user_id, MemberRole::Member, None);
-        
+
         assert_eq!(member.family_id, family_id);
         assert_eq!(member.user_id, user_id);
         assert_eq!(member.role, MemberRole::Member);
@@ -135,7 +135,7 @@ mod tests {
         let family_id = Uuid::new_v4();
         let user_id = Uuid::new_v4();
         let mut member = FamilyMember::new(family_id, user_id, MemberRole::Member, None);
-        
+
         member.change_role(MemberRole::Admin);
         assert_eq!(member.role, MemberRole::Admin);
         assert_eq!(member.permissions, MemberRole::Admin.default_permissions());
@@ -146,10 +146,10 @@ mod tests {
         let family_id = Uuid::new_v4();
         let user_id = Uuid::new_v4();
         let mut member = FamilyMember::new(family_id, user_id, MemberRole::Viewer, None);
-        
+
         member.grant_permission(Permission::CreateTransactions);
         assert!(member.permissions.contains(&Permission::CreateTransactions));
-        
+
         member.revoke_permission(Permission::CreateTransactions);
         assert!(!member.permissions.contains(&Permission::CreateTransactions));
     }
@@ -159,11 +159,11 @@ mod tests {
         let family_id = Uuid::new_v4();
         let user_id = Uuid::new_v4();
         let mut member = FamilyMember::new(family_id, user_id, MemberRole::Member, None);
-        
+
         assert!(member.can_perform(Permission::ViewTransactions));
         assert!(member.can_perform(Permission::CreateTransactions));
         assert!(!member.can_perform(Permission::DeleteFamily));
-        
+
         member.deactivate();
         assert!(!member.can_perform(Permission::ViewTransactions));
     }
@@ -172,17 +172,17 @@ mod tests {
     fn test_can_manage_member() {
         let family_id = Uuid::new_v4();
         let user_id = Uuid::new_v4();
-        
+
         let owner = FamilyMember::new(family_id, user_id, MemberRole::Owner, None);
         assert!(owner.can_manage_member(MemberRole::Owner));
         assert!(owner.can_manage_member(MemberRole::Admin));
         assert!(owner.can_manage_member(MemberRole::Member));
-        
+
         let admin = FamilyMember::new(family_id, user_id, MemberRole::Admin, None);
         assert!(!admin.can_manage_member(MemberRole::Owner));
         assert!(admin.can_manage_member(MemberRole::Admin));
         assert!(admin.can_manage_member(MemberRole::Member));
-        
+
         let member = FamilyMember::new(family_id, user_id, MemberRole::Member, None);
         assert!(!member.can_manage_member(MemberRole::Member));
     }

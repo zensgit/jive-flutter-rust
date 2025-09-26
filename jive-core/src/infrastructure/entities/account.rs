@@ -25,22 +25,27 @@ pub struct Account {
 
 impl Entity for Account {
     type Id = Uuid;
-    
+
     fn id(&self) -> Self::Id {
         self.id
     }
-    
+
     fn created_at(&self) -> DateTime<Utc> {
         self.created_at
     }
-    
+
     fn updated_at(&self) -> DateTime<Utc> {
         self.updated_at
     }
 }
 
 impl Account {
-    pub fn new(family_id: Uuid, name: String, accountable_type: String, accountable_id: Uuid) -> Self {
+    pub fn new(
+        family_id: Uuid,
+        name: String,
+        accountable_type: String,
+        accountable_id: Uuid,
+    ) -> Self {
         let now = Utc::now();
         Self {
             id: Uuid::new_v4(),
@@ -63,18 +68,18 @@ impl Account {
             updated_at: now,
         }
     }
-    
+
     pub fn classification(&self) -> AccountClassification {
         match self.accountable_type.as_str() {
             "CreditCard" | "Loan" | "OtherLiability" => AccountClassification::Liability,
             _ => AccountClassification::Asset,
         }
     }
-    
+
     pub fn is_syncing(&self) -> bool {
         self.status == "syncing"
     }
-    
+
     pub fn has_error(&self) -> bool {
         self.status == "error"
     }
@@ -95,7 +100,7 @@ pub struct Depository {
 
 impl Accountable for Depository {
     const TYPE_NAME: &'static str = "Depository";
-    
+
     async fn save(&self, tx: &mut sqlx::PgConnection) -> Result<Uuid, sqlx::Error> {
         let id = sqlx::query!(
             r#"
@@ -122,18 +127,14 @@ impl Accountable for Depository {
         .fetch_one(&mut *tx)
         .await?
         .id;
-        
+
         Ok(id)
     }
-    
+
     async fn load(id: Uuid, conn: &sqlx::PgPool) -> Result<Self, sqlx::Error> {
-        sqlx::query_as!(
-            Depository,
-            "SELECT * FROM depositories WHERE id = $1",
-            id
-        )
-        .fetch_one(conn)
-        .await
+        sqlx::query_as!(Depository, "SELECT * FROM depositories WHERE id = $1", id)
+            .fetch_one(conn)
+            .await
     }
 }
 
@@ -156,7 +157,7 @@ pub struct CreditCard {
 
 impl Accountable for CreditCard {
     const TYPE_NAME: &'static str = "CreditCard";
-    
+
     async fn save(&self, tx: &mut sqlx::PgConnection) -> Result<Uuid, sqlx::Error> {
         let id = sqlx::query!(
             r#"
@@ -195,18 +196,14 @@ impl Accountable for CreditCard {
         .fetch_one(&mut *tx)
         .await?
         .id;
-        
+
         Ok(id)
     }
-    
+
     async fn load(id: Uuid, conn: &sqlx::PgPool) -> Result<Self, sqlx::Error> {
-        sqlx::query_as!(
-            CreditCard,
-            "SELECT * FROM credit_cards WHERE id = $1",
-            id
-        )
-        .fetch_one(conn)
-        .await
+        sqlx::query_as!(CreditCard, "SELECT * FROM credit_cards WHERE id = $1", id)
+            .fetch_one(conn)
+            .await
     }
 }
 
@@ -223,7 +220,7 @@ pub struct Investment {
 
 impl Accountable for Investment {
     const TYPE_NAME: &'static str = "Investment";
-    
+
     async fn save(&self, tx: &mut sqlx::PgConnection) -> Result<Uuid, sqlx::Error> {
         let id = sqlx::query!(
             r#"
@@ -246,18 +243,14 @@ impl Accountable for Investment {
         .fetch_one(&mut *tx)
         .await?
         .id;
-        
+
         Ok(id)
     }
-    
+
     async fn load(id: Uuid, conn: &sqlx::PgPool) -> Result<Self, sqlx::Error> {
-        sqlx::query_as!(
-            Investment,
-            "SELECT * FROM investments WHERE id = $1",
-            id
-        )
-        .fetch_one(conn)
-        .await
+        sqlx::query_as!(Investment, "SELECT * FROM investments WHERE id = $1", id)
+            .fetch_one(conn)
+            .await
     }
 }
 
@@ -281,7 +274,7 @@ pub struct Property {
 
 impl Accountable for Property {
     const TYPE_NAME: &'static str = "Property";
-    
+
     async fn save(&self, tx: &mut sqlx::PgConnection) -> Result<Uuid, sqlx::Error> {
         let id = sqlx::query!(
             r#"
@@ -322,18 +315,14 @@ impl Accountable for Property {
         .fetch_one(&mut *tx)
         .await?
         .id;
-        
+
         Ok(id)
     }
-    
+
     async fn load(id: Uuid, conn: &sqlx::PgPool) -> Result<Self, sqlx::Error> {
-        sqlx::query_as!(
-            Property,
-            "SELECT * FROM properties WHERE id = $1",
-            id
-        )
-        .fetch_one(conn)
-        .await
+        sqlx::query_as!(Property, "SELECT * FROM properties WHERE id = $1", id)
+            .fetch_one(conn)
+            .await
     }
 }
 
@@ -354,7 +343,7 @@ pub struct Loan {
 
 impl Accountable for Loan {
     const TYPE_NAME: &'static str = "Loan";
-    
+
     async fn save(&self, tx: &mut sqlx::PgConnection) -> Result<Uuid, sqlx::Error> {
         let id = sqlx::query!(
             r#"
@@ -389,17 +378,13 @@ impl Accountable for Loan {
         .fetch_one(&mut *tx)
         .await?
         .id;
-        
+
         Ok(id)
     }
-    
+
     async fn load(id: Uuid, conn: &sqlx::PgPool) -> Result<Self, sqlx::Error> {
-        sqlx::query_as!(
-            Loan,
-            "SELECT * FROM loans WHERE id = $1",
-            id
-        )
-        .fetch_one(conn)
-        .await
+        sqlx::query_as!(Loan, "SELECT * FROM loans WHERE id = $1", id)
+            .fetch_one(conn)
+            .await
     }
 }

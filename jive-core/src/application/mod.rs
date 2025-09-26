@@ -1,58 +1,58 @@
 //! Application services for Jive Core
-//! 
+//!
 //! This module contains the application layer services that orchestrate business logic.
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
 // 导出所有应用服务
 pub mod account_service;
-pub mod transaction_service;
-pub mod ledger_service;
-pub mod category_service;
-pub mod user_service;
+pub mod analytics_service;
 pub mod auth_service;
 pub mod auth_service_enhanced;
-pub mod family_service;
-pub mod multi_family_service;
-pub mod middleware;
-pub mod mfa_service;
-pub mod quick_transaction_service;
-pub mod rules_engine;
-pub mod analytics_service;
-pub mod data_exchange_service;
-pub mod credit_card_service;
-pub mod investment_service;
-pub mod sync_service;
-pub mod import_service;
-pub mod export_service;
-pub mod report_service;
 pub mod budget_service;
-pub mod scheduled_transaction_service;
-pub mod rule_service;
-pub mod tag_service;
-pub mod payee_service;
+pub mod category_service;
+pub mod credit_card_service;
+pub mod data_exchange_service;
+pub mod export_service;
+pub mod family_service;
+pub mod import_service;
+pub mod investment_service;
+pub mod ledger_service;
+pub mod mfa_service;
+pub mod middleware;
+pub mod multi_family_service;
 pub mod notification_service;
+pub mod payee_service;
+pub mod quick_transaction_service;
+pub mod report_service;
+pub mod rule_service;
+pub mod rules_engine;
+pub mod scheduled_transaction_service;
+pub mod sync_service;
+pub mod tag_service;
+pub mod transaction_service;
+pub mod user_service;
 
 pub use account_service::*;
-pub use transaction_service::*;
-pub use ledger_service::*;
-pub use category_service::*;
-pub use user_service::*;
 pub use auth_service::*;
-pub use family_service::*;
-pub use sync_service::*;
-pub use import_service::*;
-pub use export_service::*;
-pub use report_service::*;
 pub use budget_service::*;
-pub use scheduled_transaction_service::*;
-pub use rule_service::*;
-pub use tag_service::*;
-pub use payee_service::*;
+pub use category_service::*;
+pub use export_service::*;
+pub use family_service::*;
+pub use import_service::*;
+pub use ledger_service::*;
 pub use notification_service::*;
+pub use payee_service::*;
+pub use report_service::*;
+pub use rule_service::*;
+pub use scheduled_transaction_service::*;
+pub use sync_service::*;
+pub use tag_service::*;
+pub use transaction_service::*;
+pub use user_service::*;
 
 use crate::error::{JiveError, Result};
 
@@ -71,7 +71,11 @@ impl PaginationParams {
     #[wasm_bindgen(constructor)]
     pub fn new(page: u32, per_page: u32) -> Self {
         let offset = (page.saturating_sub(1)) * per_page;
-        Self { page, per_page, offset }
+        Self {
+            page,
+            per_page,
+            offset,
+        }
     }
 
     #[wasm_bindgen(getter)]
@@ -110,11 +114,7 @@ pub struct PaginatedResult<T> {
 }
 
 impl<T> PaginatedResult<T> {
-    pub fn new(
-        items: Vec<T>,
-        total_count: u32,
-        pagination: &PaginationParams,
-    ) -> Self {
+    pub fn new(items: Vec<T>, total_count: u32, pagination: &PaginationParams) -> Self {
         let total_pages = (total_count as f64 / pagination.per_page as f64).ceil() as u32;
         let has_next = pagination.page < total_pages;
         let has_prev = pagination.page > 1;
@@ -263,8 +263,8 @@ pub struct ServiceResponse<T> {
 
 #[cfg(feature = "wasm")]
 #[wasm_bindgen]
-impl<T> ServiceResponse<T> 
-where 
+impl<T> ServiceResponse<T>
+where
     T: Clone + Serialize,
 {
     #[wasm_bindgen(getter)]
@@ -406,13 +406,13 @@ impl Default for BatchResult {
 #[derive(Debug, Clone)]
 pub struct ServiceContext {
     pub user_id: String,
-    pub family_id: String,  // 新增：当前 Family
+    pub family_id: String, // 新增：当前 Family
     pub current_ledger_id: Option<String>,
-    pub permissions: Vec<crate::domain::Permission>,  // 新增：用户权限
+    pub permissions: Vec<crate::domain::Permission>, // 新增：用户权限
     pub request_id: Option<String>,
     pub timestamp: chrono::DateTime<chrono::Utc>,
-    pub ip_address: Option<String>,  // 新增：用于审计
-    pub user_agent: Option<String>,  // 新增：用于审计
+    pub ip_address: Option<String>, // 新增：用于审计
+    pub user_agent: Option<String>, // 新增：用于审计
 }
 
 impl ServiceContext {
@@ -454,31 +454,35 @@ impl ServiceContext {
     pub fn has_permission(&self, permission: crate::domain::Permission) -> bool {
         self.permissions.contains(&permission)
     }
-    
+
     /// 检查权限（通过字符串）
     pub fn has_permission_str(&self, permission_str: &str) -> bool {
         use crate::domain::Permission;
-        
+
         // 将字符串转换为 Permission 枚举
         let permission = match permission_str {
             "view_transactions" => Permission::ViewTransactions,
             "create_transactions" => Permission::CreateTransactions,
             "edit_transactions" => Permission::EditTransactions,
             "delete_transactions" => Permission::DeleteTransactions,
-            "manage_rules" => Permission::ManageFamily,  // 暂时使用 ManageFamily 权限
+            "manage_rules" => Permission::ManageFamily, // 暂时使用 ManageFamily 权限
             _ => return false,
         };
-        
+
         self.has_permission(permission)
     }
-    
+
     /// 要求权限（无权限时抛出错误）
-    pub fn require_permission(&self, permission: crate::domain::Permission) -> crate::error::Result<()> {
+    pub fn require_permission(
+        &self,
+        permission: crate::domain::Permission,
+    ) -> crate::error::Result<()> {
         use crate::error::JiveError;
         if !self.has_permission(permission) {
-            return Err(JiveError::Unauthorized(
-                format!("Missing permission: {:?}", permission)
-            ));
+            return Err(JiveError::Unauthorized(format!(
+                "Missing permission: {:?}",
+                permission
+            )));
         }
         Ok(())
     }
@@ -515,9 +519,10 @@ mod tests {
         assert!(success_response.success);
         assert_eq!(success_response.data, Some("test data".to_string()));
 
-        let error_response: ServiceResponse<String> = ServiceResponse::error(
-            JiveError::ValidationError { message: "test error".to_string() }
-        );
+        let error_response: ServiceResponse<String> =
+            ServiceResponse::error(JiveError::ValidationError {
+                message: "test error".to_string(),
+            });
         assert!(!error_response.success);
         assert!(error_response.error.is_some());
     }
@@ -538,11 +543,14 @@ mod tests {
     #[test]
     fn test_service_context() {
         use crate::domain::Permission;
-        
+
         let context = ServiceContext::new("user-123".to_string(), "family-456".to_string())
             .with_ledger("ledger-789".to_string())
             .with_request_id("req-012".to_string())
-            .with_permissions(vec![Permission::ViewTransactions, Permission::CreateTransactions]);
+            .with_permissions(vec![
+                Permission::ViewTransactions,
+                Permission::CreateTransactions,
+            ]);
 
         assert_eq!(context.user_id, "user-123");
         assert_eq!(context.family_id, "family-456");

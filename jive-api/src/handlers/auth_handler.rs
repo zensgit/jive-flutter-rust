@@ -1,5 +1,6 @@
+#![allow(dead_code)]
 //! 认证处理器
-//! 
+//!
 //! 处理用户认证相关的API请求
 
 use axum::{
@@ -7,12 +8,12 @@ use axum::{
     http::StatusCode,
     response::Json as ResponseJson,
 };
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::PgPool;
-use tracing::{info, warn, error};
+use tracing::{error, info, warn};
 use uuid::Uuid;
-use chrono::{DateTime, Utc};
 
 /// 登录请求
 #[derive(Debug, Deserialize)]
@@ -55,16 +56,19 @@ pub async fn login(
     State(pool): State<PgPool>,
     Json(request): Json<LoginRequest>,
 ) -> Result<ResponseJson<AuthResponse>, StatusCode> {
-    info!("登录请求: email={}, remember_me={:?}", request.email, request.remember_me);
+    info!(
+        "登录请求: email={}, remember_me={:?}",
+        request.email, request.remember_me
+    );
 
     // 简化的认证逻辑 - 生产环境应该进行真正的密码验证
     match authenticate_user(&pool, &request.email, &request.password).await {
         Ok(Some(user)) => {
             info!("用户认证成功: {}", user.email);
-            
+
             // 生成简单的JWT token (生产环境应该使用真正的JWT库)
             let token = generate_simple_token(&user.id);
-            
+
             Ok(ResponseJson(AuthResponse {
                 success: true,
                 message: "登录成功".to_string(),
@@ -119,9 +123,9 @@ pub async fn register(
     match create_user(&pool, &request.name, &request.email, &request.password).await {
         Ok(user) => {
             info!("用户注册成功: {}", user.email);
-            
+
             let token = generate_simple_token(&user.id);
-            
+
             Ok(ResponseJson(AuthResponse {
                 success: true,
                 message: "注册成功".to_string(),
@@ -172,7 +176,11 @@ async fn authenticate_user(
         id: Uuid::new_v4().to_string(),
         name: extract_name_from_email(email),
         email: email.to_string(),
-        role: if email.contains("admin") { "admin".to_string() } else { "user".to_string() },
+        role: if email.contains("admin") {
+            "admin".to_string()
+        } else {
+            "user".to_string()
+        },
         created_at: Utc::now(),
         updated_at: Utc::now(),
     };

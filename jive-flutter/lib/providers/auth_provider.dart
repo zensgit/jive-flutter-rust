@@ -1,10 +1,10 @@
 // 认证状态管理
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/api/auth_service.dart';
-import '../core/storage/hive_config.dart';
-import '../core/network/http_client.dart';
-import '../models/user.dart';
+import 'package:jive_money/services/api/auth_service.dart';
+import 'package:jive_money/core/storage/hive_config.dart';
+import 'package:jive_money/core/network/http_client.dart';
+import 'package:jive_money/models/user.dart';
 
 /// 认证状态枚举
 enum AuthStatus {
@@ -118,7 +118,7 @@ class AuthController extends StateNotifier<AuthState> {
       debugPrint('DEBUG Provider: Got auth response');
       debugPrint('DEBUG Provider: User = ${authResponse.user}');
       debugPrint(
-          'DEBUG Provider: Token = ${authResponse.accessToken?.substring(0, 20) ?? 'null'}...');
+          'DEBUG Provider: Token = ${authResponse.accessToken.substring(0, 20)}...');
 
       // 保存用户信息
       if (authResponse.user != null) {
@@ -135,7 +135,7 @@ class AuthController extends StateNotifier<AuthState> {
       } else {
         debugPrint('DEBUG: Login failed - no user in response');
         debugPrint(
-            'DEBUG: Auth response: token=${authResponse.accessToken?.substring(0, 20)}...');
+            'DEBUG: Auth response: token=${authResponse.accessToken.substring(0, 20)}...');
         state = state.copyWith(
           status: AuthStatus.error,
           errorMessage: '登录响应中缺少用户信息',
@@ -292,3 +292,15 @@ final isAuthenticatedProvider = Provider<bool>((ref) {
 
 /// 为了兼容性，创建authProvider别名
 final authProvider = authControllerProvider;
+
+/// AuthState Provider - 为了兼容性
+final authStateProvider = Provider<AsyncValue<User?>>((ref) {
+  final authState = ref.watch(authControllerProvider);
+  if (authState.status == AuthStatus.loading) {
+    return const AsyncValue.loading();
+  } else if (authState.status == AuthStatus.error) {
+    return AsyncValue.error(authState.errorMessage ?? 'Unknown error', StackTrace.current);
+  } else {
+    return AsyncValue.data(authState.user);
+  }
+});

@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc, Duration};
+use chrono::{DateTime, Duration, Utc};
 use reqwest;
 use rust_decimal::Decimal;
 use serde::Deserialize; // Serialize 未用
@@ -14,6 +14,7 @@ use super::ServiceError;
 
 // Frankfurter API 响应
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct FrankfurterResponse {
     amount: f64,
     base: String,
@@ -23,6 +24,7 @@ struct FrankfurterResponse {
 
 // ExchangeRate-API 响应
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct ExchangeRateApiResponse {
     result: String,
     base: String,
@@ -32,6 +34,7 @@ struct ExchangeRateApiResponse {
 
 // FXRatesAPI 响应
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct FxRatesApiResponse {
     base: String,
     rates: HashMap<String, f64>,
@@ -40,12 +43,14 @@ struct FxRatesApiResponse {
 
 // CoinGecko API 响应
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct CoinGeckoResponse {
     #[serde(flatten)]
     prices: HashMap<String, CoinGeckoPriceData>,
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct CoinGeckoPriceData {
     usd: f64,
     eur: Option<f64>,
@@ -65,6 +70,7 @@ struct CoinCapResponse {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
 struct CoinCapData {
     id: String,
     symbol: String,
@@ -76,6 +82,7 @@ struct CoinCapData {
 
 // Binance ticker response
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct BinanceTicker {
     symbol: String,
     price: String,
@@ -109,13 +116,13 @@ impl ExchangeRateApiService {
             .timeout(std::time::Duration::from_secs(10))
             .build()
             .unwrap();
-        
+
         Self {
             client,
             cache: HashMap::new(),
         }
     }
-    
+
     /// Inspect cached provider source for fiat by base code
     pub fn cached_fiat_source(&self, base_currency: &str) -> Option<String> {
         let key = format!("fiat_{}", base_currency);
@@ -123,27 +130,38 @@ impl ExchangeRateApiService {
     }
 
     /// Inspect cached provider source for crypto by codes + fiat
-    pub fn cached_crypto_source(&self, crypto_codes: &[&str], fiat_currency: &str) -> Option<String> {
+    pub fn cached_crypto_source(
+        &self,
+        crypto_codes: &[&str],
+        fiat_currency: &str,
+    ) -> Option<String> {
         let key = format!("crypto_{}_{}", crypto_codes.join(","), fiat_currency);
         self.cache.get(&key).map(|c| c.source.clone())
     }
-    
+
     /// 获取法定货币汇率
-    pub async fn fetch_fiat_rates(&mut self, base_currency: &str) -> Result<HashMap<String, Decimal>, ServiceError> {
+    pub async fn fetch_fiat_rates(
+        &mut self,
+        base_currency: &str,
+    ) -> Result<HashMap<String, Decimal>, ServiceError> {
         let cache_key = format!("fiat_{}", base_currency);
-        
+
         // 检查缓存（15分钟有效期）
         if let Some(cached) = self.cache.get(&cache_key) {
             if !cached.is_expired(Duration::minutes(15)) {
-                info!("Using cached rates for {} from {}", base_currency, cached.source);
+                info!(
+                    "Using cached rates for {} from {}",
+                    base_currency, cached.source
+                );
                 return Ok(cached.rates.clone());
             }
         }
-        
+
         // 尝试多个数据源（顺序可配置：FIAT_PROVIDER_ORDER=exchangerate-api,frankfurter,fxrates）
         let mut rates = None;
         let mut source = String::new();
-        let order_env = std::env::var("FIAT_PROVIDER_ORDER").unwrap_or_else(|_| "exchangerate-api,frankfurter,fxrates".to_string());
+        let order_env = std::env::var("FIAT_PROVIDER_ORDER")
+            .unwrap_or_else(|_| "exchangerate-api,frankfurter,fxrates".to_string());
         let providers: Vec<String> = order_env
             .split(',')
             .map(|s| s.trim().to_lowercase())
@@ -152,22 +170,37 @@ impl ExchangeRateApiService {
         for p in providers {
             match p.as_str() {
                 "frankfurter" => match self.fetch_from_frankfurter(base_currency).await {
-                    Ok(r) => { rates = Some(r); source = "frankfurter".to_string(); },
+                    Ok(r) => {
+                        rates = Some(r);
+                        source = "frankfurter".to_string();
+                    }
                     Err(e) => warn!("Failed to fetch from Frankfurter: {}", e),
                 },
-                "exchangerate-api" | "exchange-rate-api" => match self.fetch_from_exchangerate_api(base_currency).await {
-                    Ok(r) => { rates = Some(r); source = "exchangerate-api".to_string(); },
-                    Err(e) => warn!("Failed to fetch from ExchangeRate-API: {}", e),
-                },
-                "fxrates" | "fx-rates-api" | "fxratesapi" => match self.fetch_from_fxrates_api(base_currency).await {
-                    Ok(r) => { rates = Some(r); source = "fxrates".to_string(); },
-                    Err(e) => warn!("Failed to fetch from FXRates API: {}", e),
-                },
+                "exchangerate-api" | "exchange-rate-api" => {
+                    match self.fetch_from_exchangerate_api(base_currency).await {
+                        Ok(r) => {
+                            rates = Some(r);
+                            source = "exchangerate-api".to_string();
+                        }
+                        Err(e) => warn!("Failed to fetch from ExchangeRate-API: {}", e),
+                    }
+                }
+                "fxrates" | "fx-rates-api" | "fxratesapi" => {
+                    match self.fetch_from_fxrates_api(base_currency).await {
+                        Ok(r) => {
+                            rates = Some(r);
+                            source = "fxrates".to_string();
+                        }
+                        Err(e) => warn!("Failed to fetch from FXRates API: {}", e),
+                    }
+                }
                 other => warn!("Unknown fiat provider: {}", other),
             }
-            if rates.is_some() { break; }
+            if rates.is_some() {
+                break;
+            }
         }
-        
+
         // 如果获取成功，更新缓存
         if let Some(rates) = rates {
             self.cache.insert(
@@ -180,61 +213,70 @@ impl ExchangeRateApiService {
             );
             return Ok(rates);
         }
-        
+
         // 如果所有API都失败，返回默认汇率
         warn!("All rate APIs failed, returning default rates");
         Ok(self.get_default_rates(base_currency))
     }
-    
+
     /// 从 Frankfurter API 获取汇率
-    async fn fetch_from_frankfurter(&self, base_currency: &str) -> Result<HashMap<String, Decimal>, ServiceError> {
+    async fn fetch_from_frankfurter(
+        &self,
+        base_currency: &str,
+    ) -> Result<HashMap<String, Decimal>, ServiceError> {
         let url = format!("https://api.frankfurter.app/latest?from={}", base_currency);
-        
-        let response = self.client
-            .get(&url)
-            .send()
-            .await
-            .map_err(|e| ServiceError::ExternalApi {
-                message: format!("Failed to fetch from Frankfurter: {}", e),
-            })?;
-        
+
+        let response =
+            self.client
+                .get(&url)
+                .send()
+                .await
+                .map_err(|e| ServiceError::ExternalApi {
+                    message: format!("Failed to fetch from Frankfurter: {}", e),
+                })?;
+
         if !response.status().is_success() {
             return Err(ServiceError::ExternalApi {
                 message: format!("Frankfurter API returned status: {}", response.status()),
             });
         }
-        
-        let data: FrankfurterResponse = response
-            .json()
-            .await
-            .map_err(|e| ServiceError::ExternalApi {
-                message: format!("Failed to parse Frankfurter response: {}", e),
-            })?;
-        
+
+        let data: FrankfurterResponse =
+            response
+                .json()
+                .await
+                .map_err(|e| ServiceError::ExternalApi {
+                    message: format!("Failed to parse Frankfurter response: {}", e),
+                })?;
+
         let mut rates = HashMap::new();
         for (currency, rate) in data.rates {
             if let Ok(decimal_rate) = Decimal::from_str(&rate.to_string()) {
                 rates.insert(currency, decimal_rate);
             }
         }
-        
+
         // 添加基础货币本身
         rates.insert(base_currency.to_string(), Decimal::ONE);
-        
+
         Ok(rates)
     }
 
     /// 从 FXRates API 获取汇率
-    async fn fetch_from_fxrates_api(&self, base_currency: &str) -> Result<HashMap<String, Decimal>, ServiceError> {
+    async fn fetch_from_fxrates_api(
+        &self,
+        base_currency: &str,
+    ) -> Result<HashMap<String, Decimal>, ServiceError> {
         let url = format!("https://api.fxratesapi.com/latest?base={}", base_currency);
 
-        let response = self.client
-            .get(&url)
-            .send()
-            .await
-            .map_err(|e| ServiceError::ExternalApi {
-                message: format!("Failed to fetch from FXRates API: {}", e),
-            })?;
+        let response =
+            self.client
+                .get(&url)
+                .send()
+                .await
+                .map_err(|e| ServiceError::ExternalApi {
+                    message: format!("Failed to fetch from FXRates API: {}", e),
+                })?;
 
         if !response.status().is_success() {
             return Err(ServiceError::ExternalApi {
@@ -242,12 +284,13 @@ impl ExchangeRateApiService {
             });
         }
 
-        let data: FxRatesApiResponse = response
-            .json()
-            .await
-            .map_err(|e| ServiceError::ExternalApi {
-                message: format!("Failed to parse FXRates response: {}", e),
-            })?;
+        let data: FxRatesApiResponse =
+            response
+                .json()
+                .await
+                .map_err(|e| ServiceError::ExternalApi {
+                    message: format!("Failed to parse FXRates response: {}", e),
+                })?;
 
         let mut rates = HashMap::new();
         for (currency, rate) in data.rates {
@@ -262,7 +305,11 @@ impl ExchangeRateApiService {
     }
 
     /// Fetch fiat rates from a specific provider label
-    pub async fn fetch_fiat_rates_from(&self, provider: &str, base_currency: &str) -> Result<(HashMap<String, Decimal>, String), ServiceError> {
+    pub async fn fetch_fiat_rates_from(
+        &self,
+        provider: &str,
+        base_currency: &str,
+    ) -> Result<(HashMap<String, Decimal>, String), ServiceError> {
         match provider.to_lowercase().as_str() {
             "exchangerate-api" | "exchange-rate-api" => {
                 let r = self.fetch_from_exchangerate_api(base_currency).await?;
@@ -276,31 +323,45 @@ impl ExchangeRateApiService {
                 let r = self.fetch_from_fxrates_api(base_currency).await?;
                 Ok((r, "fxrates".to_string()))
             }
-            other => Err(ServiceError::ExternalApi { message: format!("Unknown fiat provider: {}", other) }),
+            other => Err(ServiceError::ExternalApi {
+                message: format!("Unknown fiat provider: {}", other),
+            }),
         }
     }
-    
+
     /// 从 ExchangeRate-API 获取汇率（兼容 open.er-api 与 exchangerate-api 两种格式）
-    async fn fetch_from_exchangerate_api(&self, base_currency: &str) -> Result<HashMap<String, Decimal>, ServiceError> {
+    async fn fetch_from_exchangerate_api(
+        &self,
+        base_currency: &str,
+    ) -> Result<HashMap<String, Decimal>, ServiceError> {
         // 优先尝试 open.er-api.com（无需密钥，速率较高）
         let try_urls = vec![
             format!("https://open.er-api.com/v6/latest/{}", base_currency),
-            format!("https://api.exchangerate-api.com/v4/latest/{}", base_currency),
+            format!(
+                "https://api.exchangerate-api.com/v4/latest/{}",
+                base_currency
+            ),
         ];
 
         let mut last_err: Option<String> = None;
         for url in try_urls {
             let resp = match self.client.get(&url).send().await {
                 Ok(r) => r,
-                Err(e) => { last_err = Some(format!("request error: {}", e)); continue; }
+                Err(e) => {
+                    last_err = Some(format!("request error: {}", e));
+                    continue;
+                }
             };
-            if !resp.status().is_success() { 
+            if !resp.status().is_success() {
                 last_err = Some(format!("status: {}", resp.status()));
-                continue; 
+                continue;
             }
             let v: serde_json::Value = match resp.json().await {
                 Ok(json) => json,
-                Err(e) => { last_err = Some(format!("json error: {}", e)); continue; }
+                Err(e) => {
+                    last_err = Some(format!("json error: {}", e));
+                    continue;
+                }
             };
             // 允许两种字段名：rates 或 conversion_rates
             let map_node = v.get("rates").or_else(|| v.get("conversion_rates"));
@@ -315,17 +376,28 @@ impl ExchangeRateApiService {
                 }
                 // 添加基础货币自环
                 rates.insert(base_currency.to_uppercase(), Decimal::ONE);
-                if !rates.is_empty() { return Ok(rates); }
+                if !rates.is_empty() {
+                    return Ok(rates);
+                }
             }
             last_err = Some("missing rates map".to_string());
         }
-        Err(ServiceError::ExternalApi { message: format!("Failed to fetch/parse ExchangeRate-API: {}", last_err.unwrap_or_else(|| "unknown".to_string())) })
+        Err(ServiceError::ExternalApi {
+            message: format!(
+                "Failed to fetch/parse ExchangeRate-API: {}",
+                last_err.unwrap_or_else(|| "unknown".to_string())
+            ),
+        })
     }
-    
+
     /// 获取加密货币价格
-    pub async fn fetch_crypto_prices(&mut self, crypto_codes: Vec<&str>, fiat_currency: &str) -> Result<HashMap<String, Decimal>, ServiceError> {
+    pub async fn fetch_crypto_prices(
+        &mut self,
+        crypto_codes: Vec<&str>,
+        fiat_currency: &str,
+    ) -> Result<HashMap<String, Decimal>, ServiceError> {
         let cache_key = format!("crypto_{}_{}", crypto_codes.join(","), fiat_currency);
-        
+
         // 检查缓存（5分钟有效期）
         if let Some(cached) = self.cache.get(&cache_key) {
             if !cached.is_expired(Duration::minutes(5)) {
@@ -333,11 +405,12 @@ impl ExchangeRateApiService {
                 return Ok(cached.rates.clone());
             }
         }
-        
+
         // 尝试从多个加密货币提供商获取（顺序可配置：CRYPTO_PROVIDER_ORDER=coingecko,coincap）
         let mut prices = None;
         let mut source = String::new();
-        let order_env = std::env::var("CRYPTO_PROVIDER_ORDER").unwrap_or_else(|_| "coingecko,coincap,binance".to_string());
+        let order_env = std::env::var("CRYPTO_PROVIDER_ORDER")
+            .unwrap_or_else(|_| "coingecko,coincap,binance".to_string());
         let providers: Vec<String> = order_env
             .split(',')
             .map(|s| s.trim().to_lowercase())
@@ -345,33 +418,50 @@ impl ExchangeRateApiService {
             .collect();
         for p in providers {
             match p.as_str() {
-                "coingecko" => match self.fetch_from_coingecko(&crypto_codes, fiat_currency).await {
-                    Ok(pr) => { prices = Some(pr); source = "coingecko".to_string(); },
+                "coingecko" => match self
+                    .fetch_from_coingecko(&crypto_codes, fiat_currency)
+                    .await
+                {
+                    Ok(pr) => {
+                        prices = Some(pr);
+                        source = "coingecko".to_string();
+                    }
                     Err(e) => warn!("Failed to fetch from CoinGecko: {}", e),
                 },
                 "coincap" => {
                     // CoinCap effectively USD; for non-USD we still return USD prices for cross computation by caller
                     for code in &crypto_codes {
                         if let Ok(price) = self.fetch_from_coincap(code).await {
-                            if prices.is_none() { prices = Some(HashMap::new()); }
-                            if let Some(ref mut pmap) = prices { pmap.insert(code.to_string(), price); }
+                            if prices.is_none() {
+                                prices = Some(HashMap::new());
+                            }
+                            if let Some(ref mut pmap) = prices {
+                                pmap.insert(code.to_string(), price);
+                            }
                         }
                     }
-                    if prices.is_some() { source = "coincap".to_string(); }
+                    if prices.is_some() {
+                        source = "coincap".to_string();
+                    }
                 }
                 "binance" => {
                     // Binance provides USDT pairs. Only support USD (treated as USDT) directly.
                     if fiat_currency.to_uppercase() == "USD" {
                         if let Ok(pmap) = self.fetch_from_binance(&crypto_codes).await {
-                            if !pmap.is_empty() { prices = Some(pmap); source = "binance".to_string(); }
+                            if !pmap.is_empty() {
+                                prices = Some(pmap);
+                                source = "binance".to_string();
+                            }
                         }
                     }
                 }
                 other => warn!("Unknown crypto provider: {}", other),
             }
-            if prices.is_some() { break; }
+            if prices.is_some() {
+                break;
+            }
         }
-        
+
         // 更新缓存
         if let Some(prices) = prices {
             self.cache.insert(
@@ -384,14 +474,18 @@ impl ExchangeRateApiService {
             );
             return Ok(prices);
         }
-        
+
         // 返回默认价格
         warn!("All crypto APIs failed, returning default prices");
         Ok(self.get_default_crypto_prices())
     }
-    
+
     /// 从 CoinGecko 获取加密货币价格
-    async fn fetch_from_coingecko(&self, crypto_codes: &[&str], fiat_currency: &str) -> Result<HashMap<String, Decimal>, ServiceError> {
+    async fn fetch_from_coingecko(
+        &self,
+        crypto_codes: &[&str],
+        fiat_currency: &str,
+    ) -> Result<HashMap<String, Decimal>, ServiceError> {
         // CoinGecko ID 映射
         let id_map: HashMap<&str, &str> = [
             ("BTC", "bitcoin"),
@@ -418,49 +512,54 @@ impl ExchangeRateApiService {
             ("OP", "optimism"),
             ("SHIB", "shiba-inu"),
             ("TRX", "tron"),
-        ].iter().cloned().collect();
-        
+        ]
+        .iter()
+        .cloned()
+        .collect();
+
         let ids: Vec<String> = crypto_codes
             .iter()
             .filter_map(|code| id_map.get(code).map(|id| id.to_string()))
             .collect();
-        
+
         if ids.is_empty() {
             return Ok(HashMap::new());
         }
-        
+
         let url = format!(
             "https://api.coingecko.com/api/v3/simple/price?ids={}&vs_currencies={}&include_24hr_change=true&include_market_cap=true&include_24hr_vol=true",
             ids.join(","),
             fiat_currency.to_lowercase()
         );
-        
-        let response = self.client
-            .get(&url)
-            .send()
-            .await
-            .map_err(|e| ServiceError::ExternalApi {
-                message: format!("Failed to fetch from CoinGecko: {}", e),
-            })?;
-        
+
+        let response =
+            self.client
+                .get(&url)
+                .send()
+                .await
+                .map_err(|e| ServiceError::ExternalApi {
+                    message: format!("Failed to fetch from CoinGecko: {}", e),
+                })?;
+
         if !response.status().is_success() {
             return Err(ServiceError::ExternalApi {
                 message: format!("CoinGecko API returned status: {}", response.status()),
             });
         }
-        
-        let data: HashMap<String, HashMap<String, f64>> = response
-            .json()
-            .await
-            .map_err(|e| ServiceError::ExternalApi {
-                message: format!("Failed to parse CoinGecko response: {}", e),
-            })?;
-        
+
+        let data: HashMap<String, HashMap<String, f64>> =
+            response
+                .json()
+                .await
+                .map_err(|e| ServiceError::ExternalApi {
+                    message: format!("Failed to parse CoinGecko response: {}", e),
+                })?;
+
         let mut prices = HashMap::new();
-        
+
         // 反向映射回代码
         let reverse_map: HashMap<&str, &str> = id_map.iter().map(|(k, v)| (*v, *k)).collect();
-        
+
         for (id, price_data) in data {
             if let Some(code) = reverse_map.get(id.as_str()) {
                 if let Some(price) = price_data.get(&fiat_currency.to_lowercase()) {
@@ -470,10 +569,10 @@ impl ExchangeRateApiService {
                 }
             }
         }
-        
+
         Ok(prices)
     }
-    
+
     /// 从 CoinCap 获取单个加密货币价格 (仅USD)
     async fn fetch_from_coincap(&self, crypto_code: &str) -> Result<Decimal, ServiceError> {
         let id_map: HashMap<&str, &str> = [
@@ -493,57 +592,71 @@ impl ExchangeRateApiService {
             ("LTC", "litecoin"),
             ("UNI", "uniswap"),
             ("ATOM", "cosmos"),
-        ].iter().cloned().collect();
-        
+        ]
+        .iter()
+        .cloned()
+        .collect();
+
         let id = id_map.get(crypto_code).ok_or(ServiceError::NotFound {
             resource_type: "CryptoId".to_string(),
             id: crypto_code.to_string(),
         })?;
-        
+
         let url = format!("https://api.coincap.io/v2/assets/{}", id);
-        
-        let response = self.client
-            .get(&url)
-            .send()
-            .await
-            .map_err(|e| ServiceError::ExternalApi {
-                message: format!("Failed to fetch from CoinCap: {}", e),
-            })?;
-        
+
+        let response =
+            self.client
+                .get(&url)
+                .send()
+                .await
+                .map_err(|e| ServiceError::ExternalApi {
+                    message: format!("Failed to fetch from CoinCap: {}", e),
+                })?;
+
         if !response.status().is_success() {
             return Err(ServiceError::ExternalApi {
                 message: format!("CoinCap API returned status: {}", response.status()),
             });
         }
-        
-        let data: CoinCapResponse = response
-            .json()
-            .await
-            .map_err(|e| ServiceError::ExternalApi {
-                message: format!("Failed to parse CoinCap response: {}", e),
-            })?;
-        
+
+        let data: CoinCapResponse =
+            response
+                .json()
+                .await
+                .map_err(|e| ServiceError::ExternalApi {
+                    message: format!("Failed to parse CoinCap response: {}", e),
+                })?;
+
         Decimal::from_str(&data.data.price_usd).map_err(|e| ServiceError::ExternalApi {
             message: format!("Failed to parse price: {}", e),
         })
     }
 
     /// 从 Binance 获取加密货币 USDT 价格 (近似 USD)
-    async fn fetch_from_binance(&self, crypto_codes: &[&str]) -> Result<HashMap<String, Decimal>, ServiceError> {
+    async fn fetch_from_binance(
+        &self,
+        crypto_codes: &[&str],
+    ) -> Result<HashMap<String, Decimal>, ServiceError> {
         let mut result = HashMap::new();
         for code in crypto_codes {
             let uc = code.to_uppercase();
-            if uc == "USD" || uc == "USDT" { 
+            if uc == "USD" || uc == "USDT" {
                 result.insert(uc.clone(), Decimal::ONE);
-                continue; 
+                continue;
             }
             let symbol = format!("{}USDT", uc);
-            let url = format!("https://api.binance.com/api/v3/ticker/price?symbol={}", symbol);
-            let resp = self.client
-                .get(&url)
-                .send()
-                .await
-                .map_err(|e| ServiceError::ExternalApi { message: format!("Failed to fetch from Binance: {}", e) })?;
+            let url = format!(
+                "https://api.binance.com/api/v3/ticker/price?symbol={}",
+                symbol
+            );
+            let resp =
+                self.client
+                    .get(&url)
+                    .send()
+                    .await
+                    .map_err(|e| ServiceError::ExternalApi {
+                        message: format!("Failed to fetch from Binance: {}", e),
+                    })?;
             if !resp.status().is_success() {
                 // Skip this code silently; continue other codes
                 continue;
@@ -558,14 +671,14 @@ impl ExchangeRateApiService {
         }
         Ok(result)
     }
-    
+
     /// 获取默认汇率（用于API失败时的备用）
     fn get_default_rates(&self, base_currency: &str) -> HashMap<String, Decimal> {
         let mut rates = HashMap::new();
-        
+
         // 基础货币
         rates.insert(base_currency.to_string(), Decimal::ONE);
-        
+
         // 主要货币的大概汇率（以USD为基准）
         let usd_rates: HashMap<&str, f64> = [
             ("USD", 1.0),
@@ -588,24 +701,27 @@ impl ExchangeRateApiService {
             ("BRL", 5.0),
             ("RUB", 75.0),
             ("ZAR", 15.0),
-        ].iter().cloned().collect();
-        
+        ]
+        .iter()
+        .cloned()
+        .collect();
+
         // 获取基础货币对USD的汇率
         let base_to_usd = usd_rates.get(base_currency).copied().unwrap_or(1.0);
-        
+
         // 计算相对汇率
         for (currency, usd_rate) in usd_rates.iter() {
             if *currency != base_currency {
-                let rate = *usd_rate as f64 / base_to_usd;
+                let rate = *usd_rate / base_to_usd;
                 if let Ok(decimal_rate) = Decimal::from_str(&rate.to_string()) {
                     rates.insert((*currency).to_string(), decimal_rate);
                 }
             }
         }
-        
+
         rates
     }
-    
+
     /// 获取默认加密货币价格（USD）
     fn get_default_crypto_prices(&self) -> HashMap<String, Decimal> {
         let prices: HashMap<&str, f64> = [
@@ -625,22 +741,31 @@ impl ExchangeRateApiService {
             ("LTC", 100.0),
             ("UNI", 6.0),
             ("ATOM", 10.0),
-        ].iter().cloned().collect();
-        
+        ]
+        .iter()
+        .cloned()
+        .collect();
+
         let mut result = HashMap::new();
         for (code, price) in prices {
             if let Ok(decimal_price) = Decimal::from_str(&price.to_string()) {
                 result.insert(code.to_string(), decimal_price);
             }
         }
-        
+
         result
     }
 }
 
+impl Default for ExchangeRateApiService {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 // 单例模式的全局服务实例
-use tokio::sync::Mutex;
 use std::sync::Arc;
+use tokio::sync::Mutex;
 
 lazy_static::lazy_static! {
     pub static ref EXCHANGE_RATE_SERVICE: Arc<Mutex<ExchangeRateApiService>> = Arc::new(Mutex::new(ExchangeRateApiService::new()));

@@ -12,8 +12,24 @@ use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 use uuid::Uuid;
 
-/// JWT密钥（实际生产中应该从环境变量读取）
-const JWT_SECRET: &str = "your-secret-key-change-this-in-production";
+/// 获取 JWT 密钥（优先环境变量 JWT_SECRET；未设置时使用不安全占位并在非测试模式下警告）
+fn jwt_secret() -> &'static str {
+    // Use once_cell to cache environment lookup
+    use std::sync::OnceLock;
+    static SECRET: OnceLock<String> = OnceLock::new();
+    SECRET.get_or_init(|| {
+        match std::env::var("JWT_SECRET") {
+            Ok(v) if !v.trim().is_empty() => v,
+            _ => {
+                // Fallback (dev/test only). In production this should be set; emit warning.
+                if !cfg!(test) {
+                    eprintln!("WARNING: JWT_SECRET not set; using insecure default key");
+                }
+                "insecure-dev-jwt-secret-change-me".to_string()
+            }
+        }
+    })
+}
 
 /// JWT Claims
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -51,10 +67,10 @@ impl Claims {
         let token = encode(
             &Header::default(),
             self,
-            &EncodingKey::from_secret(JWT_SECRET.as_ref()),
+            &EncodingKey::from_secret(jwt_secret().as_bytes()),
         )
         .map_err(|_| AuthError::TokenCreation)?;
-        
+
         Ok(token)
     }
 
@@ -62,11 +78,11 @@ impl Claims {
     pub fn from_token(token: &str) -> Result<Self, AuthError> {
         let token_data = decode::<Claims>(
             token,
-            &DecodingKey::from_secret(JWT_SECRET.as_ref()),
+            &DecodingKey::from_secret(jwt_secret().as_bytes()),
             &Validation::default(),
         )
         .map_err(|_| AuthError::InvalidToken)?;
-        
+
         Ok(token_data.claims)
     }
 
@@ -94,11 +110,11 @@ impl IntoResponse for AuthError {
             AuthError::TokenCreation => (StatusCode::INTERNAL_SERVER_ERROR, "Token creation error"),
             AuthError::InvalidToken => (StatusCode::UNAUTHORIZED, "Invalid token"),
         };
-        
+
         let body = Json(serde_json::json!({
             "error": error_message,
         }));
-        
+
         (status, body).into_response()
     }
 }
@@ -126,18 +142,18 @@ where
             .get("Authorization")
             .and_then(|value| value.to_str().ok())
             .ok_or(AuthError::MissingCredentials)?;
-        
+
         // 检查Bearer前缀
         if !auth_header.starts_with("Bearer ") {
             return Err(AuthError::InvalidToken);
         }
-        
+
         // 提取token
         let token = &auth_header[7..];
-        
+
         // 验证令牌并提取claims
         let claims = Claims::from_token(token)?;
-        
+
         Ok(claims)
     }
 }
@@ -177,11 +193,21 @@ pub struct RegisterRequest {
 }
 
 // Default values for registration
-fn default_country() -> String { "CN".to_string() }
-fn default_currency() -> String { "CNY".to_string() }
-fn default_language() -> String { "zh-CN".to_string() }
-fn default_timezone() -> String { "Asia/Shanghai".to_string() }
-fn default_date_format() -> String { "YYYY-MM-DD".to_string() }
+fn default_country() -> String {
+    "CN".to_string()
+}
+fn default_currency() -> String {
+    "CNY".to_string()
+}
+fn default_language() -> String {
+    "zh-CN".to_string()
+}
+fn default_timezone() -> String {
+    "Asia/Shanghai".to_string()
+}
+fn default_date_format() -> String {
+    "YYYY-MM-DD".to_string()
+}
 
 /// 注册响应
 #[derive(Debug, Serialize)]
@@ -198,6 +224,7 @@ pub fn generate_jwt(user_id: Uuid, family_id: Option<Uuid>) -> Result<String, Au
 }
 
 /// 解码JWT令牌
+#[allow(dead_code)]
 pub fn decode_jwt(token: &str) -> Result<Claims, AuthError> {
     Claims::from_token(token)
 }

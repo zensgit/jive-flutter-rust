@@ -1,5 +1,6 @@
 /// API Constants
-import '../core/config/api_config.dart';
+library;
+import 'package:jive_money/core/config/api_config.dart';
 
 class ApiConstants {
   // 统一使用 ApiConfig.apiUrl，避免环境切换不一致

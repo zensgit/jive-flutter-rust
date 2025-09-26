@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../providers/account_provider.dart';
-import '../../providers/ledger_provider.dart';
+import 'package:jive_money/providers/account_provider.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
 
 class AccountAddScreen extends ConsumerStatefulWidget {
   const AccountAddScreen({super.key});
@@ -416,7 +416,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
             ? null
             : _accountNumberController.text,
         'currency': _selectedCurrency,
-        'color': _selectedColor.value,
+        'color': _selectedColor.toARGB32(),
         'description': _descriptionController.text.isEmpty
             ? null
             : _descriptionController.text,
