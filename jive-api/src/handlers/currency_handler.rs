@@ -15,6 +15,7 @@ use crate::auth::Claims;
 use crate::error::{ApiError, ApiResult};
 use crate::services::{CurrencyService, ExchangeRate, FamilyCurrencySettings};
 use crate::services::currency_service::{UpdateCurrencySettingsRequest, AddExchangeRateRequest, CurrencyPreference};
+use crate::services::currency_service::{ClearManualRateRequest, ClearManualRatesBatchRequest};
 use super::family_handler::ApiResponse;
 
 /// 获取所有支持的货币
@@ -188,6 +189,37 @@ pub async fn add_exchange_rate(
         .map_err(|_e| ApiError::InternalServerError)?;
     
     Ok(Json(ApiResponse::success(rate)))
+}
+
+/// 清除当日手动汇率（回退到自动来源）
+pub async fn clear_manual_exchange_rate(
+    State(pool): State<PgPool>,
+    _claims: Claims, // 需要管理员/有权限
+    Json(req): Json<ClearManualRateRequest>,
+) -> ApiResult<Json<ApiResponse<serde_json::Value>>> {
+    let service = CurrencyService::new(pool);
+    service
+        .clear_manual_rate(&req.from_currency, &req.to_currency)
+        .await
+        .map_err(|_e| ApiError::InternalServerError)?;
+    Ok(Json(ApiResponse::success(serde_json::json!({
+        "message": "Manual rate cleared for today"
+    }))))
+}
+
+/// 批量清除手动汇率（按条件）
+pub async fn clear_manual_exchange_rates_batch(
+    State(pool): State<PgPool>,
+    _claims: Claims,
+    Json(req): Json<ClearManualRatesBatchRequest>,
+) -> ApiResult<Json<ApiResponse<serde_json::Value>>> {
+    let service = CurrencyService::new(pool);
+    let affected = service.clear_manual_rates_batch(req).await
+        .map_err(|_e| ApiError::InternalServerError)?;
+    Ok(Json(ApiResponse::success(serde_json::json!({
+        "message": "Manual rates cleared",
+        "rows": affected
+    }))))
 }
 
 #[derive(Debug, Deserialize)]

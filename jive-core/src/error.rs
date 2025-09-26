@@ -10,6 +10,8 @@ use wasm_bindgen::prelude::*;
 #[derive(Error, Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum JiveError {
+    #[error("Not found: {message}")]
+    NotFound { message: String },
     #[error("Account not found: {id}")]
     AccountNotFound { id: String },
 
@@ -144,7 +146,7 @@ impl From<chrono::ParseError> for JiveError {
     }
 }
 
-#[cfg(feature = "server")]
+#[cfg(feature = "db")]
 impl From<sqlx::Error> for JiveError {
     fn from(err: sqlx::Error) -> Self {
         JiveError::DatabaseError {
@@ -153,7 +155,7 @@ impl From<sqlx::Error> for JiveError {
     }
 }
 
-#[cfg(feature = "server")]
+#[cfg(feature = "db")]
 impl From<reqwest::Error> for JiveError {
     fn from(err: reqwest::Error) -> Self {
         JiveError::NetworkError {

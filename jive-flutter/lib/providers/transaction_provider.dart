@@ -1,8 +1,8 @@
 // 交易状态管理
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/api/transaction_service.dart';
-import '../models/transaction.dart';
-import '../models/transaction_filter.dart';
+import 'package:jive_money/services/api/transaction_service.dart';
+import 'package:jive_money/models/transaction.dart';
+import 'package:jive_money/models/transaction_filter.dart';
 
 /// 交易状态
 class TransactionState {

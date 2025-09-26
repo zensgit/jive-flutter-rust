@@ -4,14 +4,14 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
-import '../../models/user.dart';
-import '../../models/account.dart';
-import '../../models/transaction.dart';
-import '../../models/ledger.dart';
-import 'adapters/user_adapter.dart';
-import 'adapters/account_adapter.dart';
-import 'adapters/transaction_adapter.dart';
-import 'adapters/ledger_adapter.dart';
+import 'package:jive_money/models/user.dart';
+import 'package:jive_money/models/account.dart';
+import 'package:jive_money/models/transaction.dart';
+import 'package:jive_money/models/ledger.dart';
+import 'package:jive_money/core/storage/adapters/user_adapter.dart';
+import 'package:jive_money/core/storage/adapters/account_adapter.dart';
+import 'package:jive_money/core/storage/adapters/transaction_adapter.dart';
+import 'package:jive_money/core/storage/adapters/ledger_adapter.dart';
 
 class HiveConfig {
   // Box 名称常量

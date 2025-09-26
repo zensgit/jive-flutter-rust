@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../services/auth_service.dart';
+import 'package:jive_money/services/auth_service.dart';
 
 /// 编辑用户资料页面
 class EditProfileScreen extends StatefulWidget {
@@ -126,7 +126,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       children: [
                         CircleAvatar(
                           radius: 60,
-                          backgroundColor: Colors.blue.withOpacity(0.1),
+                          backgroundColor: Colors.blue.withValues(alpha: 0.1),
                           backgroundImage: currentUser?.avatar != null
                               ? NetworkImage(currentUser!.avatar!)
                               : null,
@@ -221,7 +221,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.orange.withOpacity(0.1),
+                                color: Colors.orange.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -325,7 +325,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               const SizedBox(height: 24),
 
               // 保存按钮
-              SizedBox(
+              const SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
@@ -335,11 +335,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     foregroundColor: Colors.white,
                   ),
                   child: _isLoading
-                      ? const CircularProgressIndicator(
+                      ? CircularProgressIndicator(
                           valueColor:
                               AlwaysStoppedAnimation<Color>(Colors.white),
                         )
-                      : const Text(
+                      : Text(
                           '保存更改',
                           style: TextStyle(fontSize: 16),
                         ),

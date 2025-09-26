@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/admin_currency.dart';
-import '../../services/admin/currency_admin_service.dart';
+import 'package:jive_money/models/admin_currency.dart';
+import 'package:jive_money/services/admin/currency_admin_service.dart';
 
 final currencyAdminProvider =
     FutureProvider.autoDispose<List<AdminCurrency>>((ref) async {
@@ -68,7 +68,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
                           ElevatedButton.icon(
                             onPressed: () async {
                               await CurrencyAdminService().refreshCatalog();
-                              if (mounted) {
+                              if (mounted && context.mounted) {
                                 ref.invalidate(currencyAdminProvider);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(content: Text('已触发目录刷新')));
@@ -109,7 +109,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: cs.surfaceVariant,
+            color: cs.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: cs.outlineVariant),
           ),
@@ -125,7 +125,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: cs.surfaceVariant,
+                color: cs.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(c.symbol,
@@ -301,7 +301,7 @@ class _CurrencyAdminScreenState extends ConsumerState<CurrencyAdminScreen> {
       if (deactivateOld.value) {
         await svc.updateCurrency(c.code, {'is_active': false});
       }
-      if (mounted) {
+      if (mounted && context.mounted) {
         ref.invalidate(currencyAdminProvider);
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text('已创建别名并保存')));

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/theme_models.dart' as models;
+import 'package:jive_money/models/theme_models.dart' as models;
 
 /// 主题预览卡片
 class ThemePreviewCard extends StatelessWidget {
@@ -41,7 +41,7 @@ class ThemePreviewCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   color: theme.background,
-                  border: Border.all(color: theme.borderColor.withOpacity(0.3)),
+                  border: Border.all(color: theme.borderColor.withValues(alpha: 0.3)),
                 ),
                 child: _buildPreview(),
               ),
@@ -244,7 +244,7 @@ class ThemePreviewCard extends StatelessWidget {
                     color: theme.cardColor,
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(
-                      color: theme.borderColor.withOpacity(0.3),
+                      color: theme.borderColor.withValues(alpha: 0.3),
                       width: 0.5,
                     ),
                   ),
@@ -258,7 +258,7 @@ class ThemePreviewCard extends StatelessWidget {
                           width: double.infinity,
                           height: 3,
                           decoration: BoxDecoration(
-                            color: theme.onSurface.withOpacity(0.8),
+                            color: theme.onSurface.withValues(alpha: 0.8),
                             borderRadius: BorderRadius.circular(1),
                           ),
                         ),
@@ -267,7 +267,7 @@ class ThemePreviewCard extends StatelessWidget {
                           width: 30,
                           height: 2,
                           decoration: BoxDecoration(
-                            color: theme.onSurface.withOpacity(0.6),
+                            color: theme.onSurface.withValues(alpha: 0.6),
                             borderRadius: BorderRadius.circular(1),
                           ),
                         ),
@@ -328,7 +328,7 @@ class ThemePreviewCard extends StatelessWidget {
               ),
               border: Border(
                 top: BorderSide(
-                  color: theme.dividerColor.withOpacity(0.3),
+                  color: theme.dividerColor.withValues(alpha: 0.3),
                   width: 0.5,
                 ),
               ),
@@ -342,7 +342,7 @@ class ThemePreviewCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: index == 0
                         ? theme.navigationBarSelected
-                        : theme.navigationBarText.withOpacity(0.6),
+                        : theme.navigationBarText.withValues(alpha: 0.6),
                     shape: BoxShape.circle,
                   ),
                 );

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/currency.dart' as model;
-import '../../providers/currency_provider.dart';
-import '../../providers/settings_provider.dart';
-import 'currency_selection_page.dart';
-import 'crypto_selection_page.dart';
-import 'exchange_rate_converter_page.dart';
-import '../../widgets/data_source_info.dart';
+import 'package:jive_money/models/currency.dart' as model;
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/providers/settings_provider.dart';
+import 'package:jive_money/screens/management/currency_selection_page.dart';
+import 'package:jive_money/screens/management/crypto_selection_page.dart';
+import 'package:jive_money/widgets/data_source_info.dart';
+import 'package:jive_money/core/network/http_client.dart';
+import 'package:jive_money/core/network/api_readiness.dart';
+import 'package:jive_money/screens/management/manual_overrides_page.dart';
 
 /// 优化后的货币管理页面 V2
 class CurrencyManagementPageV2 extends ConsumerStatefulWidget {
@@ -67,12 +68,76 @@ class _CurrencyManagementPageV2State
             const Spacer(),
             TextButton.icon(
               onPressed: () async {
+                // 跳转到清单页（功能更完整）
+                if (!mounted) return;
+                await Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ManualOverridesPage()),
+                );
+              },
+              icon: const Icon(Icons.visibility, size: 16),
+              label: const Text('查看覆盖'),
+            ),
+            TextButton.icon(
+              onPressed: () async {
+                // 批量清除已过期手动汇率
+                try {
+                  final dio = HttpClient.instance.dio;
+                  await ApiReadiness.ensureReady(dio);
+                  final base = ref.read(baseCurrencyProvider).code;
+                  await dio.post('/currencies/rates/clear-manual-batch', data: {
+                    'from_currency': base,
+                    'only_expired': true,
+                  });
+                  await ref.read(currencyProvider.notifier).refreshExchangeRates();
+                  if (!mounted) return;
+                  _showSnackBar('已清除已过期手动汇率', Colors.green);
+                } catch (e) {
+                  if (!mounted) return;
+                  _showSnackBar('清除失败: $e', Colors.red);
+                }
+              },
+              icon: const Icon(Icons.cleaning_services, size: 16),
+              label: const Text('清除已过期'),
+            ),
+            TextButton.icon(
+              onPressed: () async {
                 await ref.read(currencyProvider.notifier).clearManualRates();
                 if (!mounted) return;
                 _showSnackBar('已清除手动汇率', Colors.green);
               },
               icon: const Icon(Icons.clear, size: 16),
               label: const Text('清除'),
+            ),
+            const SizedBox(width: 8),
+            TextButton.icon(
+              onPressed: () async {
+                // 选择日期，清除该日期及之前的手动汇率
+                final picked = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                  lastDate: DateTime.now(),
+                );
+                if (picked != null) {
+                  try {
+                    final dio = HttpClient.instance.dio;
+                    await ApiReadiness.ensureReady(dio);
+                    final base = ref.read(baseCurrencyProvider).code;
+                    await dio.post('/currencies/rates/clear-manual-batch', data: {
+                      'from_currency': base,
+                      'before_date': '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}',
+                    });
+                    await ref.read(currencyProvider.notifier).refreshExchangeRates();
+                    if (!mounted) return;
+                    _showSnackBar('已清除所选日期及之前的手动汇率', Colors.green);
+                  } catch (e) {
+                    if (!mounted) return;
+                    _showSnackBar('清除失败: $e', Colors.red);
+                  }
+                }
+              },
+              icon: const Icon(Icons.calendar_today, size: 16),
+              label: const Text('按日期清除'),
             ),
           ],
         ),
@@ -144,6 +209,8 @@ class _CurrencyManagementPageV2State
       }
     }
   }
+
+  // 已迁移为独立清单页 ManualOverridesPage
 
   Future<double?> _promptManualRate(
       String toCurrency, String baseCurrency) async {
@@ -299,7 +366,7 @@ class _CurrencyManagementPageV2State
       margin: const EdgeInsets.only(top: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: cs.errorContainer.withOpacity(0.3),
+        color: cs.errorContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: cs.error),
       ),
@@ -346,9 +413,9 @@ class _CurrencyManagementPageV2State
                       const SizedBox(width: 12),
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: selectedMap[d.code],
+                          initialValue: selectedMap[d.code],
                           items: available
-                              .map((c) => DropdownMenuItem(
+                              .map((c) => DropdownMenuItem<String>(
                                   value: c.code,
                                   child: Text('${c.code} · ${c.nameZh}')))
                               .toList(),
@@ -482,7 +549,7 @@ class _CurrencyManagementPageV2State
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: cs.tertiaryContainer.withOpacity(0.4),
+                          color: cs.tertiaryContainer.withValues(alpha: 0.4),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: cs.tertiary),
                         ),
@@ -526,7 +593,7 @@ class _CurrencyManagementPageV2State
                                           vertical: 2,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: cs.surfaceVariant,
+                                          color: cs.surfaceContainerHighest,
                                           borderRadius:
                                               BorderRadius.circular(4),
                                         ),
@@ -583,7 +650,7 @@ class _CurrencyManagementPageV2State
                           onChanged: (value) async {
                             await currencyNotifier.setMultiCurrencyMode(value);
                           },
-                          activeColor: cs.primary,
+                          activeThumbColor: cs.primary,
                         ),
                       ],
                     ),
@@ -594,7 +661,7 @@ class _CurrencyManagementPageV2State
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: cs.secondaryContainer.withOpacity(0.45),
+                            color: cs.secondaryContainer.withValues(alpha: 0.45),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: cs.secondary),
                           ),
@@ -619,7 +686,7 @@ class _CurrencyManagementPageV2State
                                 onChanged: (value) async {
                                   await currencyNotifier.setCryptoMode(value);
                                 },
-                                activeColor: cs.secondary,
+                                activeThumbColor: cs.secondary,
                               ),
                             ],
                           ),
@@ -628,7 +695,7 @@ class _CurrencyManagementPageV2State
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: cs.errorContainer.withOpacity(0.35),
+                            color: cs.errorContainer.withValues(alpha: 0.35),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: cs.error),
                           ),
@@ -810,7 +877,7 @@ class _CurrencyManagementPageV2State
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: cs.primaryContainer.withOpacity(0.35),
+                        color: cs.primaryContainer.withValues(alpha: 0.35),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../services/wechat_service.dart';
-import '../../services/auth_service.dart';
-import '../../services/storage_service.dart';
-import '../../widgets/wechat_login_button.dart';
+import 'package:jive_money/services/wechat_service.dart';
+import 'package:jive_money/services/auth_service.dart';
+import 'package:jive_money/services/storage_service.dart';
+import 'package:jive_money/widgets/wechat_login_button.dart';
 
 /// 微信绑定设置页面
 class WeChatBindingScreen extends StatefulWidget {
@@ -234,12 +234,12 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
+                            const Row(
                               children: [
-                                const Icon(Icons.wechat,
+                                Icon(Icons.wechat,
                                     color: Color(0xFF07C160)),
-                                const SizedBox(width: 8),
-                                const Text(
+                                SizedBox(width: 8),
+                                Text(
                                   '已绑定微信账户',
                                   style: TextStyle(
                                     fontSize: 16,
@@ -295,16 +295,16 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                               ],
                             ),
                             const SizedBox(height: 20),
-                            SizedBox(
+                            const SizedBox(
                               width: double.infinity,
                               child: OutlinedButton(
                                 onPressed: _isLoading ? null : _handleUnbind,
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Colors.red,
-                                  side: const BorderSide(color: Colors.red),
+                                  side: BorderSide(color: Colors.red),
                                 ),
                                 child: _isLoading
-                                    ? const SizedBox(
+                                    ? SizedBox(
                                         width: 20,
                                         height: 20,
                                         child: CircularProgressIndicator(
@@ -314,7 +314,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                                                   Colors.red),
                                         ),
                                       )
-                                    : const Text('解绑微信账户'),
+                                    : Text('解绑微信账户'),
                               ),
                             ),
                           ],
@@ -329,12 +329,12 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
+                            const Row(
                               children: [
-                                const Icon(Icons.wechat_outlined,
+                                Icon(Icons.wechat_outlined,
                                     color: Color(0xFF07C160)),
-                                const SizedBox(width: 8),
-                                const Text(
+                                SizedBox(width: 8),
+                                Text(
                                   '绑定微信账户',
                                   style: TextStyle(
                                     fontSize: 16,

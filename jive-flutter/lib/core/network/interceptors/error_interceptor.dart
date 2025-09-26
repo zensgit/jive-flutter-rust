@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../../utils/logger.dart';
+import 'package:jive_money/core/utils/logger.dart';
 
 /// 错误拦截器
 class ErrorInterceptor extends Interceptor {
@@ -63,7 +63,6 @@ class ErrorInterceptor extends Interceptor {
         message = '证书验证失败';
         break;
       case DioExceptionType.unknown:
-      default:
         if (err.error.toString().contains('SocketException')) {
           message = '网络连接失败，请检查网络';
         } else if (err.error.toString().contains('HttpException')) {

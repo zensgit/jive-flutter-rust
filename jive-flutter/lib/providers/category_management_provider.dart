@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/category.dart' as models;
-import '../models/tag.dart';
-import '../services/api/category_service.dart';
-import 'tag_provider.dart';
-import 'category_provider.dart';
+import 'package:jive_money/models/category.dart' as models;
+import 'package:jive_money/models/tag.dart';
+import 'package:jive_money/services/api/category_service.dart';
+import 'package:jive_money/providers/tag_provider.dart';
+import 'package:jive_money/providers/category_provider.dart';
 
 /// 分类管理Provider - 处理分类的高级操作
 class CategoryProvider extends ChangeNotifier {

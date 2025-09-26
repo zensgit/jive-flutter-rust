@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
-import '../../../models/ledger.dart';
-import '../hive_config.dart';
+import 'package:jive_money/models/ledger.dart';
+import 'package:jive_money/core/storage/hive_config.dart';
 
 class LedgerAdapter extends TypeAdapter<Ledger> {
   @override

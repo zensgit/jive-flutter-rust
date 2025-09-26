@@ -1,8 +1,8 @@
 import 'dart:convert';
-import '../../core/network/http_client.dart';
-import '../../core/config/api_config.dart';
-import '../../models/category.dart';
-import '../../models/category_template.dart';
+import 'package:jive_money/core/network/http_client.dart';
+import 'package:jive_money/core/config/api_config.dart';
+import 'package:jive_money/models/category.dart';
+import 'package:jive_money/models/category_template.dart';
 
 /// 分类API服务
 class CategoryService {
@@ -334,6 +334,32 @@ class CategoryService {
     } catch (_) {
       return null;
     }
+  }
+
+  // Stub methods for template management - TODO: Implement with actual API
+  Future<dynamic> createTemplate(dynamic template) async {
+    // Stub implementation
+    return Future.value({'id': 'stub', 'status': 'created'});
+  }
+
+  Future<dynamic> updateTemplate(String id, dynamic updates) async {
+    // Stub implementation
+    return Future.value({'id': id, 'status': 'updated'});
+  }
+
+  Future<void> deleteTemplate(String id) async {
+    // Stub implementation
+    return Future.value();
+  }
+
+  // Import template as category - stub implementation
+  Future<dynamic> importTemplateAsCategory(String templateId) async {
+    // TODO: Implement actual import logic
+    return Future.value({
+      'id': 'imported-$templateId',
+      'status': 'imported',
+      'message': 'Template imported successfully'
+    });
   }
 }
 

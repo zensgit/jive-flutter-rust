@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/invitation.dart';
-import '../../models/family.dart' as family_model;
-import '../../services/invitation_service.dart';
-import '../../utils/snackbar_utils.dart';
+import 'package:jive_money/models/invitation.dart';
+import 'package:jive_money/models/family.dart' as family_model;
+import 'package:jive_money/services/invitation_service.dart';
+import 'package:jive_money/utils/snackbar_utils.dart';
 
 /// 生成邀请码底部弹窗
 class GenerateInviteCodeSheet extends ConsumerStatefulWidget {
@@ -186,7 +186,7 @@ class _GenerateInviteCodeSheetState
 
               // 角色选择
               DropdownButtonFormField<family_model.FamilyRole>(
-                value: _selectedRole,
+                initialValue: _selectedRole,
                 decoration: InputDecoration(
                   labelText: '分配角色',
                   prefixIcon: const Icon(Icons.shield_outlined),
@@ -329,7 +329,7 @@ class _GenerateInviteCodeSheetState
           decoration: BoxDecoration(
             color: isSelected
                 ? theme.colorScheme.primaryContainer
-                : theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color:
@@ -364,7 +364,7 @@ class _GenerateInviteCodeSheetState
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.1),
+              color: Colors.green.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -381,7 +381,7 @@ class _GenerateInviteCodeSheetState
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(

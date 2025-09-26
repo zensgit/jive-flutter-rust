@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
-import '../../../models/transaction.dart';
-import '../hive_config.dart';
+import 'package:jive_money/models/transaction.dart';
+import 'package:jive_money/core/storage/hive_config.dart';
 
 class TransactionAdapter extends TypeAdapter<Transaction> {
   @override
@@ -183,7 +183,7 @@ class TransactionCategoryAdapter extends TypeAdapter<TransactionCategory> {
       ..writeByte(3)
       ..write(obj.icon.codePoint)
       ..writeByte(4)
-      ..write(obj.color.value)
+      ..write(obj.color.toARGB32())
       ..writeByte(5)
       ..write(obj.type.value)
       ..writeByte(6)

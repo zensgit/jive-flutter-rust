@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/currency_provider.dart';
+import 'package:jive_money/providers/currency_provider.dart';
 
 /// Simple Currency Converter Screen
 class CurrencyConverterScreen extends ConsumerStatefulWidget {

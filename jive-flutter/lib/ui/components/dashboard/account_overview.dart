@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/router/app_router.dart';
-import '../../../providers/account_provider.dart';
-import '../../../models/account.dart';
+import 'package:jive_money/core/router/app_router.dart';
+import 'package:jive_money/providers/account_provider.dart';
+import 'package:jive_money/models/account.dart';
 
 class AccountOverview extends ConsumerWidget {
   const AccountOverview({super.key});
@@ -152,10 +152,10 @@ class AccountOverview extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -200,7 +200,7 @@ class AccountOverview extends ConsumerWidget {
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: account.displayColor.withOpacity(0.2),
+          backgroundColor: account.displayColor.withValues(alpha: 0.2),
           child: Icon(
             account.icon,
             color: account.displayColor,

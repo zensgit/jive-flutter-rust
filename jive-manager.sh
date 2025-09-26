@@ -119,7 +119,7 @@ is_port_used() {
 wait_for_port() {
     local port=$1
     local service=$2
-    local max_wait=30
+    local max_wait=60
     # 对 Flutter Web 首次编译放宽等待（默认 120 秒，可用 WEB_START_TIMEOUT 覆盖）
     if [[ $service == Web* ]]; then
         max_wait=${WEB_START_TIMEOUT:-120}
@@ -403,6 +403,11 @@ ensure_flutter_available() {
 
 # 检查 flutter SDK 写权限（避免 engine.stamp 权限导致使用旧缓存）
 ensure_flutter_writable() {
+    # 允许通过环境变量跳过写权限检查（例如使用 Homebrew 安装的 Flutter）
+    if [ "${SKIP_FLUTTER_WRITE_CHECK:-}" = "1" ]; then
+        print_warning "已跳过 Flutter SDK 写权限检查 (SKIP_FLUTTER_WRITE_CHECK=1)"
+        return 0
+    fi
     local flutter_bin
     # 若用户指定本地 SDK 路径，优先使用
     if [ -n "$USE_LOCAL_FLUTTER" ] && [ -x "$USE_LOCAL_FLUTTER/bin/flutter" ]; then
@@ -865,6 +870,12 @@ show_usage() {
     echo "  status          - 查看服务状态"
     echo "  logs [服务]     - 查看服务日志"
     echo "  build web       - 构建 Flutter Web 发布版"
+    echo "  test api        - 运行 API 相关测试（含集成测试，需本地DB）"
+    echo "  test api-manual - 运行手动汇率(单对)集成测试"
+    echo "  test api-manual-batch - 运行手动汇率(批量)集成测试"
+    echo "  test api        - 运行 API 相关测试（含集成测试，需本地DB）"
+    echo "  test api-manual - 运行手动汇率(单对)集成测试"
+    echo "  test api-manual-batch - 运行手动汇率(批量)集成测试"
     echo "  rebuild         - 重新编译前端并在 3022 端口预览"
     echo "  rebuild-all [dev|safe] - 重新编译 API 与前端并预览 (默认 dev)"
     echo "  rebuild-all-dev - 重启 API(dev) 并启动前端热重载(3021)"
@@ -1114,6 +1125,39 @@ main() {
             exit 1
             ;;
     esac
+}
+
+# ================================================================
+# 测试运行器 (API)
+# ================================================================
+
+run_api_tests_manual_single() {
+    print_header
+    print_info "运行 API 集成测试：手动汇率(单对) ..."
+    cd "$PROJECT_ROOT/jive-api"
+    # 默认使用 Docker 开发数据库作为测试库，支持外部覆盖 TEST_DATABASE_URL
+    TEST_DATABASE_URL="${TEST_DATABASE_URL:-postgresql://postgres:postgres@127.0.0.1:$DB_PORT/jive_money}" \
+    SQLX_OFFLINE=true \
+    cargo test --test currency_manual_rate_test -- --ignored || { print_error "手动汇率(单对) 测试失败"; cd "$PROJECT_ROOT"; return 1; }
+    cd "$PROJECT_ROOT"
+    print_success "手动汇率(单对) 集成测试通过"
+}
+
+run_api_tests_manual_batch() {
+    print_header
+    print_info "运行 API 集成测试：手动汇率(批量清理) ..."
+    cd "$PROJECT_ROOT/jive-api"
+    TEST_DATABASE_URL="${TEST_DATABASE_URL:-postgresql://postgres:postgres@127.0.0.1:$DB_PORT/jive_money}" \
+    SQLX_OFFLINE=true \
+    cargo test --test currency_manual_rate_batch_test -- --ignored || { print_error "手动汇率(批量) 测试失败"; cd "$PROJECT_ROOT"; return 1; }
+    cd "$PROJECT_ROOT"
+    print_success "手动汇率(批量) 集成测试通过"
+}
+
+run_api_tests_all() {
+    # 顺序运行，便于定位失败用例
+    run_api_tests_manual_single || return 1
+    run_api_tests_manual_batch || return 1
 }
 
 # 执行主程序

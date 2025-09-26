@@ -70,7 +70,7 @@ class TravelEventTemplateLibrary {
   static List<TravelEventTemplate> getSystemTemplates() {
     return [
       // 常见旅行分类模板
-      TravelEventTemplate(
+      const TravelEventTemplate(
         id: 'common_travel',
         name: '常见旅行分类',
         description: '包含最常用的旅行相关支出分类',
@@ -87,7 +87,7 @@ class TravelEventTemplateLibrary {
       ),
 
       // 完整旅行模板
-      TravelEventTemplate(
+      const TravelEventTemplate(
         id: 'complete_travel',
         name: '完整旅行模板',
         description: '包含所有可能的旅行相关支出',
@@ -109,7 +109,7 @@ class TravelEventTemplateLibrary {
       ),
 
       // 国内短途旅行
-      TravelEventTemplate(
+      const TravelEventTemplate(
         id: 'domestic_short_trip',
         name: '国内短途旅行',
         description: '适合周末或短期国内旅行',
@@ -124,7 +124,7 @@ class TravelEventTemplateLibrary {
       ),
 
       // 商务出差
-      TravelEventTemplate(
+      const TravelEventTemplate(
         id: 'business_trip',
         name: '商务出差',
         description: '商务旅行相关支出分类',
@@ -140,7 +140,7 @@ class TravelEventTemplateLibrary {
       ),
 
       // 排除日常分类
-      TravelEventTemplate(
+      const TravelEventTemplate(
         id: 'exclude_daily',
         name: '排除日常支出',
         description: '排除日常生活支出，只记录旅行特有消费',

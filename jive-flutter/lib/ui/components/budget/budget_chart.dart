@@ -1,8 +1,8 @@
 // 预算图表组件
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../../core/constants/app_constants.dart';
-import 'budget_progress.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/budget/budget_progress.dart';
 
 class BudgetPieChart extends StatefulWidget {
   final List<BudgetData> budgets;
@@ -46,7 +46,7 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.2),
+          color: theme.colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -189,7 +189,7 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
       margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primary.withOpacity(0.05),
+        color: theme.colorScheme.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -201,7 +201,7 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
               Text(
                 '总预算',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
               Text(
@@ -218,7 +218,7 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
               Text(
                 '已使用',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
               Text(
@@ -236,7 +236,7 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
   }
 
   Widget _buildEmptyState(ThemeData theme) {
-    return Container(
+    return SizedBox(
       height: widget.height,
       child: Center(
         child: Column(
@@ -245,13 +245,13 @@ class _BudgetPieChartState extends State<BudgetPieChart> {
             Icon(
               Icons.pie_chart_outline,
               size: 64,
-              color: theme.colorScheme.onSurface.withOpacity(0.3),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
             Text(
               '暂无预算数据',
               style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ],
@@ -313,7 +313,7 @@ class BudgetComparisonChart extends StatelessWidget {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.2),
+          color: theme.colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -388,10 +388,10 @@ class BudgetComparisonChart extends StatelessWidget {
                       },
                     ),
                   ),
-                  topTitles: AxisTitles(
+                  topTitles: const AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
                   ),
-                  rightTitles: AxisTitles(
+                  rightTitles: const AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
                   ),
                 ),
@@ -403,7 +403,7 @@ class BudgetComparisonChart extends StatelessWidget {
                   horizontalInterval: _calculateInterval(),
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                      color: theme.colorScheme.outline.withOpacity(0.1),
+                      color: theme.colorScheme.outline.withValues(alpha: 0.1),
                       strokeWidth: 1,
                     );
                   },
@@ -483,7 +483,7 @@ class BudgetComparisonChart extends StatelessWidget {
   }
 
   Widget _buildEmptyState(ThemeData theme) {
-    return Container(
+    return SizedBox(
       height: height,
       child: Center(
         child: Column(
@@ -492,13 +492,13 @@ class BudgetComparisonChart extends StatelessWidget {
             Icon(
               Icons.bar_chart_outlined,
               size: 64,
-              color: theme.colorScheme.onSurface.withOpacity(0.3),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
             Text(
               '暂无预算数据',
               style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ],

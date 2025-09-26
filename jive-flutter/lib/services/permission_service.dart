@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/family.dart' as family_model;
-import '../models/user.dart';
-import '../providers/auth_provider.dart';
-import '../providers/family_provider.dart';
+import 'package:jive_money/models/family.dart' as family_model;
+import 'package:jive_money/models/user.dart';
+import 'package:jive_money/providers/auth_provider.dart';
+import 'package:jive_money/providers/family_provider.dart';
 
 /// 权限操作枚举
 enum PermissionAction {
@@ -93,15 +93,16 @@ class PermissionService {
 
   /// 获取用户在家庭中的角色
   family_model.FamilyRole? getUserRole(String familyId) {
-    final families = _ref.read(familyProvider);
+    final currentFamily = _ref.read(currentFamilyProvider);
 
-    if (families == null) return null;
+    if (currentFamily == null || currentFamily.id != familyId) return null;
 
     try {
-      final family = families.firstWhere((f) => f.id == familyId);
+      final family = currentFamily;
 
-      // 检查是否是拥有者
-      if (family.ownerId == currentUser?.id) {
+      // 检查是否是拥有者（未暴露ownerId，使用用户当前角色）
+      final currentRole = _ref.read(currentFamilyRoleProvider);
+      if (currentRole == family_model.FamilyRole.owner) {
         return family_model.FamilyRole.owner;
       }
 
@@ -191,9 +192,6 @@ class PermissionService {
       case PermissionAction.deleteFamily:
       case PermissionAction.archiveFamily:
         return false; // 已在开始检查过owner权限
-
-      default:
-        return false;
     }
   }
 

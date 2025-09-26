@@ -45,7 +45,6 @@ class AppSettings {
       case ThemeMode.dark:
         return 'dark';
       case ThemeMode.system:
-      default:
         return 'system';
     }
   }
@@ -229,7 +228,6 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
       case ThemeMode.dark:
         return 'dark';
       case ThemeMode.system:
-      default:
         return 'system';
     }
   }
@@ -245,15 +243,7 @@ final themeModeProvider =
   return ThemeModeNotifier();
 });
 
-// 当前用户Provider（从auth_provider导入）
-final currentUserProvider = Provider<dynamic>((ref) {
-  // TODO: 从auth_provider获取当前用户
-  return {
-    'name': '测试用户',
-    'email': 'test@example.com',
-    'avatar': null,
-  };
-});
+// 当前用户Provider应从 auth_provider.dart 引入，避免重复定义。
 
 // 账户分组Provider
 final accountGroupsProvider = FutureProvider<List<dynamic>>((ref) async {

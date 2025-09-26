@@ -9,6 +9,7 @@ pub mod category;
 pub mod category_template;
 pub mod user;
 pub mod family;
+pub mod base;
 
 pub use account::*;
 pub use transaction::*;
@@ -17,3 +18,4 @@ pub use category::*;
 pub use category_template::*;
 pub use user::*;
 pub use family::*;
+pub use base::*;

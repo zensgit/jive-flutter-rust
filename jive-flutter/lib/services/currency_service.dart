@@ -1,12 +1,11 @@
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
-import '../core/network/http_client.dart';
-import '../core/network/api_readiness.dart';
-import '../core/storage/token_storage.dart';
-import '../models/currency.dart';
-import '../models/currency_api.dart';
-import '../utils/constants.dart';
+import 'package:jive_money/core/network/http_client.dart';
+import 'package:jive_money/core/network/api_readiness.dart';
+import 'package:jive_money/core/storage/token_storage.dart';
+import 'package:jive_money/models/currency.dart';
+import 'package:jive_money/models/currency_api.dart';
+import 'package:jive_money/utils/constants.dart';
 
 class CurrencyService {
   final String? token;

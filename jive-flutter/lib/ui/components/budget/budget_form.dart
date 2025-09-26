@@ -1,9 +1,9 @@
 // 预算表单组件
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../core/constants/app_constants.dart';
-import '../buttons/primary_button.dart';
-import '../buttons/secondary_button.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/buttons/primary_button.dart';
+import 'package:jive_money/ui/components/buttons/secondary_button.dart';
 
 class BudgetForm extends StatefulWidget {
   final BudgetFormData? initialData;
@@ -225,7 +225,7 @@ class _BudgetFormState extends State<BudgetForm> {
             color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
             border: Border.all(
-              color: theme.colorScheme.outline.withOpacity(0.2),
+              color: theme.colorScheme.outline.withValues(alpha: 0.2),
             ),
           ),
           child: Row(
@@ -249,7 +249,7 @@ class _BudgetFormState extends State<BudgetForm> {
     return Expanded(
       child: Material(
         color: isSelected
-            ? theme.primaryColor.withOpacity(0.1)
+            ? theme.primaryColor.withValues(alpha: 0.1)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(AppConstants.smallBorderRadius),
         child: InkWell(
@@ -262,7 +262,7 @@ class _BudgetFormState extends State<BudgetForm> {
               style: theme.textTheme.bodySmall?.copyWith(
                 color: isSelected
                     ? theme.primaryColor
-                    : theme.colorScheme.onSurface.withOpacity(0.6),
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
               textAlign: TextAlign.center,

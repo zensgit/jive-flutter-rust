@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/settings_provider.dart';
-import '../../core/app.dart' as core;
-import '../../widgets/theme_appearance.dart';
+import 'package:jive_money/core/app.dart' as core;
+import 'package:jive_money/widgets/theme_appearance.dart';
 
 class ThemeSettingsScreen extends ConsumerWidget {
   const ThemeSettingsScreen({super.key});

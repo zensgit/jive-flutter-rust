@@ -90,25 +90,25 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
+      builder: (context) => const AlertDialog(
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.check_circle,
               color: Colors.green,
               size: 64,
             ),
-            const SizedBox(height: 16),
-            const Text(
+            SizedBox(height: 16),
+            Text(
               '扫码成功！',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
-            const Text('正在绑定微信账户...'),
+            SizedBox(height: 8),
+            Text('正在绑定微信账户...'),
           ],
         ),
       ),
@@ -155,7 +155,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
+                    color: Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -209,7 +209,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
               ),
               const SizedBox(height: 8),
               Text(
-                '二维码${_countdown}秒后过期',
+                '二维码$_countdown秒后过期',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[600],
@@ -231,7 +231,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
                 label: const Text('刷新二维码'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.black,
-                  side: BorderSide(color: Colors.black),
+                  side: const BorderSide(color: Colors.black),
                 ),
               ),
             ],
@@ -257,9 +257,9 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.05),
+                color: Colors.blue.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.blue.withOpacity(0.2)),
+                border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -347,7 +347,7 @@ class _WeChatQRBindingDialogState extends State<WeChatQRBindingDialog>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(

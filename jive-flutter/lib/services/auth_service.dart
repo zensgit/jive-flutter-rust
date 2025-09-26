@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'dart:math';
-import 'storage_service.dart';
-import 'wechat_service.dart';
+import 'package:jive_money/services/storage_service.dart';
+import 'package:jive_money/services/wechat_service.dart';
 
 /// 用户认证服务
 /// 处理登录、注册、微信认证等功能

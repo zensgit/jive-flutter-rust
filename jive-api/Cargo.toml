@@ -40,6 +40,10 @@ rust_decimal = { version = "1.37", features = ["serde"] }
 thiserror = "2.0.16"
 axum-extra = { version = "0.10.1", features = ["typed-header"] }
 anyhow = "1.0.99"
+base64 = "0.22"
+# Make core optional; gate usage behind feature `core_export`
+jive-core = { path = "../jive-core", package = "jive-core", features = ["server", "db"], default-features = false, optional = true }
+bytes = "1"
 
 # WebSocket支持
 tokio-tungstenite = "0.24"
@@ -69,6 +73,9 @@ lazy_static = "1.4"
 default = ["demo_endpoints"]
 # Demo/placeholder HTTP endpoints (export/activity/advanced/family settings)
 demo_endpoints = []
+# Enable to use jive-core export service paths
+# When core_export is enabled, also enable jive-core's db feature so CSV helpers are available.
+core_export = ["dep:jive-core"]
 
 [dev-dependencies]
 tokio-test = "0.4"

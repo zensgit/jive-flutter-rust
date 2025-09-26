@@ -1,28 +1,68 @@
-# This file configures the analyzer, which statically analyzes Dart code to
-# check for errors, warnings, and lints.
-#
-# The issues identified by the analyzer are surfaced in the UI of Dart-enabled
-# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
-# invoked from the command line by running `flutter analyze`.
+# Flutter Analyzer 配置文件
+# 优化版本 - 基于项目当前状态逐步收紧规则
+# 生成日期: 2025-09-20
 
-# The following line activates a set of recommended lints for Flutter apps,
-# packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
-linter:
-  # The lint rules applied to this project can be customized in the
-  # section below to disable rules from the `package:flutter_lints/flutter.yaml`
-  # included above or to enable additional rules. A list of all available lints
-  # and their documentation is published at https://dart.dev/lints.
-  #
-  # Instead of disabling a lint rule for the entire project in the
-  # section below, it can also be suppressed for a single line of code
-  # or a specific dart file by using the `// ignore: name_of_lint` and
-  # `// ignore_for_file: name_of_lint` syntax on the line or in the file
-  # producing the lint.
-  rules:
-    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+analyzer:
+  # 错误级别配置 - 逐步从 warning 提升到 error
+  errors:
+    # 高优先级 - 设为错误级别，立即阻断
+    dead_null_aware_expression: error           # 空安全相关的死代码
+    unreachable_switch_default: error          # 不可达的 switch default
 
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options
+    # 中优先级 - 先设为警告，待清理后提升为错误
+    deprecated_member_use: warning              # 使用废弃的API
+    use_build_context_synchronously: warning   # 异步后使用 BuildContext
+    unused_element: warning                     # 未使用的私有成员
+    unused_field: warning                       # 未使用的字段
+    unused_local_variable: warning             # 未使用的局部变量
+
+    # 低优先级 - 信息级别，不影响构建
+    prefer_const_constructors: info            # 建议使用 const 构造函数
+    prefer_const_literals_to_create_immutables: info  # 建议使用 const 字面量
+
+    # 暂时降级处理 - 噪音太大
+    unnecessary_late: ignore                   # 待后续清理
+
+  # 排除不需要分析的目录
+  exclude:
+    - build/**
+    - "**/*.g.dart"                           # 生成的代码
+    - "**/*.freezed.dart"                     # Freezed 生成的代码
+    - test/.test_coverage.dart
+    - lib/generated_plugin_registrant.dart
+    - .dart_tool/**
+
+linter:
+  # 在默认 flutter_lints 基础上添加规则
+  rules:
+    # 保持现有规则
+    prefer_const_constructors: true
+    prefer_const_literals_to_create_immutables: true
+    avoid_unnecessary_containers: true
+
+    # 新增高价值规则 - 错误预防
+    avoid_print: true                         # 生产代码不应有 print
+    always_use_package_imports: true          # 统一导入风格
+
+    # 新增代码质量规则
+    annotate_overrides: true                  # 明确标注覆写
+    prefer_final_fields: true                 # 不可变字段用 final
+    prefer_is_empty: true                     # 使用 isEmpty 而非 length == 0
+    prefer_is_not_empty: true                 # 使用 isNotEmpty
+
+    # Flutter 特定优化
+    use_key_in_widget_constructors: true      # Widget 构造函数应有 key
+    sized_box_for_whitespace: true            # 用 SizedBox 代替空 Container
+
+    # 暂时关闭的规则（根据项目需要调整）
+    # unnecessary_late: false                 # 项目中有合理使用场景
+    # prefer_single_quotes: false             # 不强制引号风格
+
+# 使用说明：
+# 1. 此配置采用渐进式策略
+# 2. 先将高危问题设为 error
+# 3. 中等问题设为 warning，修复后再提升
+# 4. 建议性规则保持 info 级别
+# 5. 每月评估一次，逐步收紧规则
