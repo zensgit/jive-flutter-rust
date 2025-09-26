@@ -195,15 +195,30 @@ export JWT_SECRET=$(openssl rand -hex 32)
 
 规范指标（推荐使用）：
 ```
-password_hash_bcrypt_total          # bcrypt (2a+2b+2y)
-password_hash_argon2id_total        # argon2id 数量
-password_hash_unknown_total         # 未识别前缀
-password_hash_total_count           # 总数
+password_hash_bcrypt_total              # bcrypt (2a+2b+2y)
+password_hash_argon2id_total            # argon2id 数量
+password_hash_unknown_total             # 未识别前缀
+password_hash_total_count               # 总数
 password_hash_bcrypt_variant{variant="2b"} X  # 每个变体
-jive_password_rehash_total          # 成功重哈希次数（bcrypt→argon2id）
+jive_password_rehash_total              # 成功重哈希次数（bcrypt→argon2id）
+jive_password_rehash_fail_total         # 重哈希失败次数（不会阻断登录）
+jive_password_rehash_fail_breakdown_total{cause="hash"|"update"} # 重哈希失败按原因
+export_requests_buffered_total          # 缓冲导出请求次数（POST CSV/JSON）
+export_requests_stream_total            # 流式导出请求次数（GET CSV streaming, feature=export_stream）
+export_rows_buffered_total              # 缓冲导出累计行数
+export_rows_stream_total                # 流式导出累计行数
+jive_build_info{...}                   # 构建信息 (value=1)
+auth_login_fail_total                  # 登录失败（未知用户 / 密码不匹配）
+auth_login_inactive_total              # 非激活账号登录尝试
+auth_login_rate_limited_total          # 登录被速率限制次数 (429)
+jive_build_info{commit,time,rustc,version} 1  # 构建信息 gauge
+export_duration_buffered_seconds_*     # 缓冲导出耗时直方图 (bucket/sum/count)
+export_duration_stream_seconds_*       # 流式导出耗时直方图 (bucket/sum/count)
+process_uptime_seconds                 # 进程运行时长（秒）
+jive_build_info{commit,time,rustc,version} 1  # 构建信息 gauge
 ```
 
-兼容旧指标（DEPRECATED，将在 2 个发布周期后移除）：
+兼容旧指标（DEPRECATED，将在 2 个发布周期后移除，详见 docs/METRICS_DEPRECATION_PLAN.md）：
 ```
 jive_password_hash_users{algo="bcrypt_2b"}
 ```
@@ -229,8 +244,17 @@ echo "Metrics bcrypt total:" \
 ```
 
 运维建议：
-- 大规模用户场景可为 hash 查询加 30s 内存缓存。
-- 迁移所有看板后移除旧的 jive_password_hash_users* 系列。
+- 大规模用户场景可为 hash 查询加 30s 内存缓存（计划中）。
+- 迁移所有看板后移除旧的 jive_password_hash_users* 系列（目标 v1.2.0）。
+- 监控 `jive_password_rehash_fail_total`，持续增长提示 DB 更新/并发异常。
+- 导出耗时直方图示例：
+```promql
+# P95 缓冲导出耗时
+histogram_quantile(0.95, sum(rate(export_duration_buffered_seconds_bucket[5m])) by (le))
+
+# 最近 1 分钟流式导出平均耗时
+sum(rate(export_duration_stream_seconds_sum[1m])) / sum(rate(export_duration_stream_seconds_count[1m]))
+```
 
 ### 密码重哈希（bcrypt → Argon2id）
 
@@ -569,3 +593,17 @@ MIT License
 ## 📞 联系
 
 如有问题，请提交 Issue 或联系维护者。
+环境变量 (Metrics & 安全):
+```
+AUTH_RATE_LIMIT=30/60               # 60 秒窗口内最多 30 次登录尝试 (默认 30/60)
+AUTH_RATE_LIMIT_HASH_EMAIL=1        # 限流键中对 email 做哈希截断 (默认1)
+ALLOW_PUBLIC_METRICS=1              # 设为 0 时启用白名单
+METRICS_ALLOW_CIDRS=127.0.0.1/32    # 逗号分隔 CIDR 列表 (ALLOW_PUBLIC_METRICS=0 生效)
+METRICS_DENY_CIDRS=                 # 可选拒绝 CIDR (deny 优先)
+METRICS_CACHE_TTL=30                # /metrics 缓存秒数 (0 禁用)
+```
+
+Grafana 仪表板: `docs/GRAFANA_DASHBOARD_TEMPLATE.json`
+Alert 规则示例: `docs/ALERT_RULES_EXAMPLE.yaml`
+安全清单: `docs/SECURITY_CHECKLIST.md`
+快速验证脚本: `scripts/verify_observability.sh`

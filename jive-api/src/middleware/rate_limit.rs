@@ -1,131 +1,86 @@
-//! 请求限流中间件
+use std::{collections::HashMap, time::{Instant, Duration}, sync::{Arc, Mutex}};
+use axum::{http::{Request, StatusCode, HeaderValue}, response::Response, middleware::Next, body::Body, extract::State};
+use crate::AppState;
+use tracing::warn;
+use sha2::{Sha256, Digest};
+use tower::BoxError;
 
-use axum::{
-    extract::{Request, State},
-    http::StatusCode,
-    middleware::Next,
-    response::{IntoResponse, Response},
-    Json,
-};
-use serde_json::json;
-use std::{
-    collections::HashMap,
-    sync::Arc,
-    time::{Duration, Instant},
-};
-use tokio::sync::RwLock;
-
-/// 限流配置
-#[derive(Clone)]
-pub struct RateLimitConfig {
-    /// 时间窗口（秒）
-    pub window_seconds: u64,
-    /// 窗口内最大请求数
-    pub max_requests: u32,
-}
-
-impl Default for RateLimitConfig {
-    fn default() -> Self {
-        Self {
-            window_seconds: 60, // 1分钟
-            max_requests: 100,  // 100个请求
-        }
-    }
-}
-
-/// 请求记录
-#[derive(Debug, Clone)]
-struct RequestRecord {
-    count: u32,
-    window_start: Instant,
-}
-
-/// 限流器
 #[derive(Clone)]
 pub struct RateLimiter {
-    config: RateLimitConfig,
-    records: Arc<RwLock<HashMap<String, RequestRecord>>>,
+    pub inner: Arc<Mutex<HashMap<String, (u32, Instant)>>>, // key -> (count, window_start)
+    pub max: u32,
+    pub window: Duration,
+    pub hash_email: bool,
 }
 
 impl RateLimiter {
-    pub fn new(config: RateLimitConfig) -> Self {
-        Self {
-            config,
-            records: Arc::new(RwLock::new(HashMap::new())),
-        }
+    pub fn new(max: u32, window_secs: u64) -> Self {
+        let hash_email = std::env::var("AUTH_RATE_LIMIT_HASH_EMAIL").map(|v| v=="1" || v.eq_ignore_ascii_case("true")).unwrap_or(true);
+        Self { inner: Arc::new(Mutex::new(HashMap::new())), max, window: Duration::from_secs(window_secs), hash_email }
     }
-
-    /// 检查是否应该限流
-    pub async fn check_rate_limit(&self, client_id: String) -> bool {
-        let mut records = self.records.write().await;
+    fn check(&self, key: &str) -> (bool, u32, u64) {
+        let mut map = self.inner.lock().unwrap();
         let now = Instant::now();
-        let window_duration = Duration::from_secs(self.config.window_seconds);
-
-        match records.get_mut(&client_id) {
-            Some(record) => {
-                // 检查是否在同一个时间窗口内
-                if now.duration_since(record.window_start) < window_duration {
-                    // 在同一窗口内，增加计数
-                    if record.count >= self.config.max_requests {
-                        return true; // 超过限制
-                    }
-                    record.count += 1;
-                } else {
-                    // 新的时间窗口，重置计数
-                    record.count = 1;
-                    record.window_start = now;
-                }
-            }
-            None => {
-                // 首次请求，创建记录
-                records.insert(
-                    client_id,
-                    RequestRecord {
-                        count: 1,
-                        window_start: now,
-                    },
-                );
-            }
+        // Opportunistic cleanup if map large
+        if map.len() > 10_000 {
+            let window = self.window;
+            map.retain(|_, (_c, start)| now.duration_since(*start) <= window);
         }
-
-        // 清理过期记录（可选，防止内存泄漏）
-        records.retain(|_, record| now.duration_since(record.window_start) < window_duration * 2);
-
-        false
+        let entry = map.entry(key.to_string()).or_insert((0, now));
+        if now.duration_since(entry.1) > self.window { *entry = (0, now); }
+        entry.0 += 1;
+        let allowed = entry.0 <= self.max;
+        let remaining = if entry.0 >= self.max { 0 } else { self.max - entry.0 };
+        let retry_after = self.window.saturating_sub(now.duration_since(entry.1)).as_secs();
+        (allowed, remaining, retry_after)
     }
 }
 
-/// 限流中间件
-pub async fn rate_limit_middleware(
-    State(limiter): State<Arc<RateLimiter>>,
-    request: Request,
+pub async fn login_rate_limit(
+    State((limiter, app_state)): State<(RateLimiter, AppState)>,
+    req: Request<Body>,
     next: Next,
 ) -> Result<Response, StatusCode> {
-    // 获取客户端标识（可以是IP地址、用户ID等）
-    let client_id = request
-        .headers()
-        .get("x-forwarded-for")
-        .and_then(|h| h.to_str().ok())
-        .or_else(|| {
-            request
-                .headers()
-                .get("x-real-ip")
-                .and_then(|h| h.to_str().ok())
-        })
-        .unwrap_or("unknown")
-        .to_string();
-
-    // 检查限流
-    if limiter.check_rate_limit(client_id).await {
-        return Ok(Json(json!({
-            "error": {
-                "type": "rate_limited",
-                "message": "Too many requests. Please try again later.",
-                "retry_after": limiter.config.window_seconds,
-            }
-        }))
-        .into_response());
+    // Buffer body (login payload is small)
+    let (parts, body) = req.into_parts();
+    let bytes = match axum::body::to_bytes(body, 64 * 1024).await { Ok(b) => b, Err(_) => {
+        return Ok(Response::builder().status(StatusCode::BAD_REQUEST)
+            .header("Content-Type","application/json")
+            .body(Body::from("{\"error_code\":\"INVALID_BODY\"}"))
+            .unwrap()); } };
+    let ip = parts.headers.get("x-forwarded-for")
+        .and_then(|v| v.to_str().ok()).and_then(|s| s.split(',').next())
+        .unwrap_or("unknown").trim().to_string();
+    let email_key = extract_email_key(&bytes, limiter.hash_email);
+    let key = format!("{}:{}", ip, email_key.unwrap_or_else(|| "_".into()));
+    let (allowed, _remain, retry_after) = limiter.check(&key);
+    let req_restored = Request::from_parts(parts, Body::from(bytes));
+    if !allowed {
+        app_state.metrics.inc_login_rate_limited();
+        warn!(event="auth_rate_limit", ip=%ip, retry_after=retry_after, key=%key, "login rate limit triggered");
+        let body = serde_json::json!({
+            "error_code": "RATE_LIMITED",
+            "message": "Too many login attempts. Please retry later.",
+            "retry_after": retry_after
+        });
+        let resp = Response::builder()
+            .status(StatusCode::TOO_MANY_REQUESTS)
+            .header("Content-Type", "application/json")
+            .header("Retry-After", HeaderValue::from_str(&retry_after.to_string()).unwrap())
+            .body(Body::from(body.to_string()))
+            .unwrap();
+        return Ok(resp);
     }
+    Ok(next.run(req_restored).await)
+}
 
-    Ok(next.run(request).await)
+fn extract_email_key(bytes: &[u8], hash: bool) -> Option<String> {
+    if bytes.is_empty() { return None; }
+    let v: serde_json::Value = serde_json::from_slice(bytes).ok()?;
+    let raw = v.get("email")?.as_str()?;
+    let norm = raw.trim().to_lowercase();
+    if norm.is_empty() { return None; }
+    if !hash { return Some(norm); }
+    let mut h = Sha256::new(); h.update(&norm); let hex = format!("{:x}", h.finalize());
+    Some(hex[..8].to_string())
 }

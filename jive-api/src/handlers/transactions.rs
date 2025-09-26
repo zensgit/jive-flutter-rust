@@ -70,8 +70,27 @@ fn csv_escape_cell(mut s: String, delimiter: char) -> String {
     }
 }
 use crate::models::permission::Permission;
-use crate::services::context::ServiceContext;
 use crate::services::{AuditService, AuthService};
+
+// Shared query builder for multiple export paths
+fn build_transactions_export_query(
+    mut base: QueryBuilder<'static, sqlx::Postgres>,
+    family_id: Uuid,
+    account_id: Option<Uuid>,
+    ledger_id: Option<Uuid>,
+    category_id: Option<Uuid>,
+    start_date: Option<NaiveDate>,
+    end_date: Option<NaiveDate>,
+) -> QueryBuilder<'static, sqlx::Postgres> {
+    base.push_bind(family_id);
+    if let Some(v) = account_id { base.push(" AND t.account_id = "); base.push_bind(v); }
+    if let Some(v) = ledger_id { base.push(" AND t.ledger_id = "); base.push_bind(v); }
+    if let Some(v) = category_id { base.push(" AND t.category_id = "); base.push_bind(v); }
+    if let Some(v) = start_date { base.push(" AND t.transaction_date >= "); base.push_bind(v); }
+    if let Some(v) = end_date { base.push(" AND t.transaction_date <= "); base.push_bind(v); }
+    base.push(" ORDER BY t.transaction_date DESC, t.id DESC");
+    base
+}
 
 /// 导出交易请求
 #[derive(Debug, Deserialize)]
@@ -88,11 +107,12 @@ pub struct ExportTransactionsRequest {
 
 /// 导出交易（返回 data:URL 形式的下载链接，避免服务器存储文件）
 pub async fn export_transactions(
-    State(pool): State<PgPool>,
+    State(state): State<crate::AppState>,
     claims: Claims,
     headers: HeaderMap,
     Json(req): Json<ExportTransactionsRequest>,
 ) -> ApiResult<impl IntoResponse> {
+    let pool = &state.pool;
     let user_id = claims.user_id()?; // 验证 JWT，提取用户ID
     let family_id = claims
         .family_id
@@ -114,45 +134,30 @@ pub async fn export_transactions(
         )));
     }
 
-    // 复用列表查询的过滤条件（限定在当前家庭）
-    let mut query = QueryBuilder::new(
-        "SELECT t.id, t.account_id, t.ledger_id, t.amount, t.transaction_type, t.transaction_date, \
-         t.category_id, c.name as category_name, t.payee_id, p.name as payee_name, \
-         t.description, t.notes \
-         FROM transactions t \
-         JOIN ledgers l ON t.ledger_id = l.id \
-         LEFT JOIN categories c ON t.category_id = c.id \
-         LEFT JOIN payees p ON t.payee_id = p.id \
-         WHERE t.deleted_at IS NULL AND l.family_id = "
+    // 构建统一查询
+    let mut query = build_transactions_export_query(
+        QueryBuilder::new(
+            "SELECT t.id, t.account_id, t.ledger_id, t.amount, t.transaction_type, t.transaction_date, \
+             t.category_id, c.name as category_name, t.payee_id, p.name as payee_name, \
+             t.description, t.notes \
+             FROM transactions t \
+             JOIN ledgers l ON t.ledger_id = l.id \
+             LEFT JOIN categories c ON t.category_id = c.id \
+             LEFT JOIN payees p ON t.payee_id = p.id \
+             WHERE t.deleted_at IS NULL AND l.family_id = "
+        ),
+        ctx.family_id,
+        req.account_id,
+        req.ledger_id,
+        req.category_id,
+        req.start_date,
+        req.end_date,
     );
-    query.push_bind(ctx.family_id);
 
-    if let Some(account_id) = req.account_id {
-        query.push(" AND t.account_id = ");
-        query.push_bind(account_id);
-    }
-    if let Some(ledger_id) = req.ledger_id {
-        query.push(" AND t.ledger_id = ");
-        query.push_bind(ledger_id);
-    }
-    if let Some(category_id) = req.category_id {
-        query.push(" AND t.category_id = ");
-        query.push_bind(category_id);
-    }
-    if let Some(start_date) = req.start_date {
-        query.push(" AND t.transaction_date >= ");
-        query.push_bind(start_date);
-    }
-    if let Some(end_date) = req.end_date {
-        query.push(" AND t.transaction_date <= ");
-        query.push_bind(end_date);
-    }
-
-    query.push(" ORDER BY t.transaction_date DESC, t.id DESC");
-
+    let start_time = std::time::Instant::now();
     let rows = query
         .build()
-        .fetch_all(&pool)
+        .fetch_all(pool)
         .await
         .map_err(|e| ApiError::DatabaseError(format!("查询交易失败: {}", e)))?;
 
@@ -228,6 +233,12 @@ pub async fn export_transactions(
             resp_headers.insert("x-audit-id", aid.to_string().parse().unwrap());
         }
 
+        // 指标：缓冲 JSON 导出（这里与 CSV 共享缓冲计数器逻辑）
+        state.metrics.inc_export_request_buffered();
+        state
+            .metrics
+            .add_export_rows_buffered(items.len() as u64);
+        state.metrics.observe_export_duration_buffered(start_time.elapsed().as_secs_f64());
         return Ok((
             resp_headers,
             Json(serde_json::json!({
@@ -381,6 +392,12 @@ pub async fn export_transactions(
         resp_headers.insert("x-audit-id", aid.to_string().parse().unwrap());
     }
 
+    // 指标：缓冲 CSV 导出
+    state.metrics.inc_export_request_buffered();
+    state
+        .metrics
+        .add_export_rows_buffered(count_for_audit as u64);
+    state.metrics.observe_export_duration_buffered(start_time.elapsed().as_secs_f64());
     // Also mirror audit id in the JSON for POST CSV
     Ok((
         resp_headers,
@@ -397,11 +414,12 @@ pub async fn export_transactions(
 
 /// 流式 CSV 下载（更适合浏览器原生下载）
 pub async fn export_transactions_csv_stream(
-    State(pool): State<PgPool>,
+    State(state): State<crate::AppState>,
     claims: Claims,
     headers: HeaderMap,
     Query(q): Query<ExportTransactionsRequest>,
 ) -> ApiResult<impl IntoResponse> {
+    let pool = &state.pool;
     let user_id = claims.user_id()?;
     let family_id = claims
         .family_id
@@ -414,39 +432,24 @@ pub async fn export_transactions_csv_stream(
     ctx.require_permission(Permission::ExportData)
         .map_err(|_| ApiError::Forbidden)?;
 
-    // 复用查询逻辑（与 JSON/CSV data:URL 相同条件，限定家庭）
-    let mut query = QueryBuilder::new(
-        "SELECT t.id, t.account_id, t.ledger_id, t.amount, t.transaction_type, t.transaction_date, \
-         t.category_id, c.name as category_name, t.payee_id, p.name as payee_name, \
-         t.description, t.notes \
-         FROM transactions t \
-         JOIN ledgers l ON t.ledger_id = l.id \
-         LEFT JOIN categories c ON t.category_id = c.id \
-         LEFT JOIN payees p ON t.payee_id = p.id \
-         WHERE t.deleted_at IS NULL AND l.family_id = "
+    let mut query = build_transactions_export_query(
+        QueryBuilder::new(
+            "SELECT t.id, t.account_id, t.ledger_id, t.amount, t.transaction_type, t.transaction_date, \
+             t.category_id, c.name as category_name, t.payee_id, p.name as payee_name, \
+             t.description, t.notes \
+             FROM transactions t \
+             JOIN ledgers l ON t.ledger_id = l.id \
+             LEFT JOIN categories c ON t.category_id = c.id \
+             LEFT JOIN payees p ON t.payee_id = p.id \
+             WHERE t.deleted_at IS NULL AND l.family_id = "
+        ),
+        ctx.family_id,
+        q.account_id,
+        q.ledger_id,
+        q.category_id,
+        q.start_date,
+        q.end_date,
     );
-    query.push_bind(ctx.family_id);
-    if let Some(account_id) = q.account_id {
-        query.push(" AND t.account_id = ");
-        query.push_bind(account_id);
-    }
-    if let Some(ledger_id) = q.ledger_id {
-        query.push(" AND t.ledger_id = ");
-        query.push_bind(ledger_id);
-    }
-    if let Some(category_id) = q.category_id {
-        query.push(" AND t.category_id = ");
-        query.push_bind(category_id);
-    }
-    if let Some(start_date) = q.start_date {
-        query.push(" AND t.transaction_date >= ");
-        query.push_bind(start_date);
-    }
-    if let Some(end_date) = q.end_date {
-        query.push(" AND t.transaction_date <= ");
-        query.push_bind(end_date);
-    }
-    query.push(" ORDER BY t.transaction_date DESC, t.id DESC");
 
     // When export_stream feature enabled, stream rows instead of buffering entire CSV
     #[cfg(feature = "export_stream")]
@@ -460,7 +463,9 @@ pub async fn export_transactions_csv_stream(
         let built_query = query.build();
         let sql = built_query.sql().to_owned();
         let pool_clone = pool.clone();
+        let metrics = state.metrics.clone();
         tokio::spawn(async move {
+            let start_time = std::time::Instant::now();
             // Execute the raw SQL query using sqlx::raw_sql
             let mut stream = sqlx::raw_sql(&sql).fetch(&pool_clone);
             // Header
@@ -475,6 +480,7 @@ pub async fn export_transactions_csv_stream(
                     return;
                 }
             }
+            let mut rows_counter: u64 = 0;
             while let Some(item) = stream.next().await {
                 match item {
                     Ok(row) => {
@@ -503,6 +509,7 @@ pub async fn export_transactions_csv_stream(
                             csv_escape_cell(payee.clone().unwrap_or_default(), ','),
                             csv_escape_cell(ttype, ',')
                         );
+                        rows_counter += 1;
                         if tx.send(Ok(bytes::Bytes::from(line))).await.is_err() {
                             return;
                         }
@@ -513,6 +520,10 @@ pub async fn export_transactions_csv_stream(
                     }
                 }
             }
+            // 发送完成后更新流式导出指标
+            metrics.inc_export_request_stream();
+            metrics.add_export_rows_stream(rows_counter);
+            metrics.observe_export_duration_stream(start_time.elapsed().as_secs_f64());
         });
         let byte_stream = ReceiverStream::new(rx).map(|r| match r {
             Ok(b) => Ok::<_, ApiError>(b),
@@ -543,7 +554,7 @@ pub async fn export_transactions_csv_stream(
     // Execute fully and build CSV body when streaming disabled
     let rows_all = query
         .build()
-        .fetch_all(&pool)
+        .fetch_all(pool)
         .await
         .map_err(|e| ApiError::DatabaseError(format!("查询交易失败: {}", e)))?;
     #[cfg(feature = "core_export")]
@@ -658,7 +669,7 @@ pub async fn export_transactions_csv_stream(
     }
     let estimated_count: i64 = count_q
         .build()
-        .fetch_one(&pool)
+        .fetch_one(pool)
         .await
         .ok()
         .and_then(|row| row.try_get::<i64, _>("c").ok())

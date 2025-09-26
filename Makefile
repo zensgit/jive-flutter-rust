@@ -25,6 +25,8 @@ help:
 	@echo "  make db-dev-down  - 停止 Docker 开发数据库/Redis/Adminer"
 	@echo "  make api-dev-docker-db - 本地 API 连接 Docker 开发数据库 (15432)"
 	@echo "  make db-dev-status - 显示 Docker 开发数据库/Redis/Adminer 与 API 端口状态"
+	@echo "  make metrics-check  - 基础指标一致性校验 (/health vs /metrics)"
+	@echo "  make seed-bcrypt-user - 插入一个 bcrypt 测试用户 (触发登录重哈希)"
 
 # 安装依赖
 install:
@@ -213,6 +215,18 @@ db-dev-status:
 	@echo ""
 	@echo "🌿 /health:"
 	@curl -fsS http://localhost:$${API_PORT:-8012}/health 2>/dev/null || echo "(API 未响应)"
+
+# ---- Metrics & Dev Utilities ----
+metrics-check:
+	@echo "运行指标一致性脚本..."
+	@cd jive-api && ./scripts/check_metrics_consistency.sh || true
+	@echo "抓取 /metrics 关键行:" && curl -fsS http://localhost:$${API_PORT:-8012}/metrics | grep -E 'password_hash_|jive_build_info|export_requests_' || true
+
+seed-bcrypt-user:
+	@echo "插入 bcrypt 测试用户 (若不存在)..."
+	@cd jive-api && cargo run --bin hash_password --quiet -- 'TempBcrypt123!' >/dev/null 2>&1 || true
+	@psql $${DATABASE_URL:-postgresql://postgres:postgres@localhost:5433/jive_money} -c "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM users WHERE email='bcrypt_test@example.com') THEN INSERT INTO users (email,password_hash,name,is_active,created_at,updated_at) VALUES ('bcrypt_test@example.com', crypt('TempBcrypt123!','bf'), 'Bcrypt Test', true, NOW(), NOW()); END IF; END $$;" 2>/dev/null || echo "⚠️ 需要本地 Postgres 运行 (5433)"
+	@echo "测试登录: curl -X POST -H 'Content-Type: application/json' -d '{\"email\":\"bcrypt_test@example.com\",\"password\":\"TempBcrypt123!\"}' http://localhost:$${API_PORT:-8012}/api/v1/auth/login"
 
 # 代码格式化
 format:

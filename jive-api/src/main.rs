@@ -19,6 +19,8 @@ use std::sync::Arc;
 use tokio::net::TcpListener;
 use tower::ServiceBuilder;
 use tower_http::trace::TraceLayer;
+use jive_money_api::middleware::rate_limit::{RateLimiter, login_rate_limit};
+use jive_money_api::middleware::metrics_guard::{metrics_guard, MetricsGuardState, Cidr};
 use tracing::{error, info, warn};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -224,6 +226,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         metrics: AppMetrics::new(),
     };
 
+    // Rate limiter (login) configuration
+    let (rl_max, rl_window) = std::env::var("AUTH_RATE_LIMIT")
+        .ok()
+        .and_then(|v| {
+            let parts: Vec<&str> = v.split('/').collect();
+            if parts.len()==2 { Some((parts[0].parse().ok()?, parts[1].parse().ok()?)) } else { None }
+        })
+        .unwrap_or((30u32, 60u64));
+    let rate_limiter = RateLimiter::new(rl_max, rl_window);
+    let metrics_guard_state = {
+        let enabled = std::env::var("ALLOW_PUBLIC_METRICS").map(|v| v=="0").unwrap_or(false);
+        let allow_list = std::env::var("METRICS_ALLOW_CIDRS").unwrap_or("127.0.0.1/32".to_string());
+        let deny_list = std::env::var("METRICS_DENY_CIDRS").unwrap_or_default();
+        let allow = allow_list.split(',').filter_map(|c| Cidr::parse(c.trim())).collect();
+        let deny = deny_list.split(',').filter_map(|c| Cidr::parse(c.trim())).collect();
+        MetricsGuardState { allow, deny, enabled }
+    };
+
     // 启动定时任务（汇率更新等）
     info!("🕒 Starting scheduled tasks...");
     let pool_arc = Arc::new(pool.clone());
@@ -280,7 +300,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             get(get_transaction_statistics),
         )
         // Metrics endpoint
-        .route("/metrics", get(metrics::metrics_handler))
+        .route("/metrics", get(metrics::metrics_handler).route_layer(
+            axum::middleware::from_fn_with_state(metrics_guard_state.clone(), metrics_guard)
+        ))
         // 收款人管理 API
         .route("/api/v1/payees", get(list_payees))
         .route("/api/v1/payees", post(create_payee))
@@ -302,7 +324,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             "/api/v1/auth/register",
             post(auth_handlers::register_with_family),
         )
-        .route("/api/v1/auth/login", post(auth_handlers::login))
+        .route("/api/v1/auth/login", post(auth_handlers::login).route_layer(
+            axum::middleware::from_fn_with_state((rate_limiter.clone(), app_state.clone()), login_rate_limit)
+        ))
         .route("/api/v1/auth/refresh", post(auth_handlers::refresh_token))
         .route("/api/v1/auth/user", get(auth_handlers::get_current_user))
         .route("/api/v1/auth/profile", get(auth_handlers::get_current_user)) // Alias for Flutter app
@@ -659,6 +683,12 @@ async fn health_check(State(state): State<AppState>) -> Json<serde_json::Value> 
         "status": "healthy",
         "service": "jive-money-api",
         "mode": mode.trim(),
+        "build": {
+            "commit": option_env!("GIT_COMMIT").unwrap_or("unknown"),
+            "time": option_env!("BUILD_TIME").unwrap_or("unknown"),
+            "rustc": option_env!("RUSTC_VERSION").unwrap_or("unknown"),
+            "version": env!("CARGO_PKG_VERSION")
+        },
         "features": {
             "websocket": true,
             "database": true,
@@ -680,7 +710,18 @@ async fn health_check(State(state): State<AppState>) -> Json<serde_json::Value> 
             },
             "rehash": {
                 "enabled": std::env::var("REHASH_ON_LOGIN").map(|v| !matches!(v.as_str(), "0" | "false" | "FALSE")).unwrap_or(true),
-                "count": state.metrics.get_rehash_count()
+                "count": state.metrics.get_rehash_count(),
+                "fail_count": state.metrics.get_rehash_fail()
+            },
+            "auth_login": {
+                "fail": state.metrics.get_login_fail(),
+                "inactive": state.metrics.get_login_inactive()
+            },
+            "export": {
+                "requests_stream": state.metrics.get_export_counts().0,
+                "requests_buffered": state.metrics.get_export_counts().1,
+                "rows_stream": state.metrics.get_export_counts().2,
+                "rows_buffered": state.metrics.get_export_counts().3
             }
         },
         "timestamp": chrono::Utc::now().to_rfc3339()

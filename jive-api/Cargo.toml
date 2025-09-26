@@ -4,6 +4,7 @@ version = "1.0.0"
 edition = "2021"
 authors = ["Jive Money Team"]
 description = "Jive Money API Server for category template management"
+build = "build.rs"
 
 [lib]
 name = "jive_money_api"
@@ -44,6 +45,7 @@ base64 = "0.22"
 # Make core optional; gate usage behind feature `core_export`
 jive-core = { path = "../jive-core", package = "jive-core", features = ["server", "db"], default-features = false, optional = true }
 bytes = "1"
+sha2 = "0.10"
 
 # WebSocket支持
 tokio-tungstenite = "0.24"
