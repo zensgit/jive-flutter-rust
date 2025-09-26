@@ -19,6 +19,10 @@ help:
 	@echo "  make logs         - 查看日志"
 	@echo "  make api-dev      - 启动完整版 API (CORS_DEV=1)"
 	@echo "  make api-safe     - 启动完整版 API (安全CORS模式)"
+	@echo "  make db-dev-up    - 启动 Docker 开发数据库(Postgres/Redis)"
+	@echo "  make db-dev-down  - 停止 Docker 开发数据库"
+	@echo "  make db-dev-status- 查看 Docker 开发数据库状态"
+	@echo "  make api-dev-docker-db - 使用本地 API 连接 Docker 数据库"
 
 # 安装依赖
 install:
@@ -100,6 +104,20 @@ docker-build:
 docker-logs:
 	@docker-compose logs -f
 
+# ---- Docker dev DB helpers ----
+db-dev-up:
+	@echo "启动 Docker 开发数据库栈(Postgres/Redis)..."
+	@DB_PORT=$${DB_PORT:-5433} docker-compose up -d postgres redis
+	@echo "✅ 已尝试启动。当前监听端口: $${DB_PORT:-5433}"
+
+db-dev-down:
+	@echo "停止 Docker 开发数据库栈(Postgres/Redis)..."
+	@docker-compose stop postgres redis || true
+	@echo "✅ 已停止（如需清理网络/卷可执行: docker-compose down）"
+
+db-dev-status:
+	@docker-compose ps
+
 # 数据库操作
 db-migrate:
 	@echo "运行数据库迁移 (jive-api/scripts/migrate_local.sh)..."
@@ -136,6 +154,16 @@ api-lint:
 	@echo "API lint: SQLx offline check + Clippy (deny warnings)"
 	@$(MAKE) api-sqlx-check
 	@$(MAKE) api-clippy
+
+# 使用本地 API 连接 Docker 数据库（默认 DB_PORT=5433，可覆盖）
+api-dev-docker-db:
+	@echo "启动本地 API，连接 Docker 数据库 (CORS_DEV=1) ..."
+	@cd jive-api && \
+	  SQLX_OFFLINE=true \
+	  CORS_DEV=1 \
+	  API_PORT=$${API_PORT:-8012} \
+	  DATABASE_URL=postgresql://jive:jive_password@localhost:$${DB_PORT:-5433}/jive_money \
+	  cargo run --bin jive-api
 
 # One-shot: migrate local DB (5433) and refresh SQLx cache for API
 api-sqlx-prepare-local:
