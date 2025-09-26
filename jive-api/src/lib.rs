@@ -17,6 +17,9 @@ pub struct AppState {
     pub pool: PgPool,
     pub ws_manager: Option<std::sync::Arc<crate::ws::WsConnectionManager>>,  // Optional WebSocket manager
     pub redis: Option<redis::aio::ConnectionManager>,
+    // Minimal metrics surface for middleware to update rate-limited counter
+    // In full version, a richer AppMetrics can be reintroduced.
+    pub rate_limited_counter: std::sync::Arc<std::sync::atomic::AtomicU64>,
 }
 
 // 实现FromRef trait以便子状态可以从AppState中提取
@@ -36,5 +39,4 @@ impl FromRef<AppState> for Option<redis::aio::ConnectionManager> {
 // Re-export commonly used types
 pub use error::{ApiError, ApiResult};
 pub use services::{ServiceContext, ServiceError};
-
 

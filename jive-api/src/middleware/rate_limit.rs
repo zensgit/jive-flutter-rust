@@ -1,6 +1,6 @@
 use std::{collections::HashMap, time::{Instant, Duration}, sync::{Arc, Mutex}};
 use axum::{http::{Request, StatusCode, HeaderValue}, response::Response, middleware::Next, body::Body, extract::State};
-use crate::AppState;
+use crate::{AppState, error::ApiErrorResponse};
 use tracing::warn;
 use sha2::{Sha256, Digest};
 use tower::BoxError;
@@ -30,7 +30,7 @@ impl RateLimiter {
         if now.duration_since(entry.1) > self.window { *entry = (0, now); }
         entry.0 += 1;
         let allowed = entry.0 <= self.max;
-        let remaining = if entry.0 >= self.max { 0 } else { self.max - entry.0 };
+        let remaining = self.max.saturating_sub(entry.0);
         let retry_after = self.window.saturating_sub(now.duration_since(entry.1)).as_secs();
         (allowed, remaining, retry_after)
     }
@@ -56,18 +56,16 @@ pub async fn login_rate_limit(
     let (allowed, _remain, retry_after) = limiter.check(&key);
     let req_restored = Request::from_parts(parts, Body::from(bytes));
     if !allowed {
-        app_state.metrics.inc_login_rate_limited();
+        use std::sync::atomic::Ordering;
+        app_state.rate_limited_counter.fetch_add(1, Ordering::Relaxed);
         warn!(event="auth_rate_limit", ip=%ip, retry_after=retry_after, key=%key, "login rate limit triggered");
-        let body = serde_json::json!({
-            "error_code": "RATE_LIMITED",
-            "message": "Too many login attempts. Please retry later.",
-            "retry_after": retry_after
-        });
+        let body = ApiErrorResponse::new("RATE_LIMITED", "Too many login attempts. Please retry later.")
+            .with_retry_after(retry_after);
         let resp = Response::builder()
             .status(StatusCode::TOO_MANY_REQUESTS)
             .header("Content-Type", "application/json")
             .header("Retry-After", HeaderValue::from_str(&retry_after.to_string()).unwrap())
-            .body(Body::from(body.to_string()))
+            .body(Body::from(serde_json::to_string(&body).unwrap()))
             .unwrap();
         return Ok(resp);
     }
