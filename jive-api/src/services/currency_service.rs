@@ -101,13 +101,17 @@ impl CurrencyService {
         .fetch_all(&self.pool)
         .await?;
         
-        let currencies = rows.into_iter().map(|row| Currency {
-            code: row.code,
-            name: row.name,
-            symbol: row.symbol.unwrap_or_default(),
-            decimal_places: row.decimal_places.unwrap_or(2),
-            is_active: row.is_active.unwrap_or(true),
-        }).collect();
+        let currencies = rows
+            .into_iter()
+            .map(|row| Currency {
+                code: row.code,
+                name: row.name,
+                // symbol 允许为 NULL，默认空串
+                symbol: row.symbol.unwrap_or_default(),
+                decimal_places: row.decimal_places.unwrap_or(2),
+                is_active: row.is_active.unwrap_or(true),
+            })
+            .collect();
         
         Ok(currencies)
     }

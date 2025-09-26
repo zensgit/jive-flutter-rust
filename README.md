@@ -146,6 +146,18 @@ make clean
 # 数据库迁移
 make db-migrate
 
+# 启动 Docker 开发数据库（Postgres/Redis），默认端口 5433，可通过 DB_PORT 覆盖
+DB_PORT=5433 make db-dev-up
+
+# 查看 Docker 开发数据库状态
+make db-dev-status
+
+# 停止 Docker 开发数据库
+make db-dev-down
+
+# 使用本地 API 连接 Docker 数据库（读取 DB_PORT，默认 5433）
+make api-dev-docker-db
+
 # 查看日志
 make logs
 

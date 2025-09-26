@@ -207,6 +207,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         pool: pool.clone(),
         ws_manager: Some(ws_manager.clone()),
         redis: redis_manager,
+        rate_limited_counter: std::sync::Arc::new(std::sync::atomic::AtomicU64::new(0)),
     };
     
     // 启动定时任务（汇率更新等）
