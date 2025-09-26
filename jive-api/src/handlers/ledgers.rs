@@ -1,14 +1,17 @@
+use crate::{
+    auth::Claims,
+    error::{ApiError, ApiResult},
+};
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
     response::Json,
 };
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::PgPool;
 use uuid::Uuid;
-use chrono::{DateTime, Utc};
-use crate::{auth::Claims, error::{ApiError, ApiResult}};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Ledger {
@@ -77,20 +80,23 @@ pub async fn list_ledgers(
     .fetch_all(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
-    let ledgers: Vec<Ledger> = rows.into_iter().map(|row| Ledger {
-        id: row.id,
-        family_id: row.family_id,
-        name: row.name,
-        ledger_type: "family".to_string(),  // Default to family type
-        description: None,
-        currency: row.currency,
-        is_default: row.is_default,
-        settings: None,
-        owner_id: None,
-        created_at: row.created_at,
-        updated_at: row.updated_at,
-    }).collect();
+
+    let ledgers: Vec<Ledger> = rows
+        .into_iter()
+        .map(|row| Ledger {
+            id: row.id,
+            family_id: row.family_id,
+            name: row.name,
+            ledger_type: "family".to_string(), // Default to family type
+            description: None,
+            currency: row.currency,
+            is_default: row.is_default,
+            settings: None,
+            owner_id: None,
+            created_at: row.created_at,
+            updated_at: row.updated_at,
+        })
+        .collect();
 
     let total = sqlx::query_scalar!(
         r#"
@@ -120,7 +126,7 @@ pub async fn get_current_ledger(
     claims: Claims,
 ) -> ApiResult<Json<Ledger>> {
     let user_id = claims.user_id()?;
-    
+
     // First try to get the default ledger for the user's current family
     let row = sqlx::query!(
         r#"
@@ -137,7 +143,7 @@ pub async fn get_current_ledger(
     .fetch_optional(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     let ledger = row.map(|r| Ledger {
         id: r.id,
         family_id: r.family_id,
@@ -201,7 +207,7 @@ pub async fn create_ledger(
     .fetch_one(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     let ledger = Ledger {
         id: row.id,
         family_id: row.family_id,
@@ -242,7 +248,7 @@ pub async fn get_ledger(
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     .ok_or(ApiError::NotFound("Ledger not found".to_string()))?;
-    
+
     let ledger = Ledger {
         id: row.id,
         family_id: row.family_id,
@@ -320,7 +326,7 @@ pub async fn update_ledger(
     .fetch_one(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     let ledger = Ledger {
         id: row.id,
         family_id: row.family_id,
@@ -360,7 +366,9 @@ pub async fn delete_ledger(
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
     if count <= 1 {
-        return Err(ApiError::BadRequest("Cannot delete the last ledger".to_string()));
+        return Err(ApiError::BadRequest(
+            "Cannot delete the last ledger".to_string(),
+        ));
     }
 
     let result = sqlx::query!(
@@ -389,7 +397,7 @@ async fn create_default_ledger(
     family_id: Option<Uuid>,
 ) -> ApiResult<Ledger> {
     let ledger_id = Uuid::new_v4();
-    
+
     let row = sqlx::query!(
         r#"
         INSERT INTO ledgers (id, family_id, name, currency, is_default, created_at, updated_at)
@@ -404,7 +412,7 @@ async fn create_default_ledger(
     .fetch_one(pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     let ledger = Ledger {
         id: row.id,
         family_id: row.family_id,
@@ -429,7 +437,7 @@ pub async fn get_ledger_statistics(
     Path(id): Path<Uuid>,
 ) -> ApiResult<Json<serde_json::Value>> {
     let user_id = claims.user_id()?;
-    
+
     // Verify user has access to this ledger
     let _ledger = sqlx::query!(
         r#"
@@ -445,7 +453,7 @@ pub async fn get_ledger_statistics(
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     .ok_or(ApiError::NotFound("Ledger not found".to_string()))?;
-    
+
     // Get transaction statistics
     let stats = sqlx::query!(
         r#"
@@ -462,7 +470,7 @@ pub async fn get_ledger_statistics(
     .fetch_one(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     // Get account count
     let account_count = sqlx::query_scalar!(
         r#"
@@ -475,7 +483,7 @@ pub async fn get_ledger_statistics(
     .fetch_one(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     Ok(Json(json!({
         "ledger_id": id,
         "total_transactions": stats.total_transactions,
@@ -494,7 +502,7 @@ pub async fn get_ledger_members(
     Path(id): Path<Uuid>,
 ) -> ApiResult<Json<serde_json::Value>> {
     let user_id = claims.user_id()?;
-    
+
     // First verify the ledger exists and user has access
     let ledger = sqlx::query!(
         r#"
@@ -510,7 +518,7 @@ pub async fn get_ledger_members(
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     .ok_or(ApiError::NotFound("Ledger not found".to_string()))?;
-    
+
     // Get family members (ledger always has family_id in the database)
     let family_id = ledger.family_id;
     {
@@ -532,7 +540,7 @@ pub async fn get_ledger_members(
         .fetch_all(&pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-        
+
         let member_list: Vec<serde_json::Value> = members.into_iter().map(|m| {
             json!({
                 "user_id": m.id,
@@ -543,7 +551,7 @@ pub async fn get_ledger_members(
                 "is_active": true
             })
         }).collect();
-        
+
         Ok(Json(json!({
             "ledger_id": id,
             "family_id": family_id,

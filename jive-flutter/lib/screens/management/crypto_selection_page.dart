@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/currency.dart' as model;
-import '../../providers/currency_provider.dart';
-import '../../widgets/source_badge.dart';
-import '../../providers/settings_provider.dart';
+import 'package:jive_money/models/currency.dart' as model;
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/widgets/source_badge.dart';
+import 'package:jive_money/providers/settings_provider.dart';
 
 /// 加密货币选择管理页面
 class CryptoSelectionPage extends ConsumerStatefulWidget {
@@ -194,7 +194,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
           width: _compact ? 40 : 48,
           height: _compact ? 40 : 48,
           decoration: BoxDecoration(
-            color: _getCryptoColor(crypto.code).withOpacity(0.12),
+            color: _getCryptoColor(crypto.code).withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color:
@@ -232,7 +232,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                         padding: EdgeInsets.symmetric(
                             horizontal: _compact ? 4 : 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: _getCryptoColor(crypto.code).withOpacity(0.2),
+                          color: _getCryptoColor(crypto.code).withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(

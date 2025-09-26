@@ -27,6 +27,7 @@ class RightClickCopy extends StatelessWidget {
 
   void _copy(BuildContext context) async {
     await Clipboard.setData(ClipboardData(text: copyText));
+    if (!context.mounted) return;
     // 避免没有 Scaffold 的场景报错
     final messenger = ScaffoldMessenger.maybeOf(context);
     messenger?.hideCurrentSnackBar();
@@ -71,7 +72,7 @@ class RightClickCopy extends StatelessWidget {
     Widget content = child;
 
     if (showIconOnHover) {
-      content = _HoverCopyIconWrapper(child: child, copyText: copyText);
+      content = _HoverCopyIconWrapper(copyText: copyText, child: child);
     }
 
     content = Padding(
@@ -120,7 +121,7 @@ class _HoverCopyIconWrapperState extends State<_HoverCopyIconWrapper> {
               right: -4,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.55),
+                  color: Colors.black.withValues(alpha: 0.55),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: const Padding(

@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/travel_event.dart';
+import 'package:jive_money/models/travel_event.dart';
 
 /// 旅行事件状态管理
 class TravelEventNotifier extends StateNotifier<List<TravelEvent>> {

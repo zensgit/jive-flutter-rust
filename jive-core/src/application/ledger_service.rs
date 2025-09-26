@@ -1,17 +1,17 @@
 //! Ledger service - 账本管理服务
-//! 
+//!
 //! 基于 Maybe 的多账本功能转换而来，包括账本CRUD、切换、权限管理等功能
 
+use chrono::{DateTime, NaiveDate, Utc};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
-use chrono::{DateTime, Utc, NaiveDate};
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
-use crate::domain::{Ledger, LedgerStatus, LedgerDisplaySettings};
+use super::{BatchResult, PaginationParams, ServiceContext, ServiceResponse};
+use crate::domain::{Ledger, LedgerDisplaySettings, LedgerStatus};
 use crate::error::{JiveError, Result};
-use super::{ServiceContext, ServiceResponse, PaginationParams, BatchResult};
 
 /// 账本创建请求
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -146,10 +146,10 @@ impl UpdateLedgerRequest {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum LedgerPermission {
-    Owner,      // 所有者
-    Admin,      // 管理员
-    Editor,     // 编辑者
-    Viewer,     // 查看者
+    Owner,  // 所有者
+    Admin,  // 管理员
+    Editor, // 编辑者
+    Viewer, // 查看者
 }
 
 #[cfg(feature = "wasm")]
@@ -179,7 +179,10 @@ impl LedgerPermission {
     /// 检查是否有权限执行操作
     #[wasm_bindgen]
     pub fn can_edit(&self) -> bool {
-        matches!(self, LedgerPermission::Owner | LedgerPermission::Admin | LedgerPermission::Editor)
+        matches!(
+            self,
+            LedgerPermission::Owner | LedgerPermission::Admin | LedgerPermission::Editor
+        )
     }
 
     #[wasm_bindgen]
@@ -444,20 +447,14 @@ impl LedgerService {
 
     /// 获取当前账本
     #[wasm_bindgen]
-    pub async fn get_current_ledger(
-        &self,
-        context: ServiceContext,
-    ) -> ServiceResponse<Ledger> {
+    pub async fn get_current_ledger(&self, context: ServiceContext) -> ServiceResponse<Ledger> {
         let result = self._get_current_ledger(context).await;
         result.into()
     }
 
     /// 获取用户的所有账本
     #[wasm_bindgen]
-    pub async fn get_user_ledgers(
-        &self,
-        context: ServiceContext,
-    ) -> ServiceResponse<Vec<Ledger>> {
+    pub async fn get_user_ledgers(&self, context: ServiceContext) -> ServiceResponse<Vec<Ledger>> {
         let result = self._get_user_ledgers(context).await;
         result.into()
     }
@@ -494,7 +491,9 @@ impl LedgerService {
         permission: LedgerPermission,
         context: ServiceContext,
     ) -> ServiceResponse<bool> {
-        let result = self._update_member_permission(ledger_id, user_id, permission, context).await;
+        let result = self
+            ._update_member_permission(ledger_id, user_id, permission, context)
+            .await;
         result.into()
     }
 
@@ -530,16 +529,15 @@ impl LedgerService {
         copy_transactions: bool,
         context: ServiceContext,
     ) -> ServiceResponse<Ledger> {
-        let result = self._duplicate_ledger(ledger_id, new_name, copy_transactions, context).await;
+        let result = self
+            ._duplicate_ledger(ledger_id, new_name, copy_transactions, context)
+            .await;
         result.into()
     }
 
     /// 获取账本统计信息
     #[wasm_bindgen]
-    pub async fn get_ledger_stats(
-        &self,
-        context: ServiceContext,
-    ) -> ServiceResponse<LedgerStats> {
+    pub async fn get_ledger_stats(&self, context: ServiceContext) -> ServiceResponse<LedgerStats> {
         let result = self._get_ledger_stats(context).await;
         result.into()
     }
@@ -604,7 +602,7 @@ impl LedgerService {
 
         // 在实际实现中，这里会保存到数据库
         // let saved_ledger = repository.save(ledger).await?;
-        // 
+        //
         // 为创建者添加所有者权限
         // permission_repository.create(LedgerPermission {
         //     ledger_id: saved_ledger.id(),
@@ -623,7 +621,9 @@ impl LedgerService {
         context: ServiceContext,
     ) -> Result<Ledger> {
         // 检查权限
-        let permission = self._check_permission(ledger_id.clone(), context.clone()).await?;
+        let permission = self
+            ._check_permission(ledger_id.clone(), context.clone())
+            .await?;
         if !permission.can_edit() {
             return Err(JiveError::PermissionDenied {
                 message: "No permission to edit this ledger".to_string(),
@@ -669,11 +669,7 @@ impl LedgerService {
     }
 
     /// 获取账本的内部实现
-    async fn _get_ledger(
-        &self,
-        ledger_id: String,
-        context: ServiceContext,
-    ) -> Result<Ledger> {
+    async fn _get_ledger(&self, ledger_id: String, context: ServiceContext) -> Result<Ledger> {
         // 检查权限
         let _permission = self._check_permission(ledger_id.clone(), context).await?;
 
@@ -693,13 +689,11 @@ impl LedgerService {
     }
 
     /// 删除账本的内部实现
-    async fn _delete_ledger(
-        &self,
-        ledger_id: String,
-        context: ServiceContext,
-    ) -> Result<bool> {
+    async fn _delete_ledger(&self, ledger_id: String, context: ServiceContext) -> Result<bool> {
         // 检查权限
-        let permission = self._check_permission(ledger_id.clone(), context.clone()).await?;
+        let permission = self
+            ._check_permission(ledger_id.clone(), context.clone())
+            .await?;
         if !permission.can_delete() {
             return Err(JiveError::PermissionDenied {
                 message: "Only owner can delete ledger".to_string(),
@@ -709,7 +703,7 @@ impl LedgerService {
         // 检查是否有账户和交易
         // let account_count = account_repository.count_by_ledger_id(&ledger_id).await?;
         // let transaction_count = transaction_repository.count_by_ledger_id(&ledger_id).await?;
-        // 
+        //
         // if account_count > 0 || transaction_count > 0 {
         //     return Err(JiveError::ValidationError {
         //         message: "Cannot delete ledger with accounts or transactions".to_string(),
@@ -770,13 +764,11 @@ impl LedgerService {
     }
 
     /// 切换账本的内部实现
-    async fn _switch_ledger(
-        &self,
-        ledger_id: String,
-        context: ServiceContext,
-    ) -> Result<Ledger> {
+    async fn _switch_ledger(&self, ledger_id: String, context: ServiceContext) -> Result<Ledger> {
         // 检查权限
-        let _permission = self._check_permission(ledger_id.clone(), context.clone()).await?;
+        let _permission = self
+            ._check_permission(ledger_id.clone(), context.clone())
+            .await?;
 
         // 获取账本
         let ledger = self._get_ledger(ledger_id.clone(), context.clone()).await?;
@@ -788,31 +780,27 @@ impl LedgerService {
     }
 
     /// 获取当前账本的内部实现
-    async fn _get_current_ledger(
-        &self,
-        context: ServiceContext,
-    ) -> Result<Ledger> {
+    async fn _get_current_ledger(&self, context: ServiceContext) -> Result<Ledger> {
         // 在实际实现中，从用户设置获取当前账本ID
         // let current_ledger_id = user_settings_repository
         //     .get_current_ledger_id(context.user_id).await?;
 
-        let current_ledger_id = context.current_ledger_id
+        let current_ledger_id = context
+            .current_ledger_id
             .unwrap_or_else(|| "default-ledger".to_string());
 
         self._get_ledger(current_ledger_id, context).await
     }
 
     /// 获取用户账本的内部实现
-    async fn _get_user_ledgers(
-        &self,
-        context: ServiceContext,
-    ) -> Result<Vec<Ledger>> {
+    async fn _get_user_ledgers(&self, context: ServiceContext) -> Result<Vec<Ledger>> {
         let filter = LedgerFilter {
             my_ledgers_only: true,
             ..Default::default()
         };
 
-        self._search_ledgers(filter, PaginationParams::new(1, 100), context).await
+        self._search_ledgers(filter, PaginationParams::new(1, 100), context)
+            .await
     }
 
     /// 邀请成员的内部实现
@@ -886,7 +874,9 @@ impl LedgerService {
         context: ServiceContext,
     ) -> Result<bool> {
         // 检查权限
-        let current_permission = self._check_permission(ledger_id.clone(), context.clone()).await?;
+        let current_permission = self
+            ._check_permission(ledger_id.clone(), context.clone())
+            .await?;
         if !current_permission.can_admin() {
             return Err(JiveError::PermissionDenied {
                 message: "No permission to update member permissions".to_string(),
@@ -914,7 +904,9 @@ impl LedgerService {
         context: ServiceContext,
     ) -> Result<bool> {
         // 检查权限
-        let permission = self._check_permission(ledger_id.clone(), context.clone()).await?;
+        let permission = self
+            ._check_permission(ledger_id.clone(), context.clone())
+            .await?;
         if !permission.can_admin() {
             return Err(JiveError::PermissionDenied {
                 message: "No permission to remove members".to_string(),
@@ -935,14 +927,12 @@ impl LedgerService {
     }
 
     /// 离开账本的内部实现
-    async fn _leave_ledger(
-        &self,
-        ledger_id: String,
-        context: ServiceContext,
-    ) -> Result<bool> {
+    async fn _leave_ledger(&self, ledger_id: String, context: ServiceContext) -> Result<bool> {
         // 检查权限
-        let permission = self._check_permission(ledger_id.clone(), context.clone()).await?;
-        
+        let permission = self
+            ._check_permission(ledger_id.clone(), context.clone())
+            .await?;
+
         // 所有者不能离开自己的账本
         if matches!(permission, LedgerPermission::Owner) {
             return Err(JiveError::ValidationError {
@@ -965,7 +955,9 @@ impl LedgerService {
         context: ServiceContext,
     ) -> Result<Ledger> {
         // 检查权限
-        let _permission = self._check_permission(ledger_id.clone(), context.clone()).await?;
+        let _permission = self
+            ._check_permission(ledger_id.clone(), context.clone())
+            .await?;
 
         // 获取原账本
         let original_ledger = self._get_ledger(ledger_id, context.clone()).await?;
@@ -994,10 +986,7 @@ impl LedgerService {
     }
 
     /// 获取统计信息的内部实现
-    async fn _get_ledger_stats(
-        &self,
-        _context: ServiceContext,
-    ) -> Result<LedgerStats> {
+    async fn _get_ledger_stats(&self, _context: ServiceContext) -> Result<LedgerStats> {
         // 在实际实现中，从数据库聚合统计数据
         let stats = LedgerStats {
             total_ledgers: 5,
@@ -1050,11 +1039,8 @@ mod tests {
     async fn test_create_ledger() {
         let service = LedgerService::new();
         let context = ServiceContext::new("user-123".to_string());
-        
-        let request = CreateLedgerRequest::new(
-            "Test Ledger".to_string(),
-            "USD".to_string(),
-        );
+
+        let request = CreateLedgerRequest::new("Test Ledger".to_string(), "USD".to_string());
 
         let result = service._create_ledger(request, context).await;
         assert!(result.is_ok());
@@ -1069,7 +1055,9 @@ mod tests {
         let service = LedgerService::new();
         let context = ServiceContext::new("user-123".to_string());
 
-        let result = service._switch_ledger("ledger-456".to_string(), context).await;
+        let result = service
+            ._switch_ledger("ledger-456".to_string(), context)
+            .await;
         assert!(result.is_ok());
     }
 
@@ -1077,7 +1065,7 @@ mod tests {
     async fn test_ledger_validation() {
         let service = LedgerService::new();
         let context = ServiceContext::new("user-123".to_string());
-        
+
         let request = CreateLedgerRequest::new(
             "".to_string(), // 空名称应该失败
             "USD".to_string(),
@@ -1116,9 +1104,6 @@ mod tests {
             LedgerPermission::from_string("editor"),
             Some(LedgerPermission::Editor)
         );
-        assert_eq!(
-            LedgerPermission::from_string("invalid"),
-            None
-        );
+        assert_eq!(LedgerPermission::from_string("invalid"), None);
     }
 }

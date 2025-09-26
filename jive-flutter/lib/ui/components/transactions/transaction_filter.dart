@@ -1,7 +1,7 @@
 // 交易筛选组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
-import 'transaction_form.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/transactions/transaction_form.dart';
 
 class TransactionFilter extends StatefulWidget {
   final TransactionFilterData? initialFilter;

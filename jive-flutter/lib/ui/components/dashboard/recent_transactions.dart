@@ -1,8 +1,8 @@
 // 最近交易组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
-import '../../../models/transaction.dart';
-import '../cards/transaction_card.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/models/transaction.dart';
+import 'package:jive_money/ui/components/cards/transaction_card.dart';
 
 class RecentTransactions extends StatelessWidget {
   final List<Transaction> transactions;
@@ -106,13 +106,13 @@ class RecentTransactions extends StatelessWidget {
                     Icon(
                       Icons.receipt_long_outlined,
                       size: 48,
-                      color: theme.colorScheme.onSurface.withOpacity(0.3),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       '暂无交易记录',
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.5),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                   ],
@@ -169,7 +169,7 @@ class GroupedRecentTransactions extends StatelessWidget {
                 if (onViewAll != null)
                   TextButton(
                     onPressed: onViewAll,
-                    child: Text('查看全部'),
+                    child: const Text('查看全部'),
                   ),
               ],
             ),
@@ -191,13 +191,13 @@ class GroupedRecentTransactions extends StatelessWidget {
                     Icon(
                       Icons.receipt_long_outlined,
                       size: 48,
-                      color: theme.colorScheme.onSurface.withOpacity(0.3),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       '暂无交易记录',
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.5),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                   ],
@@ -222,7 +222,7 @@ class GroupedRecentTransactions extends StatelessWidget {
               Text(
                 _formatDate(date),
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -230,7 +230,7 @@ class GroupedRecentTransactions extends StatelessWidget {
               Expanded(
                 child: Container(
                   height: 1,
-                  color: theme.colorScheme.outline.withOpacity(0.2),
+                  color: theme.colorScheme.outline.withValues(alpha: 0.2),
                 ),
               ),
             ],

@@ -23,15 +23,15 @@ pub struct User {
 
 impl Entity for User {
     type Id = Uuid;
-    
+
     fn id(&self) -> Self::Id {
         self.id
     }
-    
+
     fn created_at(&self) -> DateTime<Utc> {
         self.created_at
     }
-    
+
     fn updated_at(&self) -> DateTime<Utc> {
         self.updated_at
     }
@@ -59,7 +59,7 @@ impl User {
             updated_at: now,
         }
     }
-    
+
     pub fn full_name(&self) -> Option<String> {
         match (&self.first_name, &self.last_name) {
             (Some(first), Some(last)) => Some(format!("{} {}", first, last)),
@@ -68,11 +68,11 @@ impl User {
             _ => None,
         }
     }
-    
+
     pub fn is_admin(&self) -> bool {
         self.role == "admin"
     }
-    
+
     pub fn is_confirmed(&self) -> bool {
         self.confirmed_at.is_some()
     }
@@ -92,15 +92,15 @@ pub struct Session {
 
 impl Entity for Session {
     type Id = Uuid;
-    
+
     fn id(&self) -> Self::Id {
         self.id
     }
-    
+
     fn created_at(&self) -> DateTime<Utc> {
         self.created_at
     }
-    
+
     fn updated_at(&self) -> DateTime<Utc> {
         self.updated_at
     }

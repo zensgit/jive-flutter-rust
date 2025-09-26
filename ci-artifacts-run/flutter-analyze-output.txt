@@ -1,0 +1,367 @@
+Resolving dependencies...
+Downloading packages...
+  _fe_analyzer_shared 67.0.0 (89.0.0 available)
+  analyzer 6.4.1 (8.2.0 available)
+  analyzer_plugin 0.11.3 (0.13.8 available)
+  build 2.4.1 (4.0.0 available)
+  build_config 1.1.2 (1.2.0 available)
+  build_resolvers 2.4.2 (3.0.4 available)
+  build_runner 2.4.13 (2.8.0 available)
+  build_runner_core 7.3.2 (9.3.2 available)
+  characters 1.4.0 (1.4.1 available)
+  custom_lint_core 0.6.3 (0.8.1 available)
+  dart_style 2.3.6 (3.1.2 available)
+  file_picker 8.3.7 (10.3.3 available)
+  fl_chart 0.66.2 (1.1.1 available)
+  flutter_launcher_icons 0.13.1 (0.14.4 available)
+  flutter_lints 3.0.2 (6.0.0 available)
+  flutter_riverpod 2.6.1 (3.0.0 available)
+  freezed 2.5.2 (3.2.3 available)
+  freezed_annotation 2.4.4 (3.1.0 available)
+  go_router 12.1.3 (16.2.2 available)
+  image_picker_android 0.8.13+2 (0.8.13+3 available)
+! intl 0.19.0 (overridden) (0.20.2 available)
+  json_serializable 6.8.0 (6.11.1 available)
+  lints 3.0.0 (6.0.0 available)
+  material_color_utilities 0.11.1 (0.13.0 available)
+  meta 1.16.0 (1.17.0 available)
+  pool 1.5.1 (1.5.2 available)
+  protobuf 3.1.0 (4.2.0 available)
+  retrofit_generator 8.2.1 (10.0.5 available)
+  riverpod 2.6.1 (3.0.0 available)
+  riverpod_analyzer_utils 0.5.1 (0.5.10 available)
+  riverpod_annotation 2.6.1 (3.0.0 available)
+  riverpod_generator 2.4.0 (3.0.0 available)
+  shared_preferences_android 2.4.12 (2.4.13 available)
+  shelf_web_socket 2.0.1 (3.0.0 available)
+  source_gen 1.5.0 (4.0.1 available)
+  source_helper 1.3.5 (1.3.8 available)
+  test_api 0.7.6 (0.7.7 available)
+  uni_links 0.5.1 (discontinued replaced by app_links)
+  very_good_analysis 5.1.0 (10.0.0 available)
+Got dependencies!
+1 package is discontinued.
+38 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Analyzing jive-flutter...                                       
+
+warning • The value of the field '_lastGlobalFailure' isn't used • lib/core/network/interceptors/retry_interceptor.dart:11:20 • unused_field
+  error • Target of URI doesn't exist: 'package:jive_money/screens/management/manual_overrides_page.dart' • lib/core/router/app_router.dart:21:8 • uri_does_not_exist
+  error • The name 'ManualOverridesPage' isn't a class • lib/core/router/app_router.dart:225:52 • creation_with_non_type
+   info • Use the null-aware operator '?.' rather than an explicit 'null' comparison • lib/core/storage/adapters/account_adapter.dart:56:15 • prefer_null_aware_operators
+warning • 'printTime' is deprecated and shouldn't be used. Use `dateTimeFormat` with `DateTimeFormat.onlyTimeAndSinceStart` or `DateTimeFormat.none` instead • lib/core/utils/logger.dart:16:9 • deprecated_member_use
+warning • The declaration '_buildFamilyMember' isn't referenced • lib/main_simple.dart:1947:10 • unused_element
+warning • The declaration '_formatDate' isn't referenced • lib/main_simple.dart:1977:10 • unused_element
+warning • The declaration '_buildStatRow' isn't referenced • lib/main_simple.dart:1982:10 • unused_element
+warning • The value of the field '_totpSecret' isn't used • lib/main_simple.dart:2489:11 • unused_field
+warning • The declaration '_formatLastActive' isn't referenced • lib/main_simple.dart:3630:10 • unused_element
+warning • The declaration '_formatFirstLogin' isn't referenced • lib/main_simple.dart:3647:10 • unused_element
+warning • The declaration '_toggleTrust' isn't referenced • lib/main_simple.dart:3882:8 • unused_element
+warning • 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre • lib/main_simple.dart:4733:27 • deprecated_member_use
+warning • 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre • lib/main_simple.dart:4734:27 • deprecated_member_use
+   info • The constant name 'permission_grant' isn't a lowerCamelCase identifier • lib/models/audit_log.dart:84:16 • constant_identifier_names
+   info • The constant name 'permission_revoke' isn't a lowerCamelCase identifier • lib/models/audit_log.dart:85:16 • constant_identifier_names
+  error • Undefined name 'HttpClient' • lib/providers/currency_provider.dart:375:21 • undefined_identifier
+  error • Undefined name 'HttpClient' • lib/providers/currency_provider.dart:470:19 • undefined_identifier
+  error • Undefined name 'ApiReadiness' • lib/providers/currency_provider.dart:471:13 • undefined_identifier
+  error • Undefined name 'HttpClient' • lib/providers/currency_provider.dart:500:19 • undefined_identifier
+  error • Undefined name 'ApiReadiness' • lib/providers/currency_provider.dart:501:13 • undefined_identifier
+  error • Undefined name 'HttpClient' • lib/providers/currency_provider.dart:530:19 • undefined_identifier
+  error • Undefined name 'ApiReadiness' • lib/providers/currency_provider.dart:531:13 • undefined_identifier
+warning • The value of the local variable 'event' isn't used • lib/providers/travel_event_provider.dart:95:11 • unused_local_variable
+warning • The value of the local variable 'currentLedger' isn't used • lib/screens/accounts/account_add_screen.dart:50:11 • unused_local_variable
+warning • The value of the local variable 'account' isn't used • lib/screens/accounts/account_add_screen.dart:411:13 • unused_local_variable
+warning • The value of the field '_selectedGroupId' isn't used • lib/screens/accounts/accounts_screen.dart:18:16 • unused_field
+warning • The value of the field '_editingTemplate' isn't used • lib/screens/admin/template_admin_page.dart:40:27 • unused_field
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/admin/template_admin_page.dart:203:30 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/admin/template_admin_page.dart:212:30 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/admin/template_admin_page.dart:227:28 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/admin/template_admin_page.dart:237:28 • use_build_context_synchronously
+  error • Too many positional arguments: 0 expected, but 1 found • lib/screens/audit/audit_logs_screen.dart:109:60 • extra_positional_arguments_could_be_named
+  error • A value of type 'Map<String, dynamic>' can't be assigned to a variable of type 'AuditLogStatistics?' • lib/screens/audit/audit_logs_screen.dart:111:23 • invalid_assignment
+   info • Use 'const' with the constructor to improve performance • lib/screens/auth/admin_login_screen.dart:250:31 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/auth/admin_login_screen.dart:252:37 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/auth/admin_login_screen.dart:256:40 • prefer_const_constructors
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/auth/login_screen.dart:310:54 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/auth/wechat_qr_screen.dart:104:28 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/auth/wechat_qr_screen.dart:111:49 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/auth/wechat_qr_screen.dart:123:30 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/auth/wechat_register_form_screen.dart:94:24 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/auth/wechat_register_form_screen.dart:101:32 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/auth/wechat_register_form_screen.dart:108:24 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps • lib/screens/auth/wechat_register_form_screen.dart:115:30 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/auth/wechat_register_form_screen.dart:123:28 • use_build_context_synchronously
+warning • The value of the local variable 'currentMonth' isn't used • lib/screens/budgets/budgets_screen.dart:15:11 • unused_local_variable
+warning • The value of the local variable 'baseCurrency' isn't used • lib/screens/currency/currency_converter_screen.dart:76:11 • unused_local_variable
+warning • The declaration '_showLedgerSwitcher' isn't referenced • lib/screens/dashboard/dashboard_screen.dart:255:8 • unused_element
+  error • Too many positional arguments: 0 expected, but 1 found • lib/screens/family/family_activity_log_screen.dart:119:63 • extra_positional_arguments_could_be_named
+  error • A value of type 'Map<String, dynamic>' can't be assigned to a variable of type 'ActivityStatistics?' • lib/screens/family/family_activity_log_screen.dart:120:36 • invalid_assignment
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_activity_log_screen.dart:715:22 • prefer_const_constructors
+warning • The value of the local variable 'theme' isn't used • lib/screens/family/family_activity_log_screen.dart:866:11 • unused_local_variable
+warning • The value of the local variable 'theme' isn't used • lib/screens/family/family_dashboard_screen.dart:43:11 • unused_local_variable
+warning • The value of the field '_isLoading' isn't used • lib/screens/family/family_members_screen.dart:25:8 • unused_field
+warning • The value of the local variable 'theme' isn't used • lib/screens/family/family_members_screen.dart:185:11 • unused_local_variable
+warning • 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre • lib/screens/family/family_members_screen.dart:778:15 • deprecated_member_use
+warning • 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre • lib/screens/family/family_members_screen.dart:779:15 • deprecated_member_use
+  error • Too many positional arguments: 0 expected, but 1 found • lib/screens/family/family_permissions_audit_screen.dart:68:48 • extra_positional_arguments_could_be_named
+  error • Too many positional arguments: 0 expected, but 1 found • lib/screens/family/family_permissions_audit_screen.dart:69:50 • extra_positional_arguments_could_be_named
+  error • Too many positional arguments: 0 expected, but 1 found • lib/screens/family/family_permissions_audit_screen.dart:70:49 • extra_positional_arguments_could_be_named
+  error • Methods can't be invoked in constant expressions • lib/screens/family/family_permissions_audit_screen.dart:323:28 • const_eval_method_invocation
+  error • Methods can't be invoked in constant expressions • lib/screens/family/family_permissions_audit_screen.dart:364:28 • const_eval_method_invocation
+  error • Invalid constant value • lib/screens/family/family_permissions_audit_screen.dart:507:34 • invalid_constant
+warning • The value of the local variable 'date' isn't used • lib/screens/family/family_permissions_audit_screen.dart:664:13 • unused_local_variable
+  error • Invalid constant value • lib/screens/family/family_permissions_audit_screen.dart:818:15 • invalid_constant
+  error • Too many positional arguments: 0 expected, but 1 found • lib/screens/family/family_permissions_editor_screen.dart:153:53 • extra_positional_arguments_could_be_named
+  error • Too many positional arguments: 0 expected, but 1 found • lib/screens/family/family_permissions_editor_screen.dart:154:63 • extra_positional_arguments_could_be_named
+  error • A value of type 'Map<String, dynamic>' can't be assigned to a variable of type 'List<RolePermissions>' • lib/screens/family/family_permissions_editor_screen.dart:157:28 • invalid_assignment
+  error • A value of type 'List<dynamic>' can't be assigned to a variable of type 'List<CustomRole>' • lib/screens/family/family_permissions_editor_screen.dart:158:30 • invalid_assignment
+  error • Too many positional arguments: 1 expected, but 2 found • lib/screens/family/family_permissions_editor_screen.dart:294:19 • extra_positional_arguments
+  error • This expression has a type of 'void' so its value can't be used • lib/screens/family/family_permissions_editor_screen.dart:297:21 • use_of_void_result
+warning • The value of the local variable 'isSystemRole' isn't used • lib/screens/family/family_permissions_editor_screen.dart:606:11 • unused_local_variable
+warning • Don't use 'BuildContext's across async gaps • lib/screens/family/family_settings_screen.dart:629:7 • use_build_context_synchronously
+  error • A value of type 'FamilyStatistics' can't be assigned to a variable of type 'FamilyStatistics?' • lib/screens/family/family_statistics_screen.dart:64:23 • invalid_assignment
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_statistics_screen.dart:281:35 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_statistics_screen.dart:316:40 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_statistics_screen.dart:317:41 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_statistics_screen.dart:319:38 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_statistics_screen.dart:320:41 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_statistics_screen.dart:338:38 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_statistics_screen.dart:353:38 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_statistics_screen.dart:430:39 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_statistics_screen.dart:431:41 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_statistics_screen.dart:433:40 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_statistics_screen.dart:434:41 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_statistics_screen.dart:436:38 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_statistics_screen.dart:437:41 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/family/family_statistics_screen.dart:440:35 • prefer_const_constructors
+  error • The element type 'MemberStatData' can't be assigned to the list type 'Widget' • lib/screens/family/family_statistics_screen.dart:635:22 • list_element_type_not_assignable
+  error • This expression has a type of 'void' so its value can't be used • lib/screens/family/family_statistics_screen.dart:636:21 • use_of_void_result
+warning • The value of the field '_familyService' isn't used • lib/screens/invitations/pending_invitations_screen.dart:20:9 • unused_field
+warning • The value of 'refresh' should be used • lib/screens/invitations/pending_invitations_screen.dart:96:11 • unused_result
+warning • The value of the local variable 'theme' isn't used • lib/screens/invitations/pending_invitations_screen.dart:202:11 • unused_local_variable
+   info • Statements in an if should be enclosed in a block • lib/screens/management/category_management_enhanced.dart:96:34 • curly_braces_in_flow_control_structures
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/category_management_enhanced.dart:134:23 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/category_management_enhanced.dart:135:23 • prefer_const_constructors
+   info • Use 'const' literals as arguments to constructors of '@immutable' classes • lib/screens/management/category_management_enhanced.dart:138:32 • prefer_const_literals_to_create_immutables
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/category_management_enhanced.dart:139:27 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/category_management_enhanced.dart:139:66 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/category_management_enhanced.dart:140:27 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/category_management_enhanced.dart:140:68 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/category_management_enhanced.dart:141:27 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/category_management_enhanced.dart:141:68 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/category_management_enhanced.dart:147:19 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/category_management_enhanced.dart:152:39 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/category_management_enhanced.dart:179:39 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/category_management_enhanced.dart:180:40 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/management/category_management_enhanced.dart:189:21 • prefer_const_constructors
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/management/category_management_enhanced.dart:233:44 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/management/category_management_enhanced.dart:252:51 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/management/category_template_library.dart:203:30 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/management/category_template_library.dart:214:30 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/management/category_template_library.dart:277:30 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/management/category_template_library.dart:284:30 • use_build_context_synchronously
+  error • Arguments of a constant creation must be constant expressions • lib/screens/management/category_template_library.dart:901:15 • const_with_non_constant_argument
+   info • Use of 'return' in a 'finally' clause • lib/screens/management/crypto_selection_page.dart:69:21 • control_flow_in_finally
+warning • The declaration '_getCryptoIcon' isn't referenced • lib/screens/management/crypto_selection_page.dart:88:10 • unused_element
+  error • Target of URI doesn't exist: 'package:jive_money/screens/management/manual_overrides_page.dart' • lib/screens/management/currency_management_page_v2.dart:11:8 • uri_does_not_exist
+warning • The declaration '_buildManualRatesBanner' isn't referenced • lib/screens/management/currency_management_page_v2.dart:42:10 • unused_element
+  error • The name 'ManualOverridesPage' isn't a class • lib/screens/management/currency_management_page_v2.dart:74:59 • creation_with_non_type
+warning • The declaration '_promptManualRate' isn't referenced • lib/screens/management/currency_management_page_v2.dart:215:19 • unused_element
+   info • The variable name '_DeprecatedCurrencyNotice' isn't a lowerCamelCase identifier • lib/screens/management/currency_management_page_v2.dart:361:10 • non_constant_identifier_names
+warning • Dead code • lib/screens/management/currency_management_page_v2.dart:941:17 • dead_code
+   info • Use of 'return' in a 'finally' clause • lib/screens/management/currency_selection_page.dart:70:21 • control_flow_in_finally
+warning • The value of the field '_isCalculating' isn't used • lib/screens/management/exchange_rate_converter_page.dart:21:8 • unused_field
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/management/payee_management_page_v2.dart:84:28 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/management/payee_management_page_v2.dart:89:28 • use_build_context_synchronously
+warning • The declaration '_buildNewGroupCard' isn't referenced • lib/screens/management/tag_management_page.dart:290:10 • unused_element
+warning • The declaration '_showTagMenu' isn't referenced • lib/screens/management/tag_management_page.dart:696:8 • unused_element
+warning • Don't use 'BuildContext's across async gaps • lib/screens/settings/profile_settings_screen.dart:544:7 • use_build_context_synchronously
+warning • The declaration '_getCurrencyItems' isn't referenced • lib/screens/settings/profile_settings_screen.dart:1158:34 • unused_element
+warning • The library 'package:jive_money/providers/settings_provider.dart' doesn't export a member with the hidden name 'currentUserProvider' • lib/screens/settings/settings_screen.dart:7:67 • undefined_hidden_name
+warning • The declaration '_navigateToLedgerManagement' isn't referenced • lib/screens/settings/settings_screen.dart:315:8 • unused_element
+warning • The declaration '_navigateToLedgerSharing' isn't referenced • lib/screens/settings/settings_screen.dart:332:8 • unused_element
+warning • The declaration '_showCurrencySelector' isn't referenced • lib/screens/settings/settings_screen.dart:353:8 • unused_element
+warning • The declaration '_navigateToExchangeRates' isn't referenced • lib/screens/settings/settings_screen.dart:360:8 • unused_element
+warning • The declaration '_showBaseCurrencyPicker' isn't referenced • lib/screens/settings/settings_screen.dart:365:8 • unused_element
+warning • The declaration '_createLedger' isn't referenced • lib/screens/settings/settings_screen.dart:636:8 • unused_element
+warning • The value of the local variable 'result' isn't used • lib/screens/settings/settings_screen.dart:637:11 • unused_local_variable
+  error • Invalid constant value • lib/screens/settings/wechat_binding_screen.dart:301:44 • invalid_constant
+warning • 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre • lib/screens/theme_management_screen.dart:169:27 • deprecated_member_use
+warning • 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre • lib/screens/theme_management_screen.dart:170:27 • deprecated_member_use
+  error • The name 'CustomThemeEditor' isn't a class • lib/screens/theme_management_screen.dart:460:37 • creation_with_non_type
+  error • The method 'CustomThemeEditor' isn't defined for the type '_ThemeManagementScreenState' • lib/screens/theme_management_screen.dart:478:31 • undefined_method
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/theme_management_screen.dart:530:28 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/theme_management_screen.dart:537:28 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/theme_management_screen.dart:573:30 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/theme_management_screen.dart:580:30 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/theme_management_screen.dart:595:30 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/theme_management_screen.dart:602:30 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/theme_management_screen.dart:610:28 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/theme_management_screen.dart:679:28 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/theme_management_screen.dart:686:28 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/theme_management_screen.dart:721:28 • use_build_context_synchronously
+warning • The value of the local variable 'currentLedger' isn't used • lib/screens/transactions/transaction_add_screen.dart:71:11 • unused_local_variable
+warning • The value of the local variable 'transaction' isn't used • lib/screens/transactions/transaction_add_screen.dart:554:13 • unused_local_variable
+warning • The value of the field '_selectedFilter' isn't used • lib/screens/transactions/transactions_screen.dart:20:10 • unused_field
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/transactions/transactions_screen.dart:112:44 • use_build_context_synchronously
+  error • Invalid constant value • lib/screens/user/edit_profile_screen.dart:332:30 • invalid_constant
+   info • Use 'const' with the constructor to improve performance • lib/screens/welcome_screen.dart:97:30 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/welcome_screen.dart:99:32 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/welcome_screen.dart:116:31 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/welcome_screen.dart:118:30 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/screens/welcome_screen.dart:120:32 • prefer_const_constructors
+warning • The value of the field '_warned' isn't used • lib/services/admin/currency_admin_service.dart:9:14 • unused_field
+warning • The declaration '_isAdmin' isn't referenced • lib/services/admin/currency_admin_service.dart:11:8 • unused_element
+warning • Dead code • lib/services/api_service.dart:64:7 • dead_code
+warning • Dead code • lib/services/api_service.dart:78:7 • dead_code
+warning • Dead code • lib/services/api_service.dart:92:7 • dead_code
+warning • Dead code • lib/services/api_service.dart:106:7 • dead_code
+warning • The value of the field '_coincapIds' isn't used • lib/services/crypto_price_service.dart:44:36 • unused_field
+warning • The declaration '_headers' isn't referenced • lib/services/currency_service.dart:16:31 • unused_element
+  error • The argument type 'String?' can't be assigned to the parameter type 'String'.  • lib/services/deep_link_service.dart:32:23 • argument_type_not_assignable
+  error • The name 'Address' isn't a class • lib/services/email_notification_service.dart:488:22 • creation_with_non_type
+   info • The variable name 'SmtpServer' isn't a lowerCamelCase identifier • lib/services/email_notification_service.dart:497:11 • non_constant_identifier_names
+   info • The variable name 'Message' isn't a lowerCamelCase identifier • lib/services/email_notification_service.dart:507:11 • non_constant_identifier_names
+warning • The value of the local variable 'usedFallback' isn't used • lib/services/exchange_rate_service.dart:36:10 • unused_local_variable
+warning • The value of the field '_keySyncStatus' isn't used • lib/services/family_settings_service.dart:9:23 • unused_field
+  error • This expression has a type of 'void' so its value can't be used • lib/services/family_settings_service.dart:180:25 • use_of_void_result
+  error • The argument type 'FamilySettings' can't be assigned to the parameter type 'Map<String, dynamic>'.  • lib/services/family_settings_service.dart:182:17 • argument_type_not_assignable
+  error • This expression has a type of 'void' so its value can't be used • lib/services/family_settings_service.dart:186:19 • use_of_void_result
+warning • The value of the local variable 'family' isn't used • lib/services/permission_service.dart:101:13 • unused_local_variable
+   info • Use 'const' for final variables initialized to a constant value • lib/services/share_service.dart:104:9 • prefer_const_declarations
+warning • The value of the local variable 'image' isn't used • lib/services/share_service.dart:104:15 • unused_local_variable
+  error • Expected to find ';' • lib/services/share_service.dart:131:11 • expected_token
+  error • Expected an identifier • lib/services/share_service.dart:131:12 • missing_identifier
+  error • Expected to find ';' • lib/services/share_service.dart:131:12 • expected_token
+  error • Unexpected text ',' • lib/services/share_service.dart:131:12 • unexpected_token
+  error • Expected an identifier • lib/services/share_service.dart:132:9 • missing_identifier
+  error • Unexpected text ')' • lib/services/share_service.dart:132:9 • unexpected_token
+   info • Unnecessary empty statement • lib/services/share_service.dart:132:10 • empty_statements
+warning • The value of the local variable 'imageFile' isn't used • lib/services/share_service.dart:138:15 • unused_local_variable
+warning • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:152:18 • use_build_context_synchronously
+  error • The property 'isNotEmpty' can't be unconditionally accessed because the receiver can be 'null' • lib/services/share_service.dart:178:20 • unchecked_use_of_nullable_value
+  error • The method 'join' can't be unconditionally invoked because the receiver can be 'null' • lib/services/share_service.dart:178:60 • unchecked_use_of_nullable_value
+warning • Don't use 'BuildContext's across async gaps • lib/services/share_service.dart:210:18 • use_build_context_synchronously
+  error • The named parameter 'mimeType' isn't defined • lib/services/share_service.dart:277:27 • undefined_named_parameter
+  error • The argument type 'List<dynamic>' can't be assigned to the parameter type 'List<XFile>'.  • lib/services/share_service.dart:294:31 • argument_type_not_assignable
+warning • The declaration '_shareToWechat' isn't referenced • lib/services/share_service.dart:302:23 • unused_element
+   info • The variable name 'ScreenshotController' isn't a lowerCamelCase identifier • lib/services/share_service.dart:337:18 • non_constant_identifier_names
+   info • The variable name 'XFile' isn't a lowerCamelCase identifier • lib/services/share_service.dart:341:18 • non_constant_identifier_names
+warning • The value of the field '_keyAppSettings' isn't used • lib/services/storage_service.dart:20:23 • unused_field
+  error • The named parameter 'balance' is required, but there's no corresponding argument • lib/ui/components/accounts/account_list.dart:105:22 • missing_required_argument
+  error • The named parameter 'id' is required, but there's no corresponding argument • lib/ui/components/accounts/account_list.dart:105:22 • missing_required_argument
+  error • The named parameter 'name' is required, but there's no corresponding argument • lib/ui/components/accounts/account_list.dart:105:22 • missing_required_argument
+  error • The named parameter 'type' is required, but there's no corresponding argument • lib/ui/components/accounts/account_list.dart:105:22 • missing_required_argument
+  error • The named parameter 'balance' is required, but there's no corresponding argument • lib/ui/components/accounts/account_list.dart:141:34 • missing_required_argument
+  error • The named parameter 'id' is required, but there's no corresponding argument • lib/ui/components/accounts/account_list.dart:141:34 • missing_required_argument
+  error • The named parameter 'name' is required, but there's no corresponding argument • lib/ui/components/accounts/account_list.dart:141:34 • missing_required_argument
+  error • The named parameter 'type' is required, but there's no corresponding argument • lib/ui/components/accounts/account_list.dart:141:34 • missing_required_argument
+   info • The argument type 'AccountType' isn't related to 'AccountType' • lib/ui/components/accounts/account_list.dart:287:32 • collection_methods_unrelated_type
+   info • The argument type 'AccountType' isn't related to 'AccountType' • lib/ui/components/accounts/account_list.dart:288:17 • collection_methods_unrelated_type
+  error • The argument type 'AccountType (where AccountType is defined in /home/runner/work/jive-flutter-rust/jive-flutter-rust/jive-flutter/lib/models/account.dart)' can't be assigned to the parameter type 'AccountType (where AccountType is defined in /home/runner/work/jive-flutter-rust/jive-flutter-rust/jive-flutter/lib/ui/components/accounts/account_list.dart)'.  • lib/ui/components/accounts/account_list.dart:288:17 • argument_type_not_assignable
+   info • The argument type 'AccountType' isn't related to 'AccountType' • lib/ui/components/accounts/account_list.dart:290:15 • collection_methods_unrelated_type
+   info • The type of the right operand ('AccountType') isn't a subtype or a supertype of the left operand ('AccountType') • lib/ui/components/accounts/account_list.dart:302:42 • unrelated_type_equality_checks
+  error • The named parameter 'balance' is required, but there's no corresponding argument • lib/ui/components/accounts/account_list.dart:424:30 • missing_required_argument
+  error • The named parameter 'id' is required, but there's no corresponding argument • lib/ui/components/accounts/account_list.dart:424:30 • missing_required_argument
+  error • The named parameter 'name' is required, but there's no corresponding argument • lib/ui/components/accounts/account_list.dart:424:30 • missing_required_argument
+  error • The named parameter 'type' is required, but there's no corresponding argument • lib/ui/components/accounts/account_list.dart:424:30 • missing_required_argument
+  error • Undefined name 'ref' • lib/ui/components/budget/budget_progress.dart:106:35 • undefined_identifier
+  error • Undefined name 'currencyProvider' • lib/ui/components/budget/budget_progress.dart:106:44 • undefined_identifier
+  error • Undefined name 'ref' • lib/ui/components/budget/budget_progress.dart:106:98 • undefined_identifier
+  error • Undefined name 'baseCurrencyProvider' • lib/ui/components/budget/budget_progress.dart:106:107 • undefined_identifier
+  error • Undefined name 'ref' • lib/ui/components/budget/budget_progress.dart:107:35 • undefined_identifier
+  error • Undefined name 'currencyProvider' • lib/ui/components/budget/budget_progress.dart:107:44 • undefined_identifier
+  error • Undefined name 'ref' • lib/ui/components/budget/budget_progress.dart:107:97 • undefined_identifier
+  error • Undefined name 'baseCurrencyProvider' • lib/ui/components/budget/budget_progress.dart:107:106 • undefined_identifier
+  error • Methods can't be invoked in constant expressions • lib/ui/components/budget/budget_progress.dart:236:20 • const_eval_method_invocation
+   info • Use 'const' with the constructor to improve performance • lib/ui/components/buttons/secondary_button.dart:43:31 • prefer_const_constructors
+warning • The value of the local variable 'currencyFormatter' isn't used • lib/ui/components/cards/account_card.dart:67:11 • unused_local_variable
+warning • The declaration '_formatCurrency' isn't referenced • lib/ui/components/charts/balance_chart.dart:287:10 • unused_element
+warning • The declaration '_buildTooltipItems' isn't referenced • lib/ui/components/charts/balance_chart.dart:297:25 • unused_element
+warning • The value of the local variable 'groupedAccounts' isn't used • lib/ui/components/dashboard/account_overview.dart:41:43 • unused_local_variable
+  error • Undefined name 'context' • lib/ui/components/dashboard/dashboard_overview.dart:87:35 • undefined_identifier
+  error • Invalid constant value • lib/ui/components/dashboard/dashboard_overview.dart:99:23 • invalid_constant
+  error • Undefined name 'context' • lib/ui/components/dashboard/dashboard_overview.dart:161:35 • undefined_identifier
+  error • Undefined name 'context' • lib/ui/components/dashboard/dashboard_overview.dart:207:35 • undefined_identifier
+  error • Undefined name 'context' • lib/ui/components/dashboard/dashboard_overview.dart:213:35 • undefined_identifier
+  error • Undefined name 'context' • lib/ui/components/dashboard/dashboard_overview.dart:222:29 • undefined_identifier
+  error • Undefined name 'context' • lib/ui/components/dashboard/dashboard_overview.dart:249:35 • undefined_identifier
+  error • Undefined name 'context' • lib/ui/components/dashboard/dashboard_overview.dart:280:33 • undefined_identifier
+  error • Undefined name 'context' • lib/ui/components/dashboard/dashboard_overview.dart:287:33 • undefined_identifier
+  error • The name 'BalanceDataPoint' isn't a type, so it can't be used as a type argument • lib/ui/components/dashboard/dashboard_overview.dart:312:14 • non_type_as_type_argument
+  error • The name 'QuickActionData' isn't a type, so it can't be used as a type argument • lib/ui/components/dashboard/dashboard_overview.dart:313:14 • non_type_as_type_argument
+  error • The name 'TransactionData' isn't a type, so it can't be used as a type argument • lib/ui/components/dashboard/dashboard_overview.dart:314:14 • non_type_as_type_argument
+warning • The value of the field '_isFocused' isn't used • lib/ui/components/inputs/text_field_widget.dart:61:8 • unused_field
+warning • The value of the local variable 'theme' isn't used • lib/ui/components/loading/loading_widget.dart:120:11 • unused_local_variable
+warning • The declaration '_formatAmount' isn't referenced • lib/ui/components/transactions/transaction_list.dart:249:10 • unused_element
+  error • The argument type 'String?' can't be assigned to the parameter type 'String'.  • lib/ui/components/transactions/transaction_list.dart:337:16 • argument_type_not_assignable
+warning • The value of the local variable 'isTransfer' isn't used • lib/ui/components/transactions/transaction_list_item.dart:23:11 • unused_local_variable
+warning • The value of the local variable 'path' isn't used • lib/utils/image_utils.dart:151:13 • unused_local_variable
+warning • The value of the local variable 'imageExtensions' isn't used • lib/utils/image_utils.dart:152:13 • unused_local_variable
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/widgets/batch_operation_bar.dart:390:27 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/widgets/batch_operation_bar.dart:392:34 • use_build_context_synchronously
+   info • Use 'const' with the constructor to improve performance • lib/widgets/color_picker_dialog.dart:75:13 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/color_picker_dialog.dart:80:27 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/color_picker_dialog.dart:83:25 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/color_picker_dialog.dart:94:13 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/color_picker_dialog.dart:99:13 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/color_picker_dialog.dart:102:13 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/color_picker_dialog.dart:104:22 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/color_picker_dialog.dart:109:13 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/color_picker_dialog.dart:173:22 • prefer_const_constructors
+  error • Methods can't be invoked in constant expressions • lib/widgets/color_picker_dialog.dart:197:15 • const_eval_method_invocation
+  error • Methods can't be invoked in constant expressions • lib/widgets/common/refreshable_list.dart:119:21 • const_eval_method_invocation
+  error • Methods can't be invoked in constant expressions • lib/widgets/common/refreshable_list.dart:231:21 • const_eval_method_invocation
+warning • Don't use 'BuildContext's across async gaps • lib/widgets/common/right_click_copy.dart:66:13 • use_build_context_synchronously
+  error • Arguments of a constant creation must be constant expressions • lib/widgets/currency_converter.dart:184:57 • const_with_non_constant_argument
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/widgets/custom_theme_editor.dart:758:20 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/widgets/custom_theme_editor.dart:760:28 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/widgets/dialogs/accept_invitation_dialog.dart:64:11 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/widgets/dialogs/accept_invitation_dialog.dart:69:22 • use_build_context_synchronously
+warning • The value of the local variable 'currentUser' isn't used • lib/widgets/dialogs/accept_invitation_dialog.dart:93:11 • unused_local_variable
+warning • The value of 'refresh' should be used • lib/widgets/dialogs/delete_family_dialog.dart:84:11 • unused_result
+warning • The value of 'refresh' should be used • lib/widgets/dialogs/delete_family_dialog.dart:95:17 • unused_result
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/widgets/dialogs/delete_family_dialog.dart:99:22 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/widgets/dialogs/delete_family_dialog.dart:100:30 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/widgets/dialogs/delete_family_dialog.dart:108:22 • use_build_context_synchronously
+   info • Use 'const' with the constructor to improve performance • lib/widgets/invite_member_dialog.dart:349:27 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/invite_member_dialog.dart:350:28 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/invite_member_dialog.dart:354:32 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/invite_member_dialog.dart:363:27 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/invite_member_dialog.dart:364:28 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/invite_member_dialog.dart:367:29 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/invite_member_dialog.dart:368:32 • prefer_const_constructors
+   info • Use 'const' with the constructor to improve performance • lib/widgets/invite_member_dialog.dart:377:28 • prefer_const_constructors
+  error • Invalid constant value • lib/widgets/invite_member_dialog.dart:424:17 • invalid_constant
+  error • The argument type 'Widget?' can't be assigned to the parameter type 'Widget'.  • lib/widgets/permission_guard.dart:148:16 • argument_type_not_assignable
+warning • The value of the local variable 'theme' isn't used • lib/widgets/permission_guard.dart:192:11 • unused_local_variable
+warning • The value of the local variable 'theme' isn't used • lib/widgets/permission_guard.dart:283:11 • unused_local_variable
+warning • 'Share' is deprecated and shouldn't be used. Use SharePlus instead • lib/widgets/qr_code_generator.dart:90:13 • deprecated_member_use
+warning • 'shareXFiles' is deprecated and shouldn't be used. Use SharePlus.instance.share() instead • lib/widgets/qr_code_generator.dart:90:19 • deprecated_member_use
+  error • Invalid constant value • lib/widgets/qr_code_generator.dart:199:26 • invalid_constant
+  error • The named parameter 'embeddedImageStyle' isn't defined • lib/widgets/qr_code_generator.dart:232:25 • undefined_named_parameter
+  error • The named parameter 'gapless' isn't defined • lib/widgets/qr_code_generator.dart:236:25 • undefined_named_parameter
+   info • The variable name 'XFile' isn't a lowerCamelCase identifier • lib/widgets/qr_code_generator.dart:309:11 • non_constant_identifier_names
+   info • The variable name 'QrImageView' isn't a lowerCamelCase identifier • lib/widgets/qr_code_generator.dart:313:10 • non_constant_identifier_names
+warning • 'Share' is deprecated and shouldn't be used. Use SharePlus instead • lib/widgets/qr_code_generator.dart:487:29 • deprecated_member_use
+warning • 'share' is deprecated and shouldn't be used. Use SharePlus.instance.share() instead • lib/widgets/qr_code_generator.dart:487:35 • deprecated_member_use
+warning • The value of the local variable 'cs' isn't used • lib/widgets/source_badge.dart:18:11 • unused_local_variable
+  error • Invalid constant value • lib/widgets/states/loading_indicator.dart:30:22 • invalid_constant
+  error • Invalid constant value • lib/widgets/states/loading_indicator.dart:119:22 • invalid_constant
+warning • The value of the field '_selectedGroupName' isn't used • lib/widgets/tag_create_dialog.dart:26:11 • unused_field
+warning • The value of the field '_selectedGroupName' isn't used • lib/widgets/tag_edit_dialog.dart:26:11 • unused_field
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/widgets/theme_share_dialog.dart:304:28 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/widgets/theme_share_dialog.dart:315:28 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/widgets/theme_share_dialog.dart:328:28 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/widgets/theme_share_dialog.dart:335:28 • use_build_context_synchronously
+warning • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/widgets/theme_share_dialog.dart:347:26 • use_build_context_synchronously
+warning • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • tag_demo.dart:94:28 • deprecated_member_use
+warning • The declaration '_StubCatalogResult' isn't referenced • test/currency_notifier_meta_test.dart:10:7 • unused_element
+warning • 'overrideWithProvider' is deprecated and shouldn't be used. Will be removed in 3.0.0. Use overrideWith instead • test/currency_preferences_sync_test.dart:114:24 • deprecated_member_use
+warning • 'overrideWithProvider' is deprecated and shouldn't be used. Will be removed in 3.0.0. Use overrideWith instead • test/currency_preferences_sync_test.dart:142:24 • deprecated_member_use
+warning • 'overrideWithProvider' is deprecated and shouldn't be used. Will be removed in 3.0.0. Use overrideWith instead • test/currency_preferences_sync_test.dart:178:24 • deprecated_member_use
+warning • 'overrideWithProvider' is deprecated and shouldn't be used. Will be removed in 3.0.0. Use overrideWith instead • test/currency_selection_page_test.dart:86:39 • deprecated_member_use
+warning • 'overrideWithProvider' is deprecated and shouldn't be used. Will be removed in 3.0.0. Use overrideWith instead • test/currency_selection_page_test.dart:121:39 • deprecated_member_use
+warning • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • test_tag_functionality.dart:70:36 • deprecated_member_use
+
+318 issues found. (ran in 23.5s)

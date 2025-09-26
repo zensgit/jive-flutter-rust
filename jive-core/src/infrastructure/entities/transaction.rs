@@ -35,11 +35,11 @@ pub struct Transaction {
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::Type)]
 #[sqlx(type_name = "transaction_kind", rename_all = "snake_case")]
 pub enum TransactionKind {
-    Standard,       // Regular transaction, included in budget
-    FundsMovement,  // Movement between accounts, excluded from budget
-    CcPayment,      // Credit card payment, excluded from budget
-    LoanPayment,    // Loan payment, treated as expense in budget
-    OneTime,        // One-time expense/income, excluded from budget
+    Standard,      // Regular transaction, included in budget
+    FundsMovement, // Movement between accounts, excluded from budget
+    CcPayment,     // Credit card payment, excluded from budget
+    LoanPayment,   // Loan payment, treated as expense in budget
+    OneTime,       // One-time expense/income, excluded from budget
 }
 
 impl Transaction {
@@ -70,20 +70,22 @@ impl Transaction {
             updated_at: now,
         }
     }
-    
+
     // Check if this is a transfer-type transaction
     pub fn is_transfer(&self) -> bool {
         matches!(
             self.kind,
-            TransactionKind::FundsMovement | TransactionKind::CcPayment | TransactionKind::LoanPayment
+            TransactionKind::FundsMovement
+                | TransactionKind::CcPayment
+                | TransactionKind::LoanPayment
         )
     }
-    
+
     // Check if this can be reimbursed
     pub fn can_be_reimbursed(&self) -> bool {
         self.reimbursable && !self.reimbursed
     }
-    
+
     // Mark as reimbursed
     pub fn mark_as_reimbursed(&mut self, batch_id: Option<Uuid>) {
         self.reimbursed = true;
@@ -91,12 +93,12 @@ impl Transaction {
         self.reimbursement_batch_id = batch_id;
         self.updated_at = Utc::now();
     }
-    
+
     // Check if this is a scheduled transaction
     pub fn is_scheduled(&self) -> bool {
         self.scheduled_transaction_id.is_some()
     }
-    
+
     // Check if transaction can be split
     pub fn can_be_split(&self) -> bool {
         !self.is_refund && self.original_transaction_id.is_none()

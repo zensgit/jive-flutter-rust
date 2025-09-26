@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/payee.dart';
+import 'package:jive_money/models/payee.dart';
 
 /// 交易对方状态管理 - 基于Riverpod
 class PayeeNotifier extends StateNotifier<List<Payee>> {

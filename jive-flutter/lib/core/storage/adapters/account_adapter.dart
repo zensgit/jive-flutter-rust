@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
-import '../../../models/account.dart';
-import '../hive_config.dart';
+import 'package:jive_money/models/account.dart';
+import 'package:jive_money/core/storage/hive_config.dart';
 
 class AccountAdapter extends TypeAdapter<Account> {
   @override
@@ -53,7 +53,7 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..writeByte(6)
       ..write(obj.description)
       ..writeByte(7)
-      ..write(obj.color?.value)
+      ..write(obj.color == null ? null : obj.color!.toARGB32())
       ..writeByte(8)
       ..write(obj.isDefault)
       ..writeByte(9)
@@ -120,7 +120,7 @@ class AccountGroupAdapter extends TypeAdapter<AccountGroup> {
       ..writeByte(2)
       ..write(obj.description)
       ..writeByte(3)
-      ..write(obj.color?.value)
+      ..write(obj.color?.toARGB32())
       ..writeByte(4)
       ..write(obj.icon?.codePoint)
       ..writeByte(5)

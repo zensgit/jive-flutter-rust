@@ -1,21 +1,21 @@
 //! Family service - 家庭/团队协作管理服务
-//! 
+//!
 //! 基于 Maybe 的 Family 功能实现，提供多用户协作、权限管理、邀请系统等功能
 
-use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use uuid::Uuid;
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
+use super::{PaginatedResult, PaginationParams, ServiceContext, ServiceResponse};
 use crate::domain::{
-    Family, FamilyMembership, FamilyRole, FamilyInvitation, 
-    FamilySettings, Permission, InvitationStatus, FamilyAuditLog, AuditAction
+    AuditAction, Family, FamilyAuditLog, FamilyInvitation, FamilyMembership, FamilyRole,
+    FamilySettings, InvitationStatus, Permission,
 };
 use crate::error::{JiveError, Result};
-use super::{ServiceContext, ServiceResponse, PaginationParams, PaginatedResult};
 
 /// Family 创建请求
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -99,16 +99,12 @@ impl FamilyService {
         }
 
         // 创建 Family
-        let mut family = Family::new(
-            request.name,
-            request.currency,
-            request.timezone,
-        );
-        
+        let mut family = Family::new(request.name, request.currency, request.timezone);
+
         if let Some(locale) = request.locale {
             family.locale = locale;
         }
-        
+
         if let Some(date_format) = request.date_format {
             family.date_format = date_format;
         }
@@ -141,7 +137,8 @@ impl FamilyService {
             "family",
             Some(&family.id),
             None,
-        ).await?;
+        )
+        .await?;
 
         Ok(ServiceResponse::success(family))
     }
@@ -166,7 +163,10 @@ impl FamilyService {
         }
 
         // 检查是否有待处理的邀请
-        if self.has_pending_invitation(&request.email, &context.family_id).await? {
+        if self
+            .has_pending_invitation(&request.email, &context.family_id)
+            .await?
+        {
             return Err(JiveError::Conflict("Invitation already sent".into()));
         }
 
@@ -182,7 +182,8 @@ impl FamilyService {
         // self.repository.save_invitation(&invitation).await?;
 
         // 发送邀请邮件
-        self.send_invitation_email(&invitation, request.personal_message).await?;
+        self.send_invitation_email(&invitation, request.personal_message)
+            .await?;
 
         // 记录审计日志
         self.log_audit(
@@ -195,7 +196,8 @@ impl FamilyService {
                 "invitee_email": request.email,
                 "role": request.role
             })),
-        ).await?;
+        )
+        .await?;
 
         Ok(ServiceResponse::success(invitation))
     }
@@ -208,9 +210,11 @@ impl FamilyService {
     ) -> Result<ServiceResponse<FamilyMembership>> {
         // 查找并验证邀请
         let mut invitation = self.find_invitation_by_token(&token).await?;
-        
+
         if !invitation.is_valid() {
-            return Err(JiveError::BadRequest("Invalid or expired invitation".into()));
+            return Err(JiveError::BadRequest(
+                "Invalid or expired invitation".into(),
+            ));
         }
 
         // 接受邀请
@@ -222,7 +226,9 @@ impl FamilyService {
             family_id: invitation.family_id.clone(),
             user_id: user_id.clone(),
             role: invitation.role.clone(),
-            permissions: invitation.custom_permissions.clone()
+            permissions: invitation
+                .custom_permissions
+                .clone()
                 .unwrap_or_else(|| invitation.role.default_permissions()),
             joined_at: Utc::now(),
             invited_by: Some(invitation.inviter_id.clone()),
@@ -235,7 +241,8 @@ impl FamilyService {
         // self.repository.update_invitation(&invitation).await?;
 
         // 通知其他成员
-        self.notify_members_of_new_member(&invitation.family_id, &user_id).await?;
+        self.notify_members_of_new_member(&invitation.family_id, &user_id)
+            .await?;
 
         // 记录审计日志
         self.log_audit(
@@ -245,7 +252,8 @@ impl FamilyService {
             "membership",
             Some(&membership.id),
             None,
-        ).await?;
+        )
+        .await?;
 
         Ok(ServiceResponse::success(membership))
     }
@@ -260,7 +268,9 @@ impl FamilyService {
         context.require_permission(Permission::ManageRoles)?;
 
         // 获取目标成员信息
-        let mut membership = self.get_membership(&request.member_id, &context.family_id).await?;
+        let mut membership = self
+            .get_membership(&request.member_id, &context.family_id)
+            .await?;
 
         // 不能修改 Owner 的角色
         if membership.role == FamilyRole::Owner {
@@ -277,7 +287,8 @@ impl FamilyService {
 
         // 更新角色和权限
         membership.role = request.new_role.clone();
-        membership.permissions = request.custom_permissions
+        membership.permissions = request
+            .custom_permissions
             .unwrap_or_else(|| request.new_role.default_permissions());
 
         // TODO: 保存到数据库
@@ -295,7 +306,8 @@ impl FamilyService {
                 "new_role": request.new_role,
                 "target_user": request.member_id
             })),
-        ).await?;
+        )
+        .await?;
 
         Ok(ServiceResponse::success(membership))
     }
@@ -338,7 +350,8 @@ impl FamilyService {
             Some(serde_json::json!({
                 "removed_user": membership.user_id
             })),
-        ).await?;
+        )
+        .await?;
 
         Ok(ServiceResponse::success(()))
     }
@@ -353,7 +366,7 @@ impl FamilyService {
 
         // TODO: 从数据库获取成员列表
         let members = vec![];
-        
+
         Ok(ServiceResponse::success(members))
     }
 
@@ -389,7 +402,7 @@ impl FamilyService {
         // TODO: 获取并更新 Family
         let mut family = self.get_family(&context.family_id).await?;
         let old_settings = family.settings.clone();
-        
+
         family.update_settings(settings);
 
         // TODO: 保存到数据库
@@ -406,19 +419,17 @@ impl FamilyService {
                 "old_settings": old_settings,
                 "new_settings": family.settings
             })),
-        ).await?;
+        )
+        .await?;
 
         Ok(ServiceResponse::success(family))
     }
 
     /// 获取用户的所有 Family
-    pub async fn get_user_families(
-        &self,
-        user_id: String,
-    ) -> Result<ServiceResponse<Vec<Family>>> {
+    pub async fn get_user_families(&self, user_id: String) -> Result<ServiceResponse<Vec<Family>>> {
         // TODO: 从数据库获取用户的所有 Family
         let families = vec![];
-        
+
         Ok(ServiceResponse::success(families))
     }
 
@@ -429,13 +440,19 @@ impl FamilyService {
         new_owner_id: String,
     ) -> Result<ServiceResponse<()>> {
         // 只有 Owner 可以转让所有权
-        let current_membership = self.get_membership_by_user(&context.user_id, &context.family_id).await?;
+        let current_membership = self
+            .get_membership_by_user(&context.user_id, &context.family_id)
+            .await?;
         if current_membership.role != FamilyRole::Owner {
-            return Err(JiveError::Forbidden("Only owner can transfer ownership".into()));
+            return Err(JiveError::Forbidden(
+                "Only owner can transfer ownership".into(),
+            ));
         }
 
         // 获取新 Owner 的成员信息
-        let mut new_owner_membership = self.get_membership(&new_owner_id, &context.family_id).await?;
+        let mut new_owner_membership = self
+            .get_membership(&new_owner_id, &context.family_id)
+            .await?;
 
         // 更新角色
         new_owner_membership.role = FamilyRole::Owner;
@@ -461,7 +478,8 @@ impl FamilyService {
                 "old_owner": context.user_id,
                 "new_owner": new_owner_id
             })),
-        ).await?;
+        )
+        .await?;
 
         Ok(ServiceResponse::success(()))
     }
@@ -511,7 +529,11 @@ impl FamilyService {
     }
 
     /// 通过用户ID获取成员信息
-    async fn get_membership_by_user(&self, user_id: &str, family_id: &str) -> Result<FamilyMembership> {
+    async fn get_membership_by_user(
+        &self,
+        user_id: &str,
+        family_id: &str,
+    ) -> Result<FamilyMembership> {
         // TODO: 查询数据库
         Err(JiveError::NotFound("Member not found".into()))
     }
@@ -523,7 +545,11 @@ impl FamilyService {
     }
 
     /// 发送邀请邮件
-    async fn send_invitation_email(&self, invitation: &FamilyInvitation, message: Option<String>) -> Result<()> {
+    async fn send_invitation_email(
+        &self,
+        invitation: &FamilyInvitation,
+        message: Option<String>,
+    ) -> Result<()> {
         // TODO: 发送邮件
         Ok(())
     }
@@ -564,8 +590,8 @@ impl FamilyService {
             resource_type: resource_type.to_string(),
             resource_id: resource_id.map(|s| s.to_string()),
             changes,
-            ip_address: None,  // TODO: 从上下文获取
-            user_agent: None,  // TODO: 从上下文获取
+            ip_address: None, // TODO: 从上下文获取
+            user_agent: None, // TODO: 从上下文获取
             created_at: Utc::now(),
         };
 

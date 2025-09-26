@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/category_provider.dart';
+import 'package:jive_money/providers/category_provider.dart';
 
 /// 基础版分类列表页面（恢复最小可用功能）
 /// 后续增强（拖拽/批量/模板/统计）将在独立 PR 中逐步回填。
@@ -85,7 +85,7 @@ class _EmptyState extends StatelessWidget {
             Text(
               '点击右下角 + 按钮创建你的第一个分类',
               textAlign: TextAlign.center,
-              style: TextStyle(color: colorScheme.onSurface.withOpacity(.65)),
+              style: TextStyle(color: colorScheme.onSurface.withValues(alpha: .65)),
             ),
           ],
         ),

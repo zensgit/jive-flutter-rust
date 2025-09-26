@@ -1,7 +1,7 @@
 // 预算状态管理
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/budget_service.dart';
-import '../models/budget.dart';
+import 'package:jive_money/services/budget_service.dart';
+import 'package:jive_money/models/budget.dart';
 
 /// 预算状态
 class BudgetState {

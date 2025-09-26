@@ -1,43 +1,43 @@
 //! Budget service - 预算管理服务
-//! 
+//!
 //! 基于 Maybe 的预算功能转换而来，提供预算设置、跟踪、提醒等功能
 
-use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
-use chrono::{DateTime, Utc, NaiveDate, Datelike, Month};
-use rust_decimal::Decimal;
+use chrono::{DateTime, Datelike, Month, NaiveDate, Utc};
 use rust_decimal::prelude::FromStr;
+use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use uuid::Uuid;
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
-use crate::error::{JiveError, Result};
+use super::{PaginationParams, ServiceContext, ServiceResponse};
 use crate::domain::{Category, Transaction};
-use super::{ServiceContext, ServiceResponse, PaginationParams};
+use crate::error::{JiveError, Result};
 
 /// 预算类型
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum BudgetType {
-    Monthly,        // 月度预算
-    Quarterly,      // 季度预算
-    Yearly,         // 年度预算
-    Weekly,         // 周预算
-    Custom,         // 自定义周期
-    OneTime,        // 一次性预算
-    Project,        // 项目预算
+    Monthly,   // 月度预算
+    Quarterly, // 季度预算
+    Yearly,    // 年度预算
+    Weekly,    // 周预算
+    Custom,    // 自定义周期
+    OneTime,   // 一次性预算
+    Project,   // 项目预算
 }
 
 /// 预算状态
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum BudgetStatus {
-    Active,         // 活跃
-    Paused,         // 暂停
-    Completed,      // 完成
-    Cancelled,      // 取消
-    Draft,          // 草稿
+    Active,    // 活跃
+    Paused,    // 暂停
+    Completed, // 完成
+    Cancelled, // 取消
+    Draft,     // 草稿
 }
 
 /// 预算
@@ -124,10 +124,10 @@ pub struct CategoryProgress {
 /// 进度状态
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum ProgressStatus {
-    UnderBudget,    // 预算内
-    OnTrack,        // 正常
-    NearLimit,      // 接近限额
-    OverBudget,     // 超支
+    UnderBudget, // 预算内
+    OnTrack,     // 正常
+    NearLimit,   // 接近限额
+    OverBudget,  // 超支
 }
 
 /// 预算提醒
@@ -147,10 +147,10 @@ pub struct BudgetAlert {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum AlertType {
-    ThresholdReached,   // 达到阈值
-    BudgetExceeded,     // 超出预算
-    PeriodEnding,       // 周期即将结束
-    UnusualSpending,    // 异常支出
+    ThresholdReached, // 达到阈值
+    BudgetExceeded,   // 超出预算
+    PeriodEnding,     // 周期即将结束
+    UnusualSpending,  // 异常支出
 }
 
 /// 创建预算请求
@@ -359,7 +359,9 @@ impl BudgetService {
         new_period_start: NaiveDate,
         context: ServiceContext,
     ) -> ServiceResponse<Budget> {
-        let result = self._copy_budget(budget_id, new_period_start, context).await;
+        let result = self
+            ._copy_budget(budget_id, new_period_start, context)
+            .await;
         result.into()
     }
 
@@ -372,7 +374,9 @@ impl BudgetService {
         period_start: NaiveDate,
         context: ServiceContext,
     ) -> ServiceResponse<Budget> {
-        let result = self._create_from_template(template_id, amount, period_start, context).await;
+        let result = self
+            ._create_from_template(template_id, amount, period_start, context)
+            .await;
         result.into()
     }
 
@@ -394,7 +398,9 @@ impl BudgetService {
         template_name: String,
         context: ServiceContext,
     ) -> ServiceResponse<BudgetTemplate> {
-        let result = self._save_as_template(budget_id, template_name, context).await;
+        let result = self
+            ._save_as_template(budget_id, template_name, context)
+            .await;
         result.into()
     }
 
@@ -429,7 +435,9 @@ impl BudgetService {
         period2: NaiveDate,
         context: ServiceContext,
     ) -> ServiceResponse<BudgetComparison> {
-        let result = self._compare_periods(budget_id, period1, period2, context).await;
+        let result = self
+            ._compare_periods(budget_id, period1, period2, context)
+            .await;
         result.into()
     }
 
@@ -441,7 +449,9 @@ impl BudgetService {
         new_amount: Decimal,
         context: ServiceContext,
     ) -> ServiceResponse<Budget> {
-        let result = self._adjust_budget_amount(budget_id, new_amount, context).await;
+        let result = self
+            ._adjust_budget_amount(budget_id, new_amount, context)
+            .await;
         result.into()
     }
 
@@ -453,7 +463,9 @@ impl BudgetService {
         period: BudgetType,
         context: ServiceContext,
     ) -> ServiceResponse<Vec<BudgetCategory>> {
-        let result = self._auto_allocate_budget(total_amount, period, context).await;
+        let result = self
+            ._auto_allocate_budget(total_amount, period, context)
+            .await;
         result.into()
     }
 }
@@ -548,21 +560,13 @@ impl BudgetService {
     }
 
     /// 删除预算的内部实现
-    async fn _delete_budget(
-        &self,
-        _budget_id: String,
-        _context: ServiceContext,
-    ) -> Result<bool> {
+    async fn _delete_budget(&self, _budget_id: String, _context: ServiceContext) -> Result<bool> {
         // 在实际实现中，从数据库删除
         Ok(true)
     }
 
     /// 获取预算的内部实现
-    async fn _get_budget(
-        &self,
-        budget_id: String,
-        context: ServiceContext,
-    ) -> Result<Budget> {
+    async fn _get_budget(&self, budget_id: String, context: ServiceContext) -> Result<Budget> {
         // 在实际实现中，从数据库获取
         Ok(Budget {
             id: budget_id,
@@ -605,7 +609,7 @@ impl BudgetService {
         context: ServiceContext,
     ) -> Result<BudgetProgress> {
         let budget = self._get_budget(budget_id.clone(), context).await?;
-        
+
         let percentage_used = if budget.amount > Decimal::ZERO {
             (budget.spent / budget.amount) * Decimal::from(100)
         } else {
@@ -627,17 +631,15 @@ impl BudgetService {
 
         let on_track = projected_spending <= budget.amount;
 
-        let categories = vec![
-            CategoryProgress {
-                category_id: "cat-1".to_string(),
-                category_name: "Food".to_string(),
-                budget: Decimal::from(1000),
-                spent: Decimal::from(800),
-                remaining: Decimal::from(200),
-                percentage: Decimal::from(80),
-                status: ProgressStatus::NearLimit,
-            },
-        ];
+        let categories = vec![CategoryProgress {
+            category_id: "cat-1".to_string(),
+            category_name: "Food".to_string(),
+            budget: Decimal::from(1000),
+            spent: Decimal::from(800),
+            remaining: Decimal::from(200),
+            percentage: Decimal::from(80),
+            status: ProgressStatus::NearLimit,
+        }];
 
         Ok(BudgetProgress {
             budget_id,
@@ -660,18 +662,16 @@ impl BudgetService {
         budget_id: String,
         _context: ServiceContext,
     ) -> Result<BudgetHistory> {
-        let periods = vec![
-            BudgetPeriod {
-                id: Uuid::new_v4().to_string(),
-                budget_id: budget_id.clone(),
-                period_start: NaiveDate::from_ymd_opt(2024, 1, 1).unwrap(),
-                period_end: NaiveDate::from_ymd_opt(2024, 1, 31).unwrap(),
-                allocated_amount: Decimal::from(5000),
-                spent_amount: Decimal::from(4800),
-                rollover_amount: Decimal::ZERO,
-                is_current: false,
-            },
-        ];
+        let periods = vec![BudgetPeriod {
+            id: Uuid::new_v4().to_string(),
+            budget_id: budget_id.clone(),
+            period_start: NaiveDate::from_ymd_opt(2024, 1, 1).unwrap(),
+            period_end: NaiveDate::from_ymd_opt(2024, 1, 31).unwrap(),
+            allocated_amount: Decimal::from(5000),
+            spent_amount: Decimal::from(4800),
+            rollover_amount: Decimal::ZERO,
+            is_current: false,
+        }];
 
         Ok(BudgetHistory {
             budget_id,
@@ -722,7 +722,7 @@ impl BudgetService {
         context: ServiceContext,
     ) -> Result<Budget> {
         let mut original = self._get_budget(budget_id, context.clone()).await?;
-        
+
         // 计算新的结束日期
         let period_length = (original.period_end - original.period_start).num_days();
         let new_period_end = new_period_start + chrono::Duration::days(period_length);
@@ -749,14 +749,18 @@ impl BudgetService {
     ) -> Result<Budget> {
         // 获取模板
         let template = self.get_template(template_id)?;
-        
+
         // 计算结束日期
         let period_end = match template.budget_type {
             BudgetType::Monthly => {
                 let next_month = if period_start.month() == 12 {
                     NaiveDate::from_ymd_opt(period_start.year() + 1, 1, period_start.day())
                 } else {
-                    NaiveDate::from_ymd_opt(period_start.year(), period_start.month() + 1, period_start.day())
+                    NaiveDate::from_ymd_opt(
+                        period_start.year(),
+                        period_start.month() + 1,
+                        period_start.day(),
+                    )
                 };
                 next_month.unwrap() - chrono::Duration::days(1)
             }
@@ -776,7 +780,11 @@ impl BudgetService {
             remaining: amount,
             period_start,
             period_end,
-            categories: template.categories.iter().map(|c| c.category_name.clone()).collect(),
+            categories: template
+                .categories
+                .iter()
+                .map(|c| c.category_name.clone())
+                .collect(),
             tags: Vec::new(),
             rollover: false,
             alert_enabled: true,
@@ -789,38 +797,33 @@ impl BudgetService {
     }
 
     /// 获取预算模板的内部实现
-    async fn _get_budget_templates(
-        &self,
-        _context: ServiceContext,
-    ) -> Result<Vec<BudgetTemplate>> {
-        let templates = vec![
-            BudgetTemplate {
-                id: "tpl-1".to_string(),
-                name: "50/30/20 Rule".to_string(),
-                description: "50% needs, 30% wants, 20% savings".to_string(),
-                budget_type: BudgetType::Monthly,
-                categories: vec![
-                    BudgetTemplateCategory {
-                        category_name: "Needs".to_string(),
-                        percentage: Decimal::from(50),
-                        fixed_amount: None,
-                    },
-                    BudgetTemplateCategory {
-                        category_name: "Wants".to_string(),
-                        percentage: Decimal::from(30),
-                        fixed_amount: None,
-                    },
-                    BudgetTemplateCategory {
-                        category_name: "Savings".to_string(),
-                        percentage: Decimal::from(20),
-                        fixed_amount: None,
-                    },
-                ],
-                is_public: true,
-                created_by: "system".to_string(),
-                created_at: Utc::now(),
-            },
-        ];
+    async fn _get_budget_templates(&self, _context: ServiceContext) -> Result<Vec<BudgetTemplate>> {
+        let templates = vec![BudgetTemplate {
+            id: "tpl-1".to_string(),
+            name: "50/30/20 Rule".to_string(),
+            description: "50% needs, 30% wants, 20% savings".to_string(),
+            budget_type: BudgetType::Monthly,
+            categories: vec![
+                BudgetTemplateCategory {
+                    category_name: "Needs".to_string(),
+                    percentage: Decimal::from(50),
+                    fixed_amount: None,
+                },
+                BudgetTemplateCategory {
+                    category_name: "Wants".to_string(),
+                    percentage: Decimal::from(30),
+                    fixed_amount: None,
+                },
+                BudgetTemplateCategory {
+                    category_name: "Savings".to_string(),
+                    percentage: Decimal::from(20),
+                    fixed_amount: None,
+                },
+            ],
+            is_public: true,
+            created_by: "system".to_string(),
+            created_at: Utc::now(),
+        }];
 
         Ok(templates)
     }
@@ -833,19 +836,21 @@ impl BudgetService {
         context: ServiceContext,
     ) -> Result<BudgetTemplate> {
         let budget = self._get_budget(budget_id, context.clone()).await?;
-        
+
         let template = BudgetTemplate {
             id: Uuid::new_v4().to_string(),
             name: template_name,
             description: budget.description.unwrap_or_default(),
             budget_type: budget.budget_type,
-            categories: budget.categories.iter().map(|c| {
-                BudgetTemplateCategory {
+            categories: budget
+                .categories
+                .iter()
+                .map(|c| BudgetTemplateCategory {
                     category_name: c.clone(),
                     percentage: Decimal::from(0),
                     fixed_amount: None,
-                }
-            }).collect(),
+                })
+                .collect(),
             is_public: false,
             created_by: context.user_id,
             created_at: Utc::now(),
@@ -861,17 +866,15 @@ impl BudgetService {
         budget_id: String,
         _context: ServiceContext,
     ) -> Result<Vec<BudgetAlert>> {
-        let alerts = vec![
-            BudgetAlert {
-                id: Uuid::new_v4().to_string(),
-                budget_id,
-                alert_type: AlertType::ThresholdReached,
-                threshold: Decimal::from(80),
-                message: "You have used 80% of your budget".to_string(),
-                triggered_at: Utc::now(),
-                acknowledged: false,
-            },
-        ];
+        let alerts = vec![BudgetAlert {
+            id: Uuid::new_v4().to_string(),
+            budget_id,
+            alert_type: AlertType::ThresholdReached,
+            threshold: Decimal::from(80),
+            message: "You have used 80% of your budget".to_string(),
+            triggered_at: Utc::now(),
+            acknowledged: false,
+        }];
 
         Ok(alerts)
     }
@@ -940,7 +943,7 @@ impl BudgetService {
         context: ServiceContext,
     ) -> Result<Budget> {
         let mut budget = self._get_budget(budget_id, context).await?;
-        
+
         if new_amount <= Decimal::ZERO {
             return Err(JiveError::ValidationError {
                 message: "Budget amount must be positive".to_string(),
@@ -1020,7 +1023,7 @@ mod tests {
     async fn test_create_budget() {
         let service = BudgetService::new();
         let context = ServiceContext::new("user-123".to_string());
-        
+
         let request = CreateBudgetRequest {
             name: "Test Budget".to_string(),
             budget_type: BudgetType::Monthly,
@@ -1048,7 +1051,9 @@ mod tests {
         let service = BudgetService::new();
         let context = ServiceContext::new("user-123".to_string());
 
-        let result = service._get_budget_progress("budget-1".to_string(), context).await;
+        let result = service
+            ._get_budget_progress("budget-1".to_string(), context)
+            .await;
         assert!(result.is_ok());
 
         let progress = result.unwrap();
@@ -1062,7 +1067,9 @@ mod tests {
         let service = BudgetService::new();
         let context = ServiceContext::new("user-123".to_string());
 
-        let result = service._get_budget_suggestions(BudgetType::Monthly, context).await;
+        let result = service
+            ._get_budget_suggestions(BudgetType::Monthly, context)
+            .await;
         assert!(result.is_ok());
 
         let suggestions = result.unwrap();

@@ -6,11 +6,11 @@ use axum::{
     http::StatusCode,
     response::Json,
 };
-use serde::{Deserialize, Serialize};
-use sqlx::{PgPool, Row, QueryBuilder};
-use uuid::Uuid;
-use rust_decimal::Decimal;
 use chrono::{DateTime, Utc};
+use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
+use sqlx::{PgPool, QueryBuilder, Row};
+use uuid::Uuid;
 
 use crate::error::{ApiError, ApiResult};
 
@@ -35,6 +35,7 @@ pub struct CreateAccountRequest {
     pub currency: Option<String>,
     pub initial_balance: Option<Decimal>,
     pub color: Option<String>,
+    #[allow(dead_code)]
     pub icon: Option<String>,
     pub notes: Option<String>,
 }
@@ -100,43 +101,43 @@ pub async fn list_accounts(
         "SELECT id, ledger_id, name, account_type, account_number, institution_name,
          currency, current_balance, available_balance, credit_limit, status,
          is_manual, color, icon, notes, created_at, updated_at
-         FROM accounts WHERE 1=1"
+         FROM accounts WHERE 1=1",
     );
-    
+
     // 添加过滤条件
     if let Some(ledger_id) = params.ledger_id {
         query.push(" AND ledger_id = ");
         query.push_bind(ledger_id);
     }
-    
+
     if let Some(account_type) = params.account_type {
         query.push(" AND account_type = ");
         query.push_bind(account_type);
     }
-    
+
     if !params.include_archived.unwrap_or(false) {
         query.push(" AND deleted_at IS NULL");
     }
-    
+
     query.push(" ORDER BY name");
-    
+
     // 分页
     let page = params.page.unwrap_or(1);
     let per_page = params.per_page.unwrap_or(20);
     let offset = ((page - 1) * per_page) as i64;
-    
+
     query.push(" LIMIT ");
     query.push_bind(per_page as i64);
     query.push(" OFFSET ");
     query.push_bind(offset);
-    
+
     // 执行查询
     let accounts = query
         .build()
         .fetch_all(&pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     // 转换为响应格式
     let mut response = Vec::new();
     for row in accounts {
@@ -160,7 +161,7 @@ pub async fn list_accounts(
             updated_at: row.get("updated_at"),
         });
     }
-    
+
     Ok(Json(response))
 }
 
@@ -183,7 +184,7 @@ pub async fn get_account(
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     .ok_or(ApiError::NotFound("Account not found".to_string()))?;
-    
+
     let response = AccountResponse {
         id: account.id,
         ledger_id: account.ledger_id,
@@ -192,7 +193,7 @@ pub async fn get_account(
         account_number: account.account_number,
         institution_name: account.institution_name,
         currency: account.currency.unwrap_or_else(|| "CNY".to_string()),
-        current_balance: account.current_balance.unwrap_or_else(|| Decimal::ZERO),
+        current_balance: account.current_balance.unwrap_or(Decimal::ZERO),
         available_balance: account.available_balance,
         credit_limit: account.credit_limit,
         status: account.status.unwrap_or_else(|| "active".to_string()),
@@ -200,10 +201,10 @@ pub async fn get_account(
         color: account.color,
         icon: None,
         notes: account.notes,
-        created_at: account.created_at.unwrap_or_else(|| chrono::Utc::now()),
-        updated_at: account.updated_at.unwrap_or_else(|| chrono::Utc::now()),
+        created_at: account.created_at.unwrap_or_else(chrono::Utc::now),
+        updated_at: account.updated_at.unwrap_or_else(chrono::Utc::now),
     };
-    
+
     Ok(Json(response))
 }
 
@@ -215,7 +216,7 @@ pub async fn create_account(
     let id = Uuid::new_v4();
     let currency = req.currency.unwrap_or_else(|| "CNY".to_string());
     let initial_balance = req.initial_balance.unwrap_or(Decimal::ZERO);
-    
+
     let account = sqlx::query!(
         r#"
         INSERT INTO accounts (
@@ -243,7 +244,7 @@ pub async fn create_account(
     .fetch_one(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     // 如果有初始余额，创建余额记录
     if initial_balance != Decimal::ZERO {
         sqlx::query!(
@@ -259,7 +260,7 @@ pub async fn create_account(
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     }
-    
+
     let response = AccountResponse {
         id: account.id,
         ledger_id: account.ledger_id,
@@ -268,7 +269,7 @@ pub async fn create_account(
         account_number: account.account_number,
         institution_name: account.institution_name,
         currency: account.currency.unwrap_or_else(|| "CNY".to_string()),
-        current_balance: account.current_balance.unwrap_or_else(|| Decimal::ZERO),
+        current_balance: account.current_balance.unwrap_or(Decimal::ZERO),
         available_balance: account.available_balance,
         credit_limit: account.credit_limit,
         status: account.status.unwrap_or_else(|| "active".to_string()),
@@ -276,10 +277,10 @@ pub async fn create_account(
         color: account.color,
         icon: None,
         notes: account.notes,
-        created_at: account.created_at.unwrap_or_else(|| chrono::Utc::now()),
-        updated_at: account.updated_at.unwrap_or_else(|| chrono::Utc::now()),
+        created_at: account.created_at.unwrap_or_else(chrono::Utc::now),
+        updated_at: account.updated_at.unwrap_or_else(chrono::Utc::now),
     };
-    
+
     Ok(Json(response))
 }
 
@@ -291,37 +292,37 @@ pub async fn update_account(
 ) -> ApiResult<Json<AccountResponse>> {
     // 构建动态更新查询
     let mut query = QueryBuilder::new("UPDATE accounts SET updated_at = NOW()");
-    
+
     if let Some(name) = &req.name {
         query.push(", name = ");
         query.push_bind(name);
     }
-    
+
     if let Some(account_number) = &req.account_number {
         query.push(", account_number = ");
         query.push_bind(account_number);
     }
-    
+
     if let Some(institution_name) = &req.institution_name {
         query.push(", institution_name = ");
         query.push_bind(institution_name);
     }
-    
+
     if let Some(color) = &req.color {
         query.push(", color = ");
         query.push_bind(color);
     }
-    
+
     if let Some(icon) = &req.icon {
         query.push(", icon = ");
         query.push_bind(icon);
     }
-    
+
     if let Some(notes) = &req.notes {
         query.push(", notes = ");
         query.push_bind(notes);
     }
-    
+
     if let Some(is_archived) = req.is_archived {
         if is_archived {
             query.push(", deleted_at = NOW()");
@@ -329,17 +330,17 @@ pub async fn update_account(
             query.push(", deleted_at = NULL");
         }
     }
-    
+
     query.push(" WHERE id = ");
     query.push_bind(id);
     query.push(" RETURNING id, ledger_id, name, account_type, account_number, institution_name, currency, current_balance, available_balance, credit_limit, status, is_manual, color, icon, notes, created_at, updated_at");
-    
+
     let account = query
         .build()
         .fetch_one(&pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     let response = AccountResponse {
         id: account.get("id"),
         ledger_id: account.get("ledger_id"),
@@ -359,7 +360,7 @@ pub async fn update_account(
         created_at: account.get("created_at"),
         updated_at: account.get("updated_at"),
     };
-    
+
     Ok(Json(response))
 }
 
@@ -379,11 +380,11 @@ pub async fn delete_account(
     .execute(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     if result.rows_affected() == 0 {
         return Err(ApiError::NotFound("Account not found".to_string()));
     }
-    
+
     Ok(StatusCode::NO_CONTENT)
 }
 
@@ -392,10 +393,10 @@ pub async fn get_account_statistics(
     Query(params): Query<AccountQuery>,
     State(pool): State<PgPool>,
 ) -> ApiResult<Json<AccountStatistics>> {
-    let ledger_id = params.ledger_id.ok_or(
-        ApiError::BadRequest("ledger_id is required".to_string())
-    )?;
-    
+    let ledger_id = params
+        .ledger_id
+        .ok_or(ApiError::BadRequest("ledger_id is required".to_string()))?;
+
     // 获取总体统计
     let stats = sqlx::query!(
         r#"
@@ -411,7 +412,7 @@ pub async fn get_account_statistics(
     .fetch_one(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     // 按类型统计
     let type_stats = sqlx::query!(
         r#"
@@ -429,7 +430,7 @@ pub async fn get_account_statistics(
     .fetch_all(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     let by_type: Vec<TypeStatistics> = type_stats
         .into_iter()
         .map(|row| TypeStatistics {
@@ -438,10 +439,10 @@ pub async fn get_account_statistics(
             total_balance: row.total_balance.unwrap_or(Decimal::ZERO),
         })
         .collect();
-    
+
     let total_assets = stats.total_assets.unwrap_or(Decimal::ZERO);
     let total_liabilities = stats.total_liabilities.unwrap_or(Decimal::ZERO);
-    
+
     let response = AccountStatistics {
         total_accounts: stats.total_accounts.unwrap_or(0),
         total_assets,
@@ -449,6 +450,6 @@ pub async fn get_account_statistics(
         net_worth: total_assets - total_liabilities,
         by_type,
     };
-    
+
     Ok(Json(response))
 }

@@ -55,18 +55,19 @@ else
 fi
 
 # 5. 检查数据库
-if psql postgresql://postgres:postgres@localhost:5433/jive_money -c "SELECT 1" > /dev/null 2>&1; then
+DB_PORT=${DB_PORT:-5433}
+if psql postgresql://postgres:postgres@localhost:$DB_PORT/jive_money -c "SELECT 1" > /dev/null 2>&1; then
     echo -e "${GREEN}✅ 数据库jive_money存在${NC}"
 else
     echo -e "${YELLOW}📝 创建数据库jive_money...${NC}"
-    psql postgresql://postgres:postgres@localhost:5433 -c "CREATE DATABASE jive_money;" 2>/dev/null || true
+    psql postgresql://postgres:postgres@localhost:$DB_PORT -c "CREATE DATABASE jive_money;" 2>/dev/null || true
     
     # 运行迁移
     echo -e "${YELLOW}🔄 运行数据库迁移...${NC}"
     for migration in migrations/*.sql; do
         if [ -f "$migration" ]; then
             echo "  - $(basename $migration)"
-            psql postgresql://postgres:postgres@localhost:5433/jive_money -f "$migration" > /dev/null 2>&1 || true
+            psql postgresql://postgres:postgres@localhost:$DB_PORT/jive_money -f "$migration" > /dev/null 2>&1 || true
         fi
     done
     echo -e "${GREEN}✅ 数据库初始化完成${NC}"
@@ -87,7 +88,7 @@ echo "  按 Ctrl+C"
 echo ""
 
 # 设置环境变量并运行
-export DATABASE_URL="postgresql://postgres:postgres@localhost:5433/jive_money"
+export DATABASE_URL=${DATABASE_URL:-"postgresql://postgres:postgres@localhost:$DB_PORT/jive_money"}
 export REDIS_URL="redis://localhost:6380"
 export API_PORT=8012
 export RUST_LOG=info

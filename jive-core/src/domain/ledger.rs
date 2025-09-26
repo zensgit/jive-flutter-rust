@@ -1,14 +1,14 @@
 //! Ledger domain model
 
 use chrono::{DateTime, Utc};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
-use crate::error::{JiveError, Result};
 use super::{Entity, SoftDeletable};
+use crate::error::{JiveError, Result};
 
 /// 账本类型枚举
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -22,10 +22,9 @@ pub enum LedgerType {
     Investment,
 }
 
-#[cfg(feature = "wasm")]
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 impl LedgerType {
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn as_string(&self) -> String {
         match self {
             LedgerType::Personal => "personal".to_string(),
@@ -37,7 +36,7 @@ impl LedgerType {
         }
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn from_string(s: &str) -> Option<LedgerType> {
         match s {
             "personal" => Some(LedgerType::Personal),
@@ -63,10 +62,9 @@ pub struct LedgerDisplaySettings {
     default_currency: String,
 }
 
-#[cfg(feature = "wasm")]
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 impl LedgerDisplaySettings {
-    #[wasm_bindgen(constructor)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(constructor))]
     pub fn new() -> Self {
         Self {
             hide_all_categories: false,
@@ -79,63 +77,63 @@ impl LedgerDisplaySettings {
     }
 
     // Getters
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn hide_all_categories(&self) -> bool {
         self.hide_all_categories
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn show_transfer_flows(&self) -> bool {
         self.show_transfer_flows
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn show_investment_flows(&self) -> bool {
         self.show_investment_flows
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn show_account_balances(&self) -> bool {
         self.show_account_balances
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn group_by_account_type(&self) -> bool {
         self.group_by_account_type
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn default_currency(&self) -> String {
         self.default_currency.clone()
     }
 
     // Setters
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_hide_all_categories(&mut self, hide: bool) {
         self.hide_all_categories = hide;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_show_transfer_flows(&mut self, show: bool) {
         self.show_transfer_flows = show;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_show_investment_flows(&mut self, show: bool) {
         self.show_investment_flows = show;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_show_account_balances(&mut self, show: bool) {
         self.show_account_balances = show;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_group_by_account_type(&mut self, group: bool) {
         self.group_by_account_type = group;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_default_currency(&mut self, currency: String) -> Result<()> {
         crate::error::validate_currency(&currency)?;
         self.default_currency = currency;
@@ -158,7 +156,7 @@ pub struct Ledger {
     name: String,
     description: Option<String>,
     ledger_type: LedgerType,
-    color: String, // 十六进制颜色代码
+    color: String,        // 十六进制颜色代码
     icon: Option<String>, // 图标名称或表情符号
     is_default: bool,
     is_active: bool,
@@ -174,13 +172,12 @@ pub struct Ledger {
     // 权限相关
     is_shared: bool,
     shared_with_users: Vec<String>, // 共享用户ID列表
-    permission_level: String, // "read", "write", "admin"
+    permission_level: String,       // "read", "write", "admin"
 }
 
-#[cfg(feature = "wasm")]
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 impl Ledger {
-    #[wasm_bindgen(constructor)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(constructor))]
     pub fn new(
         user_id: String,
         name: String,
@@ -233,103 +230,103 @@ impl Ledger {
     }
 
     // Getters
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn id(&self) -> String {
         self.id.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn user_id(&self) -> String {
         self.user_id.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn name(&self) -> String {
         self.name.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn description(&self) -> Option<String> {
         self.description.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn ledger_type(&self) -> LedgerType {
         self.ledger_type.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn color(&self) -> String {
         self.color.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn icon(&self) -> Option<String> {
         self.icon.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn is_default(&self) -> bool {
         self.is_default
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn is_active(&self) -> bool {
         self.is_active
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn is_hidden(&self) -> bool {
         self.is_hidden
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn display_settings(&self) -> LedgerDisplaySettings {
         self.display_settings.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn transaction_count(&self) -> u32 {
         self.transaction_count
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn last_transaction_date(&self) -> Option<String> {
         self.last_transaction_date.map(|d| d.to_string())
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn created_at(&self) -> String {
         self.created_at.to_rfc3339()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn updated_at(&self) -> String {
         self.updated_at.to_rfc3339()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn is_deleted(&self) -> bool {
         self.deleted_at.is_some()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn is_shared(&self) -> bool {
         self.is_shared
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn shared_with_users(&self) -> Vec<String> {
         self.shared_with_users.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn permission_level(&self) -> String {
         self.permission_level.clone()
     }
 
     // Setters
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_name(&mut self, name: String) -> Result<()> {
         let trimmed = name.trim();
         if trimmed.is_empty() {
@@ -347,7 +344,7 @@ impl Ledger {
         Ok(())
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_description(&mut self, description: Option<String>) -> Result<()> {
         if let Some(ref desc) = description {
             crate::utils::Validator::validate_description(desc)?;
@@ -357,7 +354,7 @@ impl Ledger {
         Ok(())
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_color(&mut self, color: String) -> Result<()> {
         if !color.starts_with('#') || color.len() != 7 {
             return Err(JiveError::ValidationError {
@@ -369,44 +366,44 @@ impl Ledger {
         Ok(())
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_icon(&mut self, icon: Option<String>) {
         self.icon = icon;
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_is_default(&mut self, is_default: bool) {
         self.is_default = is_default;
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_is_active(&mut self, is_active: bool) {
         self.is_active = is_active;
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_is_hidden(&mut self, is_hidden: bool) {
         self.is_hidden = is_hidden;
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_display_settings(&mut self, settings: LedgerDisplaySettings) {
         self.display_settings = settings;
         self.updated_at = Utc::now();
     }
 
     // 业务方法
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn increment_transaction_count(&mut self) {
         self.transaction_count += 1;
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn decrement_transaction_count(&mut self) {
         if self.transaction_count > 0 {
             self.transaction_count -= 1;
@@ -414,7 +411,7 @@ impl Ledger {
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn update_last_transaction_date(&mut self, date: String) -> Result<()> {
         let parsed_date = chrono::NaiveDate::parse_from_str(&date, "%Y-%m-%d")
             .map_err(|_| JiveError::InvalidDate { date })?;
@@ -423,7 +420,7 @@ impl Ledger {
         Ok(())
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn share_with_user(&mut self, user_id: String, permission: String) -> Result<()> {
         if !["read", "write", "admin"].contains(&permission.as_str()) {
             return Err(JiveError::ValidationError {
@@ -439,7 +436,7 @@ impl Ledger {
         Ok(())
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn unshare_with_user(&mut self, user_id: String) {
         if let Some(pos) = self.shared_with_users.iter().position(|u| u == &user_id) {
             self.shared_with_users.remove(pos);
@@ -450,40 +447,40 @@ impl Ledger {
         }
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn can_user_access(&self, user_id: String) -> bool {
         self.user_id == user_id || self.shared_with_users.contains(&user_id)
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn can_user_write(&self, user_id: String) -> bool {
         if self.user_id == user_id {
             return true;
         }
-        self.shared_with_users.contains(&user_id) && 
-        (self.permission_level == "write" || self.permission_level == "admin")
+        self.shared_with_users.contains(&user_id)
+            && (self.permission_level == "write" || self.permission_level == "admin")
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn soft_delete(&mut self) {
         self.deleted_at = Some(Utc::now());
         self.is_active = false;
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn restore(&mut self) {
         self.deleted_at = None;
         self.is_active = true;
         self.updated_at = Utc::now();
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn is_visible(&self) -> bool {
         self.is_active && !self.is_hidden && !self.is_deleted()
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn get_display_name(&self) -> String {
         if self.is_default {
             format!("{} (默认)", self.name)
@@ -492,7 +489,7 @@ impl Ledger {
         }
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn get_type_display_name(&self) -> String {
         match self.ledger_type {
             LedgerType::Personal => "个人账本".to_string(),
@@ -505,7 +502,7 @@ impl Ledger {
     }
 
     /// 获取统计摘要
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn get_summary(&self) -> String {
         format!(
             "{} transactions, last activity: {}",
@@ -574,17 +571,14 @@ impl SoftDeletable for Ledger {
     fn is_deleted(&self) -> bool {
         self.deleted_at.is_some()
     }
-
     fn deleted_at(&self) -> Option<DateTime<Utc>> {
         self.deleted_at
     }
-
     fn soft_delete(&mut self) {
-        self.soft_delete();
+        self.deleted_at = Some(Utc::now());
     }
-
     fn restore(&mut self) {
-        self.restore();
+        self.deleted_at = None;
     }
 }
 
@@ -663,19 +657,31 @@ impl LedgerBuilder {
             message: "Ledger name is required".to_string(),
         })?;
 
-        let ledger_type = self.ledger_type.ok_or_else(|| JiveError::ValidationError {
-            message: "Ledger type is required".to_string(),
-        })?;
+        let ledger_type = self
+            .ledger_type
+            .clone()
+            .ok_or_else(|| JiveError::ValidationError {
+                message: "Ledger type is required".to_string(),
+            })?;
 
-        let color = self.color.unwrap_or_else(|| "#3B82F6".to_string());
+        let color = self.color.clone().unwrap_or_else(|| "#3B82F6".to_string());
 
-        let mut ledger = Ledger::new(user_id, name, ledger_type, color)?;
-        
-        if let Some(description) = self.description {
+        let lt = self.ledger_type.unwrap_or(LedgerType::Personal);
+        let mut ledger = Ledger::new(
+            user_id,
+            name,
+            lt,
+            self.color.clone().unwrap_or_else(|| "#6B7280".into()),
+        )?;
+        ledger.description = self.description.clone();
+        ledger.icon = self.icon.clone();
+        ledger.is_default = self.is_default;
+
+        if let Some(description) = self.description.clone() {
             ledger.set_description(Some(description))?;
         }
 
-        if let Some(icon) = self.icon {
+        if let Some(icon) = self.icon.clone() {
             ledger.set_icon(Some(icon));
         }
 
@@ -700,7 +706,8 @@ mod tests {
             "My Personal Ledger".to_string(),
             LedgerType::Personal,
             "#3B82F6".to_string(),
-        ).unwrap();
+        )
+        .unwrap();
 
         assert_eq!(ledger.name(), "My Personal Ledger");
         assert!(matches!(ledger.ledger_type(), LedgerType::Personal));
@@ -732,11 +739,14 @@ mod tests {
             "Shared Ledger".to_string(),
             LedgerType::Family,
             "#FF6B6B".to_string(),
-        ).unwrap();
+        )
+        .unwrap();
 
         assert!(!ledger.is_shared());
-        
-        ledger.share_with_user("user-456".to_string(), "write".to_string()).unwrap();
+
+        ledger
+            .share_with_user("user-456".to_string(), "write".to_string())
+            .unwrap();
         assert!(ledger.is_shared());
         assert!(ledger.can_user_access("user-456".to_string()));
         assert!(ledger.can_user_write("user-456".to_string()));
@@ -761,7 +771,10 @@ mod tests {
 
         assert_eq!(ledger.name(), "Project Alpha");
         assert!(matches!(ledger.ledger_type(), LedgerType::Project));
-        assert_eq!(ledger.description(), Some("Project tracking ledger".to_string()));
+        assert_eq!(
+            ledger.description(),
+            Some("Project tracking ledger".to_string())
+        );
         assert_eq!(ledger.icon(), Some("📊".to_string()));
         assert!(ledger.is_default());
     }
@@ -773,7 +786,8 @@ mod tests {
             "Test Ledger".to_string(),
             LedgerType::Personal,
             "#3B82F6".to_string(),
-        ).unwrap();
+        )
+        .unwrap();
 
         assert_eq!(ledger.transaction_count(), 0);
 
@@ -795,7 +809,8 @@ mod tests {
             "".to_string(),
             LedgerType::Personal,
             "#3B82F6".to_string(),
-        ).is_err());
+        )
+        .is_err());
 
         // 测试无效颜色
         assert!(Ledger::new(
@@ -803,6 +818,7 @@ mod tests {
             "Valid Name".to_string(),
             LedgerType::Personal,
             "invalid-color".to_string(),
-        ).is_err());
+        )
+        .is_err());
     }
 }

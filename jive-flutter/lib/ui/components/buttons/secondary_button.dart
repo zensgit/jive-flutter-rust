@@ -1,6 +1,6 @@
 // 次要按钮组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
 
 class SecondaryButton extends StatelessWidget {
   final String text;
@@ -40,7 +40,7 @@ class SecondaryButton extends StatelessWidget {
         onPressed: isEnabled ? onPressed : null,
         style: OutlinedButton.styleFrom(
           foregroundColor: textColor ?? theme.primaryColor,
-          padding: padding ?? const EdgeInsets.symmetric(horizontal: 24),
+          padding: padding ?? EdgeInsets.symmetric(horizontal: 24),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
           ),

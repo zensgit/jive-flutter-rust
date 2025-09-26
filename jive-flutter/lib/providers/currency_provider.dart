@@ -2,12 +2,14 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../models/currency.dart';
-import '../models/exchange_rate.dart';
-import '../services/exchange_rate_service.dart';
-import '../services/crypto_price_service.dart';
-import '../services/currency_service.dart' as api;
-import '../services/currency_service.dart';
+import 'package:jive_money/models/currency.dart';
+import 'package:jive_money/models/exchange_rate.dart';
+import 'package:jive_money/services/exchange_rate_service.dart';
+import 'package:jive_money/services/crypto_price_service.dart';
+import 'package:jive_money/services/currency_service.dart' as api;
+import 'package:jive_money/services/currency_service.dart';
+import 'package:jive_money/core/network/http_client.dart';
+import 'package:jive_money/core/network/api_readiness.dart';
 
 // --- PR1: Currency catalog meta state (fallback / errors / sync times) ---
 class CurrencyCatalogMeta {
@@ -113,12 +115,14 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   final ExchangeRateService _exchangeRateService;
   final CryptoPriceService _cryptoPriceService;
   final CurrencyService _currencyService;
-  Map<String, Currency> _currencyCache = {};
+  final Map<String, Currency> _currencyCache = {};
   // Server-provided currency catalog
   List<Currency> _serverCurrencies = [];
   String? _catalogEtag;
   CurrencyCatalogMeta _catalogMeta = const CurrencyCatalogMeta(usingFallback: false);
   Map<String, ExchangeRate> _exchangeRates = {};
+  // Per-currency manual expiry (from server detailed response, local time)
+  final Map<String, DateTime?> _manualExpiryMeta = {};
   bool _isLoadingRates = false;
   DateTime? _lastRateUpdate;
   Future<void>? _pendingRateUpdate;
@@ -133,6 +137,7 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
 
   bool _initialized = false;
   final bool _suppressAutoInit;
+  bool _disposed = false;
 
   CurrencyNotifier(
     this._prefsBox,
@@ -355,11 +360,14 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   }
 
   Future<void> _performRateUpdate() async {
-    if (_isLoadingRates) return;
+    if (_isLoadingRates || _disposed) return;
 
     _isLoadingRates = true;
 
     try {
+      // Check if disposed before continuing
+      if (_disposed) return;
+
       // Always fetch live rates first for selected targets (no mock)
       final targets = state.selectedCurrencies
           .where((c) => c != state.baseCurrency)
@@ -368,6 +376,25 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
           state.baseCurrency, targets);
       _exchangeRates =
           rates; // may be partially empty if server missing some pairs
+      // Fetch manual expiry meta in parallel (best-effort)
+      try {
+        final dio = HttpClient.instance.dio;
+        final resp = await dio.post('/currencies/rates-detailed', data: {
+          'base_currency': state.baseCurrency,
+          'target_currencies': targets,
+        });
+        final data = resp.data['data'] ?? resp.data;
+        final rmap = (data['rates'] as Map?) ?? {};
+        _manualExpiryMeta.clear();
+        rmap.forEach((code, item) {
+          if (item is Map && item['manual_rate_expiry'] != null) {
+            final dt = DateTime.tryParse(item['manual_rate_expiry'].toString());
+            _manualExpiryMeta[code.toString()] = dt?.toLocal();
+          }
+        });
+      } catch (_) {
+        // ignore meta failures
+      }
       // Overlay valid manual rates so they take precedence until expiry
       final nowUtc = DateTime.now().toUtc();
       if (_manualRates.isNotEmpty) {
@@ -398,9 +425,11 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       }
     } catch (e) {
       debugPrint('Error loading exchange rates: $e');
-      _exchangeRates = MockExchangeRates.getAllRatesFrom(state.baseCurrency);
-      _lastRateUpdate = DateTime.now();
-      state = state.copyWith(isFallback: true);
+      if (!_disposed) {
+        _exchangeRates = MockExchangeRates.getAllRatesFrom(state.baseCurrency);
+        _lastRateUpdate = DateTime.now();
+        state = state.copyWith(isFallback: true);
+      }
     } finally {
       _isLoadingRates = false;
     }
@@ -443,6 +472,26 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     );
     await _prefsBox.delete(_kManualRatesExpiryKey);
     await _savePreferences();
+
+    // Persist to backend per-currency
+    try {
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      for (final entry in toCurrencyRates.entries) {
+        final code = entry.key;
+        final rate = entry.value;
+        final expiry = expiriesUtc[code]?.toUtc();
+        await dio.post('/currencies/rates/add', data: {
+          'from_currency': state.baseCurrency,
+          'to_currency': code,
+          'rate': rate,
+          'source': 'manual',
+          if (expiry != null) 'manual_rate_expiry': expiry.toIso8601String(),
+        });
+      }
+    } catch (e) {
+      debugPrint('Failed to persist manual rates: $e');
+    }
   }
 
   /// Clear manual rates (revert to automatic)
@@ -454,6 +503,16 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     await _prefsBox.delete(_kManualRatesExpiryKey);
     await _prefsBox.delete(_kManualRatesExpiryMapKey);
     await _savePreferences();
+    // 同步清除服务端该基础货币下的所有手动汇率
+    try {
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      await dio.post('/currencies/rates/clear-manual-batch', data: {
+        'from_currency': state.baseCurrency,
+      });
+    } catch (e) {
+      debugPrint('Failed to batch clear manual rates on server: $e');
+    }
     await _loadExchangeRates();
   }
 
@@ -474,6 +533,17 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       await _prefsBox.delete(_kManualRatesExpiryMapKey);
     }
     await _savePreferences();
+    // Persist to backend: clear today's manual flag for this pair
+    try {
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      await dio.post('/currencies/rates/clear-manual', data: {
+        'from_currency': state.baseCurrency,
+        'to_currency': toCurrencyCode,
+      });
+    } catch (e) {
+      debugPrint('Failed to clear manual rate on server: $e');
+    }
     await _loadExchangeRates();
   }
 
@@ -515,6 +585,9 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     }
     return _manualRatesExpiryUtc;
   }
+
+  /// Manual expiry for specific currency (local time if provided by server)
+  DateTime? manualExpiryFor(String toCurrencyCode) => _manualExpiryMeta[toCurrencyCode];
 
   Future<void> _loadCryptoPrices() async {
     try {
@@ -750,6 +823,18 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
 
   bool get hasPendingPreferences => _prefsBox.containsKey(_kPendingPrefsKey);
 
+  /// 检查汇率是否需要更新
+  bool get ratesNeedUpdate {
+    // 简单实现：检查汇率是否过期（如果有上次更新时间）
+    if (_lastRateUpdate == null) return true;
+
+    final now = DateTime.now();
+    final timeSinceUpdate = now.difference(_lastRateUpdate!);
+
+    // 如果超过1小时未更新，认为需要更新
+    return timeSinceUpdate.inHours >= 1;
+  }
+
   void _schedulePreferencePush() {
     _prefsDebounce?.cancel();
     _prefsDebounce = Timer(const Duration(milliseconds: 500), () {
@@ -967,6 +1052,13 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   /// Save preferences to storage
   Future<void> _savePreferences() async {
     await _prefsBox.put('currency_preferences', state.toJson());
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _pendingRateUpdate = null;
+    super.dispose();
   }
 }
 

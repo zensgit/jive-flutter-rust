@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../services/api/category_service.dart';
-import '../../models/category_template.dart';
-import '../../models/user.dart';
-import '../../services/auth_service.dart';
-import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
+import 'package:jive_money/services/api/category_service.dart';
+import 'package:jive_money/models/category_template.dart';
+// For UserDataExt extension
+import 'package:jive_money/services/auth_service.dart';
+import 'package:jive_money/widgets/common/loading_widget.dart';
+import 'package:jive_money/widgets/states/error_state.dart';
+import 'package:jive_money/models/account_classification.dart';
 
 /// 超级管理员模板管理页面
 ///
 /// 仅超级管理员可访问，用于管理系统分类模板
 class TemplateAdminPage extends StatefulWidget {
-  const TemplateAdminPage({Key? key}) : super(key: key);
+  const TemplateAdminPage({super.key});
 
   @override
   State<TemplateAdminPage> createState() => _TemplateAdminPageState();
@@ -137,6 +138,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
           try {
             if (_isCreating) {
               await _categoryService.createTemplate(updatedTemplate);
+              if (!context.mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('模板创建成功'),
@@ -144,7 +146,8 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
                 ),
               );
             } else {
-              await _categoryService.updateTemplate(updatedTemplate);
+              await _categoryService.updateTemplate(updatedTemplate.id, updatedTemplate.toJson());
+              if (!context.mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('模板更新成功'),
@@ -155,6 +158,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
             Navigator.pop(context);
             _loadTemplates();
           } catch (e) {
+            if (!context.mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('保存失败: $e'),
@@ -195,6 +199,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
     if (confirmed == true) {
       try {
         await _categoryService.deleteTemplate(template.id);
+        if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('模板已删除'),
@@ -203,6 +208,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         );
         _loadTemplates();
       } catch (e) {
+        if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('删除失败: $e'),
@@ -216,7 +222,8 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
   Future<void> _toggleFeatured(SystemCategoryTemplate template) async {
     try {
       template.setFeatured(!template.isFeatured);
-      await _categoryService.updateTemplate(template);
+      await _categoryService.updateTemplate(template.id, {'isFeatured': !template.isFeatured});
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -226,6 +233,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
       );
       _loadTemplates();
     } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('操作失败: $e'),
@@ -305,7 +313,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
       body: _isLoading
           ? const LoadingWidget()
           : _error.isNotEmpty
-              ? ErrorWidget(
+              ? ErrorState(
                   message: _error,
                   onRetry: _loadTemplates,
                 )
@@ -328,7 +336,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -506,7 +514,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
+            color: color.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Center(
@@ -610,8 +618,6 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         return '支出';
       case AccountClassification.transfer:
         return '转账';
-      default:
-        return '未知';
     }
   }
 }
@@ -635,7 +641,7 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -994,8 +1000,6 @@ class _TemplateEditorDialogState extends State<_TemplateEditorDialog> {
         return '支出';
       case AccountClassification.transfer:
         return '转账';
-      default:
-        return '未知';
     }
   }
 }

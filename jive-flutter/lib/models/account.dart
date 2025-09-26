@@ -101,7 +101,7 @@ class Account {
       'currency': currency,
       'account_number': accountNumber,
       'description': description,
-      'color': color?.value,
+      'color': color?.toARGB32(),
       'is_default': isDefault,
       'exclude_from_stats': excludeFromStats,
       'is_archived': isArchived,
@@ -184,7 +184,6 @@ class Account {
       case AccountType.loan:
         return Colors.red;
       case AccountType.other:
-      default:
         return Colors.grey;
     }
   }
@@ -273,7 +272,7 @@ class AccountGroup {
       if (id != null) 'id': id,
       'name': name,
       'description': description,
-      'color': color?.value,
+      'color': color?.toARGB32(),
       'icon': icon?.codePoint,
       'sort_order': sortOrder,
       'account_ids': accountIds,

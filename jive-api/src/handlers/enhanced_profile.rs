@@ -1,22 +1,18 @@
-use axum::{
-    extract::State,
-    http::StatusCode,
-    response::Json,
-};
-use serde::{Deserialize, Serialize};
-use sqlx::PgPool;
-use uuid::Uuid;
-use chrono::{DateTime, Utc};
 use argon2::{
     password_hash::{rand_core::OsRng, PasswordHasher, SaltString},
     Argon2,
 };
+use axum::{extract::State, http::StatusCode, response::Json};
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use sqlx::PgPool;
+use uuid::Uuid;
 
+use super::family_handler::ApiResponse;
 use crate::auth::{Claims, RegisterRequest};
 use crate::error::{ApiError, ApiResult};
-use crate::services::{FamilyService, AvatarService};
 use crate::models::family::CreateFamilyRequest;
-use super::family_handler::ApiResponse;
+use crate::services::{AvatarService, FamilyService};
 
 /// Enhanced User Profile with preferences
 #[derive(Debug, Serialize, Deserialize)]
@@ -56,14 +52,12 @@ pub async fn register_with_preferences(
     Json(req): Json<RegisterRequest>,
 ) -> ApiResult<Json<ApiResponse<serde_json::Value>>> {
     // Check if email already exists
-    let exists: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)"
-    )
-    .bind(&req.email)
-    .fetch_one(&pool)
-    .await
-    .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+    let exists: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)")
+        .bind(&req.email)
+        .fetch_one(&pool)
+        .await
+        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
     if exists {
         return Ok(Json(ApiResponse::<serde_json::Value> {
             success: false,
@@ -76,10 +70,12 @@ pub async fn register_with_preferences(
             timestamp: chrono::Utc::now(),
         }));
     }
-    
-    let mut tx = pool.begin().await
+
+    let mut tx = pool
+        .begin()
+        .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     // Hash password
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
@@ -87,13 +83,13 @@ pub async fn register_with_preferences(
         .hash_password(req.password.as_bytes(), &salt)
         .map_err(|_| ApiError::InternalServerError)?
         .to_string();
-    
+
     // Create user with preferences
     let user_id = Uuid::new_v4();
-    
+
     // Generate random avatar for the user
     let avatar = AvatarService::generate_random_avatar(&req.name, &req.email);
-    
+
     // First, try to add columns if they don't exist (safe operation)
     let _ = sqlx::query(
         r#"
@@ -107,26 +103,27 @@ pub async fn register_with_preferences(
         ADD COLUMN IF NOT EXISTS avatar_style VARCHAR(20) DEFAULT 'initials',
         ADD COLUMN IF NOT EXISTS avatar_color VARCHAR(20) DEFAULT '#4ECDC4',
         ADD COLUMN IF NOT EXISTS avatar_background VARCHAR(20) DEFAULT '#E3FFF8'
-        "#
+        "#,
     )
     .execute(&mut *tx)
     .await;
-    
+
     // Insert user with preferences and avatar
     sqlx::query(
         r#"
         INSERT INTO users (
-            id, email, full_name, password_hash, 
+            id, email, name, full_name, password_hash, 
             country, preferred_currency, preferred_language, 
             preferred_timezone, preferred_date_format,
             avatar_url, avatar_style, avatar_color, avatar_background,
             created_at, updated_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
-        "#
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+        "#,
     )
     .bind(user_id)
     .bind(&req.email)
+    .bind(&req.name)
     .bind(&req.name)
     .bind(&password_hash)
     .bind(&req.country)
@@ -143,11 +140,12 @@ pub async fn register_with_preferences(
     .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     // Commit user creation
-    tx.commit().await
+    tx.commit()
+        .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     // Create family with user's preferences
     let family_service = FamilyService::new(pool.clone());
     let family_request = CreateFamilyRequest {
@@ -156,23 +154,23 @@ pub async fn register_with_preferences(
         timezone: Some(req.timezone.clone()),
         locale: Some(req.language.clone()),
     };
-    
-    let family = family_service.create_family(user_id, family_request).await
+
+    let family = family_service
+        .create_family(user_id, family_request)
+        .await
         .map_err(|_e| ApiError::InternalServerError)?;
-    
+
     // Update user's current family
-    sqlx::query(
-        "UPDATE users SET current_family_id = $1 WHERE id = $2"
-    )
-    .bind(family.id)
-    .bind(user_id)
-    .execute(&pool)
-    .await
-    .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+    sqlx::query("UPDATE users SET current_family_id = $1 WHERE id = $2")
+        .bind(family.id)
+        .bind(user_id)
+        .execute(&pool)
+        .await
+        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
     // Generate JWT token
     let token = crate::auth::generate_jwt(user_id, Some(family.id))?;
-    
+
     Ok(Json(ApiResponse::success(serde_json::json!({
         "user_id": user_id,
         "email": req.email,
@@ -193,7 +191,7 @@ pub async fn get_enhanced_profile(
     claims: Claims,
 ) -> ApiResult<Json<ApiResponse<EnhancedUserProfile>>> {
     let user_id = claims.user_id()?;
-    
+
     // Try to get user with preferences (handle missing columns gracefully)
     let result = sqlx::query(
         r#"
@@ -212,37 +210,53 @@ pub async fn get_enhanced_profile(
         FROM users u
         LEFT JOIN families f ON u.current_family_id = f.id
         WHERE u.id = $1
-        "#
+        "#,
     )
     .bind(user_id)
     .fetch_optional(&pool)
     .await;
-    
+
     match result {
         Ok(Some(row)) => {
             use sqlx::Row;
-            
+
             let profile = EnhancedUserProfile {
-                id: row.try_get("id").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
-                email: row.try_get("email").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
-                name: row.try_get("name").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
+                id: row
+                    .try_get("id")
+                    .map_err(|e| ApiError::DatabaseError(e.to_string()))?,
+                email: row
+                    .try_get("email")
+                    .map_err(|e| ApiError::DatabaseError(e.to_string()))?,
+                name: row
+                    .try_get("name")
+                    .map_err(|e| ApiError::DatabaseError(e.to_string()))?,
                 avatar_url: row.try_get("avatar_url").ok(),
                 avatar_style: row.try_get("avatar_style").ok(),
                 avatar_color: row.try_get("avatar_color").ok(),
                 avatar_background: row.try_get("avatar_background").ok(),
                 country: row.try_get("country").unwrap_or_else(|_| "CN".to_string()),
-                preferred_currency: row.try_get("preferred_currency").unwrap_or_else(|_| "CNY".to_string()),
-                preferred_language: row.try_get("preferred_language").unwrap_or_else(|_| "zh-CN".to_string()),
-                preferred_timezone: row.try_get("preferred_timezone").unwrap_or_else(|_| "Asia/Shanghai".to_string()),
-                preferred_date_format: row.try_get("preferred_date_format").unwrap_or_else(|_| "YYYY-MM-DD".to_string()),
+                preferred_currency: row
+                    .try_get("preferred_currency")
+                    .unwrap_or_else(|_| "CNY".to_string()),
+                preferred_language: row
+                    .try_get("preferred_language")
+                    .unwrap_or_else(|_| "zh-CN".to_string()),
+                preferred_timezone: row
+                    .try_get("preferred_timezone")
+                    .unwrap_or_else(|_| "Asia/Shanghai".to_string()),
+                preferred_date_format: row
+                    .try_get("preferred_date_format")
+                    .unwrap_or_else(|_| "YYYY-MM-DD".to_string()),
                 family_id: row.try_get("current_family_id").ok(),
                 family_name: row.try_get("family_name").ok(),
                 is_verified: row.try_get("is_verified").unwrap_or(false),
-                created_at: row.try_get("created_at").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
+                created_at: row
+                    .try_get("created_at")
+                    .map_err(|e| ApiError::DatabaseError(e.to_string()))?,
             };
-            
+
             Ok(Json(ApiResponse::success(profile)))
-        },
+        }
         Ok(None) => Err(ApiError::NotFound("User not found".to_string())),
         Err(_) => {
             // If columns don't exist, return basic profile with defaults
@@ -257,23 +271,29 @@ pub async fn get_enhanced_profile(
                 FROM users u
                 LEFT JOIN families f ON u.current_family_id = f.id
                 WHERE u.id = $1
-                "#
+                "#,
             )
             .bind(user_id)
             .fetch_optional(&pool)
             .await
             .map_err(|e| ApiError::DatabaseError(e.to_string()))?
             .ok_or_else(|| ApiError::NotFound("User not found".to_string()))?;
-            
+
             use sqlx::Row;
-            
-            let user_id: Uuid = basic_user.try_get("id").map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-            let email: String = basic_user.try_get("email").map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-            let name: String = basic_user.try_get("name").unwrap_or_else(|_| "User".to_string());
-            
+
+            let user_id: Uuid = basic_user
+                .try_get("id")
+                .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+            let email: String = basic_user
+                .try_get("email")
+                .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+            let name: String = basic_user
+                .try_get("name")
+                .unwrap_or_else(|_| "User".to_string());
+
             // Generate default avatar if not present
             let avatar = AvatarService::generate_deterministic_avatar(&user_id.to_string(), &name);
-            
+
             let profile = EnhancedUserProfile {
                 id: user_id,
                 email,
@@ -290,9 +310,11 @@ pub async fn get_enhanced_profile(
                 family_id: basic_user.try_get("current_family_id").ok(),
                 family_name: basic_user.try_get("family_name").ok(),
                 is_verified: basic_user.try_get("is_verified").unwrap_or(false),
-                created_at: basic_user.try_get("created_at").map_err(|e| ApiError::DatabaseError(e.to_string()))?,
+                created_at: basic_user
+                    .try_get("created_at")
+                    .map_err(|e| ApiError::DatabaseError(e.to_string()))?,
             };
-            
+
             Ok(Json(ApiResponse::success(profile)))
         }
     }
@@ -305,51 +327,51 @@ pub async fn update_preferences(
     Json(req): Json<UpdatePreferencesRequest>,
 ) -> ApiResult<StatusCode> {
     let user_id = claims.user_id()?;
-    
+
     // Build dynamic update query
     let mut updates = vec!["updated_at = NOW()".to_string()];
     let mut bind_values: Vec<String> = vec![];
     let mut bind_idx = 2;
-    
+
     if let Some(name) = req.name {
         updates.push(format!("full_name = ${}", bind_idx));
         bind_values.push(name);
         bind_idx += 1;
     }
-    
+
     if let Some(country) = req.country {
         updates.push(format!("country = ${}", bind_idx));
         bind_values.push(country);
         bind_idx += 1;
     }
-    
+
     if let Some(currency) = req.preferred_currency {
         updates.push(format!("preferred_currency = ${}", bind_idx));
         bind_values.push(currency);
         bind_idx += 1;
     }
-    
+
     if let Some(language) = req.preferred_language {
         updates.push(format!("preferred_language = ${}", bind_idx));
         bind_values.push(language);
         bind_idx += 1;
     }
-    
+
     if let Some(timezone) = req.preferred_timezone {
         updates.push(format!("preferred_timezone = ${}", bind_idx));
         bind_values.push(timezone);
         bind_idx += 1;
     }
-    
+
     if let Some(date_format) = req.preferred_date_format {
         updates.push(format!("preferred_date_format = ${}", bind_idx));
         bind_values.push(date_format);
     }
-    
+
     if bind_values.is_empty() {
         return Ok(StatusCode::OK);
     }
-    
+
     // First try to add columns if they don't exist
     let _ = sqlx::query(
         r#"
@@ -359,24 +381,24 @@ pub async fn update_preferences(
         ADD COLUMN IF NOT EXISTS preferred_language VARCHAR(10) DEFAULT 'zh-CN',
         ADD COLUMN IF NOT EXISTS preferred_timezone VARCHAR(50) DEFAULT 'Asia/Shanghai',
         ADD COLUMN IF NOT EXISTS preferred_date_format VARCHAR(20) DEFAULT 'YYYY-MM-DD'
-        "#
+        "#,
     )
     .execute(&pool)
     .await;
-    
+
     // Build and execute update query
     let query = format!("UPDATE users SET {} WHERE id = $1", updates.join(", "));
     let mut query_builder = sqlx::query(&query).bind(user_id);
-    
+
     for value in bind_values {
         query_builder = query_builder.bind(value);
     }
-    
+
     query_builder
         .execute(&pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     Ok(StatusCode::OK)
 }
 
@@ -441,6 +463,6 @@ pub async fn get_supported_locales() -> Json<ApiResponse<serde_json::Value>> {
             {"value": "MMM DD, YYYY", "name": "Dec 31, 2024", "description": "英文格式"}
         ]
     });
-    
+
     Json(ApiResponse::success(locales))
 }

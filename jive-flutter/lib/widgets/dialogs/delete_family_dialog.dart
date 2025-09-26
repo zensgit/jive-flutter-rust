@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/family.dart' as family_model;
-import '../../services/api/family_service.dart';
-import '../../providers/family_provider.dart';
+import 'package:jive_money/models/family.dart' as family_model;
+import 'package:jive_money/services/api/family_service.dart';
+import 'package:jive_money/providers/family_provider.dart';
 
 class DeleteFamilyDialog extends ConsumerStatefulWidget {
   final family_model.Family family;
@@ -81,17 +81,18 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
       await familyService.deleteFamily(widget.family.id);
 
       // 刷新Family列表
-      await ref.refresh(userFamiliesProvider);
+      ref.refresh(userFamiliesProvider);
 
       if (mounted) {
         // 如果删除的是当前Family，切换到其他Family或显示空状态
         final currentFamily = ref.read(currentFamilyProvider);
         if (currentFamily?.id == widget.family.id) {
           final families = ref.read(userFamiliesProvider);
-          if (families != null && families.isNotEmpty) {
+          if (families.isNotEmpty) {
             // 切换到第一个可用的Family
             await familyService.switchFamily(families.first.family.id);
-            await ref.refresh(currentFamilyProvider);
+            if (!context.mounted) return;
+            ref.refresh(currentFamilyProvider);
           }
         }
 
@@ -147,7 +148,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: theme.colorScheme.errorContainer.withOpacity(0.3),
+                color: theme.colorScheme.errorContainer.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(

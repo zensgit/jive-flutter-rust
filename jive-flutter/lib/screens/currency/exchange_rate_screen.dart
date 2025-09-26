@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/currency_provider.dart';
-import '../../providers/currency_provider.dart' show currencyCatalogMetaProvider; // explicit meta provider
+import 'package:jive_money/providers/currency_provider.dart';
+// explicit meta provider
 
 /// Exchange Rate Screen - Auto-refreshes when opened
 class ExchangeRateScreen extends ConsumerStatefulWidget {
@@ -220,7 +220,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
 
             // From currency
             DropdownButtonFormField<String>(
-              value: _fromCurrency,
+              initialValue: _fromCurrency,
               decoration: const InputDecoration(
                 labelText: '从',
                 border: OutlineInputBorder(),
@@ -278,7 +278,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
 
             // To currency
             DropdownButtonFormField<String>(
-              value: _toCurrency,
+              initialValue: _toCurrency,
               decoration: const InputDecoration(
                 labelText: '到',
                 border: OutlineInputBorder(),

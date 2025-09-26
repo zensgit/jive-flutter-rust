@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/family.dart' as family_model;
-import '../../services/api/family_service.dart';
-import '../../providers/auth_provider.dart';
-import '../../widgets/loading_overlay.dart';
+import 'package:jive_money/models/family.dart' as family_model;
+import 'package:jive_money/services/api/family_service.dart';
+import 'package:jive_money/widgets/loading_overlay.dart';
 
 /// 权限编辑界面
 class FamilyPermissionsEditorScreen extends ConsumerStatefulWidget {
@@ -11,10 +10,10 @@ class FamilyPermissionsEditorScreen extends ConsumerStatefulWidget {
   final String familyName;
 
   const FamilyPermissionsEditorScreen({
-    Key? key,
+    super.key,
     required this.familyId,
     required this.familyName,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<FamilyPermissionsEditorScreen> createState() =>
@@ -155,13 +154,9 @@ class _FamilyPermissionsEditorScreenState
       final customRoles = await _familyService.getCustomRoles(widget.familyId);
 
       setState(() {
-        if (permissions != null) {
-          _rolePermissions = permissions;
-        }
-        if (customRoles != null) {
-          _customRoles = customRoles;
-        }
-      });
+        _rolePermissions = permissions;
+              _customRoles = customRoles;
+            });
     } catch (e) {
       _showError('加载权限配置失败: $e');
     } finally {
@@ -473,7 +468,7 @@ class _FamilyPermissionsEditorScreenState
                 children: [
                   Container(
                     padding: const EdgeInsets.all(16),
-                    color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     child: const Text(
                       '角色列表',
                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -620,7 +615,7 @@ class _FamilyPermissionsEditorScreenState
         // 头部信息
         Container(
           padding: const EdgeInsets.all(16),
-          color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
           child: Row(
             children: [
               Expanded(
@@ -861,7 +856,7 @@ class _CreateCustomRoleDialogState extends State<_CreateCustomRoleDialog> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              value: _baseRole,
+              initialValue: _baseRole,
               decoration: const InputDecoration(
                 labelText: '基于角色',
                 helperText: '新角色将继承所选角色的权限',

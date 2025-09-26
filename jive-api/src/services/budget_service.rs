@@ -1,5 +1,5 @@
 use crate::error::{ApiError, ApiResult};
-use chrono::{DateTime, Datelike, Timelike, Utc, Duration};
+use chrono::{DateTime, Datelike, Duration, Timelike, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use uuid::Uuid;
@@ -64,17 +64,17 @@ impl BudgetService {
     /// 创建预算
     pub async fn create_budget(&self, data: CreateBudgetRequest) -> ApiResult<Budget> {
         let budget_id = Uuid::new_v4();
-        
+
         // 验证预算期间
         let end_date = match data.period_type {
             BudgetPeriod::Monthly => {
                 let start = data.start_date;
                 Some(start + Duration::days(30))
-            },
+            }
             BudgetPeriod::Yearly => {
                 let start = data.start_date;
                 Some(start + Duration::days(365))
-            },
+            }
             BudgetPeriod::Custom => data.end_date,
             _ => None,
         };
@@ -89,16 +89,16 @@ impl BudgetService {
                 $1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW()
             )
             RETURNING *
-            "#
+            "#,
         )
-        .bind(&budget_id)
-        .bind(&data.ledger_id)
-        .bind(&data.name)
-        .bind(&data.period_type)
-        .bind(&data.amount)
-        .bind(&data.category_id)
-        .bind(&data.start_date)
-        .bind(&end_date)
+        .bind(budget_id)
+        .bind(data.ledger_id)
+        .bind(data.name)
+        .bind(data.period_type)
+        .bind(data.amount)
+        .bind(data.category_id)
+        .bind(data.start_date)
+        .bind(end_date)
         .bind(true)
         .fetch_one(&self.pool)
         .await
@@ -110,17 +110,16 @@ impl BudgetService {
     /// 获取预算进度
     pub async fn get_budget_progress(&self, budget_id: Uuid) -> ApiResult<BudgetProgress> {
         // 获取预算信息
-        let budget: Budget = sqlx::query_as(
-            "SELECT * FROM budgets WHERE id = $1 AND is_active = true"
-        )
-        .bind(&budget_id)
-        .fetch_one(&self.pool)
-        .await
-        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+        let budget: Budget =
+            sqlx::query_as("SELECT * FROM budgets WHERE id = $1 AND is_active = true")
+                .bind(budget_id)
+                .fetch_one(&self.pool)
+                .await
+                .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         // 计算当前期间
         let (period_start, period_end) = self.get_current_period(&budget)?;
-        
+
         // 获取期间内的支出
         let spent: (Option<f64>,) = sqlx::query_as(
             r#"
@@ -131,12 +130,12 @@ impl BudgetService {
             AND transaction_date BETWEEN $2 AND $3
             AND ($4::uuid IS NULL OR category_id = $4)
             AND status = 'cleared'
-            "#
+            "#,
         )
-        .bind(&budget.ledger_id)
-        .bind(&period_start)
-        .bind(&period_end)
-        .bind(&budget.category_id)
+        .bind(budget.ledger_id)
+        .bind(period_start)
+        .bind(period_end)
+        .bind(budget.category_id)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -149,7 +148,7 @@ impl BudgetService {
         let now = Utc::now();
         let days_remaining = (period_end - now).num_days().max(0);
         let days_passed = (now - period_start).num_days().max(1);
-        
+
         // 计算平均日支出和预测
         let average_daily_spend = spent_amount / days_passed as f64;
         let projected_total = average_daily_spend * (days_passed + days_remaining) as f64;
@@ -160,17 +159,20 @@ impl BudgetService {
         };
 
         // 获取分类支出明细
-        let categories = self.get_category_spending(
-            &budget.ledger_id,
-            &period_start,
-            &period_end,
-            budget.category_id
-        ).await?;
+        let categories = self
+            .get_category_spending(
+                &budget.ledger_id,
+                &period_start,
+                &period_end,
+                budget.category_id,
+            )
+            .await?;
 
         Ok(BudgetProgress {
             budget_id: budget.id,
             budget_name: budget.name,
-            period: format!("{} - {}", 
+            period: format!(
+                "{} - {}",
                 period_start.format("%Y-%m-%d"),
                 period_end.format("%Y-%m-%d")
             ),
@@ -211,12 +213,12 @@ impl BudgetService {
             GROUP BY c.id, c.name
             HAVING SUM(t.amount) > 0
             ORDER BY amount_spent DESC
-            "#
+            "#,
         )
         .bind(ledger_id)
         .bind(start_date)
         .bind(end_date)
-        .bind(&category_filter)
+        .bind(category_filter)
         .fetch_all(&self.pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -227,7 +229,7 @@ impl BudgetService {
     /// 计算当前预算期间
     fn get_current_period(&self, budget: &Budget) -> ApiResult<(DateTime<Utc>, DateTime<Utc>)> {
         let now = Utc::now();
-        
+
         match budget.period_type {
             BudgetPeriod::Monthly => {
                 let start = Utc::now()
@@ -241,14 +243,11 @@ impl BudgetService {
                     .unwrap()
                     .with_nanosecond(0)
                     .unwrap();
-                
-                let end = (start + Duration::days(32))
-                    .with_day(1)
-                    .unwrap()
-                    - Duration::seconds(1);
-                
+
+                let end = (start + Duration::days(32)).with_day(1).unwrap() - Duration::seconds(1);
+
                 Ok((start, end))
-            },
+            }
             BudgetPeriod::Yearly => {
                 let start = Utc::now()
                     .with_month(1)
@@ -263,42 +262,43 @@ impl BudgetService {
                     .unwrap()
                     .with_nanosecond(0)
                     .unwrap();
-                
+
                 let end = start + Duration::days(365) - Duration::seconds(1);
-                
+
                 Ok((start, end))
-            },
-            BudgetPeriod::Custom => {
-                Ok((budget.start_date, budget.end_date.unwrap_or(now + Duration::days(30))))
-            },
-            _ => {
-                Ok((budget.start_date, now + Duration::days(30)))
             }
+            BudgetPeriod::Custom => Ok((
+                budget.start_date,
+                budget.end_date.unwrap_or(now + Duration::days(30)),
+            )),
+            _ => Ok((budget.start_date, now + Duration::days(30))),
         }
     }
 
     /// 预算预警检查
     pub async fn check_budget_alerts(&self, ledger_id: Uuid) -> ApiResult<Vec<BudgetAlert>> {
-        let budgets: Vec<Budget> = sqlx::query_as(
-            "SELECT * FROM budgets WHERE ledger_id = $1 AND is_active = true"
-        )
-        .bind(&ledger_id)
-        .fetch_all(&self.pool)
-        .await
-        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+        let budgets: Vec<Budget> =
+            sqlx::query_as("SELECT * FROM budgets WHERE ledger_id = $1 AND is_active = true")
+                .bind(ledger_id)
+                .fetch_all(&self.pool)
+                .await
+                .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         let mut alerts = Vec::new();
 
         for budget in budgets {
             let progress = self.get_budget_progress(budget.id).await?;
-            
+
             // 检查预警条件
             if progress.percentage_used >= 90.0 {
                 alerts.push(BudgetAlert {
                     budget_id: budget.id,
                     budget_name: budget.name.clone(),
                     alert_type: AlertType::Critical,
-                    message: format!("预算 {} 已使用 {:.1}%", budget.name, progress.percentage_used),
+                    message: format!(
+                        "预算 {} 已使用 {:.1}%",
+                        budget.name, progress.percentage_used
+                    ),
                     percentage_used: progress.percentage_used,
                     remaining_amount: progress.remaining_amount,
                 });
@@ -307,7 +307,10 @@ impl BudgetService {
                     budget_id: budget.id,
                     budget_name: budget.name.clone(),
                     alert_type: AlertType::Warning,
-                    message: format!("预算 {} 已使用 {:.1}%", budget.name, progress.percentage_used),
+                    message: format!(
+                        "预算 {} 已使用 {:.1}%",
+                        budget.name, progress.percentage_used
+                    ),
                     percentage_used: progress.percentage_used,
                     remaining_amount: progress.remaining_amount,
                 });
@@ -320,7 +323,10 @@ impl BudgetService {
                         budget_id: budget.id,
                         budget_name: budget.name.clone(),
                         alert_type: AlertType::Projection,
-                        message: format!("按当前支出速度，预算 {} 预计超支 ¥{:.2}", budget.name, overspend),
+                        message: format!(
+                            "按当前支出速度，预算 {} 预计超支 ¥{:.2}",
+                            budget.name, overspend
+                        ),
                         percentage_used: progress.percentage_used,
                         remaining_amount: progress.remaining_amount,
                     });
@@ -338,15 +344,14 @@ impl BudgetService {
         period: ReportPeriod,
     ) -> ApiResult<BudgetReport> {
         let (start_date, end_date) = self.get_report_period(period)?;
-        
+
         // 获取所有预算
-        let budgets: Vec<Budget> = sqlx::query_as(
-            "SELECT * FROM budgets WHERE ledger_id = $1 AND is_active = true"
-        )
-        .bind(&ledger_id)
-        .fetch_all(&self.pool)
-        .await
-        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+        let budgets: Vec<Budget> =
+            sqlx::query_as("SELECT * FROM budgets WHERE ledger_id = $1 AND is_active = true")
+                .bind(ledger_id)
+                .fetch_all(&self.pool)
+                .await
+                .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         let mut budget_summaries = Vec::new();
         let mut total_budgeted = 0.0;
@@ -356,7 +361,7 @@ impl BudgetService {
             let progress = self.get_budget_progress(budget.id).await?;
             total_budgeted += budget.amount;
             total_spent += progress.spent_amount;
-            
+
             budget_summaries.push(BudgetSummary {
                 budget_name: budget.name,
                 budgeted: budget.amount,
@@ -379,17 +384,18 @@ impl BudgetService {
                 WHERE ledger_id = $1 AND category_id IS NOT NULL
             )
             AND status = 'cleared'
-            "#
+            "#,
         )
-        .bind(&ledger_id)
-        .bind(&start_date)
-        .bind(&end_date)
+        .bind(ledger_id)
+        .bind(start_date)
+        .bind(end_date)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         Ok(BudgetReport {
-            period: format!("{} - {}", 
+            period: format!(
+                "{} - {}",
                 start_date.format("%Y-%m-%d"),
                 end_date.format("%Y-%m-%d")
             ),
@@ -405,7 +411,7 @@ impl BudgetService {
 
     fn get_report_period(&self, period: ReportPeriod) -> ApiResult<(DateTime<Utc>, DateTime<Utc>)> {
         let now = Utc::now();
-        
+
         match period {
             ReportPeriod::CurrentMonth => {
                 let start = now
@@ -420,7 +426,7 @@ impl BudgetService {
                     .with_nanosecond(0)
                     .unwrap();
                 Ok((start, now))
-            },
+            }
             ReportPeriod::LastMonth => {
                 let end = now
                     .with_day(1)
@@ -446,7 +452,7 @@ impl BudgetService {
                     .with_nanosecond(0)
                     .unwrap();
                 Ok((start, end))
-            },
+            }
             ReportPeriod::CurrentYear => {
                 let start = now
                     .with_month(1)
@@ -462,7 +468,7 @@ impl BudgetService {
                     .with_nanosecond(0)
                     .unwrap();
                 Ok((start, now))
-            },
+            }
         }
     }
 }

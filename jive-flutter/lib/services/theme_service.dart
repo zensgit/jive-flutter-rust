@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'dart:math';
-import '../models/theme_models.dart' as models;
-import 'storage_service.dart';
+import 'package:jive_money/models/theme_models.dart' as models;
+import 'package:jive_money/services/storage_service.dart';
 
 /// 主题管理服务
 class ThemeService extends ChangeNotifier {
@@ -409,8 +409,10 @@ class ThemeService extends ChangeNotifier {
     // Flutter会通过MediaQuery.of(context).platformBrightness自动检测
     // 这里我们模拟系统主题变化监听
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final window = WidgetsBinding.instance.window;
-      _systemIsDark = window.platformBrightness == Brightness.dark;
+      final views = WidgetsBinding.instance.platformDispatcher.views;
+      final view = views.isNotEmpty ? views.first : null;
+      final brightness = view?.platformDispatcher.platformBrightness ?? WidgetsBinding.instance.platformDispatcher.platformBrightness;
+      _systemIsDark = brightness == Brightness.dark;
     });
   }
 
@@ -621,9 +623,9 @@ class ThemeService extends ChangeNotifier {
       downloads: 0,
       rating: 5.0,
       primaryColor: primaryColor,
-      primaryVariant: primaryColor.withOpacity(0.8),
+      primaryVariant: primaryColor.withValues(alpha: 0.8),
       secondary: secondaryColor,
-      secondaryVariant: secondaryColor.withOpacity(0.8),
+      secondaryVariant: secondaryColor.withValues(alpha: 0.8),
       background: Colors.white,
       surface: Colors.white,
       surfaceVariant: const Color(0xFFF5F5F5),

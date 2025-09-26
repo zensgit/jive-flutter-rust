@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import '../../providers/transaction_provider.dart';
-import '../../providers/account_provider.dart';
-import '../../providers/ledger_provider.dart';
+import 'package:jive_money/providers/transaction_provider.dart';
+import 'package:jive_money/providers/account_provider.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
 
 class TransactionAddScreen extends ConsumerStatefulWidget {
   final String? type; // income, expense, transfer
@@ -216,10 +216,10 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                                 color: Theme.of(context).primaryColor,
                               ),
                               const SizedBox(width: 8),
-                              Text(account.name ?? '未命名'),
+                              Text(account.name),
                               const Spacer(),
                               Text(
-                                '¥${(account.balance ?? 0).toStringAsFixed(2)}',
+                                '¥${account.balance.toStringAsFixed(2)}',
                                 style: TextStyle(
                                   color: Colors.grey[600],
                                   fontSize: 12,
@@ -272,10 +272,10 @@ class _TransactionAddScreenState extends ConsumerState<TransactionAddScreen> {
                                   color: Theme.of(context).primaryColor,
                                 ),
                                 const SizedBox(width: 8),
-                                Text(account.name ?? '未命名'),
+                                Text(account.name),
                                 const Spacer(),
                                 Text(
-                                  '¥${(account.balance ?? 0).toStringAsFixed(2)}',
+                                  '¥${account.balance.toStringAsFixed(2)}',
                                   style: TextStyle(
                                     color: Colors.grey[600],
                                     fontSize: 12,

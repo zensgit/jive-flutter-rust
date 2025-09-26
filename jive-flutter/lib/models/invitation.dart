@@ -1,9 +1,9 @@
 /// 邀请系统模型
 /// 用于管理Family成员邀请流程
+library;
 
-import 'package:flutter/foundation.dart';
-import 'family.dart';
-import 'user.dart';
+import 'package:jive_money/models/family.dart';
+import 'package:jive_money/models/user.dart';
 
 /// 邀请状态枚举
 enum InvitationStatus {

@@ -1,7 +1,7 @@
 //! Error handling for Jive Core
 
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
-use serde::{Serialize, Deserialize};
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
@@ -10,6 +10,8 @@ use wasm_bindgen::prelude::*;
 #[derive(Error, Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum JiveError {
+    #[error("Not found: {message}")]
+    NotFound { message: String },
     #[error("Account not found: {id}")]
     AccountNotFound { id: String },
 
@@ -144,7 +146,7 @@ impl From<chrono::ParseError> for JiveError {
     }
 }
 
-#[cfg(feature = "server")]
+#[cfg(feature = "db")]
 impl From<sqlx::Error> for JiveError {
     fn from(err: sqlx::Error) -> Self {
         JiveError::DatabaseError {
@@ -153,7 +155,7 @@ impl From<sqlx::Error> for JiveError {
     }
 }
 
-#[cfg(feature = "server")]
+#[cfg(feature = "db")]
 impl From<reqwest::Error> for JiveError {
     fn from(err: reqwest::Error) -> Self {
         JiveError::NetworkError {
@@ -164,7 +166,8 @@ impl From<reqwest::Error> for JiveError {
 
 // 验证辅助函数
 pub fn validate_amount(amount: &str) -> Result<rust_decimal::Decimal> {
-    amount.parse::<rust_decimal::Decimal>()
+    amount
+        .parse::<rust_decimal::Decimal>()
         .map_err(|_| JiveError::InvalidAmount {
             amount: amount.to_string(),
         })
@@ -172,10 +175,10 @@ pub fn validate_amount(amount: &str) -> Result<rust_decimal::Decimal> {
 
 pub fn validate_currency(currency: &str) -> Result<()> {
     const VALID_CURRENCIES: &[&str] = &[
-        "USD", "EUR", "GBP", "JPY", "CNY", "CAD", "AUD", "CHF", "SEK", "NOK", "DKK", 
-        "KRW", "SGD", "HKD", "INR", "BRL", "MXN", "RUB", "ZAR", "TRY"
+        "USD", "EUR", "GBP", "JPY", "CNY", "CAD", "AUD", "CHF", "SEK", "NOK", "DKK", "KRW", "SGD",
+        "HKD", "INR", "BRL", "MXN", "RUB", "ZAR", "TRY",
     ];
-    
+
     if VALID_CURRENCIES.contains(&currency) {
         Ok(())
     } else {
@@ -191,21 +194,20 @@ pub fn validate_email(email: &str) -> Result<()> {
             message: "Email cannot be empty".to_string(),
         });
     }
-    
+
     if !email.contains('@') || !email.contains('.') {
         return Err(JiveError::ValidationError {
             message: "Invalid email format".to_string(),
         });
     }
-    
+
     Ok(())
 }
 
 pub fn validate_id(id: &str) -> Result<uuid::Uuid> {
-    uuid::Uuid::parse_str(id)
-        .map_err(|_| JiveError::ValidationError {
-            message: format!("Invalid UUID format: {}", id),
-        })
+    uuid::Uuid::parse_str(id).map_err(|_| JiveError::ValidationError {
+        message: format!("Invalid UUID format: {}", id),
+    })
 }
 
 /// 错误分类助手
@@ -214,33 +216,35 @@ pub mod error_classification {
 
     /// 检查错误是否为用户错误（可以显示给用户）
     pub fn is_user_error(error: &JiveError) -> bool {
-        matches!(error,
-            JiveError::AccountNotFound { .. } |
-            JiveError::TransactionNotFound { .. } |
-            JiveError::LedgerNotFound { .. } |
-            JiveError::CategoryNotFound { .. } |
-            JiveError::InsufficientBalance { .. } |
-            JiveError::InvalidAmount { .. } |
-            JiveError::InvalidCurrency { .. } |
-            JiveError::InvalidDate { .. } |
-            JiveError::ValidationError { .. } |
-            JiveError::AuthenticationError { .. } |
-            JiveError::AuthorizationError { .. } |
-            JiveError::PermissionDenied { .. }
+        matches!(
+            error,
+            JiveError::AccountNotFound { .. }
+                | JiveError::TransactionNotFound { .. }
+                | JiveError::LedgerNotFound { .. }
+                | JiveError::CategoryNotFound { .. }
+                | JiveError::InsufficientBalance { .. }
+                | JiveError::InvalidAmount { .. }
+                | JiveError::InvalidCurrency { .. }
+                | JiveError::InvalidDate { .. }
+                | JiveError::ValidationError { .. }
+                | JiveError::AuthenticationError { .. }
+                | JiveError::AuthorizationError { .. }
+                | JiveError::PermissionDenied { .. }
         )
     }
 
     /// 检查错误是否为系统错误（需要记录日志）
     pub fn is_system_error(error: &JiveError) -> bool {
-        matches!(error,
-            JiveError::DatabaseError { .. } |
-            JiveError::NetworkError { .. } |
-            JiveError::SerializationError { .. } |
-            JiveError::ExternalServiceError { .. } |
-            JiveError::ConfigurationError { .. } |
-            JiveError::SyncError { .. } |
-            JiveError::EncryptionError { .. } |
-            JiveError::Unknown { .. }
+        matches!(
+            error,
+            JiveError::DatabaseError { .. }
+                | JiveError::NetworkError { .. }
+                | JiveError::SerializationError { .. }
+                | JiveError::ExternalServiceError { .. }
+                | JiveError::ConfigurationError { .. }
+                | JiveError::SyncError { .. }
+                | JiveError::EncryptionError { .. }
+                | JiveError::Unknown { .. }
         )
     }
 

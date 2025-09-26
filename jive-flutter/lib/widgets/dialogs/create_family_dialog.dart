@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/ledger.dart';
-import '../../providers/ledger_provider.dart';
+import 'package:jive_money/models/ledger.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
 
 /// 创建家庭对话框
 class CreateFamilyDialog extends ConsumerStatefulWidget {
@@ -128,7 +128,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: theme.primaryColor.withOpacity(0.1),
+                color: theme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(16),
                 ),
@@ -185,7 +185,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
 
                     // 类型选择
                     DropdownButtonFormField<LedgerType>(
-                      value: _selectedType,
+                      initialValue: _selectedType,
                       decoration: InputDecoration(
                         labelText: '类型',
                         prefixIcon: Icon(_getTypeIcon(_selectedType)),
@@ -215,7 +215,7 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
 
                     // 货币选择
                     DropdownButtonFormField<String>(
-                      value: _selectedCurrency,
+                      initialValue: _selectedCurrency,
                       decoration: InputDecoration(
                         labelText: '货币',
                         prefixIcon: const Icon(Icons.attach_money),
@@ -289,10 +289,10 @@ class _CreateFamilyDialogState extends ConsumerState<CreateFamilyDialog> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: theme.primaryColor.withOpacity(0.05),
+                        color: theme.primaryColor.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: theme.primaryColor.withOpacity(0.2),
+                          color: theme.primaryColor.withValues(alpha: 0.2),
                         ),
                       ),
                       child: Row(

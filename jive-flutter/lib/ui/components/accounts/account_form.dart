@@ -1,10 +1,10 @@
 // 账户表单组件
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../core/constants/app_constants.dart';
-import '../buttons/primary_button.dart';
-import '../buttons/secondary_button.dart';
-import 'account_list.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/buttons/primary_button.dart';
+import 'package:jive_money/ui/components/buttons/secondary_button.dart';
+import 'package:jive_money/ui/components/accounts/account_list.dart';
 
 class AccountForm extends StatefulWidget {
   final AccountFormData? initialData;
@@ -159,7 +159,7 @@ class _AccountFormState extends State<AccountForm> {
             color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
             border: Border.all(
-              color: theme.colorScheme.outline.withOpacity(0.2),
+              color: theme.colorScheme.outline.withValues(alpha: 0.2),
             ),
           ),
           child: Row(
@@ -200,7 +200,7 @@ class _AccountFormState extends State<AccountForm> {
     final isSelected = _type == type;
 
     return Material(
-      color: isSelected ? color.withOpacity(0.1) : Colors.transparent,
+      color: isSelected ? color.withValues(alpha: 0.1) : Colors.transparent,
       borderRadius: BorderRadius.circular(AppConstants.smallBorderRadius),
       child: InkWell(
         onTap: () {
@@ -223,7 +223,7 @@ class _AccountFormState extends State<AccountForm> {
                 size: 20,
                 color: isSelected
                     ? color
-                    : theme.colorScheme.onSurface.withOpacity(0.6),
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               const SizedBox(width: 8),
               Text(
@@ -231,7 +231,7 @@ class _AccountFormState extends State<AccountForm> {
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: isSelected
                       ? color
-                      : theme.colorScheme.onSurface.withOpacity(0.6),
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
@@ -413,7 +413,7 @@ class _AccountFormState extends State<AccountForm> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Text('选择颜色'),
+                  const Text('选择颜色'),
                 ],
               ),
             ),
@@ -439,7 +439,7 @@ class _AccountFormState extends State<AccountForm> {
                 children: [
                   Icon(_icon, size: 24),
                   const SizedBox(width: 8),
-                  Text('选择图标'),
+                  const Text('选择图标'),
                 ],
               ),
             ),

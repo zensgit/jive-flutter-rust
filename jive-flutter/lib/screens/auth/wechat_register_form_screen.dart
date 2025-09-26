@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../services/wechat_service.dart';
-import '../../services/auth_service.dart';
-import '../../utils/password_strength.dart';
+import 'package:jive_money/services/wechat_service.dart';
+import 'package:jive_money/services/auth_service.dart';
+import 'package:jive_money/utils/password_strength.dart';
 
 /// 微信注册表单页面
 class WeChatRegisterFormScreen extends StatefulWidget {
@@ -87,6 +87,7 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
       if (result.success && result.userData != null) {
         // 注册成功后绑定微信
         final bindResult = await _authService.bindWechat();
+        if (!context.mounted) return;
 
         if (bindResult.success) {
           // 绑定成功，返回成功结果

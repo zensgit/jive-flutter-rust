@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/router/app_router.dart';
-import '../../providers/budget_provider.dart';
-import '../../models/budget.dart';
-import '../../providers/currency_provider.dart';
+import 'package:jive_money/core/router/app_router.dart';
+import 'package:jive_money/providers/budget_provider.dart';
+import 'package:jive_money/models/budget.dart';
+import 'package:jive_money/providers/currency_provider.dart';
 
 class BudgetsScreen extends ConsumerWidget {
   const BudgetsScreen({super.key});
@@ -99,7 +99,7 @@ class BudgetsScreen extends ConsumerWidget {
                 gradient: LinearGradient(
                   colors: [
                     Theme.of(context).primaryColor,
-                    Theme.of(context).primaryColor.withOpacity(0.7),
+                    Theme.of(context).primaryColor.withValues(alpha: 0.7),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -288,7 +288,7 @@ class BudgetsScreen extends ConsumerWidget {
         Text(
           label,
           style: TextStyle(
-            color: color.withOpacity(0.7),
+            color: color.withValues(alpha: 0.7),
             fontSize: 12,
           ),
         ),
@@ -337,7 +337,7 @@ class BudgetsScreen extends ConsumerWidget {
                         height: 40,
                         decoration: BoxDecoration(
                           color: _getCategoryColor(budget.category)
-                              .withOpacity(0.1),
+                              .withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(
@@ -422,7 +422,7 @@ class BudgetsScreen extends ConsumerWidget {
                         .formatCurrency(
                             spent, ref.read(baseCurrencyProvider).code);
                     return Text(
-                      '已用 ' + used,
+                      '已用 $used',
                       style: TextStyle(
                         color: Colors.grey[600],
                         fontSize: 12,
@@ -435,7 +435,7 @@ class BudgetsScreen extends ConsumerWidget {
                         .formatCurrency(
                             amount, ref.read(baseCurrencyProvider).code);
                     return Text(
-                      '预算 ' + totalStr,
+                      '预算 $totalStr',
                       style: TextStyle(
                         color: Colors.grey[600],
                         fontSize: 12,
