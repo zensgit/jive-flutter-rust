@@ -278,7 +278,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/rules/execute", post(execute_rules))
         
         // 认证 API
-        .route("/api/v1/auth/register", post(auth_handlers::register_with_family))
+        .route("/api/v1/auth/register", post(auth_handlers::register))
         .route("/api/v1/auth/login", post(auth_handlers::login))
         .route("/api/v1/auth/refresh", post(auth_handlers::refresh_token))
         .route("/api/v1/auth/user", get(auth_handlers::get_current_user))

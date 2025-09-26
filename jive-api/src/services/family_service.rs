@@ -61,18 +61,20 @@ impl FamilyService {
         };
         
         // Create family
+        tracing::info!(target: "family_service", user_id = %user_id, name = %family_name, "Inserting family with owner_id");
         let family_id = Uuid::new_v4();
         let invite_code = Family::generate_invite_code();
         
         let family = sqlx::query_as::<_, Family>(
             r#"
-            INSERT INTO families (id, name, currency, timezone, locale, invite_code, member_count, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, $5, $6, 1, $7, $8)
+            INSERT INTO families (id, name, owner_id, currency, timezone, locale, invite_code, member_count, created_at, updated_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, 1, $8, $9)
             RETURNING *
             "#
         )
         .bind(family_id)
         .bind(&family_name)
+        .bind(user_id)
         .bind(request.currency.as_deref().unwrap_or("CNY"))
         .bind(request.timezone.as_deref().unwrap_or("Asia/Shanghai"))
         .bind(request.locale.as_deref().unwrap_or("zh-CN"))
@@ -103,7 +105,7 @@ impl FamilyService {
         // Create default ledger
         sqlx::query(
             r#"
-            INSERT INTO ledgers (id, family_id, name, currency, owner_id, is_default, created_at, updated_at)
+            INSERT INTO ledgers (id, family_id, name, currency, created_by, is_default, created_at, updated_at)
             VALUES ($1, $2, $3, $4, $5, true, $6, $7)
             "#
         )
