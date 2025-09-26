@@ -24,6 +24,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 // 使用库中的模块
 use jive_money_api::{handlers, services, ws};
+mod metrics;
 
 // 导入处理器
 use handlers::accounts::*;
@@ -278,6 +279,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             "/api/v1/transactions/statistics",
             get(get_transaction_statistics),
         )
+        // Metrics endpoint
+        .route("/metrics", get(metrics::metrics_handler))
         // 收款人管理 API
         .route("/api/v1/payees", get(list_payees))
         .route("/api/v1/payees", post(create_payee))
