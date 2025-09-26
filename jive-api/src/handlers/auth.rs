@@ -124,35 +124,24 @@ pub async fn register(
         .map_err(|_| ApiError::InternalServerError)?
         .to_string();
     
-    // 创建用户
+    // 创建用户与家庭的 ID
     let user_id = Uuid::new_v4();
-    let family_id = Uuid::new_v4(); // 为新用户创建默认家庭
+    let family_id = Uuid::new_v4();
     
     // 开始事务
     let mut tx = pool.begin().await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
-    // 创建家庭
-    sqlx::query(
-        r#"
-        INSERT INTO families (id, name, created_at, updated_at)
-        VALUES ($1, $2, NOW(), NOW())
-        "#
-    )
-    .bind(family_id)
-    .bind(format!("{}'s Family", req.name))
-    .execute(&mut *tx)
-    .await
-    .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
-    // 创建用户（将 name 写入 name 与 full_name，便于后续使用）
+    // 先创建用户（避免 families.owner_id 外键约束失败）
+    tracing::info!(target: "auth_register", user_id = %user_id, family_id = %family_id, email = %final_email, "Creating user then family with owner_id");
     sqlx::query(
         r#"
         INSERT INTO users (
-            id, email, username, full_name, password_hash, current_family_id,
-            status, email_verified, created_at, updated_at
+            id, email, username, name, full_name, password_hash,
+            is_active, email_verified, created_at, updated_at
         ) VALUES (
-            $1, $2, $3, $4, $5, $6, 'active', false, NOW(), NOW()
+            $1, $2, $3, $4, $5, $6,
+            true, false, NOW(), NOW()
         )
         "#
     )
@@ -160,26 +149,51 @@ pub async fn register(
     .bind(&final_email)
     .bind(&username_opt)
     .bind(&req.name)
+    .bind(&req.name)
     .bind(password_hash)
+    .execute(&mut *tx)
+    .await
+    .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    // 再创建家庭（带 owner_id）
+    tracing::info!(target: "auth_register", user_id = %user_id, family_id = %family_id, "Inserting family with owner_id in register");
+    sqlx::query(
+        r#"
+        INSERT INTO families (id, name, owner_id, created_at, updated_at)
+        VALUES ($1, $2, $3, NOW(), NOW())
+        "#
+    )
     .bind(family_id)
+    .bind(format!("{}'s Family", req.name))
+    .bind(user_id)
     .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
-    // 创建默认账本
+    // 创建默认账本（标记 is_default，记录创建者）
     let ledger_id = Uuid::new_v4();
     sqlx::query(
         r#"
-        INSERT INTO ledgers (id, family_id, name, currency, created_at, updated_at)
-        VALUES ($1, $2, '默认账本', 'CNY', NOW(), NOW())
+        INSERT INTO ledgers (id, family_id, name, currency, created_by, is_default, created_at, updated_at)
+        VALUES ($1, $2, '默认账本', 'CNY', $3, true, NOW(), NOW())
         "#
     )
     .bind(ledger_id)
     .bind(family_id)
+    .bind(user_id)
     .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     
+    // 绑定用户的当前家庭并提交事务
+    tracing::info!(target: "auth_register", user_id = %user_id, family_id = %family_id, "Binding current_family_id and committing");
+    sqlx::query("UPDATE users SET current_family_id = $1 WHERE id = $2")
+        .bind(family_id)
+        .bind(user_id)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
     // 提交事务
     tx.commit().await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;

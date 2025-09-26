@@ -147,6 +147,7 @@ pub async fn register_with_preferences(
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
     // Create family with user's preferences
+    tracing::info!(target: "enhanced_register", user_id = %user_id, name = %req.name, "Creating family via FamilyService (owner_id)");
     let family_service = FamilyService::new(pool.clone());
     let family_request = CreateFamilyRequest {
         name: Some(format!("{}的家庭", req.name)),
@@ -155,12 +156,16 @@ pub async fn register_with_preferences(
         locale: Some(req.language.clone()),
     };
 
-    let family = family_service
-        .create_family(user_id, family_request)
-        .await
-        .map_err(|_e| ApiError::InternalServerError)?;
+    let family = match family_service.create_family(user_id, family_request).await {
+        Ok(f) => f,
+        Err(e) => {
+            tracing::error!(target: "enhanced_register", error=?e, user_id=%user_id, "create_family failed");
+            return Err(ApiError::InternalServerError);
+        }
+    };
 
     // Update user's current family
+    tracing::info!(target: "enhanced_register", user_id = %user_id, family_id = %family.id, "Binding current_family_id after enhanced register");
     sqlx::query("UPDATE users SET current_family_id = $1 WHERE id = $2")
         .bind(family.id)
         .bind(user_id)
