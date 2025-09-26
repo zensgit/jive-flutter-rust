@@ -186,6 +186,52 @@ export JWT_SECRET=$(openssl rand -hex 32)
 
 未设置时（或留空）API 会在开发 / 测试自动使用一个不安全的占位并打印警告，不可在生产依赖该默认值。
 
+### 监控与指标 (Metrics)
+
+| Endpoint    | 用途              | 认证 | 备注 |
+|-------------|-------------------|------|------|
+| `/health`   | 探活 + 快照       | 否   | 轻量 JSON：hash 分布、rehash 状态、汇率指标等 |
+| `/metrics`  | Prometheus 拉取    | 否   | 文本格式指标（适合长期监控） |
+
+规范指标（推荐使用）：
+```
+password_hash_bcrypt_total          # bcrypt (2a+2b+2y)
+password_hash_argon2id_total        # argon2id 数量
+password_hash_unknown_total         # 未识别前缀
+password_hash_total_count           # 总数
+password_hash_bcrypt_variant{variant="2b"} X  # 每个变体
+jive_password_rehash_total          # 成功重哈希次数（bcrypt→argon2id）
+```
+
+兼容旧指标（DEPRECATED，将在 2 个发布周期后移除）：
+```
+jive_password_hash_users{algo="bcrypt_2b"}
+```
+
+Prometheus 抓取示例：
+```yaml
+scrape_configs:
+  - job_name: jive-api
+    metrics_path: /metrics
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["api-host:8012"]
+```
+
+一致性快速校验（bcrypt 聚合与 /metrics 是否匹配）：
+```bash
+H=$(curl -s http://localhost:8012/health)
+M=$(curl -s http://localhost:8012/metrics)
+echo "Health bcrypt sum:" \
+  $(echo "$H" | jq '.metrics.hash_distribution.bcrypt | (."2a"+."2b"+."2y")')
+echo "Metrics bcrypt total:" \
+  $(grep '^password_hash_bcrypt_total' <<<"$M" | awk '{print $2}')
+```
+
+运维建议：
+- 大规模用户场景可为 hash 查询加 30s 内存缓存。
+- 迁移所有看板后移除旧的 jive_password_hash_users* 系列。
+
 ### 密码重哈希（bcrypt → Argon2id）
 
 登录成功后，如检测到旧 bcrypt 哈希，系统会在 `REHASH_ON_LOGIN` 未显式关闭时（默认开启）尝试透明升级为 Argon2id：
