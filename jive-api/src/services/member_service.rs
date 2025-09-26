@@ -17,7 +17,7 @@ impl MemberService {
     pub fn new(pool: PgPool) -> Self {
         Self { pool }
     }
-
+    
     pub async fn add_member(
         &self,
         ctx: &ServiceContext,
@@ -25,7 +25,7 @@ impl MemberService {
         role: MemberRole,
     ) -> Result<FamilyMember, ServiceError> {
         ctx.require_permission(Permission::InviteMembers)?;
-
+        
         // Check if already member
         let exists = sqlx::query_scalar::<_, bool>(
             r#"
@@ -33,21 +33,21 @@ impl MemberService {
                 SELECT 1 FROM family_members
                 WHERE family_id = $1 AND user_id = $2
             )
-            "#,
+            "#
         )
         .bind(ctx.family_id)
         .bind(user_id)
         .fetch_one(&self.pool)
         .await?;
-
+        
         if exists {
             return Err(ServiceError::MemberAlreadyExists);
         }
-
+        
         // Add member
         let permissions = role.default_permissions();
         let permissions_json = serde_json::to_value(&permissions)?;
-
+        
         let member = sqlx::query_as::<_, FamilyMember>(
             r#"
             INSERT INTO family_members (
@@ -55,7 +55,7 @@ impl MemberService {
             )
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *
-            "#,
+            "#
         )
         .bind(ctx.family_id)
         .bind(user_id)
@@ -65,50 +65,52 @@ impl MemberService {
         .bind(Utc::now())
         .fetch_one(&self.pool)
         .await?;
-
+        
         Ok(member)
     }
-
+    
     pub async fn remove_member(
         &self,
         ctx: &ServiceContext,
         user_id: Uuid,
     ) -> Result<(), ServiceError> {
         ctx.require_permission(Permission::RemoveMembers)?;
-
+        
         // Get member info
         let member_role = sqlx::query_scalar::<_, String>(
-            "SELECT role FROM family_members WHERE family_id = $1 AND user_id = $2",
+            "SELECT role FROM family_members WHERE family_id = $1 AND user_id = $2"
         )
         .bind(ctx.family_id)
         .bind(user_id)
         .fetch_optional(&self.pool)
         .await?
         .ok_or_else(|| ServiceError::not_found("Member", user_id))?;
-
+        
         // Cannot remove owner
         if member_role == "owner" {
             return Err(ServiceError::CannotRemoveOwner);
         }
-
+        
         // Check if actor can manage this role
         let target_role = MemberRole::from_str_name(&member_role)
             .ok_or_else(|| ServiceError::ValidationError("Invalid role".to_string()))?;
-
+        
         if !ctx.can_manage_role(target_role) {
             return Err(ServiceError::PermissionDenied);
         }
-
+        
         // Remove member
-        sqlx::query("DELETE FROM family_members WHERE family_id = $1 AND user_id = $2")
-            .bind(ctx.family_id)
-            .bind(user_id)
-            .execute(&self.pool)
-            .await?;
-
+        sqlx::query(
+            "DELETE FROM family_members WHERE family_id = $1 AND user_id = $2"
+        )
+        .bind(ctx.family_id)
+        .bind(user_id)
+        .execute(&self.pool)
+        .await?;
+        
         Ok(())
     }
-
+    
     pub async fn update_member_role(
         &self,
         ctx: &ServiceContext,
@@ -116,38 +118,38 @@ impl MemberService {
         new_role: MemberRole,
     ) -> Result<FamilyMember, ServiceError> {
         ctx.require_permission(Permission::UpdateMemberRoles)?;
-
+        
         // Get current role
         let current_role = sqlx::query_scalar::<_, String>(
-            "SELECT role FROM family_members WHERE family_id = $1 AND user_id = $2",
+            "SELECT role FROM family_members WHERE family_id = $1 AND user_id = $2"
         )
         .bind(ctx.family_id)
         .bind(user_id)
         .fetch_optional(&self.pool)
         .await?
         .ok_or_else(|| ServiceError::not_found("Member", user_id))?;
-
+        
         // Cannot change owner role
         if current_role == "owner" {
             return Err(ServiceError::CannotChangeOwnerRole);
         }
-
+        
         // Check permissions
         if !ctx.can_manage_role(new_role) {
             return Err(ServiceError::PermissionDenied);
         }
-
+        
         // Update role and permissions
         let permissions = new_role.default_permissions();
         let permissions_json = serde_json::to_value(&permissions)?;
-
+        
         let member = sqlx::query_as::<_, FamilyMember>(
             r#"
             UPDATE family_members
             SET role = $1, permissions = $2
             WHERE family_id = $3 AND user_id = $4
             RETURNING *
-            "#,
+            "#
         )
         .bind(new_role.to_string())
         .bind(permissions_json)
@@ -155,10 +157,10 @@ impl MemberService {
         .bind(user_id)
         .fetch_one(&self.pool)
         .await?;
-
+        
         Ok(member)
     }
-
+    
     pub async fn update_member_permissions(
         &self,
         ctx: &ServiceContext,
@@ -166,50 +168,50 @@ impl MemberService {
         permissions: Vec<Permission>,
     ) -> Result<FamilyMember, ServiceError> {
         ctx.require_permission(Permission::UpdateMemberRoles)?;
-
+        
         // Get member role
         let member_role = sqlx::query_scalar::<_, String>(
-            "SELECT role FROM family_members WHERE family_id = $1 AND user_id = $2",
+            "SELECT role FROM family_members WHERE family_id = $1 AND user_id = $2"
         )
         .bind(ctx.family_id)
         .bind(user_id)
         .fetch_optional(&self.pool)
         .await?
         .ok_or_else(|| ServiceError::not_found("Member", user_id))?;
-
+        
         // Cannot change owner permissions
         if member_role == "owner" {
             return Err(ServiceError::BusinessRuleViolation(
-                "Owner permissions cannot be customized".to_string(),
+                "Owner permissions cannot be customized".to_string()
             ));
         }
-
+        
         // Update permissions
         let permissions_json = serde_json::to_value(&permissions)?;
-
+        
         let member = sqlx::query_as::<_, FamilyMember>(
             r#"
             UPDATE family_members
             SET permissions = $1
             WHERE family_id = $2 AND user_id = $3
             RETURNING *
-            "#,
+            "#
         )
         .bind(permissions_json)
         .bind(ctx.family_id)
         .bind(user_id)
         .fetch_one(&self.pool)
         .await?;
-
+        
         Ok(member)
     }
-
+    
     pub async fn get_family_members(
         &self,
         ctx: &ServiceContext,
     ) -> Result<Vec<MemberWithUserInfo>, ServiceError> {
         ctx.require_permission(Permission::ViewMembers)?;
-
+        
         let members = sqlx::query_as::<_, MemberWithUserInfo>(
             r#"
             SELECT 
@@ -225,15 +227,15 @@ impl MemberService {
             JOIN users u ON fm.user_id = u.id
             WHERE fm.family_id = $1
             ORDER BY fm.joined_at
-            "#,
+            "#
         )
         .bind(ctx.family_id)
         .fetch_all(&self.pool)
         .await?;
-
+        
         Ok(members)
     }
-
+    
     pub async fn check_permission(
         &self,
         user_id: Uuid,
@@ -244,13 +246,13 @@ impl MemberService {
             r#"
             SELECT permissions FROM family_members
             WHERE family_id = $1 AND user_id = $2
-            "#,
+            "#
         )
         .bind(family_id)
         .bind(user_id)
         .fetch_optional(&self.pool)
         .await?;
-
+        
         if let Some(json) = permissions_json {
             let permissions: Vec<Permission> = serde_json::from_value(json)?;
             Ok(permissions.contains(&permission))
@@ -258,7 +260,7 @@ impl MemberService {
             Ok(false)
         }
     }
-
+    
     pub async fn get_member_context(
         &self,
         user_id: Uuid,
@@ -271,7 +273,7 @@ impl MemberService {
             email: String,
             full_name: Option<String>,
         }
-
+        
         let row = sqlx::query_as::<_, MemberContextRow>(
             r#"
             SELECT 
@@ -282,19 +284,19 @@ impl MemberService {
             FROM family_members fm
             JOIN users u ON fm.user_id = u.id
             WHERE fm.family_id = $1 AND fm.user_id = $2
-            "#,
+            "#
         )
         .bind(family_id)
         .bind(user_id)
         .fetch_optional(&self.pool)
         .await?
         .ok_or(ServiceError::PermissionDenied)?;
-
+        
         let role = MemberRole::from_str_name(&row.role)
             .ok_or_else(|| ServiceError::ValidationError("Invalid role".to_string()))?;
-
+        
         let permissions: Vec<Permission> = serde_json::from_value(row.permissions)?;
-
+        
         Ok(ServiceContext::new(
             user_id,
             family_id,

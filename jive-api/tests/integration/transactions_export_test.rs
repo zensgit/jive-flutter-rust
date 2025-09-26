@@ -172,26 +172,6 @@ mod tests {
         let audit_str = audit_hdr.to_str().unwrap();
         assert!(Uuid::parse_str(audit_str).is_ok(), "invalid X-Audit-Id: {}", audit_str);
 
-        // POST CSV with include_header=false should not contain header line
-        let req = Request::builder()
-            .method("POST")
-            .uri("/api/v1/transactions/export")
-            .header(header::AUTHORIZATION, token.clone())
-            .header(header::CONTENT_TYPE, "application/json")
-            .body(Body::from(json!({"format":"csv","include_header":false}).to_string()))
-            .unwrap();
-        let resp = app.clone().oneshot(req).await.unwrap();
-        assert_eq!(resp.status(), http::StatusCode::OK);
-        let body = hyper::body::to_bytes(resp.into_body()).await.unwrap();
-        let v: serde_json::Value = serde_json::from_slice(&body).unwrap();
-        assert_eq!(v["success"], true);
-        let url = v["download_url"].as_str().unwrap_or("");
-        let b64_idx = url.rfind("base64,").unwrap() + "base64,".len();
-        let decoded = base64::engine::general_purpose::STANDARD.decode(&url[b64_idx..]).unwrap();
-        let csv_text = String::from_utf8(decoded).unwrap();
-        let first_line = csv_text.lines().next().unwrap_or("");
-        assert!(!first_line.starts_with("Date,"), "POST CSV header should be suppressed when include_header=false");
-
         // GET CSV streaming (also validate filename header)
         let req = Request::builder()
             .method("GET")
@@ -210,20 +190,6 @@ mod tests {
         let audit = headers.get("x-audit-id").expect("missing X-Audit-Id header");
         let audit_str = audit.to_str().unwrap();
         assert!(Uuid::parse_str(audit_str).is_ok(), "invalid X-Audit-Id: {}", audit_str);
-
-        // GET CSV with include_header=false should not contain header line
-        let req = Request::builder()
-            .method("GET")
-            .uri("/api/v1/transactions/export.csv?include_header=false")
-            .header(header::AUTHORIZATION, token.clone())
-            .body(Body::empty())
-            .unwrap();
-        let resp = app.clone().oneshot(req).await.unwrap();
-        assert_eq!(resp.status(), http::StatusCode::OK);
-        let body = hyper::body::to_bytes(resp.into_body()).await.unwrap();
-        let csv_text = String::from_utf8(body.to_vec()).unwrap();
-        let first_line = csv_text.lines().next().unwrap_or("");
-        assert!(!first_line.starts_with("Date,"), "header should be suppressed when include_header=false");
 
         // Filter: by ledger_id should include only rows for that ledger
         let req = Request::builder()

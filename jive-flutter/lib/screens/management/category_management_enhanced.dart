@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/category.dart';
-import '../../models/category_template.dart';
-import '../../providers/category_provider.dart';
-import '../../providers/ledger_provider.dart';
-import '../../services/api/category_service.dart';
-import '../../widgets/bottom_sheets/import_details_sheet.dart';
+import 'package:jive_money/models/category.dart';
+import 'package:jive_money/models/category_template.dart';
+import 'package:jive_money/providers/category_provider.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
+import 'package:jive_money/services/api/category_service.dart';
+import 'package:jive_money/widgets/bottom_sheets/import_details_sheet.dart';
 
 class CategoryManagementEnhancedPage extends ConsumerStatefulWidget {
   const CategoryManagementEnhancedPage({super.key});

@@ -36,17 +36,14 @@ pub async fn get_audit_logs(
     if ctx.family_id != family_id {
         return Err(StatusCode::FORBIDDEN);
     }
-
+    
     // Check permission
-    if ctx
-        .require_permission(crate::models::permission::Permission::ViewAuditLog)
-        .is_err()
-    {
+    if ctx.require_permission(crate::models::permission::Permission::ViewAuditLog).is_err() {
         return Err(StatusCode::FORBIDDEN);
     }
-
+    
     let service = AuditService::new(pool.clone());
-
+    
     let filter = AuditLogFilter {
         family_id: Some(family_id),
         user_id: query.user_id,
@@ -60,7 +57,7 @@ pub async fn get_audit_logs(
         limit: query.limit,
         offset: query.offset,
     };
-
+    
     match service.get_audit_logs(filter).await {
         Ok(logs) => Ok(Json(ApiResponse::success(logs))),
         Err(e) => {
@@ -110,7 +107,7 @@ pub async fn cleanup_audit_logs(
             RETURNING 1
         )
         SELECT COUNT(*) FROM del
-        "#,
+        "#
     )
     .bind(family_id)
     .bind(days)
@@ -120,25 +117,23 @@ pub async fn cleanup_audit_logs(
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     // Log this cleanup operation into audit trail (best-effort)
-    let _ = AuditService::new(pool.clone())
-        .log_action(
-            family_id,
-            ctx.user_id,
-            crate::models::audit::CreateAuditLogRequest {
-                action: crate::models::audit::AuditAction::Delete,
-                entity_type: "audit_logs".to_string(),
-                entity_id: None,
-                old_values: None,
-                new_values: Some(serde_json::json!({
-                    "older_than_days": days,
-                    "limit": limit,
-                    "deleted": deleted,
-                })),
-            },
-            None,
-            None,
-        )
-        .await;
+    let _ = AuditService::new(pool.clone()).log_action(
+        family_id,
+        ctx.user_id,
+        crate::models::audit::CreateAuditLogRequest {
+            action: crate::models::audit::AuditAction::Delete,
+            entity_type: "audit_logs".to_string(),
+            entity_id: None,
+            old_values: None,
+            new_values: Some(serde_json::json!({
+                "older_than_days": days,
+                "limit": limit,
+                "deleted": deleted,
+            })),
+        },
+        None,
+        None,
+    ).await;
 
     Ok(Json(ApiResponse::success(serde_json::json!({
         "deleted": deleted,
@@ -163,34 +158,29 @@ pub async fn export_audit_logs(
     if ctx.family_id != family_id {
         return Err(StatusCode::FORBIDDEN);
     }
-
+    
     // Check permission
-    if ctx
-        .require_permission(crate::models::permission::Permission::ViewAuditLog)
-        .is_err()
-    {
+    if ctx.require_permission(crate::models::permission::Permission::ViewAuditLog).is_err() {
         return Err(StatusCode::FORBIDDEN);
     }
-
+    
     let service = AuditService::new(pool.clone());
-
-    match service
-        .export_audit_report(family_id, query.from_date, query.to_date)
-        .await
-    {
-        Ok(csv) => Ok(Response::builder()
-            .status(StatusCode::OK)
-            .header(header::CONTENT_TYPE, "text/csv")
-            .header(
-                header::CONTENT_DISPOSITION,
-                format!(
-                    "attachment; filename=\"audit_log_{}_{}.csv\"",
-                    query.from_date.format("%Y%m%d"),
-                    query.to_date.format("%Y%m%d")
-                ),
-            )
-            .body(csv.into())
-            .unwrap()),
+    
+    match service.export_audit_report(family_id, query.from_date, query.to_date).await {
+        Ok(csv) => {
+            Ok(Response::builder()
+                .status(StatusCode::OK)
+                .header(header::CONTENT_TYPE, "text/csv")
+                .header(
+                    header::CONTENT_DISPOSITION,
+                    format!("attachment; filename=\"audit_log_{}_{}.csv\"", 
+                        query.from_date.format("%Y%m%d"),
+                        query.to_date.format("%Y%m%d")
+                    )
+                )
+                .body(csv.into())
+                .unwrap())
+        },
         Err(e) => {
             eprintln!("Error exporting audit logs: {:?}", e);
             Err(StatusCode::INTERNAL_SERVER_ERROR)

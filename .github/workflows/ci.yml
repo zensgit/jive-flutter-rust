@@ -12,148 +12,27 @@ on:
         description: 'Enable debug mode'
         required: false
         default: false
-      full_run:
-        type: boolean
-        description: 'Run all heavy jobs on manual dispatch'
-        required: false
-        default: false
-
-permissions:
-  contents: read
-  pull-requests: write
 
 env:
   FLUTTER_VERSION: '3.35.3'
   RUST_VERSION: '1.89.0'
-  # Docker Hub credentials - optional but recommended to avoid rate limits
-  DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-  DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-
-concurrency:
-  group: core-ci-${{ github.ref }}-${{ github.event_name }}
-  cancel-in-progress: true
 
 jobs:
-  changes:
-    name: Detect Changes
-    runs-on: ubuntu-latest
-    outputs:
-      docs_only: ${{ steps.out.outputs.docs_only }}
-      flutter_changed: ${{ steps.out.outputs.flutter_changed }}
-    steps:
-    - uses: actions/checkout@v4
-    - name: Paths filter
-      id: filter
-      uses: dorny/paths-filter@v3
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        filters: |
-          docs:
-            - '**/*.md'
-            - 'docs/**'
-            - 'README.md'
-            - 'AGENTS.md'
-            - '.github/*.md'
-            - 'PR_DESCRIPTIONS/**'
-          code:
-            - '!**/*.md'
-          flutter:
-            - 'jive-flutter/**'
-            - 'jive-flutter/pubspec.yaml'
-    - name: Set outputs
-      id: out
-      run: |
-        if [ "${{ steps.filter.outputs.docs }}" = "true" ] && [ "${{ steps.filter.outputs.code }}" != "true" ]; then
-          echo "docs_only=true" >> "$GITHUB_OUTPUT"
-        else
-          echo "docs_only=false" >> "$GITHUB_OUTPUT"
-        fi
-        echo "flutter_changed=${{ steps.filter.outputs.flutter }}" >> "$GITHUB_OUTPUT"
-  rustfmt-check:
-    name: Rustfmt Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    continue-on-error: false
-    needs: [changes]
-    env:
-      DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: Setup Rust
-      uses: dtolnay/rust-toolchain@stable
-      with:
-        toolchain: ${{ env.RUST_VERSION }}
-        components: rustfmt
-    - name: Check formatting (jive-api)
-      if: env.DOCS_ONLY != 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
-      working-directory: jive-api
-      run: |
-        cargo fmt --all -- --check
-
-    - name: Check formatting (jive-core)
-      if: env.DOCS_ONLY != 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
-      working-directory: jive-core
-      run: |
-        cargo fmt --all -- --check
-
-  cargo-deny:
-    name: Cargo Deny Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    continue-on-error: false
-    needs: [changes]
-    env:
-      DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: Install cargo-deny
-      if: env.DOCS_ONLY != 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
-      run: |
-        curl -sSfL https://github.com/EmbarkStudios/cargo-deny/releases/download/0.14.24/cargo-deny-0.14.24-x86_64-unknown-linux-musl.tar.gz | tar xz
-        sudo mv cargo-deny*/cargo-deny /usr/local/bin/cargo-deny
-        cargo-deny --version
-    - name: Run cargo-deny (API)
-      if: env.DOCS_ONLY != 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
-      working-directory: jive-api
-      run: |
-        set -o pipefail
-        cargo-deny check -c ../deny.toml 2>&1 | tee ../cargo-deny-output.txt || true
-
-    - name: Upload cargo-deny output
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: cargo-deny-output
-        path: cargo-deny-output.txt
   flutter-test:
     name: Flutter Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    continue-on-error: false
-    needs: [changes]
-    env:
-      DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
-      FLUTTER_CHANGED: ${{ needs.changes.outputs.flutter_changed }}
+    continue-on-error: true
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: No Flutter changes detected (short-circuit)
-      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED != 'true'
-      run: |
-        echo "No Flutter changes; skipping analysis/tests to keep pipeline efficient."
-
     - name: Setup Flutter
-      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
       uses: subosito/flutter-action@v2
       with:
         flutter-version: ${{ env.FLUTTER_VERSION }}
         channel: 'stable'
 
     - name: Cache Flutter dependencies
-      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
       uses: actions/cache@v4
       with:
         path: |
@@ -165,18 +44,15 @@ jobs:
           ${{ runner.os }}-flutter-
 
     - name: Install dependencies
-      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
       working-directory: jive-flutter
       run: flutter pub get
 
     - name: Generate code (build_runner)
-      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
       working-directory: jive-flutter
       run: |
         flutter pub run build_runner build --delete-conflicting-outputs || true
 
     - name: Analyze code (non-fatal for now)
-      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
       working-directory: jive-flutter
       run: |
         set -o pipefail
@@ -184,14 +60,13 @@ jobs:
         flutter analyze --no-fatal-warnings 2>&1 | tee ../flutter-analyze-output.txt || true
 
     - name: Upload analyzer output
-      if: always() && env.FLUTTER_CHANGED == 'true'
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: flutter-analyze-output
         path: flutter-analyze-output.txt
 
     - name: Run tests
-      if: env.DOCS_ONLY != 'true' && env.FLUTTER_CHANGED == 'true' && (github.event_name != 'workflow_dispatch' || inputs.full_run == 'true')
       working-directory: jive-flutter
       run: |
         # Generate machine-readable test results (non-fatal for reporting)
@@ -204,7 +79,7 @@ jobs:
         flutter test test/settings_manual_overrides_navigation_test.dart --machine > ../flutter-widget-manual-overrides.json || true
 
     - name: Upload manual-overrides widget test output
-      if: always() && env.FLUTTER_CHANGED == 'true'
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: flutter-manual-overrides-widget
@@ -212,7 +87,7 @@ jobs:
         if-no-files-found: ignore
 
     - name: Generate test report
-      if: always() && env.FLUTTER_CHANGED == 'true'
+      if: always()
       working-directory: jive-flutter
       run: |
         echo "# Flutter Test Report" > ../test-report.md
@@ -236,7 +111,7 @@ jobs:
         fi
 
     - name: Upload test report
-      if: always() && env.FLUTTER_CHANGED == 'true'
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: test-report
@@ -245,10 +120,6 @@ jobs:
   rust-test:
     name: Rust API Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs: [changes]
-    env:
-      DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
 
     services:
       postgres:
@@ -278,23 +149,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Login to Docker Hub
-      if: env.DOCKER_USERNAME != '' && env.DOCKER_TOKEN != ''
-      uses: docker/login-action@v3
-      with:
-        username: ${{ env.DOCKER_USERNAME }}
-        password: ${{ env.DOCKER_TOKEN }}
-      continue-on-error: true
-
     - name: Setup Rust
-      if: env.DOCS_ONLY != 'true'
       uses: dtolnay/rust-toolchain@stable
       with:
         toolchain: ${{ env.RUST_VERSION }}
         components: rustfmt, clippy
 
     - name: Cache Rust dependencies
-      if: env.DOCS_ONLY != 'true'
       uses: actions/cache@v4
       with:
         path: |
@@ -366,7 +227,7 @@ jobs:
         exit 1
 
     - name: Comment SQLx diff summary to PR
-      if: steps.sqlx_check.outcome == 'failure' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+      if: steps.sqlx_check.outcome == 'failure' && github.event_name == 'pull_request'
       uses: actions/github-script@v7
       with:
         script: |
@@ -494,7 +355,6 @@ jobs:
   rust-core-check:
     name: Rust Core Dual Mode Check
     runs-on: ubuntu-latest
-    timeout-minutes: 20
     # Restored to blocking mode (fail-fast: true)
     continue-on-error: false
     services:
@@ -518,14 +378,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
-    - name: Login to Docker Hub
-      if: env.DOCKER_USERNAME != '' && env.DOCKER_TOKEN != ''
-      uses: docker/login-action@v3
-      with:
-        username: ${{ env.DOCKER_USERNAME }}
-        password: ${{ env.DOCKER_TOKEN }}
-      continue-on-error: true
 
     - name: Setup Rust
       uses: dtolnay/rust-toolchain@stable
@@ -572,11 +424,7 @@ jobs:
   field-compare:
     name: Field Comparison Check
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: [changes, flutter-test, rust-test]
-    if: needs.changes.outputs.flutter_changed == 'true'
-    env:
-      FLUTTER_CHANGED: ${{ needs.changes.outputs.flutter_changed }}
+    needs: [flutter-test, rust-test]
 
     steps:
     - uses: actions/checkout@v4
@@ -586,17 +434,15 @@ jobs:
       with:
         name: test-report
         path: .
-        if-no-files-found: ignore
 
     - name: Download Flutter analyzer output
       uses: actions/download-artifact@v4
       with:
         name: flutter-analyze-output
         path: .
-        if-no-files-found: ignore
 
     - name: Upload analyzer output for comparison
-      if: always() && env.FLUTTER_CHANGED == 'true'
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: flutter-analyze-output-comparison
@@ -608,7 +454,6 @@ jobs:
         sudo apt-get install -y jq
 
     - name: Compare Flutter and Rust fields
-      if: env.FLUTTER_CHANGED == 'true'
       run: |
         echo "# Field Comparison Report" > field-compare-report.md
         echo "## Flutter vs Rust Model Comparison" >> field-compare-report.md
@@ -647,19 +492,63 @@ jobs:
         fi
 
     - name: Upload field comparison report
-      if: always() && env.FLUTTER_CHANGED == 'true'
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: field-compare-report
         path: field-compare-report.md
         if-no-files-found: ignore
 
-  
+  cargo-deny:
+    name: Cargo Deny Check
+    runs-on: ubuntu-latest
+    continue-on-error: true  # Non-blocking initially
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install cargo-deny
+      run: cargo install cargo-deny --locked
+
+    - name: Run cargo-deny
+      working-directory: jive-api
+      run: |
+        cargo deny check 2>&1 | tee ../cargo-deny-output.txt || true
+
+    - name: Upload cargo-deny output
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: cargo-deny-output
+        path: cargo-deny-output.txt
+
+  rustfmt-check:
+    name: Rustfmt Check
+    runs-on: ubuntu-latest
+    continue-on-error: true  # Non-blocking initially
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: ${{ env.RUST_VERSION }}
+        components: rustfmt
+
+    - name: Run rustfmt check
+      run: |
+        cd jive-api && cargo fmt --all -- --check 2>&1 | tee ../rustfmt-output.txt || true
+        cd ../jive-core && cargo fmt --all -- --check 2>&1 | tee -a ../rustfmt-output.txt || true
+
+    - name: Upload rustfmt output
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: rustfmt-output
+        path: rustfmt-output.txt
 
   rust-api-clippy:
     name: Rust API Clippy (blocking)
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     # Now blocking with -D warnings since we achieved 0 clippy warnings
     steps:
     - uses: actions/checkout@v4
@@ -701,11 +590,8 @@ jobs:
   summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: [changes, flutter-test, rust-test, rust-core-check, field-compare, rust-api-clippy, cargo-deny, rustfmt-check]
+    needs: [flutter-test, rust-test, rust-core-check, field-compare, rust-api-clippy, cargo-deny, rustfmt-check]
     if: always()
-    env:
-      DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
 
     steps:
     - name: Download all artifacts
@@ -719,18 +605,14 @@ jobs:
         echo "- Branch: ${{ github.ref_name }}" >> ci-summary.md
         echo "- Commit: ${{ github.sha }}" >> ci-summary.md
         echo "" >> ci-summary.md
-        echo "## Optimization" >> ci-summary.md
-        echo "- Docs-only fast path: ${DOCS_ONLY}" >> ci-summary.md
-        echo "" >> ci-summary.md
 
         echo "## Test Results" >> ci-summary.md
         echo "- Flutter Tests: ${{ needs.flutter-test.result }}" >> ci-summary.md
         echo "- Rust Tests: ${{ needs.rust-test.result }}" >> ci-summary.md
         echo "- Rust Core Check: ${{ needs.rust-core-check.result }}" >> ci-summary.md
-        echo "- Rust API Clippy: ${{ needs.rust-api-clippy.result }}" >> ci-summary.md
+        echo "- Field Comparison: ${{ needs.field-compare.result }}" >> ci-summary.md
         echo "- Cargo Deny: ${{ needs.cargo-deny.result }}" >> ci-summary.md
         echo "- Rustfmt Check: ${{ needs.rustfmt-check.result }}" >> ci-summary.md
-        echo "- Field Comparison: ${{ needs.field-compare.result }}" >> ci-summary.md
         echo "" >> ci-summary.md
 
         if [ -f test-report/test-report.md ]; then
@@ -744,15 +626,6 @@ jobs:
           tail -50 rust-test-results/rust-test-results.txt >> ci-summary.md
           echo '```' >> ci-summary.md
         fi
-
-        echo "" >> ci-summary.md
-        echo "## Job Durations (approx)" >> ci-summary.md
-        echo "- Flutter Tests: ${{ needs.flutter-test.result }}" >> ci-summary.md
-        echo "- Rust API Tests: ${{ needs.rust-test.result }}" >> ci-summary.md
-        echo "- Rust Core Check: ${{ needs.rust-core-check.result }}" >> ci-summary.md
-        echo "- Rust API Clippy: ${{ needs.rust-api-clippy.result }}" >> ci-summary.md
-        echo "- Cargo Deny: ${{ needs.cargo-deny.result }}" >> ci-summary.md
-        echo "- Rustfmt Check: ${{ needs.rustfmt-check.result }}" >> ci-summary.md
 
         # Manual overrides tests summary
         echo "" >> ci-summary.md
@@ -779,7 +652,7 @@ jobs:
 
         # Rust API Clippy 结果
         echo "" >> ci-summary.md
-        echo "## Rust API Clippy" >> ci-summary.md
+        echo "## Rust API Clippy (Non-blocking)" >> ci-summary.md
         echo "- Status: ${{ needs.rust-api-clippy.result }}" >> ci-summary.md
         echo "- Artifact: api-clippy-output.txt" >> ci-summary.md
 

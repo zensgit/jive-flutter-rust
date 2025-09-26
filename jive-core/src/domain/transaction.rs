@@ -1,15 +1,15 @@
 //! Transaction domain model
 
-use chrono::{DateTime, NaiveDate, Utc};
+use chrono::{DateTime, Utc, NaiveDate};
 use rust_decimal::Decimal;
-use serde::{Deserialize, Serialize};
+use serde::{Serialize, Deserialize};
 use uuid::Uuid;
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
-use super::{Entity, SoftDeletable, TransactionStatus, TransactionType};
 use crate::error::{JiveError, Result};
+use super::{Entity, SoftDeletable, TransactionType, TransactionStatus};
 
 /// 交易实体
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -61,11 +61,11 @@ impl Transaction {
     ) -> Result<Transaction> {
         let parsed_date = NaiveDate::parse_from_str(&date, "%Y-%m-%d")
             .map_err(|_| JiveError::InvalidDate { date })?;
-
+        
         // 验证金额
         crate::utils::Validator::validate_transaction_amount(&amount)?;
         crate::error::validate_currency(&currency)?;
-
+        
         // 验证名称
         if name.trim().is_empty() {
             return Err(JiveError::ValidationError {
@@ -295,7 +295,7 @@ impl Transaction {
                 message: "Tag cannot be empty".to_string(),
             });
         }
-
+        
         if !self.tags.contains(&cleaned_tag) {
             self.tags.push(cleaned_tag);
             self.updated_at = Utc::now();
@@ -355,16 +355,11 @@ impl Transaction {
     }
 
     #[wasm_bindgen]
-    pub fn set_multi_currency(
-        &mut self,
-        original_amount: String,
-        original_currency: String,
-        exchange_rate: String,
-    ) -> Result<()> {
+    pub fn set_multi_currency(&mut self, original_amount: String, original_currency: String, exchange_rate: String) -> Result<()> {
         crate::error::validate_currency(&original_currency)?;
         crate::utils::Validator::validate_transaction_amount(&original_amount)?;
         crate::utils::Validator::validate_transaction_amount(&exchange_rate)?;
-
+        
         self.original_amount = Some(original_amount);
         self.original_currency = Some(original_currency);
         self.exchange_rate = Some(exchange_rate);
@@ -472,15 +467,15 @@ impl Transaction {
     pub fn search_keywords(&self) -> Vec<String> {
         let mut keywords = Vec::new();
         keywords.push(self.name.to_lowercase());
-
+        
         if let Some(desc) = &self.description {
             keywords.push(desc.to_lowercase());
         }
-
+        
         if let Some(notes) = &self.notes {
             keywords.push(notes.to_lowercase());
         }
-
+        
         keywords.extend(self.tags.iter().map(|tag| tag.to_lowercase()));
         keywords
     }
@@ -503,18 +498,10 @@ impl Entity for Transaction {
 }
 
 impl SoftDeletable for Transaction {
-    fn is_deleted(&self) -> bool {
-        self.deleted_at.is_some()
-    }
-    fn deleted_at(&self) -> Option<DateTime<Utc>> {
-        self.deleted_at
-    }
-    fn soft_delete(&mut self) {
-        self.deleted_at = Some(Utc::now());
-    }
-    fn restore(&mut self) {
-        self.deleted_at = None;
-    }
+    fn is_deleted(&self) -> bool { self.deleted_at.is_some() }
+    fn deleted_at(&self) -> Option<DateTime<Utc>> { self.deleted_at }
+    fn soft_delete(&mut self) { self.deleted_at = Some(Utc::now()); }
+    fn restore(&mut self) { self.deleted_at = None; }
 }
 
 /// 交易构建器
@@ -662,11 +649,9 @@ impl TransactionBuilder {
             message: "Date is required".to_string(),
         })?;
 
-        let transaction_type = self
-            .transaction_type
-            .ok_or_else(|| JiveError::ValidationError {
-                message: "Transaction type is required".to_string(),
-            })?;
+        let transaction_type = self.transaction_type.ok_or_else(|| JiveError::ValidationError {
+            message: "Transaction type is required".to_string(),
+        })?;
 
         // 验证输入
         crate::utils::Validator::validate_transaction_amount(&amount)?;
@@ -725,8 +710,7 @@ mod tests {
             "USD".to_string(),
             "2023-12-25".to_string(),
             TransactionType::Expense,
-        )
-        .unwrap();
+        ).unwrap();
 
         assert_eq!(transaction.name(), "Test Transaction");
         assert_eq!(transaction.amount(), "100.50");
@@ -745,12 +729,11 @@ mod tests {
             "USD".to_string(),
             "2023-12-25".to_string(),
             TransactionType::Expense,
-        )
-        .unwrap();
+        ).unwrap();
 
         transaction.add_tag("food".to_string()).unwrap();
         transaction.add_tag("restaurant".to_string()).unwrap();
-
+        
         assert!(transaction.has_tag("food".to_string()));
         assert!(transaction.has_tag("restaurant".to_string()));
         assert!(!transaction.has_tag("travel".to_string()));
@@ -791,15 +774,16 @@ mod tests {
             "CNY".to_string(),
             "2023-12-25".to_string(),
             TransactionType::Expense,
-        )
-        .unwrap();
+        ).unwrap();
 
-        transaction
-            .set_multi_currency("100.00".to_string(), "USD".to_string(), "7.20".to_string())
-            .unwrap();
+        transaction.set_multi_currency(
+            "100.00".to_string(),
+            "USD".to_string(),
+            "7.20".to_string(),
+        ).unwrap();
 
         assert!(transaction.is_multi_currency());
-
+        
         transaction.clear_multi_currency();
         assert!(!transaction.is_multi_currency());
     }
@@ -814,8 +798,7 @@ mod tests {
             "USD".to_string(),
             "2023-12-25".to_string(),
             TransactionType::Income,
-        )
-        .unwrap();
+        ).unwrap();
 
         let expense = Transaction::new(
             "account-123".to_string(),
@@ -825,8 +808,7 @@ mod tests {
             "USD".to_string(),
             "2023-12-25".to_string(),
             TransactionType::Expense,
-        )
-        .unwrap();
+        ).unwrap();
 
         assert_eq!(income.signed_amount(), "1000.00");
         assert_eq!(expense.signed_amount(), "-500.00");
@@ -842,8 +824,7 @@ mod tests {
             "USD".to_string(),
             "2023-12-25".to_string(),
             TransactionType::Expense,
-        )
-        .unwrap();
+        ).unwrap();
 
         assert_eq!(transaction.month_key(), "2023-12");
     }

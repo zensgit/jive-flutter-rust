@@ -1,10 +1,10 @@
 //! Utility functions for Jive Core
 
-use crate::error::{JiveError, Result};
-use chrono::{DateTime, Datelike, NaiveDate, Utc};
-use rust_decimal::Decimal;
-use serde::{Deserialize, Serialize};
+use chrono::{DateTime, Utc, NaiveDate, Datelike};
 use uuid::Uuid;
+use rust_decimal::Decimal;
+use serde::{Serialize, Deserialize};
+use crate::error::{JiveError, Result};
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
@@ -58,51 +58,33 @@ fn get_currency_symbol(currency: &str) -> &'static str {
 /// 计算两个金额的加法
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub fn add_amounts(amount1: &str, amount2: &str) -> Result<String> {
-    let a1 = amount1
-        .parse::<Decimal>()
-        .map_err(|_| JiveError::InvalidAmount {
-            amount: amount1.to_string(),
-        })?;
-    let a2 = amount2
-        .parse::<Decimal>()
-        .map_err(|_| JiveError::InvalidAmount {
-            amount: amount2.to_string(),
-        })?;
-
+    let a1 = amount1.parse::<Decimal>()
+        .map_err(|_| JiveError::InvalidAmount { amount: amount1.to_string() })?;
+    let a2 = amount2.parse::<Decimal>()
+        .map_err(|_| JiveError::InvalidAmount { amount: amount2.to_string() })?;
+    
     Ok((a1 + a2).to_string())
 }
 
 /// 计算两个金额的减法
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub fn subtract_amounts(amount1: &str, amount2: &str) -> Result<String> {
-    let a1 = amount1
-        .parse::<Decimal>()
-        .map_err(|_| JiveError::InvalidAmount {
-            amount: amount1.to_string(),
-        })?;
-    let a2 = amount2
-        .parse::<Decimal>()
-        .map_err(|_| JiveError::InvalidAmount {
-            amount: amount2.to_string(),
-        })?;
-
+    let a1 = amount1.parse::<Decimal>()
+        .map_err(|_| JiveError::InvalidAmount { amount: amount1.to_string() })?;
+    let a2 = amount2.parse::<Decimal>()
+        .map_err(|_| JiveError::InvalidAmount { amount: amount2.to_string() })?;
+    
     Ok((a1 - a2).to_string())
 }
 
 /// 计算两个金额的乘法
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub fn multiply_amounts(amount: &str, multiplier: &str) -> Result<String> {
-    let a = amount
-        .parse::<Decimal>()
-        .map_err(|_| JiveError::InvalidAmount {
-            amount: amount.to_string(),
-        })?;
-    let m = multiplier
-        .parse::<Decimal>()
-        .map_err(|_| JiveError::InvalidAmount {
-            amount: multiplier.to_string(),
-        })?;
-
+    let a = amount.parse::<Decimal>()
+        .map_err(|_| JiveError::InvalidAmount { amount: amount.to_string() })?;
+    let m = multiplier.parse::<Decimal>()
+        .map_err(|_| JiveError::InvalidAmount { amount: multiplier.to_string() })?;
+    
     Ok((a * m).to_string())
 }
 
@@ -125,54 +107,38 @@ impl CurrencyConverter {
         if from_currency == to_currency {
             return Ok(amount.to_string());
         }
-
-        let decimal_amount = amount
-            .parse::<Decimal>()
-            .map_err(|_| JiveError::InvalidAmount {
-                amount: amount.to_string(),
-            })?;
-
+        
+        let decimal_amount = amount.parse::<Decimal>()
+            .map_err(|_| JiveError::InvalidAmount { amount: amount.to_string() })?;
+        
         let rate = self.get_exchange_rate(from_currency, to_currency)?;
         let converted = decimal_amount * rate;
-
+        
         Ok(converted.to_string())
     }
 
     #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn get_supported_currencies(&self) -> Vec<String> {
         vec![
-            "USD".to_string(),
-            "EUR".to_string(),
-            "GBP".to_string(),
-            "JPY".to_string(),
-            "CNY".to_string(),
-            "CAD".to_string(),
-            "AUD".to_string(),
-            "CHF".to_string(),
-            "SEK".to_string(),
-            "NOK".to_string(),
-            "DKK".to_string(),
-            "KRW".to_string(),
-            "SGD".to_string(),
-            "HKD".to_string(),
-            "INR".to_string(),
-            "BRL".to_string(),
-            "MXN".to_string(),
-            "RUB".to_string(),
-            "ZAR".to_string(),
-            "TRY".to_string(),
+            "USD".to_string(), "EUR".to_string(), "GBP".to_string(),
+            "JPY".to_string(), "CNY".to_string(), "CAD".to_string(),
+            "AUD".to_string(), "CHF".to_string(), "SEK".to_string(),
+            "NOK".to_string(), "DKK".to_string(), "KRW".to_string(),
+            "SGD".to_string(), "HKD".to_string(), "INR".to_string(),
+            "BRL".to_string(), "MXN".to_string(), "RUB".to_string(),
+            "ZAR".to_string(), "TRY".to_string(),
         ]
     }
 
     fn get_exchange_rate(&self, from: &str, to: &str) -> Result<Decimal> {
         // 简化的汇率表，实际应该从外部 API 获取
         let rates = [
-            ("USD", "CNY", Decimal::new(720, 2)),    // 7.20
-            ("EUR", "CNY", Decimal::new(780, 2)),    // 7.80
-            ("GBP", "CNY", Decimal::new(890, 2)),    // 8.90
-            ("USD", "EUR", Decimal::new(92, 2)),     // 0.92
-            ("USD", "GBP", Decimal::new(80, 2)),     // 0.80
-            ("USD", "JPY", Decimal::new(15000, 2)),  // 150.00
+            ("USD", "CNY", Decimal::new(720, 2)), // 7.20
+            ("EUR", "CNY", Decimal::new(780, 2)), // 7.80
+            ("GBP", "CNY", Decimal::new(890, 2)), // 8.90
+            ("USD", "EUR", Decimal::new(92, 2)),  // 0.92
+            ("USD", "GBP", Decimal::new(80, 2)),  // 0.80
+            ("USD", "JPY", Decimal::new(15000, 2)), // 150.00
             ("USD", "KRW", Decimal::new(133000, 2)), // 1330.00
         ];
 
@@ -212,33 +178,24 @@ impl DateTimeUtils {
     /// 解析日期字符串
     #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn parse_date(date_str: &str) -> Result<String> {
-        let date = NaiveDate::parse_from_str(date_str, "%Y-%m-%d").map_err(|_| {
-            JiveError::InvalidDate {
-                date: date_str.to_string(),
-            }
-        })?;
+        let date = NaiveDate::parse_from_str(date_str, "%Y-%m-%d")
+            .map_err(|_| JiveError::InvalidDate { date: date_str.to_string() })?;
         Ok(date.to_string())
     }
 
     /// 格式化日期
     #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn format_date(date_str: &str, format: &str) -> Result<String> {
-        let date = NaiveDate::parse_from_str(date_str, "%Y-%m-%d").map_err(|_| {
-            JiveError::InvalidDate {
-                date: date_str.to_string(),
-            }
-        })?;
+        let date = NaiveDate::parse_from_str(date_str, "%Y-%m-%d")
+            .map_err(|_| JiveError::InvalidDate { date: date_str.to_string() })?;
         Ok(date.format(format).to_string())
     }
 
     /// 获取月初日期
     #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn get_month_start(date_str: &str) -> Result<String> {
-        let date = NaiveDate::parse_from_str(date_str, "%Y-%m-%d").map_err(|_| {
-            JiveError::InvalidDate {
-                date: date_str.to_string(),
-            }
-        })?;
+        let date = NaiveDate::parse_from_str(date_str, "%Y-%m-%d")
+            .map_err(|_| JiveError::InvalidDate { date: date_str.to_string() })?;
         let month_start = date.with_day(1).unwrap();
         Ok(month_start.to_string())
     }
@@ -246,18 +203,15 @@ impl DateTimeUtils {
     /// 获取月末日期
     #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn get_month_end(date_str: &str) -> Result<String> {
-        let date = NaiveDate::parse_from_str(date_str, "%Y-%m-%d").map_err(|_| {
-            JiveError::InvalidDate {
-                date: date_str.to_string(),
-            }
-        })?;
-
+        let date = NaiveDate::parse_from_str(date_str, "%Y-%m-%d")
+            .map_err(|_| JiveError::InvalidDate { date: date_str.to_string() })?;
+        
         let next_month = if date.month() == 12 {
             NaiveDate::from_ymd_opt(date.year() + 1, 1, 1).unwrap()
         } else {
             NaiveDate::from_ymd_opt(date.year(), date.month() + 1, 1).unwrap()
         };
-
+        
         let month_end = next_month.pred_opt().unwrap();
         Ok(month_end.to_string())
     }
@@ -290,26 +244,22 @@ impl Validator {
 
     /// 验证交易金额
     pub fn validate_transaction_amount(amount: &str) -> Result<Decimal> {
-        let decimal = amount
-            .parse::<Decimal>()
-            .map_err(|_| JiveError::InvalidAmount {
-                amount: amount.to_string(),
-            })?;
-
+        let decimal = amount.parse::<Decimal>()
+            .map_err(|_| JiveError::InvalidAmount { amount: amount.to_string() })?;
+        
         if decimal.is_zero() {
             return Err(JiveError::ValidationError {
                 message: "Transaction amount cannot be zero".to_string(),
             });
         }
-
+        
         // 检查金额是否过大
-        if decimal.abs() > Decimal::new(999999999999i64, 2) {
-            // 9,999,999,999.99
+        if decimal.abs() > Decimal::new(999999999999i64, 2) { // 9,999,999,999.99
             return Err(JiveError::ValidationError {
                 message: "Transaction amount too large".to_string(),
             });
         }
-
+        
         Ok(decimal)
     }
 
@@ -321,19 +271,19 @@ impl Validator {
                 message: "Email cannot be empty".to_string(),
             });
         }
-
+        
         if !trimmed.contains('@') || !trimmed.contains('.') {
             return Err(JiveError::ValidationError {
                 message: "Invalid email format".to_string(),
             });
         }
-
+        
         if trimmed.len() > 254 {
             return Err(JiveError::ValidationError {
                 message: "Email too long".to_string(),
             });
         }
-
+        
         Ok(())
     }
 
@@ -344,23 +294,23 @@ impl Validator {
                 message: "Password must be at least 8 characters long".to_string(),
             });
         }
-
+        
         if password.len() > 128 {
             return Err(JiveError::ValidationError {
                 message: "Password too long (max 128 characters)".to_string(),
             });
         }
-
+        
         let has_upper = password.chars().any(|c| c.is_uppercase());
         let has_lower = password.chars().any(|c| c.is_lowercase());
         let has_digit = password.chars().any(|c| c.is_numeric());
-
+        
         if !has_upper || !has_lower || !has_digit {
             return Err(JiveError::ValidationError {
                 message: "Password must contain uppercase, lowercase, and numbers".to_string(),
             });
         }
-
+        
         Ok(())
     }
 
@@ -381,8 +331,7 @@ pub struct StringUtils;
 impl StringUtils {
     /// 清理和标准化文本
     pub fn clean_text(text: &str) -> String {
-        text.trim()
-            .chars()
+        text.trim().chars()
             .filter(|c| !c.is_control() || c.is_whitespace())
             .collect::<String>()
             .split_whitespace()
@@ -402,7 +351,7 @@ impl StringUtils {
     /// 生成简短的显示ID（用于UI）
     pub fn short_id(full_id: &str) -> String {
         if full_id.len() > 8 {
-            format!("{}...{}", &full_id[..4], &full_id[full_id.len() - 4..])
+            format!("{}...{}", &full_id[..4], &full_id[full_id.len()-4..])
         } else {
             full_id.to_string()
         }
@@ -489,10 +438,7 @@ mod tests {
     #[test]
     fn test_string_utils() {
         assert_eq!(StringUtils::clean_text("  hello   world  "), "hello world");
-        assert_eq!(
-            StringUtils::truncate("This is a long text", 10),
-            "This is..."
-        );
+        assert_eq!(StringUtils::truncate("This is a long text", 10), "This is...");
         assert_eq!(StringUtils::truncate("Short", 10), "Short");
         assert_eq!(StringUtils::short_id("123456789012345678"), "1234...5678");
         assert_eq!(StringUtils::short_id("12345678"), "12345678");

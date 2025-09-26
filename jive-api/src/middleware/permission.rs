@@ -1,4 +1,9 @@
-use axum::{extract::Request, http::StatusCode, middleware::Next, response::Response};
+use axum::{
+    extract::Request,
+    http::StatusCode,
+    middleware::Next,
+    response::Response,
+};
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
@@ -13,12 +18,7 @@ use crate::{
 /// 权限中间件 - 检查单个权限
 pub async fn require_permission(
     required: Permission,
-) -> impl Fn(
-    Request,
-    Next,
-) -> std::pin::Pin<
-    Box<dyn std::future::Future<Output = Result<Response, StatusCode>> + Send>,
-> + Clone {
+) -> impl Fn(Request, Next) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Response, StatusCode>> + Send>> + Clone {
     move |request: Request, next: Next| {
         Box::pin(async move {
             // 从request extensions获取ServiceContext
@@ -26,12 +26,12 @@ pub async fn require_permission(
                 .extensions()
                 .get::<ServiceContext>()
                 .ok_or(StatusCode::UNAUTHORIZED)?;
-
+            
             // 检查权限
             if !context.can_perform(required) {
                 return Err(StatusCode::FORBIDDEN);
             }
-
+            
             Ok(next.run(request).await)
         })
     }
@@ -40,12 +40,7 @@ pub async fn require_permission(
 /// 多权限中间件 - 检查多个权限（任一满足）
 pub async fn require_any_permission(
     permissions: Vec<Permission>,
-) -> impl Fn(
-    Request,
-    Next,
-) -> std::pin::Pin<
-    Box<dyn std::future::Future<Output = Result<Response, StatusCode>> + Send>,
-> + Clone {
+) -> impl Fn(Request, Next) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Response, StatusCode>> + Send>> + Clone {
     move |request: Request, next: Next| {
         let value = permissions.clone();
         Box::pin(async move {
@@ -53,14 +48,14 @@ pub async fn require_any_permission(
                 .extensions()
                 .get::<ServiceContext>()
                 .ok_or(StatusCode::UNAUTHORIZED)?;
-
+            
             // 检查是否有任一权限
             let has_permission = value.iter().any(|p| context.can_perform(*p));
-
+            
             if !has_permission {
                 return Err(StatusCode::FORBIDDEN);
             }
-
+            
             Ok(next.run(request).await)
         })
     }
@@ -69,12 +64,7 @@ pub async fn require_any_permission(
 /// 多权限中间件 - 检查多个权限（全部满足）
 pub async fn require_all_permissions(
     permissions: Vec<Permission>,
-) -> impl Fn(
-    Request,
-    Next,
-) -> std::pin::Pin<
-    Box<dyn std::future::Future<Output = Result<Response, StatusCode>> + Send>,
-> + Clone {
+) -> impl Fn(Request, Next) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Response, StatusCode>> + Send>> + Clone {
     move |request: Request, next: Next| {
         let value = permissions.clone();
         Box::pin(async move {
@@ -82,14 +72,14 @@ pub async fn require_all_permissions(
                 .extensions()
                 .get::<ServiceContext>()
                 .ok_or(StatusCode::UNAUTHORIZED)?;
-
+            
             // 检查是否有所有权限
             let has_all_permissions = value.iter().all(|p| context.can_perform(*p));
-
+            
             if !has_all_permissions {
                 return Err(StatusCode::FORBIDDEN);
             }
-
+            
             Ok(next.run(request).await)
         })
     }
@@ -98,19 +88,14 @@ pub async fn require_all_permissions(
 /// 角色中间件 - 检查最低角色要求
 pub async fn require_minimum_role(
     minimum_role: MemberRole,
-) -> impl Fn(
-    Request,
-    Next,
-) -> std::pin::Pin<
-    Box<dyn std::future::Future<Output = Result<Response, StatusCode>> + Send>,
-> + Clone {
+) -> impl Fn(Request, Next) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Response, StatusCode>> + Send>> + Clone {
     move |request: Request, next: Next| {
         Box::pin(async move {
             let context = request
                 .extensions()
                 .get::<ServiceContext>()
                 .ok_or(StatusCode::UNAUTHORIZED)?;
-
+            
             // 检查角色级别
             let role_level = match context.role {
                 MemberRole::Owner => 4,
@@ -118,48 +103,54 @@ pub async fn require_minimum_role(
                 MemberRole::Member => 2,
                 MemberRole::Viewer => 1,
             };
-
+            
             let required_level = match minimum_role {
                 MemberRole::Owner => 4,
                 MemberRole::Admin => 3,
                 MemberRole::Member => 2,
                 MemberRole::Viewer => 1,
             };
-
+            
             if role_level < required_level {
                 return Err(StatusCode::FORBIDDEN);
             }
-
+            
             Ok(next.run(request).await)
         })
     }
 }
 
 /// Owner专用中间件
-pub async fn require_owner(request: Request, next: Next) -> Result<Response, StatusCode> {
+pub async fn require_owner(
+    request: Request,
+    next: Next,
+) -> Result<Response, StatusCode> {
     let context = request
         .extensions()
         .get::<ServiceContext>()
         .ok_or(StatusCode::UNAUTHORIZED)?;
-
+    
     if context.role != MemberRole::Owner {
         return Err(StatusCode::FORBIDDEN);
     }
-
+    
     Ok(next.run(request).await)
 }
 
 /// Admin及以上中间件
-pub async fn require_admin_or_owner(request: Request, next: Next) -> Result<Response, StatusCode> {
+pub async fn require_admin_or_owner(
+    request: Request,
+    next: Next,
+) -> Result<Response, StatusCode> {
     let context = request
         .extensions()
         .get::<ServiceContext>()
         .ok_or(StatusCode::UNAUTHORIZED)?;
-
+    
     if !matches!(context.role, MemberRole::Owner | MemberRole::Admin) {
         return Err(StatusCode::FORBIDDEN);
     }
-
+    
     Ok(next.run(request).await)
 }
 
@@ -179,29 +170,29 @@ impl PermissionCache {
             ttl: Duration::from_secs(ttl_seconds),
         }
     }
-
+    
     pub async fn get(&self, user_id: Uuid, family_id: Uuid) -> Option<Vec<Permission>> {
         let cache = self.cache.read().await;
-
+        
         if let Some((permissions, cached_at)) = cache.get(&(user_id, family_id)) {
             if cached_at.elapsed() < self.ttl {
                 return Some(permissions.clone());
             }
         }
-
+        
         None
     }
-
+    
     pub async fn set(&self, user_id: Uuid, family_id: Uuid, permissions: Vec<Permission>) {
         let mut cache = self.cache.write().await;
         cache.insert((user_id, family_id), (permissions, Instant::now()));
     }
-
+    
     pub async fn invalidate(&self, user_id: Uuid, family_id: Uuid) {
         let mut cache = self.cache.write().await;
         cache.remove(&(user_id, family_id));
     }
-
+    
     pub async fn clear(&self) {
         let mut cache = self.cache.write().await;
         cache.clear();
@@ -221,15 +212,12 @@ impl PermissionError {
     pub fn insufficient_permissions(permission: Permission) -> Self {
         Self {
             code: "INSUFFICIENT_PERMISSIONS".to_string(),
-            message: format!(
-                "You need '{}' permission to perform this action",
-                permission
-            ),
+            message: format!("You need '{}' permission to perform this action", permission),
             required_permission: Some(permission.to_string()),
             required_role: None,
         }
     }
-
+    
     pub fn insufficient_role(role: MemberRole) -> Self {
         Self {
             code: "INSUFFICIENT_ROLE".to_string(),
@@ -256,15 +244,15 @@ pub async fn check_resource_permission(
         ResourceOwnership::OwnedBy(owner_id) => {
             // 资源所有者或有权限的人可以访问
             context.user_id == owner_id || context.can_perform(permission)
-        }
+        },
         ResourceOwnership::SharedInFamily(family_id) => {
             // 必须是Family成员且有权限
             context.family_id == family_id && context.can_perform(permission)
-        }
+        },
         ResourceOwnership::Public => {
             // 公开资源，只要认证即可
             true
-        }
+        },
     }
 }
 
@@ -312,11 +300,11 @@ impl PermissionGroup {
             ],
         }
     }
-
+    
     pub fn check_any(&self, context: &ServiceContext) -> bool {
         self.permissions().iter().any(|p| context.can_perform(*p))
     }
-
+    
     pub fn check_all(&self, context: &ServiceContext) -> bool {
         self.permissions().iter().all(|p| context.can_perform(*p))
     }
@@ -325,7 +313,7 @@ impl PermissionGroup {
 #[cfg(test)]
 mod tests {
     use super::*;
-
+    
     #[test]
     fn test_permission_group() {
         let context = ServiceContext::new(
@@ -336,26 +324,26 @@ mod tests {
             "test@example.com".to_string(),
             None,
         );
-
+        
         let group = PermissionGroup::AccountManagement;
         assert!(group.check_any(&context)); // Has some account permissions
         assert!(!group.check_all(&context)); // Doesn't have all
     }
-
+    
     #[tokio::test]
     async fn test_permission_cache() {
         let cache = PermissionCache::new(5);
         let user_id = Uuid::new_v4();
         let family_id = Uuid::new_v4();
         let permissions = vec![Permission::ViewAccounts];
-
+        
         // Set cache
         cache.set(user_id, family_id, permissions.clone()).await;
-
+        
         // Get from cache
         let cached = cache.get(user_id, family_id).await;
         assert_eq!(cached, Some(permissions));
-
+        
         // Invalidate
         cache.invalidate(user_id, family_id).await;
         let cached = cache.get(user_id, family_id).await;

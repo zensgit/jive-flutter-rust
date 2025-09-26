@@ -17,7 +17,9 @@ pub use invitation::{
     InvitationStatus,
 };
 #[allow(unused_imports)]
-pub use membership::{CreateMemberRequest, FamilyMember, MemberWithUserInfo, UpdateMemberRequest};
+pub use membership::{
+    CreateMemberRequest, FamilyMember, MemberWithUserInfo, UpdateMemberRequest,
+};
 #[allow(unused_imports)]
 pub use permission::{MemberRole, Permission};
 
