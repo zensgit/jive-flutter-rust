@@ -1,0 +1,39 @@
+groups:
+  - name: jive-api-alerts
+    rules:
+      - alert: RehashFailBurst
+        expr: increase(jive_password_rehash_fail_total[10m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Password rehash failures detected
+      - alert: LoginFailSurge
+        expr: rate(auth_login_fail_total[5m]) > 3 * rate(auth_login_fail_total[30m])
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Sudden login failure surge
+      - alert: ExportLatencyHigh
+        expr: histogram_quantile(0.95,sum by (le)(rate(export_duration_buffered_seconds_bucket[5m]))) > 2
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: Buffered export P95 latency >2s
+      - alert: RateLimitedSpike
+        expr: increase(auth_login_rate_limited_total[5m]) > 50
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: Many logins being rate-limited (possible attack)
+      - alert: ProcessRestarted
+        expr: increase(process_uptime_seconds[5m]) < 60
+        for: 0m
+        labels:
+          severity: info
+        annotations:
+          summary: API process restarted recently
+

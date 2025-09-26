@@ -248,9 +248,8 @@ pub async fn login(
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     }
     .ok_or_else(|| {
-        if cfg!(debug_assertions) {
-            println!("DEBUG[login]: user not found for input={}", &login_input);
-        }
+        if cfg!(debug_assertions) { println!("DEBUG[login]: user not found for input={}", &login_input); }
+        state.metrics.increment_login_fail();
         ApiError::Unauthorized
     })?;
 
@@ -280,9 +279,8 @@ pub async fn login(
 
     // 检查用户状态
     if !user.is_active {
-        if cfg!(debug_assertions) {
-            println!("DEBUG[login]: user inactive: {}", user.email);
-        }
+        if cfg!(debug_assertions) { println!("DEBUG[login]: user inactive: {}", user.email); }
+        state.metrics.increment_login_inactive();
         return Err(ApiError::Forbidden);
     }
 
@@ -308,11 +306,7 @@ pub async fn login(
         .unwrap_or(true);
 
     if hash.starts_with("$argon2") {
-        let parsed_hash = PasswordHash::new(hash).map_err(|e| {
-            #[cfg(debug_assertions)]
-            println!("DEBUG[login]: failed to parse Argon2 hash: {:?}", e);
-            ApiError::InternalServerError
-        })?;
+        let parsed_hash = PasswordHash::new(hash).map_err(|e| { #[cfg(debug_assertions)] println!("DEBUG[login]: failed to parse Argon2 hash: {:?}", e); state.metrics.increment_login_fail(); ApiError::InternalServerError })?;
         let argon2 = Argon2::default();
         argon2
             .verify_password(req.password.as_bytes(), &parsed_hash)
@@ -320,9 +314,7 @@ pub async fn login(
     } else if hash.starts_with("$2") {
         // bcrypt format ($2a$, $2b$, $2y$)
         let ok = bcrypt::verify(&req.password, hash).unwrap_or(false);
-        if !ok {
-            return Err(ApiError::Unauthorized);
-        }
+        if !ok { state.metrics.increment_login_fail(); return Err(ApiError::Unauthorized); }
 
         if enable_rehash {
             // Password rehash: transparently upgrade bcrypt to Argon2id on successful login
@@ -340,27 +332,23 @@ pub async fn login(
                     .await
                     {
                         tracing::warn!(user_id=%user.id, error=?e, "password rehash failed");
+                        // 记录重哈希失败次数
+                        state.metrics.increment_rehash_fail();
+                        state.metrics.inc_rehash_fail_update();
                     } else {
                         tracing::debug!(user_id=%user.id, "password rehash succeeded: bcrypt→argon2id");
                         // Increment rehash metrics
                         state.metrics.increment_rehash();
                     }
                 }
-                Err(e) => {
-                    tracing::warn!(user_id=%user.id, error=?e, "failed to generate Argon2id hash")
-                }
+                Err(e) => { tracing::warn!(user_id=%user.id, error=?e, "failed to generate Argon2id hash"); state.metrics.increment_rehash_fail(); state.metrics.inc_rehash_fail_hash(); }
             }
         }
     } else {
         // Unknown format: try Argon2 parse as best-effort, otherwise unauthorized
         match PasswordHash::new(hash) {
-            Ok(parsed) => {
-                let argon2 = Argon2::default();
-                argon2
-                    .verify_password(req.password.as_bytes(), &parsed)
-                    .map_err(|_| ApiError::Unauthorized)?;
-            }
-            Err(_) => return Err(ApiError::Unauthorized),
+            Ok(parsed) => { let argon2 = Argon2::default(); argon2.verify_password(req.password.as_bytes(), &parsed).map_err(|_| { state.metrics.increment_login_fail(); ApiError::Unauthorized })?; }
+            Err(_) => { state.metrics.increment_login_fail(); return Err(ApiError::Unauthorized); }
         }
     }
 

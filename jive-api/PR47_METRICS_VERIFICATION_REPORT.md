@@ -252,15 +252,27 @@ curl -s http://localhost:8014/health | jq '.metrics'
 6. **✅ Consistency Validation**: Perfect consistency between `/health` and `/metrics` endpoints
 7. **✅ Code Quality**: Meets project standards with only minor cosmetic warnings
 
-### Verified Metrics Available
-- `jive_password_rehash_total` - Counter of successful bcrypt→argon2id rehashes
-- `jive_password_hash_users{algo="bcrypt_2a|2b|2y|argon2id"}` - User count by hash type
+### Verified Metrics Available (Updated Post PR #48 Plan)
+Canonical (new) metrics:
+- `password_hash_bcrypt_total` – Users with any bcrypt variant (2a+2b+2y)
+- `password_hash_argon2id_total` – Users with argon2id hashes
+- `password_hash_unknown_total` – Users whose hash prefix not in (2a,2b,2y,argon2id)
+- `password_hash_total_count` – Total users counted
+- `password_hash_bcrypt_variant{variant="2a|2b|2y"}` – Per-variant bcrypt counts
+- `jive_password_rehash_total` – Successful bcrypt→argon2id rehash counter
 
-### Next Actions (Optional)
-1. Add monitoring documentation to README
-2. Create consistency verification scripts
+Legacy (DEPRECATED – retained temporarily for dashboards):
+- `jive_password_hash_users{algo="bcrypt_2a|bcrypt_2b|bcrypt_2y|argon2id"}`
+
+Deprecation Notice: legacy `jive_password_hash_users` will be removed after dashboards migrate to canonical metrics (target: two release cycles). Monitor usage before removal.
+
+### Next Actions (Optional / In Progress)
+1. Add monitoring documentation to README (IN PROGRESS)
+2. Create consistency verification scripts (IN PROGRESS)
 3. Configure Prometheus scraping for production
 4. Test rehash counter during actual password changes
+5. Migrate dashboards from legacy to canonical metrics
+6. Decide removal date for legacy metrics (propose: +2 releases)
 
 ### Final Status: 🎯 COMPLETE SUCCESS
 **All verification requirements fulfilled. PR #47 is production-ready.**

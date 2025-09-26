@@ -104,12 +104,12 @@ impl CurrencyService {
         let currencies = rows
             .into_iter()
             .map(|row| {
-                let code = row.code.clone();
+                let _code = row.code.clone();
                 Currency {
                     code: row.code,
                     name: row.name,
-                    // Handle potentially nullable symbol field
-                    symbol: row.symbol.unwrap_or(code),
+                    // symbol column非空：直接使用；保持与之前“若为空给默认”语义一致（当前 schema 下为空可能性极低）
+                    symbol: row.symbol,
                     decimal_places: row.decimal_places.unwrap_or(2),
                     is_active: row.is_active.unwrap_or(true),
                 }
@@ -210,7 +210,7 @@ impl CurrencyService {
             Ok(FamilyCurrencySettings {
                 family_id,
                 // Handle potentially nullable base_currency field
-                base_currency: settings.base_currency.unwrap_or_else(|| "CNY".to_string()),
+                base_currency: if settings.base_currency.is_empty() { "CNY".to_string() } else { settings.base_currency },
                 allow_multi_currency: settings.allow_multi_currency.unwrap_or(false),
                 auto_convert: settings.auto_convert.unwrap_or(false),
                 supported_currencies: supported,
