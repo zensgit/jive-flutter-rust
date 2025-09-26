@@ -1,5 +1,5 @@
 //! NotificationService - 通知管理服务
-//! 
+//!
 //! 提供全面的通知管理功能，包括：
 //! - 多种通知类型支持（预算、账单、储蓄、成就等）
 //! - 智能推送策略
@@ -9,38 +9,38 @@
 //! - 周报月报生成
 //! - 多渠道发送（应用内、邮件、推送、短信、微信）
 
+use chrono::{Datelike, Duration, NaiveDate, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
-use chrono::{NaiveDateTime, NaiveDate, Utc, Duration, Datelike};
 use std::collections::HashMap;
+use uuid::Uuid;
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
 use crate::{
+    application::{PaginatedResult, PaginationParams, ServiceContext, ServiceResponse},
     error::{JiveError, Result},
-    application::{ServiceContext, ServiceResponse, PaginationParams, PaginatedResult}
 };
 
 /// 通知类型枚举
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum NotificationType {
-    BudgetAlert,        // 预算警告
-    PaymentReminder,    // 付款提醒
-    BillDue,           // 账单到期
-    BillReminder,      // 账单提醒
-    GoalAchievement,   // 目标达成
-    SavingGoal,        // 储蓄目标
-    SecurityAlert,     // 安全警告
-    SystemUpdate,      // 系统更新
-    TransactionAlert,  // 交易警告
-    CategoryAlert,     // 分类警告
-    WeeklySummary,     // 周报
-    MonthlyReport,     // 月报
-    Achievement,       // 成就
-    Subscription,      // 订阅
-    CustomAlert,       // 自定义警告
+    BudgetAlert,      // 预算警告
+    PaymentReminder,  // 付款提醒
+    BillDue,          // 账单到期
+    BillReminder,     // 账单提醒
+    GoalAchievement,  // 目标达成
+    SavingGoal,       // 储蓄目标
+    SecurityAlert,    // 安全警告
+    SystemUpdate,     // 系统更新
+    TransactionAlert, // 交易警告
+    CategoryAlert,    // 分类警告
+    WeeklySummary,    // 周报
+    MonthlyReport,    // 月报
+    Achievement,      // 成就
+    Subscription,     // 订阅
+    CustomAlert,      // 自定义警告
 }
 
 #[cfg(feature = "wasm")]
@@ -72,10 +72,10 @@ impl NotificationType {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum NotificationPriority {
-    Low,      // 低优先级
-    Medium,   // 中等优先级
-    High,     // 高优先级
-    Urgent,   // 紧急
+    Low,    // 低优先级
+    Medium, // 中等优先级
+    High,   // 高优先级
+    Urgent, // 紧急
 }
 
 #[cfg(feature = "wasm")]
@@ -96,23 +96,23 @@ impl NotificationPriority {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum NotificationStatus {
-    Pending,    // 待发送
-    Sent,       // 已发送
-    Read,       // 已读
-    Dismissed,  // 已忽略
-    Failed,     // 发送失败
+    Pending,   // 待发送
+    Sent,      // 已发送
+    Read,      // 已读
+    Dismissed, // 已忽略
+    Failed,    // 发送失败
 }
 
 /// 通知渠道
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum NotificationChannel {
-    InApp,      // 应用内通知
-    Email,      // 邮件
-    SMS,        // 短信
-    Push,       // 推送通知
-    WeChat,     // 微信通知
-    WebHook,    // 网络钩子
+    InApp,   // 应用内通知
+    Email,   // 邮件
+    SMS,     // 短信
+    Push,    // 推送通知
+    WeChat,  // 微信通知
+    WebHook, // 网络钩子
 }
 
 /// 通知信息
@@ -144,22 +144,33 @@ pub struct Notification {
 #[wasm_bindgen]
 impl Notification {
     #[wasm_bindgen(getter)]
-    pub fn id(&self) -> String { self.id.clone() }
-    
-    #[wasm_bindgen(getter)]
-    pub fn user_id(&self) -> String { self.user_id.clone() }
-    
-    #[wasm_bindgen(getter)]
-    pub fn title(&self) -> String { self.title.clone() }
-    
-    #[wasm_bindgen(getter)]
-    pub fn message(&self) -> String { self.message.clone() }
-    
-    #[wasm_bindgen(getter)]
-    pub fn is_read(&self) -> bool { 
-        matches!(self.status, NotificationStatus::Read | NotificationStatus::Dismissed) 
+    pub fn id(&self) -> String {
+        self.id.clone()
     }
-    
+
+    #[wasm_bindgen(getter)]
+    pub fn user_id(&self) -> String {
+        self.user_id.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn title(&self) -> String {
+        self.title.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn message(&self) -> String {
+        self.message.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn is_read(&self) -> bool {
+        matches!(
+            self.status,
+            NotificationStatus::Read | NotificationStatus::Dismissed
+        )
+    }
+
     #[wasm_bindgen(getter)]
     pub fn is_expired(&self) -> bool {
         if let Some(expires_at) = self.expires_at {
@@ -191,16 +202,24 @@ pub struct NotificationTemplate {
 #[wasm_bindgen]
 impl NotificationTemplate {
     #[wasm_bindgen(getter)]
-    pub fn id(&self) -> String { self.id.clone() }
-    
+    pub fn id(&self) -> String {
+        self.id.clone()
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn name(&self) -> String { self.name.clone() }
-    
+    pub fn name(&self) -> String {
+        self.name.clone()
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn title_template(&self) -> String { self.title_template.clone() }
-    
+    pub fn title_template(&self) -> String {
+        self.title_template.clone()
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn message_template(&self) -> String { self.message_template.clone() }
+    pub fn message_template(&self) -> String {
+        self.message_template.clone()
+    }
 }
 
 /// 创建通知请求
@@ -246,17 +265,17 @@ impl CreateNotificationRequest {
             template_variables: None,
         }
     }
-    
+
     #[wasm_bindgen(setter)]
     pub fn set_priority(&mut self, priority: NotificationPriority) {
         self.priority = priority;
     }
-    
+
     #[wasm_bindgen(setter)]
     pub fn set_action_url(&mut self, action_url: Option<String>) {
         self.action_url = action_url;
     }
-    
+
     #[wasm_bindgen]
     pub fn add_channel(&mut self, channel: NotificationChannel) {
         if !self.channels.contains(&channel) {
@@ -327,11 +346,7 @@ pub struct BulkNotificationRequest {
 #[wasm_bindgen]
 impl BulkNotificationRequest {
     #[wasm_bindgen(constructor)]
-    pub fn new(
-        notification_type: NotificationType,
-        title: String,
-        message: String,
-    ) -> Self {
+    pub fn new(notification_type: NotificationType, title: String, message: String) -> Self {
         Self {
             user_ids: Vec::new(),
             notification_type,
@@ -345,7 +360,7 @@ impl BulkNotificationRequest {
             expires_at: None,
         }
     }
-    
+
     #[wasm_bindgen]
     pub fn add_user(&mut self, user_id: String) {
         if !self.user_ids.contains(&user_id) {
@@ -373,16 +388,24 @@ pub struct NotificationStats {
 #[wasm_bindgen]
 impl NotificationStats {
     #[wasm_bindgen(getter)]
-    pub fn total_sent(&self) -> u32 { self.total_sent }
-    
+    pub fn total_sent(&self) -> u32 {
+        self.total_sent
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn total_read(&self) -> u32 { self.total_read }
-    
+    pub fn total_read(&self) -> u32 {
+        self.total_read
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn read_rate(&self) -> f64 { self.read_rate }
-    
+    pub fn read_rate(&self) -> f64 {
+        self.read_rate
+    }
+
     #[wasm_bindgen(getter)]
-    pub fn delivery_rate(&self) -> f64 { self.delivery_rate }
+    pub fn delivery_rate(&self) -> f64 {
+        self.delivery_rate
+    }
 }
 
 /// 通知管理服务
@@ -409,13 +432,13 @@ pub struct NotificationPreferences {
     pub monthly_reports: bool,
     pub achievements: bool,
     pub large_transaction_threshold: f64,  // 大额交易阈值
-    pub bill_reminder_days: Vec<i32>,     // 账单提醒天数 [0, 1, 3, 7]
+    pub bill_reminder_days: Vec<i32>,      // 账单提醒天数 [0, 1, 3, 7]
     pub quiet_hours_start: Option<String>, // HH:MM格式 "22:00"
     pub quiet_hours_end: Option<String>,   // "08:00"
     pub timezone: Option<String>,
     pub email: Option<String>,
     pub phone: Option<String>,
-    pub wechat_openid: Option<String>,    // 微信OpenID
+    pub wechat_openid: Option<String>, // 微信OpenID
     pub email_digest_frequency: EmailDigestFrequency,
     pub frequency_limits: HashMap<String, u32>, // 类型 -> 每天最大数量
 }
@@ -423,10 +446,10 @@ pub struct NotificationPreferences {
 /// 邮件摘要频率
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EmailDigestFrequency {
-    Realtime,  // 实时
-    Daily,     // 每日摘要
-    Weekly,    // 每周摘要
-    Never,     // 不发送
+    Realtime, // 实时
+    Daily,    // 每日摘要
+    Weekly,   // 每周摘要
+    Never,    // 不发送
 }
 
 #[cfg(feature = "wasm")]
@@ -497,7 +520,7 @@ pub struct SavingGoalUpdateRequest {
     pub current_amount: f64,
     pub target_amount: f64,
     pub progress_percentage: f64,
-    pub milestone_reached: Option<u32>,  // 25, 50, 75, 100
+    pub milestone_reached: Option<u32>, // 25, 50, 75, 100
     pub currency: String,
 }
 
@@ -535,14 +558,14 @@ pub struct AchievementNotificationRequest {
 /// 成就类型
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum AchievementType {
-    FirstTransaction,    // 第一笔交易
-    StreakMilestone,    // 连续记账里程碑
-    SavingMilestone,    // 储蓄里程碑
-    BudgetMaster,       // 预算大师
-    InvestmentGuru,     // 投资达人
-    DebtFreeHero,       // 无债一身轻
-    CategoryExplorer,   // 分类探索者
-    YearInReview,       // 年度总结
+    FirstTransaction, // 第一笔交易
+    StreakMilestone,  // 连续记账里程碑
+    SavingMilestone,  // 储蓄里程碑
+    BudgetMaster,     // 预算大师
+    InvestmentGuru,   // 投资达人
+    DebtFreeHero,     // 无债一身轻
+    CategoryExplorer, // 分类探索者
+    YearInReview,     // 年度总结
 }
 
 /// 周报统计
@@ -562,12 +585,12 @@ pub struct WeeklySummaryStats {
 /// 月报统计
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MonthlyReportStats {
-    pub month: String,  // "2024-01"
+    pub month: String, // "2024-01"
     pub income: f64,
     pub expenses: f64,
     pub net_income: f64,
     pub top_categories: Vec<(String, f64)>,
-    pub comparison_to_last_month: f64,  // 百分比变化
+    pub comparison_to_last_month: f64, // 百分比变化
     pub budget_performance: Vec<BudgetStatus>,
     pub investment_performance: Option<f64>,
     pub credit_utilization: Option<f64>,
@@ -586,10 +609,10 @@ pub struct BudgetStatus {
 /// 预算健康状态
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum BudgetHealthStatus {
-    Good,      // < 75%
-    Warning,   // 75-90%
-    Critical,  // 90-100%
-    Exceeded,  // > 100%
+    Good,     // < 75%
+    Warning,  // 75-90%
+    Critical, // 90-100%
+    Exceeded, // > 100%
 }
 
 impl NotificationService {
@@ -599,7 +622,7 @@ impl NotificationService {
             templates: HashMap::new(),
             user_preferences: HashMap::new(),
         };
-        
+
         service.init_default_templates();
         service
     }
@@ -614,7 +637,12 @@ impl NotificationService {
                 "您的{{category}}预算已使用{{percentage}}%，已花费¥{{spent}}，预算为¥{{budget}}",
                 NotificationPriority::High,
                 vec![NotificationChannel::InApp, NotificationChannel::Email],
-                vec!["category".to_string(), "percentage".to_string(), "spent".to_string(), "budget".to_string()],
+                vec![
+                    "category".to_string(),
+                    "percentage".to_string(),
+                    "spent".to_string(),
+                    "budget".to_string(),
+                ],
             ),
             (
                 NotificationType::BillReminder,
@@ -623,7 +651,11 @@ impl NotificationService {
                 "您的{{card_name}}账单将在{{days}}天后到期，当前欠款¥{{balance}}",
                 NotificationPriority::High,
                 vec![NotificationChannel::InApp, NotificationChannel::Push],
-                vec!["card_name".to_string(), "days".to_string(), "balance".to_string()],
+                vec![
+                    "card_name".to_string(),
+                    "days".to_string(),
+                    "balance".to_string(),
+                ],
             ),
             (
                 NotificationType::SavingGoal,
@@ -650,7 +682,10 @@ impl NotificationService {
                 "{{achievement_message}}",
                 NotificationPriority::Low,
                 vec![NotificationChannel::InApp, NotificationChannel::Push],
-                vec!["achievement_title".to_string(), "achievement_message".to_string()],
+                vec![
+                    "achievement_title".to_string(),
+                    "achievement_message".to_string(),
+                ],
             ),
             (
                 NotificationType::WeeklySummary,
@@ -659,7 +694,12 @@ impl NotificationService {
                 "本周收入¥{{income}}，支出¥{{expenses}}，净收入¥{{net}}",
                 NotificationPriority::Low,
                 vec![NotificationChannel::InApp, NotificationChannel::Email],
-                vec!["week_range".to_string(), "income".to_string(), "expenses".to_string(), "net".to_string()],
+                vec![
+                    "week_range".to_string(),
+                    "income".to_string(),
+                    "expenses".to_string(),
+                    "net".to_string(),
+                ],
             ),
             (
                 NotificationType::MonthlyReport,
@@ -668,7 +708,12 @@ impl NotificationService {
                 "上月收入¥{{income}}，支出¥{{expenses}}。主要支出类别：{{top_categories}}",
                 NotificationPriority::Low,
                 vec![NotificationChannel::InApp, NotificationChannel::Email],
-                vec!["month".to_string(), "income".to_string(), "expenses".to_string(), "top_categories".to_string()],
+                vec![
+                    "month".to_string(),
+                    "income".to_string(),
+                    "expenses".to_string(),
+                    "top_categories".to_string(),
+                ],
             ),
         ];
 
@@ -686,7 +731,7 @@ impl NotificationService {
                 created_at: Utc::now().naive_utc(),
                 updated_at: Utc::now().naive_utc(),
             };
-            
+
             self.templates.insert(template.id.clone(), template);
         }
     }
@@ -698,9 +743,13 @@ impl NotificationService {
         context: &ServiceContext,
     ) -> Result<String> {
         // 获取用户偏好
-        let preferences = self.user_preferences.get(&request.family_id)
+        let preferences = self
+            .user_preferences
+            .get(&request.family_id)
             .cloned()
-            .unwrap_or_else(|| NotificationPreferences::new(context.user_id.clone(), request.family_id.clone()));
+            .unwrap_or_else(|| {
+                NotificationPreferences::new(context.user_id.clone(), request.family_id.clone())
+            });
 
         if !preferences.budget_alerts {
             return Ok(String::new());
@@ -709,35 +758,50 @@ impl NotificationService {
         let (title, message) = if request.percentage >= 100.0 {
             (
                 format!("预算提醒: {}", request.category_name),
-                format!("您已超出{}预算！已花费¥{}，预算为¥{}", 
-                    request.category_name, request.spent_amount, request.budget_amount)
+                format!(
+                    "您已超出{}预算！已花费¥{}，预算为¥{}",
+                    request.category_name, request.spent_amount, request.budget_amount
+                ),
             )
         } else if request.percentage >= 90.0 {
             (
                 format!("预算提醒: {}", request.category_name),
-                format!("您的{}预算已使用{}%，请注意控制支出", 
-                    request.category_name, request.percentage as i32)
+                format!(
+                    "您的{}预算已使用{}%，请注意控制支出",
+                    request.category_name, request.percentage as i32
+                ),
             )
         } else {
             (
                 format!("预算提醒: {}", request.category_name),
-                format!("您的{}预算已使用{}%", 
-                    request.category_name, request.percentage as i32)
+                format!(
+                    "您的{}预算已使用{}%",
+                    request.category_name, request.percentage as i32
+                ),
             )
         };
 
         let mut metadata = HashMap::new();
-        metadata.insert("budget_id".to_string(), serde_json::json!(request.budget_id));
-        metadata.insert("percentage".to_string(), serde_json::json!(request.percentage));
-        metadata.insert("urgent".to_string(), serde_json::json!(request.percentage >= 100.0));
+        metadata.insert(
+            "budget_id".to_string(),
+            serde_json::json!(request.budget_id),
+        );
+        metadata.insert(
+            "percentage".to_string(),
+            serde_json::json!(request.percentage),
+        );
+        metadata.insert(
+            "urgent".to_string(),
+            serde_json::json!(request.percentage >= 100.0),
+        );
 
         let notification_request = CreateNotificationRequest {
             user_id: context.user_id.clone(),
             notification_type: NotificationType::BudgetAlert,
-            priority: if request.percentage >= 100.0 { 
-                NotificationPriority::Urgent 
-            } else { 
-                NotificationPriority::High 
+            priority: if request.percentage >= 100.0 {
+                NotificationPriority::Urgent
+            } else {
+                NotificationPriority::High
             },
             title,
             message,
@@ -750,7 +814,9 @@ impl NotificationService {
             template_variables: None,
         };
 
-        let notification = self.create_notification(notification_request, context).await?;
+        let notification = self
+            .create_notification(notification_request, context)
+            .await?;
         Ok(notification.id)
     }
 
@@ -760,56 +826,82 @@ impl NotificationService {
         request: BillReminderRequest,
         context: &ServiceContext,
     ) -> Result<String> {
-        let preferences = self.user_preferences.get(&request.family_id)
+        let preferences = self
+            .user_preferences
+            .get(&request.family_id)
             .cloned()
-            .unwrap_or_else(|| NotificationPreferences::new(context.user_id.clone(), request.family_id.clone()));
+            .unwrap_or_else(|| {
+                NotificationPreferences::new(context.user_id.clone(), request.family_id.clone())
+            });
 
         if !preferences.bill_reminders {
             return Ok(String::new());
         }
 
         // 检查是否在提醒天数范围内
-        if !preferences.bill_reminder_days.contains(&request.days_until_due) {
+        if !preferences
+            .bill_reminder_days
+            .contains(&request.days_until_due)
+        {
             return Ok(String::new());
         }
 
         let (title, message) = match request.days_until_due {
             0 => (
                 format!("账单提醒: {}", request.card_name),
-                format!("您的{}账单今天到期！当前欠款¥{}", 
-                    request.card_name, request.current_balance)
+                format!(
+                    "您的{}账单今天到期！当前欠款¥{}",
+                    request.card_name, request.current_balance
+                ),
             ),
             1 => (
                 format!("账单提醒: {}", request.card_name),
-                format!("您的{}账单明天到期！当前欠款¥{}", 
-                    request.card_name, request.current_balance)
+                format!(
+                    "您的{}账单明天到期！当前欠款¥{}",
+                    request.card_name, request.current_balance
+                ),
             ),
             _ => (
                 format!("账单提醒: {}", request.card_name),
-                format!("您的{}账单将在{}天后到期，当前欠款¥{}", 
-                    request.card_name, request.days_until_due, request.current_balance)
+                format!(
+                    "您的{}账单将在{}天后到期，当前欠款¥{}",
+                    request.card_name, request.days_until_due, request.current_balance
+                ),
             ),
         };
 
         let mut metadata = HashMap::new();
-        metadata.insert("credit_card_id".to_string(), serde_json::json!(request.credit_card_id));
-        metadata.insert("days_until_due".to_string(), serde_json::json!(request.days_until_due));
-        metadata.insert("urgent".to_string(), serde_json::json!(request.days_until_due <= 1));
+        metadata.insert(
+            "credit_card_id".to_string(),
+            serde_json::json!(request.credit_card_id),
+        );
+        metadata.insert(
+            "days_until_due".to_string(),
+            serde_json::json!(request.days_until_due),
+        );
+        metadata.insert(
+            "urgent".to_string(),
+            serde_json::json!(request.days_until_due <= 1),
+        );
 
         let notification_request = CreateNotificationRequest {
             user_id: context.user_id.clone(),
             notification_type: NotificationType::BillReminder,
-            priority: if request.days_until_due <= 1 { 
-                NotificationPriority::Urgent 
-            } else { 
-                NotificationPriority::High 
+            priority: if request.days_until_due <= 1 {
+                NotificationPriority::Urgent
+            } else {
+                NotificationPriority::High
             },
             title,
             message,
             action_url: Some(format!("/credit-cards/{}", request.credit_card_id)),
             data: Some(serde_json::to_string(&metadata).unwrap_or_default()),
             channels: if request.days_until_due <= 1 {
-                vec![NotificationChannel::InApp, NotificationChannel::Push, NotificationChannel::SMS]
+                vec![
+                    NotificationChannel::InApp,
+                    NotificationChannel::Push,
+                    NotificationChannel::SMS,
+                ]
             } else {
                 preferences.enabled_channels.clone()
             },
@@ -819,7 +911,9 @@ impl NotificationService {
             template_variables: None,
         };
 
-        let notification = self.create_notification(notification_request, context).await?;
+        let notification = self
+            .create_notification(notification_request, context)
+            .await?;
         Ok(notification.id)
     }
 
@@ -829,9 +923,13 @@ impl NotificationService {
         request: SavingGoalUpdateRequest,
         context: &ServiceContext,
     ) -> Result<String> {
-        let preferences = self.user_preferences.get(&request.family_id)
+        let preferences = self
+            .user_preferences
+            .get(&request.family_id)
             .cloned()
-            .unwrap_or_else(|| NotificationPreferences::new(context.user_id.clone(), request.family_id.clone()));
+            .unwrap_or_else(|| {
+                NotificationPreferences::new(context.user_id.clone(), request.family_id.clone())
+            });
 
         if !preferences.saving_goals {
             return Ok(String::new());
@@ -840,31 +938,42 @@ impl NotificationService {
         let (title, message) = if let Some(milestone) = request.milestone_reached {
             (
                 "储蓄目标达成！".to_string(),
-                format!("恭喜！您的{}已达到{}%的目标", request.plan_name, milestone)
+                format!("恭喜！您的{}已达到{}%的目标", request.plan_name, milestone),
             )
         } else {
             (
                 "储蓄目标进度更新".to_string(),
-                format!("您的{}已完成{}%，已存¥{}，目标¥{}", 
-                    request.plan_name, 
+                format!(
+                    "您的{}已完成{}%，已存¥{}，目标¥{}",
+                    request.plan_name,
                     request.progress_percentage as i32,
-                    request.current_amount, 
-                    request.target_amount)
+                    request.current_amount,
+                    request.target_amount
+                ),
             )
         };
 
         let mut metadata = HashMap::new();
-        metadata.insert("saving_plan_id".to_string(), serde_json::json!(request.saving_plan_id));
-        metadata.insert("progress".to_string(), serde_json::json!(request.progress_percentage));
-        metadata.insert("celebration".to_string(), serde_json::json!(request.milestone_reached.is_some()));
+        metadata.insert(
+            "saving_plan_id".to_string(),
+            serde_json::json!(request.saving_plan_id),
+        );
+        metadata.insert(
+            "progress".to_string(),
+            serde_json::json!(request.progress_percentage),
+        );
+        metadata.insert(
+            "celebration".to_string(),
+            serde_json::json!(request.milestone_reached.is_some()),
+        );
 
         let notification_request = CreateNotificationRequest {
             user_id: context.user_id.clone(),
             notification_type: NotificationType::SavingGoal,
-            priority: if request.milestone_reached.is_some() { 
-                NotificationPriority::Medium 
-            } else { 
-                NotificationPriority::Low 
+            priority: if request.milestone_reached.is_some() {
+                NotificationPriority::Medium
+            } else {
+                NotificationPriority::Low
             },
             title,
             message,
@@ -877,7 +986,9 @@ impl NotificationService {
             template_variables: None,
         };
 
-        let notification = self.create_notification(notification_request, context).await?;
+        let notification = self
+            .create_notification(notification_request, context)
+            .await?;
         Ok(notification.id)
     }
 
@@ -887,9 +998,13 @@ impl NotificationService {
         request: TransactionAlertRequest,
         context: &ServiceContext,
     ) -> Result<String> {
-        let preferences = self.user_preferences.get(&request.family_id)
+        let preferences = self
+            .user_preferences
+            .get(&request.family_id)
             .cloned()
-            .unwrap_or_else(|| NotificationPreferences::new(context.user_id.clone(), request.family_id.clone()));
+            .unwrap_or_else(|| {
+                NotificationPreferences::new(context.user_id.clone(), request.family_id.clone())
+            });
 
         if !preferences.transaction_alerts {
             return Ok(String::new());
@@ -905,34 +1020,62 @@ impl NotificationService {
         let (title, message) = match request.alert_type {
             TransactionAlertType::LargeExpense => (
                 "大额支出提醒".to_string(),
-                format!("您刚刚在{}消费了¥{}", 
-                    request.merchant_name.as_ref().unwrap_or(&"未知商户".to_string()), 
-                    request.amount)
+                format!(
+                    "您刚刚在{}消费了¥{}",
+                    request
+                        .merchant_name
+                        .as_ref()
+                        .unwrap_or(&"未知商户".to_string()),
+                    request.amount
+                ),
             ),
             TransactionAlertType::UnusualActivity => (
                 "异常交易提醒".to_string(),
-                format!("检测到异常交易：{}，金额¥{}", request.description, request.amount)
+                format!(
+                    "检测到异常交易：{}，金额¥{}",
+                    request.description, request.amount
+                ),
             ),
             TransactionAlertType::AutoCategorized => (
                 "交易已自动分类".to_string(),
-                format!("交易\"{}\"已自动归类为{}", 
-                    request.description, 
-                    request.category_name.as_ref().unwrap_or(&"未分类".to_string()))
+                format!(
+                    "交易\"{}\"已自动归类为{}",
+                    request.description,
+                    request
+                        .category_name
+                        .as_ref()
+                        .unwrap_or(&"未分类".to_string())
+                ),
             ),
             TransactionAlertType::DuplicateDetected => (
                 "重复交易检测".to_string(),
-                format!("检测到可能的重复交易：{}，金额¥{}", request.description, request.amount)
+                format!(
+                    "检测到可能的重复交易：{}，金额¥{}",
+                    request.description, request.amount
+                ),
             ),
             TransactionAlertType::RefundReceived => (
                 "收到退款".to_string(),
-                format!("您收到了¥{}的退款：{}", request.amount, request.description)
+                format!("您收到了¥{}的退款：{}", request.amount, request.description),
             ),
         };
 
         let mut metadata = HashMap::new();
-        metadata.insert("transaction_id".to_string(), serde_json::json!(request.transaction_id));
-        metadata.insert("alert_type".to_string(), serde_json::json!(format!("{:?}", request.alert_type)));
-        metadata.insert("urgent".to_string(), serde_json::json!(matches!(request.alert_type, TransactionAlertType::UnusualActivity)));
+        metadata.insert(
+            "transaction_id".to_string(),
+            serde_json::json!(request.transaction_id),
+        );
+        metadata.insert(
+            "alert_type".to_string(),
+            serde_json::json!(format!("{:?}", request.alert_type)),
+        );
+        metadata.insert(
+            "urgent".to_string(),
+            serde_json::json!(matches!(
+                request.alert_type,
+                TransactionAlertType::UnusualActivity
+            )),
+        );
 
         let notification_request = CreateNotificationRequest {
             user_id: context.user_id.clone(),
@@ -953,7 +1096,9 @@ impl NotificationService {
             template_variables: None,
         };
 
-        let notification = self.create_notification(notification_request, context).await?;
+        let notification = self
+            .create_notification(notification_request, context)
+            .await?;
         Ok(notification.id)
     }
 
@@ -963,9 +1108,13 @@ impl NotificationService {
         request: AchievementNotificationRequest,
         context: &ServiceContext,
     ) -> Result<String> {
-        let preferences = self.user_preferences.get(&request.family_id)
+        let preferences = self
+            .user_preferences
+            .get(&request.family_id)
             .cloned()
-            .unwrap_or_else(|| NotificationPreferences::new(context.user_id.clone(), request.family_id.clone()));
+            .unwrap_or_else(|| {
+                NotificationPreferences::new(context.user_id.clone(), request.family_id.clone())
+            });
 
         if !preferences.achievements {
             return Ok(String::new());
@@ -974,50 +1123,57 @@ impl NotificationService {
         let (title, message) = match request.achievement_type {
             AchievementType::FirstTransaction => (
                 "🎉 欢迎开始记账！".to_string(),
-                "您已记录第一笔交易，继续保持良好的记账习惯".to_string()
+                "您已记录第一笔交易，继续保持良好的记账习惯".to_string(),
             ),
             AchievementType::StreakMilestone => {
-                let days = request.details.get("days")
+                let days = request
+                    .details
+                    .get("days")
                     .and_then(|v| v.as_u64())
                     .unwrap_or(0);
                 (
                     format!("🔥 连续记账{}天！", days),
-                    format!("太棒了！您已经连续{}天保持记账，继续加油", days)
+                    format!("太棒了！您已经连续{}天保持记账，继续加油", days),
                 )
-            },
+            }
             AchievementType::SavingMilestone => {
-                let amount = request.details.get("amount")
+                let amount = request
+                    .details
+                    .get("amount")
                     .and_then(|v| v.as_f64())
                     .unwrap_or(0.0);
                 (
                     "💰 储蓄里程碑！".to_string(),
-                    format!("恭喜！您的总储蓄已达到¥{}", amount)
+                    format!("恭喜！您的总储蓄已达到¥{}", amount),
                 )
-            },
+            }
             AchievementType::BudgetMaster => (
                 "📊 预算大师！".to_string(),
-                "连续3个月控制预算在计划内，理财能力提升".to_string()
+                "连续3个月控制预算在计划内，理财能力提升".to_string(),
             ),
             AchievementType::InvestmentGuru => (
                 "📈 投资达人！".to_string(),
-                "您的投资组合表现优异，继续保持".to_string()
+                "您的投资组合表现优异，继续保持".to_string(),
             ),
             AchievementType::DebtFreeHero => (
                 "🎊 无债一身轻！".to_string(),
-                "恭喜您还清所有债务，财务自由更进一步".to_string()
+                "恭喜您还清所有债务，财务自由更进一步".to_string(),
             ),
             AchievementType::CategoryExplorer => (
                 "🗂️ 分类探索者！".to_string(),
-                "您已使用了所有消费类别，记账更加精细".to_string()
+                "您已使用了所有消费类别，记账更加精细".to_string(),
             ),
             AchievementType::YearInReview => (
                 "📅 年度总结！".to_string(),
-                "您的年度财务报告已生成，点击查看详情".to_string()
+                "您的年度财务报告已生成，点击查看详情".to_string(),
             ),
         };
 
         let mut metadata = HashMap::new();
-        metadata.insert("achievement_type".to_string(), serde_json::json!(format!("{:?}", request.achievement_type)));
+        metadata.insert(
+            "achievement_type".to_string(),
+            serde_json::json!(format!("{:?}", request.achievement_type)),
+        );
         for (key, value) in request.details {
             metadata.insert(key, value);
         }
@@ -1038,7 +1194,9 @@ impl NotificationService {
             template_variables: None,
         };
 
-        let notification = self.create_notification(notification_request, context).await?;
+        let notification = self
+            .create_notification(notification_request, context)
+            .await?;
         Ok(notification.id)
     }
 
@@ -1049,9 +1207,13 @@ impl NotificationService {
         stats: WeeklySummaryStats,
         context: &ServiceContext,
     ) -> Result<String> {
-        let preferences = self.user_preferences.get(&family_id)
+        let preferences = self
+            .user_preferences
+            .get(&family_id)
             .cloned()
-            .unwrap_or_else(|| NotificationPreferences::new(context.user_id.clone(), family_id.clone()));
+            .unwrap_or_else(|| {
+                NotificationPreferences::new(context.user_id.clone(), family_id.clone())
+            });
 
         if !preferences.weekly_summary {
             return Ok(String::new());
@@ -1059,8 +1221,10 @@ impl NotificationService {
 
         let week_range = format!(
             "{}月{}日 - {}月{}日",
-            stats.week_start.month(), stats.week_start.day(),
-            stats.week_end.month(), stats.week_end.day()
+            stats.week_start.month(),
+            stats.week_start.day(),
+            stats.week_end.month(),
+            stats.week_end.day()
         );
 
         let title = format!("周报：{}", week_range);
@@ -1070,8 +1234,14 @@ impl NotificationService {
         );
 
         let mut metadata = HashMap::new();
-        metadata.insert("week_start".to_string(), serde_json::json!(stats.week_start.to_string()));
-        metadata.insert("week_end".to_string(), serde_json::json!(stats.week_end.to_string()));
+        metadata.insert(
+            "week_start".to_string(),
+            serde_json::json!(stats.week_start.to_string()),
+        );
+        metadata.insert(
+            "week_end".to_string(),
+            serde_json::json!(stats.week_end.to_string()),
+        );
         metadata.insert("stats".to_string(), serde_json::json!(stats));
 
         let notification_request = CreateNotificationRequest {
@@ -1089,7 +1259,9 @@ impl NotificationService {
             template_variables: None,
         };
 
-        let notification = self.create_notification(notification_request, context).await?;
+        let notification = self
+            .create_notification(notification_request, context)
+            .await?;
         Ok(notification.id)
     }
 
@@ -1100,16 +1272,22 @@ impl NotificationService {
         stats: MonthlyReportStats,
         context: &ServiceContext,
     ) -> Result<String> {
-        let preferences = self.user_preferences.get(&family_id)
+        let preferences = self
+            .user_preferences
+            .get(&family_id)
             .cloned()
-            .unwrap_or_else(|| NotificationPreferences::new(context.user_id.clone(), family_id.clone()));
+            .unwrap_or_else(|| {
+                NotificationPreferences::new(context.user_id.clone(), family_id.clone())
+            });
 
         if !preferences.monthly_reports {
             return Ok(String::new());
         }
 
         let title = format!("{}财务报告", stats.month);
-        let top_categories_str = stats.top_categories.iter()
+        let top_categories_str = stats
+            .top_categories
+            .iter()
             .take(3)
             .map(|(cat, amount)| format!("{}(¥{})", cat, amount))
             .collect::<Vec<_>>()
@@ -1139,7 +1317,9 @@ impl NotificationService {
             template_variables: None,
         };
 
-        let notification = self.create_notification(notification_request, context).await?;
+        let notification = self
+            .create_notification(notification_request, context)
+            .await?;
         Ok(notification.id)
     }
 
@@ -1177,14 +1357,19 @@ impl NotificationService {
         // 检查用户通知偏好
         if let Some(preferences) = self.user_preferences.get(&request.user_id) {
             // 检查用户是否启用了该通知类型
-            if !preferences.enabled_types.contains(&request.notification_type) {
+            if !preferences
+                .enabled_types
+                .contains(&request.notification_type)
+            {
                 return Err(JiveError::ValidationError {
                     message: "用户未启用此类型的通知".to_string(),
                 });
             }
 
             // 检查通知渠道是否可用
-            let available_channels: Vec<_> = request.channels.iter()
+            let available_channels: Vec<_> = request
+                .channels
+                .iter()
                 .filter(|channel| preferences.enabled_channels.contains(channel))
                 .cloned()
                 .collect();
@@ -1200,11 +1385,16 @@ impl NotificationService {
         let (final_title, final_message) = if let Some(template_id) = &request.template_id {
             if let Some(template) = self.templates.get(template_id) {
                 if let Some(variables) = &request.template_variables {
-                    let title = self.replace_template_variables(&template.title_template, variables);
-                    let message = self.replace_template_variables(&template.message_template, variables);
+                    let title =
+                        self.replace_template_variables(&template.title_template, variables);
+                    let message =
+                        self.replace_template_variables(&template.message_template, variables);
                     (title, message)
                 } else {
-                    (template.title_template.clone(), template.message_template.clone())
+                    (
+                        template.title_template.clone(),
+                        template.message_template.clone(),
+                    )
                 }
             } else {
                 return Err(JiveError::NotFound {
@@ -1216,7 +1406,8 @@ impl NotificationService {
         };
 
         // 设置过期时间（默认30天）
-        let expires_at = request.expires_at
+        let expires_at = request
+            .expires_at
             .or_else(|| Some(Utc::now().naive_utc() + Duration::days(30)));
 
         let now = Utc::now().naive_utc();
@@ -1236,7 +1427,11 @@ impl NotificationService {
             data: request.data,
             channels: request.channels,
             scheduled_at: request.scheduled_at,
-            sent_at: if request.scheduled_at.is_none() { Some(now) } else { None },
+            sent_at: if request.scheduled_at.is_none() {
+                Some(now)
+            } else {
+                None
+            },
             read_at: None,
             expires_at,
             retry_count: 0,
@@ -1246,7 +1441,8 @@ impl NotificationService {
             updated_at: now,
         };
 
-        self.notifications.insert(notification.id.clone(), notification.clone());
+        self.notifications
+            .insert(notification.id.clone(), notification.clone());
         Ok(notification)
     }
 
@@ -1263,7 +1459,7 @@ impl NotificationService {
         }
 
         let mut notification_ids = Vec::new();
-        
+
         for user_id in request.user_ids {
             let individual_request = CreateNotificationRequest {
                 user_id,
@@ -1295,7 +1491,8 @@ impl NotificationService {
         notification_id: &str,
         _context: &ServiceContext,
     ) -> Result<Notification> {
-        self.notifications.get(notification_id)
+        self.notifications
+            .get(notification_id)
             .cloned()
             .ok_or_else(|| JiveError::NotFound {
                 message: format!("通知 {} 不存在", notification_id),
@@ -1340,7 +1537,7 @@ impl NotificationService {
 
                 if let Some(is_read) = filter.is_read {
                     let notification_is_read = matches!(
-                        notification.status, 
+                        notification.status,
                         NotificationStatus::Read | NotificationStatus::Dismissed
                     );
                     if notification_is_read != is_read {
@@ -1376,8 +1573,11 @@ impl NotificationService {
         let total_count = notifications.len() as u32;
         let start = pagination.offset as usize;
         let end = (start + pagination.per_page as usize).min(notifications.len());
-        
-        let page_items = notifications[start..end].iter().map(|n| (*n).clone()).collect();
+
+        let page_items = notifications[start..end]
+            .iter()
+            .map(|n| (*n).clone())
+            .collect();
 
         Ok(PaginatedResult::new(page_items, total_count, &pagination))
     }
@@ -1388,10 +1588,12 @@ impl NotificationService {
         notification_id: &str,
         _context: &ServiceContext,
     ) -> Result<()> {
-        let notification = self.notifications.get_mut(notification_id)
-            .ok_or_else(|| JiveError::NotFound {
-                message: format!("通知 {} 不存在", notification_id),
-            })?;
+        let notification =
+            self.notifications
+                .get_mut(notification_id)
+                .ok_or_else(|| JiveError::NotFound {
+                    message: format!("通知 {} 不存在", notification_id),
+                })?;
 
         if notification.status != NotificationStatus::Read {
             notification.status = NotificationStatus::Read;
@@ -1408,10 +1610,12 @@ impl NotificationService {
         notification_id: &str,
         _context: &ServiceContext,
     ) -> Result<()> {
-        let notification = self.notifications.get_mut(notification_id)
-            .ok_or_else(|| JiveError::NotFound {
-                message: format!("通知 {} 不存在", notification_id),
-            })?;
+        let notification =
+            self.notifications
+                .get_mut(notification_id)
+                .ok_or_else(|| JiveError::NotFound {
+                    message: format!("通知 {} 不存在", notification_id),
+                })?;
 
         notification.status = NotificationStatus::Dismissed;
         notification.read_at = Some(Utc::now().naive_utc());
@@ -1430,8 +1634,12 @@ impl NotificationService {
         let now = Utc::now().naive_utc();
 
         for notification in self.notifications.values_mut() {
-            if notification.user_id == user_id && 
-               !matches!(notification.status, NotificationStatus::Read | NotificationStatus::Dismissed) {
+            if notification.user_id == user_id
+                && !matches!(
+                    notification.status,
+                    NotificationStatus::Read | NotificationStatus::Dismissed
+                )
+            {
                 notification.status = NotificationStatus::Read;
                 notification.read_at = Some(now);
                 notification.updated_at = now;
@@ -1466,7 +1674,9 @@ impl NotificationService {
         let now = Utc::now().naive_utc();
         let mut removed_count = 0;
 
-        let expired_ids: Vec<String> = self.notifications.iter()
+        let expired_ids: Vec<String> = self
+            .notifications
+            .iter()
             .filter_map(|(id, notification)| {
                 if let Some(expires_at) = notification.expires_at {
                     if now > expires_at {
@@ -1489,16 +1699,14 @@ impl NotificationService {
     }
 
     /// 重试失败的通知
-    pub async fn retry_failed_notifications(
-        &mut self,
-        _context: &ServiceContext,
-    ) -> Result<u32> {
+    pub async fn retry_failed_notifications(&mut self, _context: &ServiceContext) -> Result<u32> {
         let mut retried_count = 0;
         let now = Utc::now().naive_utc();
 
         for notification in self.notifications.values_mut() {
-            if notification.status == NotificationStatus::Failed && 
-               notification.retry_count < notification.max_retries {
+            if notification.status == NotificationStatus::Failed
+                && notification.retry_count < notification.max_retries
+            {
                 notification.retry_count += 1;
                 notification.status = NotificationStatus::Pending;
                 notification.updated_at = now;
@@ -1516,26 +1724,31 @@ impl NotificationService {
         _context: &ServiceContext,
     ) -> Result<NotificationStats> {
         let notifications: Vec<_> = if let Some(user_id) = user_id {
-            self.notifications.values()
+            self.notifications
+                .values()
                 .filter(|n| n.user_id == user_id)
                 .collect()
         } else {
             self.notifications.values().collect()
         };
 
-        let total_sent = notifications.iter()
+        let total_sent = notifications
+            .iter()
             .filter(|n| !matches!(n.status, NotificationStatus::Pending))
             .count() as u32;
 
-        let total_read = notifications.iter()
+        let total_read = notifications
+            .iter()
             .filter(|n| matches!(n.status, NotificationStatus::Read))
             .count() as u32;
 
-        let total_dismissed = notifications.iter()
+        let total_dismissed = notifications
+            .iter()
             .filter(|n| matches!(n.status, NotificationStatus::Dismissed))
             .count() as u32;
 
-        let total_failed = notifications.iter()
+        let total_failed = notifications
+            .iter()
             .filter(|n| matches!(n.status, NotificationStatus::Failed))
             .count() as u32;
 
@@ -1554,7 +1767,9 @@ impl NotificationService {
         // 按类型统计
         let mut by_type = HashMap::new();
         for notification in &notifications {
-            *by_type.entry(notification.notification_type.as_string()).or_insert(0) += 1;
+            *by_type
+                .entry(notification.notification_type.as_string())
+                .or_insert(0) += 1;
         }
 
         // 按渠道统计
@@ -1568,7 +1783,9 @@ impl NotificationService {
         // 按优先级统计
         let mut by_priority = HashMap::new();
         for notification in &notifications {
-            *by_priority.entry(notification.priority.as_string()).or_insert(0) += 1;
+            *by_priority
+                .entry(notification.priority.as_string())
+                .or_insert(0) += 1;
         }
 
         Ok(NotificationStats {
@@ -1590,7 +1807,8 @@ impl NotificationService {
         preferences: NotificationPreferences,
         _context: &ServiceContext,
     ) -> Result<()> {
-        self.user_preferences.insert(preferences.user_id.clone(), preferences);
+        self.user_preferences
+            .insert(preferences.user_id.clone(), preferences);
         Ok(())
     }
 
@@ -1600,7 +1818,8 @@ impl NotificationService {
         user_id: &str,
         _context: &ServiceContext,
     ) -> Result<NotificationPreferences> {
-        self.user_preferences.get(user_id)
+        self.user_preferences
+            .get(user_id)
             .cloned()
             .unwrap_or_else(|| NotificationPreferences::new(user_id.to_string()))
             .into()
@@ -1612,7 +1831,9 @@ impl NotificationService {
         notification_type: Option<NotificationType>,
         _context: &ServiceContext,
     ) -> Result<Vec<NotificationTemplate>> {
-        let templates: Vec<_> = self.templates.values()
+        let templates: Vec<_> = self
+            .templates
+            .values()
             .filter(|template| {
                 if let Some(notification_type) = &notification_type {
                     &template.notification_type == notification_type
@@ -1673,7 +1894,11 @@ impl NotificationService {
     }
 
     // 辅助方法：替换模板变量
-    fn replace_template_variables(&self, template: &str, variables: &HashMap<String, String>) -> String {
+    fn replace_template_variables(
+        &self,
+        template: &str,
+        variables: &HashMap<String, String>,
+    ) -> String {
         let mut result = template.to_string();
         for (key, value) in variables {
             result = result.replace(&format!("{{{{{}}}}}", key), value);
@@ -1682,10 +1907,14 @@ impl NotificationService {
     }
 
     // 辅助方法：提取模板变量
-    fn extract_template_variables(&self, title_template: &str, message_template: &str) -> Vec<String> {
+    fn extract_template_variables(
+        &self,
+        title_template: &str,
+        message_template: &str,
+    ) -> Vec<String> {
         let mut variables = Vec::new();
         let combined = format!("{} {}", title_template, message_template);
-        
+
         // 简单的正则匹配 {{variable}} 格式
         let mut start = 0;
         while let Some(open) = combined[start..].find("{{") {
@@ -1701,7 +1930,7 @@ impl NotificationService {
                 break;
             }
         }
-        
+
         variables
     }
 }
@@ -1808,7 +2037,10 @@ impl WasmNotificationService {
         notification_id: &str,
         context: &ServiceContext,
     ) -> Result<ServiceResponse<Notification>, JsValue> {
-        let result = self.service.get_notification(notification_id, context).await;
+        let result = self
+            .service
+            .get_notification(notification_id, context)
+            .await;
         Ok(ServiceResponse::from(result))
     }
 
@@ -1863,11 +2095,17 @@ mod tests {
             template_variables: None,
         };
 
-        let notification = service.create_notification(request, &context).await.unwrap();
+        let notification = service
+            .create_notification(request, &context)
+            .await
+            .unwrap();
         assert_eq!(notification.title, "预算警告");
         assert_eq!(notification.message, "您的餐饮预算已超出80%");
         assert_eq!(notification.user_id, "test-user");
-        assert_eq!(notification.notification_type, NotificationType::BudgetAlert);
+        assert_eq!(
+            notification.notification_type,
+            NotificationType::BudgetAlert
+        );
         assert_eq!(notification.priority, NotificationPriority::High);
         assert_eq!(notification.status, NotificationStatus::Sent);
         assert!(notification.sent_at.is_some());
@@ -1894,7 +2132,9 @@ mod tests {
             template_variables: None,
         };
 
-        let result = service.create_notification(empty_user_request, &context).await;
+        let result = service
+            .create_notification(empty_user_request, &context)
+            .await;
         assert!(result.is_err());
         assert!(result.unwrap_err().to_string().contains("用户ID不能为空"));
 
@@ -1914,7 +2154,9 @@ mod tests {
             template_variables: None,
         };
 
-        let result = service.create_notification(empty_title_request, &context).await;
+        let result = service
+            .create_notification(empty_title_request, &context)
+            .await;
         assert!(result.is_err());
         assert!(result.unwrap_err().to_string().contains("通知标题不能为空"));
 
@@ -1934,9 +2176,14 @@ mod tests {
             template_variables: None,
         };
 
-        let result = service.create_notification(empty_channels_request, &context).await;
+        let result = service
+            .create_notification(empty_channels_request, &context)
+            .await;
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("至少需要选择一个通知渠道"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("至少需要选择一个通知渠道"));
     }
 
     #[tokio::test]
@@ -1960,14 +2207,23 @@ mod tests {
             template_variables: None,
         };
 
-        let notification = service.create_notification(request, &context).await.unwrap();
+        let notification = service
+            .create_notification(request, &context)
+            .await
+            .unwrap();
         assert_eq!(notification.status, NotificationStatus::Sent);
         assert!(notification.read_at.is_none());
 
         // 标记为已读
-        service.mark_as_read(&notification.id, &context).await.unwrap();
+        service
+            .mark_as_read(&notification.id, &context)
+            .await
+            .unwrap();
 
-        let updated_notification = service.get_notification(&notification.id, &context).await.unwrap();
+        let updated_notification = service
+            .get_notification(&notification.id, &context)
+            .await
+            .unwrap();
         assert_eq!(updated_notification.status, NotificationStatus::Read);
         assert!(updated_notification.read_at.is_some());
     }
@@ -1978,7 +2234,11 @@ mod tests {
         let context = create_test_context();
 
         let bulk_request = BulkNotificationRequest {
-            user_ids: vec!["user1".to_string(), "user2".to_string(), "user3".to_string()],
+            user_ids: vec![
+                "user1".to_string(),
+                "user2".to_string(),
+                "user3".to_string(),
+            ],
             notification_type: NotificationType::SystemUpdate,
             priority: NotificationPriority::Low,
             title: "系统更新".to_string(),
@@ -1990,7 +2250,10 @@ mod tests {
             expires_at: None,
         };
 
-        let notification_ids = service.create_bulk_notifications(bulk_request, &context).await.unwrap();
+        let notification_ids = service
+            .create_bulk_notifications(bulk_request, &context)
+            .await
+            .unwrap();
         assert_eq!(notification_ids.len(), 3);
 
         // 验证每个用户都收到了通知
@@ -2009,7 +2272,10 @@ mod tests {
             };
 
             let pagination = PaginationParams::new(1, 10);
-            let notifications = service.get_notifications(Some(filter), pagination, &context).await.unwrap();
+            let notifications = service
+                .get_notifications(Some(filter), pagination, &context)
+                .await
+                .unwrap();
             assert_eq!(notifications.items.len(), 1);
             assert_eq!(notifications.items[0].title, "系统更新");
         }
@@ -2025,7 +2291,10 @@ mod tests {
             (NotificationStatus::Sent, NotificationType::BudgetAlert),
             (NotificationStatus::Read, NotificationType::PaymentReminder),
             (NotificationStatus::Read, NotificationType::BillDue),
-            (NotificationStatus::Dismissed, NotificationType::GoalAchievement),
+            (
+                NotificationStatus::Dismissed,
+                NotificationType::GoalAchievement,
+            ),
             (NotificationStatus::Failed, NotificationType::SecurityAlert),
         ];
 
@@ -2045,18 +2314,27 @@ mod tests {
                 template_variables: None,
             };
 
-            let notification = service.create_notification(request, &context).await.unwrap();
-            
+            let notification = service
+                .create_notification(request, &context)
+                .await
+                .unwrap();
+
             // 手动设置状态（模拟不同的状态）
             if let Some(n) = service.notifications.get_mut(&notification.id) {
                 n.status = status;
-                if matches!(status, NotificationStatus::Read | NotificationStatus::Dismissed) {
+                if matches!(
+                    status,
+                    NotificationStatus::Read | NotificationStatus::Dismissed
+                ) {
                     n.read_at = Some(Utc::now().naive_utc());
                 }
             }
         }
 
-        let stats = service.get_notification_stats(Some("test-user".to_string()), &context).await.unwrap();
+        let stats = service
+            .get_notification_stats(Some("test-user".to_string()), &context)
+            .await
+            .unwrap();
         assert_eq!(stats.total_sent, 5);
         assert_eq!(stats.total_read, 2);
         assert_eq!(stats.total_dismissed, 1);
@@ -2071,13 +2349,16 @@ mod tests {
         let context = create_test_context();
 
         // 创建一个包含模板变量的模板
-        let template = service.create_template(
-            "预算警告模板".to_string(),
-            NotificationType::BudgetAlert,
-            "{{category}}预算警告".to_string(),
-            "您的{{category}}预算已超出{{percentage}}%，当前金额：{{amount}}".to_string(),
-            &context,
-        ).await.unwrap();
+        let template = service
+            .create_template(
+                "预算警告模板".to_string(),
+                NotificationType::BudgetAlert,
+                "{{category}}预算警告".to_string(),
+                "您的{{category}}预算已超出{{percentage}}%，当前金额：{{amount}}".to_string(),
+                &context,
+            )
+            .await
+            .unwrap();
 
         // 使用模板创建通知
         let mut variables = HashMap::new();
@@ -2089,7 +2370,7 @@ mod tests {
             user_id: "test-user".to_string(),
             notification_type: NotificationType::BudgetAlert,
             priority: NotificationPriority::High,
-            title: "".to_string(), // 将被模板替换
+            title: "".to_string(),   // 将被模板替换
             message: "".to_string(), // 将被模板替换
             action_url: None,
             data: None,
@@ -2100,8 +2381,14 @@ mod tests {
             template_variables: Some(variables),
         };
 
-        let notification = service.create_notification(request, &context).await.unwrap();
+        let notification = service
+            .create_notification(request, &context)
+            .await
+            .unwrap();
         assert_eq!(notification.title, "餐饮预算警告");
-        assert_eq!(notification.message, "您的餐饮预算已超出120%，当前金额：¥1,200");
+        assert_eq!(
+            notification.message,
+            "您的餐饮预算已超出120%，当前金额：¥1,200"
+        );
     }
 }

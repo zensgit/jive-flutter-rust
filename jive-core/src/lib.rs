@@ -1,5 +1,5 @@
 //! Jive Core Library
-//! 
+//!
 //! This library contains the core business logic for the Jive financial application.
 //! It's designed to work across multiple platforms through WASM bindings.
 
@@ -74,7 +74,9 @@ pub fn get_app_name() -> String {
 #[cfg(feature = "wasm")]
 #[wasm_bindgen]
 pub fn init_logging() {
-    web_sys::console::log_1(&format!("{} Core v{} - Logging initialized", APP_NAME, VERSION).into());
+    web_sys::console::log_1(
+        &format!("{} Core v{} - Logging initialized", APP_NAME, VERSION).into(),
+    );
 }
 
 #[cfg(test)]

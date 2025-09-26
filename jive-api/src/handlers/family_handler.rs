@@ -42,7 +42,7 @@ impl<T> ApiResponse<T> {
             timestamp: chrono::Utc::now(),
         }
     }
-    
+
     pub fn error(code: String, message: String) -> ApiResponse<()> {
         ApiResponse {
             success: false,
@@ -67,23 +67,21 @@ pub async fn create_family(
         Ok(id) => id,
         Err(_) => return Err(StatusCode::UNAUTHORIZED),
     };
-    
+
     let service = FamilyService::new(pool.clone());
-    
+
     match service.create_family(user_id, request).await {
         Ok(family) => Ok(Json(ApiResponse::success(family))),
-        Err(ServiceError::Conflict(msg)) => {
-            Ok(Json(ApiResponse::<Family> {
-                success: false,
-                data: None,
-                error: Some(ApiError {
-                    code: "FAMILY_ALREADY_EXISTS".to_string(),
-                    message: msg,
-                    details: None,
-                }),
-                timestamp: chrono::Utc::now(),
-            }))
-        },
+        Err(ServiceError::Conflict(msg)) => Ok(Json(ApiResponse::<Family> {
+            success: false,
+            data: None,
+            error: Some(ApiError {
+                code: "FAMILY_ALREADY_EXISTS".to_string(),
+                message: msg,
+                details: None,
+            }),
+            timestamp: chrono::Utc::now(),
+        })),
         Err(e) => {
             eprintln!("Error creating family: {:?}", e);
             Err(StatusCode::INTERNAL_SERVER_ERROR)
@@ -100,9 +98,9 @@ pub async fn list_families(
         Ok(id) => id,
         Err(_) => return Err(StatusCode::UNAUTHORIZED),
     };
-    
+
     let service = FamilyService::new(pool.clone());
-    
+
     match service.get_user_families(user_id).await {
         Ok(families) => Ok(Json(ApiResponse::success(families))),
         Err(e) => {
@@ -121,9 +119,9 @@ pub async fn get_family(
     if ctx.family_id != family_id {
         return Err(StatusCode::FORBIDDEN);
     }
-    
+
     let service = FamilyService::new(pool.clone());
-    
+
     match service.get_family(&ctx, family_id).await {
         Ok(family) => Ok(Json(ApiResponse::success(family))),
         Err(ServiceError::PermissionDenied) => Err(StatusCode::FORBIDDEN),
@@ -145,9 +143,9 @@ pub async fn update_family(
     if ctx.family_id != family_id {
         return Err(StatusCode::FORBIDDEN);
     }
-    
+
     let service = FamilyService::new(pool.clone());
-    
+
     match service.update_family(&ctx, family_id, request).await {
         Ok(family) => Ok(Json(ApiResponse::success(family))),
         Err(ServiceError::PermissionDenied) => Err(StatusCode::FORBIDDEN),
@@ -169,21 +167,20 @@ pub async fn delete_family(
         Ok(id) => id,
         Err(_) => return Err(StatusCode::UNAUTHORIZED),
     };
-    
+
     // Verify user is owner of the family
-    let role: Option<String> = sqlx::query_scalar(
-        "SELECT role FROM family_members WHERE family_id = $1 AND user_id = $2"
-    )
-    .bind(family_id)
-    .bind(user_id)
-    .fetch_optional(&pool)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+    let role: Option<String> =
+        sqlx::query_scalar("SELECT role FROM family_members WHERE family_id = $1 AND user_id = $2")
+            .bind(family_id)
+            .bind(user_id)
+            .fetch_optional(&pool)
+            .await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
     if role.as_deref() != Some("owner") {
         return Err(StatusCode::FORBIDDEN);
     }
-    
+
     // Create a minimal context for the service
     let ctx = ServiceContext::new(
         user_id,
@@ -193,9 +190,9 @@ pub async fn delete_family(
         String::new(),
         None,
     );
-    
+
     let service = FamilyService::new(pool.clone());
-    
+
     match service.delete_family(&ctx, family_id).await {
         Ok(()) => Ok(StatusCode::NO_CONTENT),
         Err(ServiceError::PermissionDenied) => Err(StatusCode::FORBIDDEN),
@@ -217,35 +214,34 @@ pub async fn join_family(
         Ok(id) => id,
         Err(_) => return Err(StatusCode::UNAUTHORIZED),
     };
-    
+
     let service = FamilyService::new(pool.clone());
-    
-    match service.join_family_by_invite_code(user_id, request.invite_code).await {
+
+    match service
+        .join_family_by_invite_code(user_id, request.invite_code)
+        .await
+    {
         Ok(family) => Ok(Json(ApiResponse::success(family))),
-        Err(ServiceError::InvalidInvitation) => {
-            Ok(Json(ApiResponse::<Family> {
-                success: false,
-                data: None,
-                error: Some(ApiError {
-                    code: "INVALID_INVITE_CODE".to_string(),
-                    message: "邀请码无效或已过期".to_string(),
-                    details: None,
-                }),
-                timestamp: chrono::Utc::now(),
-            }))
-        },
-        Err(ServiceError::Conflict(msg)) => {
-            Ok(Json(ApiResponse::<Family> {
-                success: false,
-                data: None,
-                error: Some(ApiError {
-                    code: "ALREADY_MEMBER".to_string(),
-                    message: msg,
-                    details: None,
-                }),
-                timestamp: chrono::Utc::now(),
-            }))
-        },
+        Err(ServiceError::InvalidInvitation) => Ok(Json(ApiResponse::<Family> {
+            success: false,
+            data: None,
+            error: Some(ApiError {
+                code: "INVALID_INVITE_CODE".to_string(),
+                message: "邀请码无效或已过期".to_string(),
+                details: None,
+            }),
+            timestamp: chrono::Utc::now(),
+        })),
+        Err(ServiceError::Conflict(msg)) => Ok(Json(ApiResponse::<Family> {
+            success: false,
+            data: None,
+            error: Some(ApiError {
+                code: "ALREADY_MEMBER".to_string(),
+                message: msg,
+                details: None,
+            }),
+            timestamp: chrono::Utc::now(),
+        })),
         Err(e) => {
             eprintln!("Error joining family: {:?}", e);
             Err(StatusCode::INTERNAL_SERVER_ERROR)
@@ -265,7 +261,7 @@ pub async fn switch_family(
     Json(request): Json<SwitchFamilyRequest>,
 ) -> Result<StatusCode, StatusCode> {
     let service = FamilyService::new(pool.clone());
-    
+
     match service.switch_family(user_id, request.family_id).await {
         Ok(()) => Ok(StatusCode::OK),
         Err(ServiceError::PermissionDenied) => Err(StatusCode::FORBIDDEN),
@@ -286,23 +282,23 @@ pub async fn get_family_statistics(
         Ok(id) => id,
         Err(_) => return Err(StatusCode::UNAUTHORIZED),
     };
-    
+
     // Verify user is member of the family
     let is_member: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM family_members WHERE family_id = $1 AND user_id = $2)"
+        "SELECT EXISTS(SELECT 1 FROM family_members WHERE family_id = $1 AND user_id = $2)",
     )
     .bind(family_id)
     .bind(user_id)
     .fetch_one(&pool)
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+
     if !is_member {
         return Err(StatusCode::FORBIDDEN);
     }
-    
+
     let service = FamilyService::new(pool.clone());
-    
+
     match service.get_family_statistics(family_id).await {
         Ok(stats) => Ok(Json(ApiResponse::success(stats))),
         Err(e) => {
@@ -321,9 +317,9 @@ pub async fn regenerate_invite_code(
     if ctx.family_id != family_id {
         return Err(StatusCode::FORBIDDEN);
     }
-    
+
     let service = FamilyService::new(pool.clone());
-    
+
     match service.regenerate_invite_code(&ctx, family_id).await {
         Ok(code) => Ok(Json(ApiResponse::success(code))),
         Err(ServiceError::PermissionDenied) => Err(StatusCode::FORBIDDEN),
@@ -357,26 +353,23 @@ pub async fn request_verification_code(
         Ok(id) => id,
         Err(_) => return Err(StatusCode::UNAUTHORIZED),
     };
-    
+
     if let Some(redis_conn) = redis {
         let verification_service = crate::services::VerificationService::new(Some(redis_conn));
-        
+
         // Get user email for sending code
-        let email: Option<String> = sqlx::query_scalar(
-            "SELECT email FROM users WHERE id = $1"
-        )
-        .bind(user_id)
-        .fetch_optional(&pool)
-        .await
-        .unwrap_or(None);
-        
+        let email: Option<String> = sqlx::query_scalar("SELECT email FROM users WHERE id = $1")
+            .bind(user_id)
+            .fetch_optional(&pool)
+            .await
+            .unwrap_or(None);
+
         let email = email.unwrap_or_else(|| "user@example.com".to_string());
-        
-        match verification_service.send_verification_code(
-            &user_id.to_string(),
-            &request.operation,
-            &email
-        ).await {
+
+        match verification_service
+            .send_verification_code(&user_id.to_string(), &request.operation, &email)
+            .await
+        {
             Ok(code) => {
                 // In production, don't return the code
                 Ok(Json(ApiResponse {
@@ -434,24 +427,26 @@ pub async fn leave_family(
         Ok(id) => id,
         Err(_) => return Err(StatusCode::UNAUTHORIZED),
     };
-    
+
     // Verify the code first
     if let Some(redis_conn) = redis {
         let verification_service = crate::services::VerificationService::new(Some(redis_conn));
-        
-        match verification_service.verify_code(
-            &user_id.to_string(),
-            "leave_family",
-            &request.verification_code
-        ).await {
+
+        match verification_service
+            .verify_code(
+                &user_id.to_string(),
+                "leave_family",
+                &request.verification_code,
+            )
+            .await
+        {
             Ok(true) => {
-            // Code is valid, proceed with leaving family
-            let service = FamilyService::new(pool.clone());
-            
-            match service.leave_family(user_id, request.family_id).await {
-                Ok(()) => Ok(Json(ApiResponse::success(()))),
-                Err(ServiceError::BusinessRuleViolation(msg)) => {
-                    Ok(Json(ApiResponse::<()> {
+                // Code is valid, proceed with leaving family
+                let service = FamilyService::new(pool.clone());
+
+                match service.leave_family(user_id, request.family_id).await {
+                    Ok(()) => Ok(Json(ApiResponse::success(()))),
+                    Err(ServiceError::BusinessRuleViolation(msg)) => Ok(Json(ApiResponse::<()> {
                         success: false,
                         data: None,
                         error: Some(ApiError {
@@ -460,57 +455,50 @@ pub async fn leave_family(
                             details: None,
                         }),
                         timestamp: chrono::Utc::now(),
-                    }))
+                    })),
+                    Err(e) => {
+                        eprintln!("Error leaving family: {:?}", e);
+                        Err(StatusCode::INTERNAL_SERVER_ERROR)
+                    }
                 }
-                Err(e) => {
-                    eprintln!("Error leaving family: {:?}", e);
-                    Err(StatusCode::INTERNAL_SERVER_ERROR)
-                }
             }
-            }
-            Ok(false) => {
-                Ok(Json(ApiResponse::<()> {
-                    success: false,
-                    data: None,
-                    error: Some(ApiError {
-                        code: "INVALID_VERIFICATION_CODE".to_string(),
-                        message: "验证码错误或已过期".to_string(),
-                        details: None,
-                    }),
-                    timestamp: chrono::Utc::now(),
-                }))
-            }
-            Err(_) => {
-                Ok(Json(ApiResponse::<()> {
-                    success: false,
-                    data: None,
-                    error: Some(ApiError {
-                        code: "VERIFICATION_SERVICE_ERROR".to_string(),
-                        message: "验证码服务暂时不可用".to_string(),
-                        details: None,
-                    }),
-                    timestamp: chrono::Utc::now(),
-                }))
-            }
+            Ok(false) => Ok(Json(ApiResponse::<()> {
+                success: false,
+                data: None,
+                error: Some(ApiError {
+                    code: "INVALID_VERIFICATION_CODE".to_string(),
+                    message: "验证码错误或已过期".to_string(),
+                    details: None,
+                }),
+                timestamp: chrono::Utc::now(),
+            })),
+            Err(_) => Ok(Json(ApiResponse::<()> {
+                success: false,
+                data: None,
+                error: Some(ApiError {
+                    code: "VERIFICATION_SERVICE_ERROR".to_string(),
+                    message: "验证码服务暂时不可用".to_string(),
+                    details: None,
+                }),
+                timestamp: chrono::Utc::now(),
+            })),
         }
     } else {
         // Redis not available, proceed without verification in development
         let service = FamilyService::new(pool.clone());
-        
+
         match service.leave_family(user_id, request.family_id).await {
             Ok(()) => Ok(Json(ApiResponse::success(()))),
-            Err(ServiceError::BusinessRuleViolation(msg)) => {
-                Ok(Json(ApiResponse::<()> {
-                    success: false,
-                    data: None,
-                    error: Some(ApiError {
-                        code: "CANNOT_LEAVE".to_string(),
-                        message: msg,
-                        details: None,
-                    }),
-                    timestamp: chrono::Utc::now(),
-                }))
-            }
+            Err(ServiceError::BusinessRuleViolation(msg)) => Ok(Json(ApiResponse::<()> {
+                success: false,
+                data: None,
+                error: Some(ApiError {
+                    code: "CANNOT_LEAVE".to_string(),
+                    message: msg,
+                    details: None,
+                }),
+                timestamp: chrono::Utc::now(),
+            })),
             Err(e) => {
                 eprintln!("Error leaving family: {:?}", e);
                 Err(StatusCode::INTERNAL_SERVER_ERROR)
@@ -528,34 +516,32 @@ pub async fn get_family_actions(
         Ok(id) => id,
         Err(_) => return Err(StatusCode::UNAUTHORIZED),
     };
-    
+
     // Get user's role in the family
-    let role: Option<String> = sqlx::query_scalar(
-        "SELECT role FROM family_members WHERE family_id = $1 AND user_id = $2"
-    )
-    .bind(family_id)
-    .bind(user_id)
-    .fetch_optional(&pool)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+    let role: Option<String> =
+        sqlx::query_scalar("SELECT role FROM family_members WHERE family_id = $1 AND user_id = $2")
+            .bind(family_id)
+            .bind(user_id)
+            .fetch_optional(&pool)
+            .await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
     let is_owner = role.as_deref() == Some("owner");
-    
+
     // Check if family has multiple members (for delete button visibility)
-    let member_count: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM family_members WHERE family_id = $1"
-    )
-    .bind(family_id)
-    .fetch_one(&pool)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+    let member_count: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM family_members WHERE family_id = $1")
+            .bind(family_id)
+            .fetch_one(&pool)
+            .await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
     // Determine available actions
     let can_leave = !is_owner; // Can leave if not owner
     let can_delete = is_owner && member_count > 1; // Can delete if owner and has invited others
     let can_invite = is_owner || role.as_deref() == Some("admin"); // Can invite if owner or admin
     let can_manage_members = is_owner || role.as_deref() == Some("admin");
-    
+
     Ok(Json(ApiResponse::success(serde_json::json!({
         "can_leave": can_leave,
         "can_delete": can_delete,
@@ -568,8 +554,7 @@ pub async fn get_family_actions(
 }
 
 // Get role descriptions
-pub async fn get_role_descriptions(
-) -> Result<Json<ApiResponse<serde_json::Value>>, StatusCode> {
+pub async fn get_role_descriptions() -> Result<Json<ApiResponse<serde_json::Value>>, StatusCode> {
     let roles = serde_json::json!({
         "roles": [
             {
@@ -728,7 +713,7 @@ pub async fn get_role_descriptions(
             ]
         }
     });
-    
+
     Ok(Json(ApiResponse::success(roles)))
 }
 
@@ -750,17 +735,16 @@ pub async fn transfer_ownership(
         Ok(id) => id,
         Err(_) => return Err(StatusCode::UNAUTHORIZED),
     };
-    
+
     // Verify user is the current owner
-    let role: Option<String> = sqlx::query_scalar(
-        "SELECT role FROM family_members WHERE family_id = $1 AND user_id = $2"
-    )
-    .bind(family_id)
-    .bind(user_id)
-    .fetch_optional(&pool)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+    let role: Option<String> =
+        sqlx::query_scalar("SELECT role FROM family_members WHERE family_id = $1 AND user_id = $2")
+            .bind(family_id)
+            .bind(user_id)
+            .fetch_optional(&pool)
+            .await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
     if role.as_deref() != Some("owner") {
         return Ok(Json(ApiResponse::<()> {
             success: false,
@@ -773,46 +757,51 @@ pub async fn transfer_ownership(
             timestamp: chrono::Utc::now(),
         }));
     }
-    
+
     // Verify the verification code
     if let Some(redis_conn) = redis {
         let verification_service = crate::services::VerificationService::new(Some(redis_conn));
-        
-        match verification_service.verify_code(
-            &user_id.to_string(),
-            "transfer_ownership",
-            &request.verification_code
-        ).await {
-            Ok(true) => {
-            // Verify new owner exists and is a member
-            let new_owner_role: Option<String> = sqlx::query_scalar(
-                "SELECT role FROM family_members WHERE family_id = $1 AND user_id = $2"
+
+        match verification_service
+            .verify_code(
+                &user_id.to_string(),
+                "transfer_ownership",
+                &request.verification_code,
             )
-            .bind(family_id)
-            .bind(request.new_owner_id)
-            .fetch_optional(&pool)
             .await
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-            
-            if new_owner_role.is_none() {
-                return Ok(Json(ApiResponse::<()> {
-                    success: false,
-                    data: None,
-                    error: Some(ApiError {
-                        code: "USER_NOT_MEMBER".to_string(),
-                        message: "目标用户不是家庭成员".to_string(),
-                        details: None,
-                    }),
-                    timestamp: chrono::Utc::now(),
-                }));
-            }
-            
-            // Start transaction
-            let mut tx = pool.begin().await
+        {
+            Ok(true) => {
+                // Verify new owner exists and is a member
+                let new_owner_role: Option<String> = sqlx::query_scalar(
+                    "SELECT role FROM family_members WHERE family_id = $1 AND user_id = $2",
+                )
+                .bind(family_id)
+                .bind(request.new_owner_id)
+                .fetch_optional(&pool)
+                .await
                 .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-            
-            // Update old owner to admin
-            sqlx::query(
+
+                if new_owner_role.is_none() {
+                    return Ok(Json(ApiResponse::<()> {
+                        success: false,
+                        data: None,
+                        error: Some(ApiError {
+                            code: "USER_NOT_MEMBER".to_string(),
+                            message: "目标用户不是家庭成员".to_string(),
+                            details: None,
+                        }),
+                        timestamp: chrono::Utc::now(),
+                    }));
+                }
+
+                // Start transaction
+                let mut tx = pool
+                    .begin()
+                    .await
+                    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+                // Update old owner to admin
+                sqlx::query(
                 "UPDATE family_members SET role = 'admin' WHERE family_id = $1 AND user_id = $2"
             )
             .bind(family_id)
@@ -820,13 +809,14 @@ pub async fn transfer_ownership(
             .execute(&mut *tx)
             .await
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-            
-            // Update new owner
-            let owner_permissions = crate::models::permission::MemberRole::Owner.default_permissions();
-            let permissions_json = serde_json::to_value(&owner_permissions)
-                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-            
-            sqlx::query(
+
+                // Update new owner
+                let owner_permissions =
+                    crate::models::permission::MemberRole::Owner.default_permissions();
+                let permissions_json = serde_json::to_value(&owner_permissions)
+                    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+                sqlx::query(
                 "UPDATE family_members SET role = 'owner', permissions = $1 WHERE family_id = $2 AND user_id = $3"
             )
             .bind(permissions_json)
@@ -835,37 +825,34 @@ pub async fn transfer_ownership(
             .execute(&mut *tx)
             .await
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-            
-            // Commit transaction
-            tx.commit().await
-                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-            
-            Ok(Json(ApiResponse::success(())))
+
+                // Commit transaction
+                tx.commit()
+                    .await
+                    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+                Ok(Json(ApiResponse::success(())))
             }
-            Ok(false) => {
-                Ok(Json(ApiResponse::<()> {
-                    success: false,
-                    data: None,
-                    error: Some(ApiError {
-                        code: "INVALID_VERIFICATION_CODE".to_string(),
-                        message: "验证码错误或已过期".to_string(),
-                        details: None,
-                    }),
-                    timestamp: chrono::Utc::now(),
-                }))
-            }
-            Err(_) => {
-                Ok(Json(ApiResponse::<()> {
-                    success: false,
-                    data: None,
-                    error: Some(ApiError {
-                        code: "VERIFICATION_SERVICE_ERROR".to_string(),
-                        message: "验证码服务暂时不可用".to_string(),
-                        details: None,
-                    }),
-                    timestamp: chrono::Utc::now(),
-                }))
-            }
+            Ok(false) => Ok(Json(ApiResponse::<()> {
+                success: false,
+                data: None,
+                error: Some(ApiError {
+                    code: "INVALID_VERIFICATION_CODE".to_string(),
+                    message: "验证码错误或已过期".to_string(),
+                    details: None,
+                }),
+                timestamp: chrono::Utc::now(),
+            })),
+            Err(_) => Ok(Json(ApiResponse::<()> {
+                success: false,
+                data: None,
+                error: Some(ApiError {
+                    code: "VERIFICATION_SERVICE_ERROR".to_string(),
+                    message: "验证码服务暂时不可用".to_string(),
+                    details: None,
+                }),
+                timestamp: chrono::Utc::now(),
+            })),
         }
     } else {
         // Redis not available, return error for this sensitive operation

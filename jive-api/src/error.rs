@@ -12,22 +12,22 @@ use serde_json::json;
 pub enum ApiError {
     #[error("Not found: {0}")]
     NotFound(String),
-    
+
     #[error("Bad request: {0}")]
     BadRequest(String),
-    
+
     #[error("Unauthorized")]
     Unauthorized,
-    
+
     #[error("Forbidden")]
     Forbidden,
-    
+
     #[error("Database error: {0}")]
     DatabaseError(String),
-    
+
     #[error("Validation error: {0}")]
     ValidationError(String),
-    
+
     #[error("Internal server error")]
     InternalServerError,
 }
@@ -39,9 +39,15 @@ impl IntoResponse for ApiError {
             ApiError::BadRequest(msg) => (StatusCode::BAD_REQUEST, msg),
             ApiError::Unauthorized => (StatusCode::UNAUTHORIZED, "Unauthorized".to_string()),
             ApiError::Forbidden => (StatusCode::FORBIDDEN, "Forbidden".to_string()),
-            ApiError::DatabaseError(msg) => (StatusCode::INTERNAL_SERVER_ERROR, format!("Database error: {}", msg)),
+            ApiError::DatabaseError(msg) => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Database error: {}", msg),
+            ),
             ApiError::ValidationError(msg) => (StatusCode::UNPROCESSABLE_ENTITY, msg),
-            ApiError::InternalServerError => (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error".to_string()),
+            ApiError::InternalServerError => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Internal server error".to_string(),
+            ),
         };
 
         let body = Json(json!({
@@ -63,7 +69,9 @@ impl From<AuthError> for ApiError {
     fn from(err: AuthError) -> Self {
         match err {
             AuthError::WrongCredentials => ApiError::Unauthorized,
-            AuthError::MissingCredentials => ApiError::BadRequest("Missing credentials".to_string()),
+            AuthError::MissingCredentials => {
+                ApiError::BadRequest("Missing credentials".to_string())
+            }
             AuthError::TokenCreation => ApiError::InternalServerError,
             AuthError::InvalidToken => ApiError::Unauthorized,
         }

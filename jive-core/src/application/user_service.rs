@@ -1,17 +1,17 @@
 //! User service - 用户管理服务
-//! 
+//!
 //! 基于 Maybe 的用户管理功能转换而来，包括用户CRUD、偏好设置、权限管理等功能
 
-use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
-use crate::domain::{User, UserStatus, UserRole, UserPreferences};
+use super::{BatchResult, PaginationParams, ServiceContext, ServiceResponse};
+use crate::domain::{User, UserPreferences, UserRole, UserStatus};
 use crate::error::{JiveError, Result};
-use super::{ServiceContext, ServiceResponse, PaginationParams, BatchResult};
 
 /// 用户创建请求
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -383,10 +383,7 @@ impl UserService {
 
     /// 获取当前用户
     #[wasm_bindgen]
-    pub async fn get_current_user(
-        &self,
-        context: ServiceContext,
-    ) -> ServiceResponse<User> {
+    pub async fn get_current_user(&self, context: ServiceContext) -> ServiceResponse<User> {
         let result = self._get_current_user(context).await;
         result.into()
     }
@@ -445,7 +442,9 @@ impl UserService {
         verification_token: String,
         context: ServiceContext,
     ) -> ServiceResponse<bool> {
-        let result = self._verify_email(user_id, verification_token, context).await;
+        let result = self
+            ._verify_email(user_id, verification_token, context)
+            .await;
         result.into()
     }
 
@@ -502,16 +501,15 @@ impl UserService {
         preferences: UserPreferences,
         context: ServiceContext,
     ) -> ServiceResponse<User> {
-        let result = self._update_preferences(user_id, preferences, context).await;
+        let result = self
+            ._update_preferences(user_id, preferences, context)
+            .await;
         result.into()
     }
 
     /// 获取用户统计信息
     #[wasm_bindgen]
-    pub async fn get_user_stats(
-        &self,
-        context: ServiceContext,
-    ) -> ServiceResponse<UserStats> {
+    pub async fn get_user_stats(&self, context: ServiceContext) -> ServiceResponse<UserStats> {
         let result = self._get_user_stats(context).await;
         result.into()
     }
@@ -524,7 +522,9 @@ impl UserService {
         pagination: PaginationParams,
         context: ServiceContext,
     ) -> ServiceResponse<Vec<UserActivity>> {
-        let result = self._get_user_activities(user_id, pagination, context).await;
+        let result = self
+            ._get_user_activities(user_id, pagination, context)
+            .await;
         result.into()
     }
 
@@ -537,7 +537,9 @@ impl UserService {
         description: String,
         context: ServiceContext,
     ) -> ServiceResponse<bool> {
-        let result = self._log_activity(user_id, activity_type, description, context).await;
+        let result = self
+            ._log_activity(user_id, activity_type, description, context)
+            .await;
         result.into()
     }
 
@@ -575,7 +577,10 @@ impl UserService {
         self.validate_password(&request.password)?;
 
         // 检查邮箱是否已存在
-        if self._user_exists(request.email.clone(), _context.clone()).await? {
+        if self
+            ._user_exists(request.email.clone(), _context.clone())
+            .await?
+        {
             return Err(JiveError::ValidationError {
                 message: "Email already exists".to_string(),
             });
@@ -609,7 +614,8 @@ impl UserService {
             "user_created".to_string(),
             "User account created".to_string(),
             _context,
-        ).await?;
+        )
+        .await?;
 
         Ok(user)
     }
@@ -668,17 +674,14 @@ impl UserService {
             "user_updated".to_string(),
             "User information updated".to_string(),
             context,
-        ).await?;
+        )
+        .await?;
 
         Ok(user)
     }
 
     /// 获取用户的内部实现
-    async fn _get_user(
-        &self,
-        user_id: String,
-        context: ServiceContext,
-    ) -> Result<User> {
+    async fn _get_user(&self, user_id: String, context: ServiceContext) -> Result<User> {
         // 权限检查：只能查看自己的信息，或者管理员可以查看其他用户
         if user_id != context.user_id {
             let current_user = self._get_current_user(context.clone()).await?;
@@ -701,19 +704,12 @@ impl UserService {
     }
 
     /// 获取当前用户的内部实现
-    async fn _get_current_user(
-        &self,
-        context: ServiceContext,
-    ) -> Result<User> {
+    async fn _get_current_user(&self, context: ServiceContext) -> Result<User> {
         self._get_user(context.user_id, context).await
     }
 
     /// 删除用户的内部实现
-    async fn _delete_user(
-        &self,
-        user_id: String,
-        context: ServiceContext,
-    ) -> Result<bool> {
+    async fn _delete_user(&self, user_id: String, context: ServiceContext) -> Result<bool> {
         // 权限检查：只有管理员或用户本人可以删除
         if user_id != context.user_id {
             let current_user = self._get_current_user(context.clone()).await?;
@@ -742,7 +738,8 @@ impl UserService {
             "user_deleted".to_string(),
             "User account deleted".to_string(),
             context,
-        ).await?;
+        )
+        .await?;
 
         Ok(true)
     }
@@ -767,10 +764,7 @@ impl UserService {
 
         // 模拟一些用户数据
         for i in 1..=5 {
-            let user = User::new(
-                format!("user{}@example.com", i),
-                format!("User {}", i),
-            )?;
+            let user = User::new(format!("user{}@example.com", i), format!("User {}", i))?;
             users.push(user);
         }
 
@@ -815,13 +809,13 @@ impl UserService {
 
         // 在实际实现中，这里会验证当前密码并更新新密码
         // let user = self._get_user(user_id, context.clone()).await?;
-        // 
+        //
         // if !password_service.verify_password(&request.current_password, &user.password_hash) {
         //     return Err(JiveError::ValidationError {
         //         message: "Current password is incorrect".to_string(),
         //     });
         // }
-        // 
+        //
         // let new_password_hash = password_service.hash_password(&request.new_password)?;
         // repository.update_password(user_id, new_password_hash).await?;
 
@@ -831,17 +825,14 @@ impl UserService {
             "password_changed".to_string(),
             "Password changed successfully".to_string(),
             context,
-        ).await?;
+        )
+        .await?;
 
         Ok(true)
     }
 
     /// 重置密码的内部实现
-    async fn _reset_password(
-        &self,
-        email: String,
-        _context: ServiceContext,
-    ) -> Result<bool> {
+    async fn _reset_password(&self, email: String, _context: ServiceContext) -> Result<bool> {
         // 验证邮箱格式
         crate::utils::Validator::validate_email(&email)?;
 
@@ -867,7 +858,7 @@ impl UserService {
     ) -> Result<bool> {
         // 在实际实现中，这里会验证令牌并标记邮箱为已验证
         // let is_valid = token_service.verify_email_token(&verification_token, &user_id)?;
-        // 
+        //
         // if !is_valid {
         //     return Err(JiveError::ValidationError {
         //         message: "Invalid verification token".to_string(),
@@ -885,7 +876,8 @@ impl UserService {
             "email_verified".to_string(),
             "Email address verified".to_string(),
             context,
-        ).await?;
+        )
+        .await?;
 
         Ok(true)
     }
@@ -908,7 +900,8 @@ impl UserService {
             "verification_email_sent".to_string(),
             "Verification email sent".to_string(),
             context,
-        ).await?;
+        )
+        .await?;
 
         Ok(true)
     }
@@ -931,7 +924,10 @@ impl UserService {
         crate::utils::Validator::validate_email(&request.email)?;
 
         // 检查用户是否已存在
-        if self._user_exists(request.email.clone(), context.clone()).await? {
+        if self
+            ._user_exists(request.email.clone(), context.clone())
+            .await?
+        {
             return Err(JiveError::ValidationError {
                 message: "User with this email already exists".to_string(),
             });
@@ -948,7 +944,7 @@ impl UserService {
         //     request.role,
         //     context.user_id,
         // )?;
-        // 
+        //
         // let invite_token = token_service.generate_invite_token(&invitation.id())?;
         // email_service.send_invitation_email(&invitation, &invite_token).await?;
 
@@ -956,11 +952,7 @@ impl UserService {
     }
 
     /// 激活用户的内部实现
-    async fn _activate_user(
-        &self,
-        user_id: String,
-        context: ServiceContext,
-    ) -> Result<User> {
+    async fn _activate_user(&self, user_id: String, context: ServiceContext) -> Result<User> {
         // 权限检查：只有管理员可以激活用户
         let current_user = self._get_current_user(context.clone()).await?;
         if !current_user.is_admin() {
@@ -978,7 +970,8 @@ impl UserService {
             "user_activated".to_string(),
             "User account activated".to_string(),
             context,
-        ).await?;
+        )
+        .await?;
 
         Ok(user)
     }
@@ -1007,7 +1000,8 @@ impl UserService {
             "user_suspended".to_string(),
             format!("User account suspended: {}", reason),
             context,
-        ).await?;
+        )
+        .await?;
 
         Ok(user)
     }
@@ -1035,16 +1029,14 @@ impl UserService {
             "preferences_updated".to_string(),
             "User preferences updated".to_string(),
             context,
-        ).await?;
+        )
+        .await?;
 
         Ok(user)
     }
 
     /// 获取用户统计信息的内部实现
-    async fn _get_user_stats(
-        &self,
-        context: ServiceContext,
-    ) -> Result<UserStats> {
+    async fn _get_user_stats(&self, context: ServiceContext) -> Result<UserStats> {
         // 权限检查：只有管理员可以查看统计信息
         let current_user = self._get_current_user(context).await?;
         if !current_user.is_admin() {
@@ -1120,31 +1112,23 @@ impl UserService {
         //     metadata: HashMap::new(),
         //     created_at: Utc::now(),
         // };
-        // 
+        //
         // activity_repository.save(activity).await?;
 
         Ok(true)
     }
 
     /// 检查用户是否存在的内部实现
-    async fn _user_exists(
-        &self,
-        email: String,
-        _context: ServiceContext,
-    ) -> Result<bool> {
+    async fn _user_exists(&self, email: String, _context: ServiceContext) -> Result<bool> {
         // 在实际实现中，查询数据库检查邮箱是否存在
         // let exists = repository.exists_by_email(&email).await?;
-        
+
         // 模拟检查
         Ok(false)
     }
 
     /// 通过邮箱获取用户的内部实现
-    async fn _get_user_by_email(
-        &self,
-        email: String,
-        context: ServiceContext,
-    ) -> Result<User> {
+    async fn _get_user_by_email(&self, email: String, context: ServiceContext) -> Result<User> {
         // 验证邮箱格式
         crate::utils::Validator::validate_email(&email)?;
 
@@ -1204,7 +1188,7 @@ mod tests {
     async fn test_create_user() {
         let service = UserService::new();
         let context = ServiceContext::new("admin-123".to_string());
-        
+
         let request = CreateUserRequest::new(
             "test@example.com".to_string(),
             "Test User".to_string(),
@@ -1251,7 +1235,9 @@ mod tests {
             "NewPassword123".to_string(),
         );
 
-        let result = service._change_password("user-123".to_string(), request, context).await;
+        let result = service
+            ._change_password("user-123".to_string(), request, context)
+            .await;
         assert!(result.is_ok());
     }
 
@@ -1266,7 +1252,9 @@ mod tests {
             "DifferentPassword123".to_string(),
         );
 
-        let result = service._change_password("user-123".to_string(), request, context).await;
+        let result = service
+            ._change_password("user-123".to_string(), request, context)
+            .await;
         assert!(result.is_err());
     }
 

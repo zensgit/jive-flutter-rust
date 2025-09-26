@@ -12,7 +12,7 @@ pub struct Budget {
     pub start_date: NaiveDate,
     pub end_date: NaiveDate,
     pub currency: String,
-    
+
     // Budget amounts
     pub budgeted_spending: Decimal,
     pub expected_income: Decimal,
@@ -24,29 +24,34 @@ pub struct Budget {
     pub estimated_spending: Decimal,
     pub estimated_income: Decimal,
     pub remaining_expected_income: Decimal,
-    
+
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
 
 impl Entity for Budget {
     type Id = Uuid;
-    
+
     fn id(&self) -> Self::Id {
         self.id
     }
-    
+
     fn created_at(&self) -> DateTime<Utc> {
         self.created_at
     }
-    
+
     fn updated_at(&self) -> DateTime<Utc> {
         self.updated_at
     }
 }
 
 impl Budget {
-    pub fn new(family_id: Uuid, start_date: NaiveDate, end_date: NaiveDate, currency: String) -> Self {
+    pub fn new(
+        family_id: Uuid,
+        start_date: NaiveDate,
+        end_date: NaiveDate,
+        currency: String,
+    ) -> Self {
         let now = Utc::now();
         Self {
             id: Uuid::new_v4(),
@@ -68,15 +73,15 @@ impl Budget {
             updated_at: now,
         }
     }
-    
+
     pub fn name(&self) -> String {
         self.start_date.format("%B %Y").to_string()
     }
-    
+
     pub fn is_initialized(&self) -> bool {
         self.budgeted_spending != Decimal::ZERO || self.expected_income != Decimal::ZERO
     }
-    
+
     pub fn calculate_available(&mut self) {
         self.available_to_spend = self.budgeted_spending - self.actual_spending;
         self.available_to_allocate = self.expected_income - self.allocated_spending;
@@ -115,11 +120,12 @@ impl BudgetCategory {
             updated_at: now,
         }
     }
-    
+
     pub fn available_to_spend(&self) -> Decimal {
-        self.budgeted_spending - self.actual_spending + self.rollover_amount.unwrap_or(Decimal::ZERO)
+        self.budgeted_spending - self.actual_spending
+            + self.rollover_amount.unwrap_or(Decimal::ZERO)
     }
-    
+
     pub fn percentage_spent(&self) -> Decimal {
         if self.budgeted_spending == Decimal::ZERO {
             Decimal::ZERO
@@ -127,7 +133,7 @@ impl BudgetCategory {
             (self.actual_spending / self.budgeted_spending) * Decimal::from(100)
         }
     }
-    
+
     pub fn is_over_budget(&self) -> bool {
         self.actual_spending > self.budgeted_spending
     }
@@ -138,7 +144,7 @@ impl BudgetCategory {
 pub struct BudgetAlert {
     pub id: Uuid,
     pub budget_id: Uuid,
-    pub category_id: Option<Uuid>, // None for overall budget
+    pub category_id: Option<Uuid>,     // None for overall budget
     pub threshold_percentage: Decimal, // e.g., 80.0 for 80%
     pub alert_type: BudgetAlertType,
     pub is_active: bool,
@@ -150,9 +156,9 @@ pub struct BudgetAlert {
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::Type)]
 #[sqlx(type_name = "budget_alert_type", rename_all = "snake_case")]
 pub enum BudgetAlertType {
-    Warning,    // e.g., at 80% spent
-    Critical,   // e.g., at 95% spent
-    Exceeded,   // Over budget
+    Warning,  // e.g., at 80% spent
+    Critical, // e.g., at 95% spent
+    Exceeded, // Over budget
 }
 
 // BudgetGoal - savings or spending goals
@@ -177,10 +183,10 @@ pub struct BudgetGoal {
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::Type)]
 #[sqlx(type_name = "budget_goal_type", rename_all = "snake_case")]
 pub enum BudgetGoalType {
-    Savings,        // Save X amount
-    DebtReduction,  // Pay down debt
-    SpendingLimit,  // Don't exceed X amount
-    Emergency,      // Emergency fund
+    Savings,       // Save X amount
+    DebtReduction, // Pay down debt
+    SpendingLimit, // Don't exceed X amount
+    Emergency,     // Emergency fund
 }
 
 impl BudgetGoal {
@@ -191,11 +197,11 @@ impl BudgetGoal {
             (self.current_amount / self.target_amount) * Decimal::from(100)
         }
     }
-    
+
     pub fn remaining_amount(&self) -> Decimal {
         (self.target_amount - self.current_amount).max(Decimal::ZERO)
     }
-    
+
     pub fn days_until_target(&self) -> Option<i64> {
         self.target_date.map(|date| {
             let today = chrono::Local::now().naive_local().date();
@@ -226,8 +232,11 @@ impl BudgetCalculator {
     pub fn new(budget_id: Uuid) -> Self {
         Self { budget_id }
     }
-    
-    pub async fn calculate_actuals(&self, pool: &sqlx::PgPool) -> Result<BudgetActuals, sqlx::Error> {
+
+    pub async fn calculate_actuals(
+        &self,
+        pool: &sqlx::PgPool,
+    ) -> Result<BudgetActuals, sqlx::Error> {
         // Get budget details
         let budget = sqlx::query_as!(
             Budget,
@@ -236,7 +245,7 @@ impl BudgetCalculator {
         )
         .fetch_one(pool)
         .await?;
-        
+
         // Calculate actual spending
         let spending = sqlx::query!(
             r#"
@@ -256,7 +265,7 @@ impl BudgetCalculator {
         )
         .fetch_one(pool)
         .await?;
-        
+
         // Calculate actual income
         let income = sqlx::query!(
             r#"
@@ -276,7 +285,7 @@ impl BudgetCalculator {
         )
         .fetch_one(pool)
         .await?;
-        
+
         // Calculate by category
         let category_spending = sqlx::query!(
             r#"
@@ -300,16 +309,21 @@ impl BudgetCalculator {
         )
         .fetch_all(pool)
         .await?;
-        
+
         Ok(BudgetActuals {
-            total_spending: Decimal::from_str(&spending.total.unwrap_or(0).to_string()).unwrap_or(Decimal::ZERO),
-            total_income: Decimal::from_str(&income.total.unwrap_or(0).to_string()).unwrap_or(Decimal::ZERO),
+            total_spending: Decimal::from_str(&spending.total.unwrap_or(0).to_string())
+                .unwrap_or(Decimal::ZERO),
+            total_income: Decimal::from_str(&income.total.unwrap_or(0).to_string())
+                .unwrap_or(Decimal::ZERO),
             category_spending: category_spending
                 .into_iter()
-                .map(|row| (
-                    row.category_id.unwrap(),
-                    Decimal::from_str(&row.total.unwrap_or(0).to_string()).unwrap_or(Decimal::ZERO)
-                ))
+                .map(|row| {
+                    (
+                        row.category_id.unwrap(),
+                        Decimal::from_str(&row.total.unwrap_or(0).to_string())
+                            .unwrap_or(Decimal::ZERO),
+                    )
+                })
                 .collect(),
         })
     }

@@ -12,7 +12,7 @@ pub struct Rule {
     pub name: Option<String>,
     pub resource_type: String, // 'transaction', 'account', etc.
     pub is_active: bool,
-    pub priority: i32, // Rules are applied in priority order
+    pub priority: i32,         // Rules are applied in priority order
     pub stop_processing: bool, // Stop processing other rules if this matches
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
@@ -20,15 +20,15 @@ pub struct Rule {
 
 impl Entity for Rule {
     type Id = Uuid;
-    
+
     fn id(&self) -> Self::Id {
         self.id
     }
-    
+
     fn created_at(&self) -> DateTime<Utc> {
         self.created_at
     }
-    
+
     fn updated_at(&self) -> DateTime<Utc> {
         self.updated_at
     }
@@ -57,12 +57,12 @@ pub struct RuleCondition {
     pub id: Uuid,
     pub rule_id: Uuid,
     pub parent_id: Option<Uuid>, // For nested conditions
-    pub field: String, // Field to check (e.g., 'name', 'amount', 'date')
+    pub field: String,           // Field to check (e.g., 'name', 'amount', 'date')
     pub operator: ConditionOperator,
     pub value: Option<String>, // Stored as string, parsed based on field type
     pub value_type: ValueType,
     pub logic_operator: LogicOperator, // AND/OR with other conditions
-    pub position: i32, // Order of evaluation
+    pub position: i32,                 // Order of evaluation
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -123,11 +123,11 @@ impl RuleCondition {
             updated_at: now,
         }
     }
-    
+
     // Check if condition matches a value
     pub fn matches(&self, field_value: &str) -> bool {
         let condition_value = self.value.as_deref().unwrap_or("");
-        
+
         match self.operator {
             ConditionOperator::Equals => field_value == condition_value,
             ConditionOperator::NotEquals => field_value != condition_value,
@@ -150,7 +150,7 @@ pub struct RuleAction {
     pub action_type: ActionType,
     pub field: Option<String>, // Field to modify
     pub value: Option<String>, // Value to set
-    pub position: i32, // Order of execution
+    pub position: i32,         // Order of execution
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -223,14 +223,14 @@ impl RuleLog {
             created_at: now,
         }
     }
-    
+
     pub fn with_change(mut self, field: String, old: Option<String>, new: Option<String>) -> Self {
         self.field_changed = Some(field);
         self.old_value = old;
         self.new_value = new;
         self
     }
-    
+
     pub fn with_error(mut self, error: String) -> Self {
         self.success = false;
         self.error_message = Some(error);
@@ -267,34 +267,28 @@ impl RuleTemplate {
             name: "Auto-categorize Groceries".to_string(),
             description: "Automatically categorize transactions from grocery stores".to_string(),
             resource_type: "transaction".to_string(),
-            conditions: vec![
-                RuleConditionTemplate {
-                    field: "name".to_string(),
-                    operator: "contains".to_string(),
-                    value: Some("grocery".to_string()),
-                },
-            ],
-            actions: vec![
-                RuleActionTemplate {
-                    action_type: "set_category".to_string(),
-                    value: Some("Groceries".to_string()),
-                },
-            ],
+            conditions: vec![RuleConditionTemplate {
+                field: "name".to_string(),
+                operator: "contains".to_string(),
+                value: Some("grocery".to_string()),
+            }],
+            actions: vec![RuleActionTemplate {
+                action_type: "set_category".to_string(),
+                value: Some("Groceries".to_string()),
+            }],
         }
     }
-    
+
     pub fn mark_business_expenses() -> Self {
         Self {
             name: "Mark Business Expenses".to_string(),
             description: "Mark transactions as reimbursable business expenses".to_string(),
             resource_type: "transaction".to_string(),
-            conditions: vec![
-                RuleConditionTemplate {
-                    field: "category".to_string(),
-                    operator: "equals".to_string(),
-                    value: Some("Business".to_string()),
-                },
-            ],
+            conditions: vec![RuleConditionTemplate {
+                field: "category".to_string(),
+                operator: "equals".to_string(),
+                value: Some("Business".to_string()),
+            }],
             actions: vec![
                 RuleActionTemplate {
                     action_type: "mark_reimbursable".to_string(),
@@ -307,25 +301,21 @@ impl RuleTemplate {
             ],
         }
     }
-    
+
     pub fn exclude_transfers() -> Self {
         Self {
             name: "Exclude Transfers from Budget".to_string(),
             description: "Exclude internal transfers from budget calculations".to_string(),
             resource_type: "transaction".to_string(),
-            conditions: vec![
-                RuleConditionTemplate {
-                    field: "kind".to_string(),
-                    operator: "in".to_string(),
-                    value: Some("funds_movement,cc_payment".to_string()),
-                },
-            ],
-            actions: vec![
-                RuleActionTemplate {
-                    action_type: "exclude_from_budget".to_string(),
-                    value: None,
-                },
-            ],
+            conditions: vec![RuleConditionTemplate {
+                field: "kind".to_string(),
+                operator: "in".to_string(),
+                value: Some("funds_movement,cc_payment".to_string()),
+            }],
+            actions: vec![RuleActionTemplate {
+                action_type: "exclude_from_budget".to_string(),
+                value: None,
+            }],
         }
     }
 }

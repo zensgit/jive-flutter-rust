@@ -59,36 +59,20 @@ impl IntoResponse for AppError {
                 msg.clone(),
                 "authentication_error",
             ),
-            AppError::Authorization(msg) => (
-                StatusCode::FORBIDDEN,
-                msg.clone(),
-                "authorization_error",
-            ),
-            AppError::Validation(msg) => (
-                StatusCode::BAD_REQUEST,
-                msg.clone(),
-                "validation_error",
-            ),
-            AppError::NotFound(msg) => (
-                StatusCode::NOT_FOUND,
-                msg.clone(),
-                "not_found",
-            ),
+            AppError::Authorization(msg) => {
+                (StatusCode::FORBIDDEN, msg.clone(), "authorization_error")
+            }
+            AppError::Validation(msg) => (StatusCode::BAD_REQUEST, msg.clone(), "validation_error"),
+            AppError::NotFound(msg) => (StatusCode::NOT_FOUND, msg.clone(), "not_found"),
             AppError::InternalServer(msg) => (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 msg.clone(),
                 "internal_error",
             ),
-            AppError::RateLimited(msg) => (
-                StatusCode::TOO_MANY_REQUESTS,
-                msg.clone(),
-                "rate_limited",
-            ),
-            AppError::BadRequest(msg) => (
-                StatusCode::BAD_REQUEST,
-                msg.clone(),
-                "bad_request",
-            ),
+            AppError::RateLimited(msg) => {
+                (StatusCode::TOO_MANY_REQUESTS, msg.clone(), "rate_limited")
+            }
+            AppError::BadRequest(msg) => (StatusCode::BAD_REQUEST, msg.clone(), "bad_request"),
         };
 
         let body = Json(json!({
