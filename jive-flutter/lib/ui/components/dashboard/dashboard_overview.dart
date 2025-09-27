@@ -33,7 +33,7 @@ class DashboardOverview extends StatelessWidget {
             const SizedBox(height: 20),
 
             // 余额趋势图表
-            if (data.balanceData.isNotEmpty) _buildBalanceChart(),
+            if (data.balanceData.isNotEmpty) _buildBalanceChart(context),
 
             const SizedBox(height: 20),
 
@@ -54,12 +54,12 @@ class DashboardOverview extends StatelessWidget {
             const SizedBox(height: 20),
 
             // 账户概览
-            if (data.accounts.isNotEmpty) _buildAccountsOverview(),
+            if (data.accounts.isNotEmpty) _buildAccountsOverview(context),
 
             const SizedBox(height: 20),
 
             // 预算概览
-            if (data.budgets.isNotEmpty) _buildBudgetOverview(),
+            if (data.budgets.isNotEmpty) _buildBudgetOverview(context),
 
             // 底部安全区域
             const SizedBox(height: 20),
@@ -69,7 +69,7 @@ class DashboardOverview extends StatelessWidget {
     );
   }
 
-  Widget _buildBalanceChart() {
+  Widget _buildBalanceChart(BuildContext context) {
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(
@@ -93,7 +93,7 @@ class DashboardOverview extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-            const SizedBox(
+            SizedBox(
               height: 200,
               child: BalanceChart(
                 data: data.balanceData,
@@ -143,7 +143,7 @@ class DashboardOverview extends StatelessWidget {
     );
   }
 
-  Widget _buildAccountsOverview() {
+  Widget _buildAccountsOverview(BuildContext context) {
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(
@@ -171,7 +171,7 @@ class DashboardOverview extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ...data.accounts.take(3).map(
-                  (account) => _buildAccountItem(account),
+                  (account) => _buildAccountItem(context, account),
                 ),
           ],
         ),
@@ -179,7 +179,7 @@ class DashboardOverview extends StatelessWidget {
     );
   }
 
-  Widget _buildAccountItem(AccountOverviewData account) {
+  Widget _buildAccountItem(BuildContext context, AccountOverviewData account) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -231,7 +231,7 @@ class DashboardOverview extends StatelessWidget {
     );
   }
 
-  Widget _buildBudgetOverview() {
+  Widget _buildBudgetOverview(BuildContext context) {
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(
@@ -259,7 +259,7 @@ class DashboardOverview extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ...data.budgets.take(3).map(
-                  (budget) => _buildBudgetItem(budget),
+                  (budget) => _buildBudgetItem(context, budget),
                 ),
           ],
         ),
@@ -267,7 +267,7 @@ class DashboardOverview extends StatelessWidget {
     );
   }
 
-  Widget _buildBudgetItem(BudgetOverviewData budget) {
+  Widget _buildBudgetItem(BuildContext context, BudgetOverviewData budget) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(

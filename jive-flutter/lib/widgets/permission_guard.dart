@@ -133,36 +133,38 @@ class PermissionButton extends ConsumerWidget {
 
     Widget button;
 
-    if (child is ElevatedButton) {
-      final elevatedButton = child as ElevatedButton;
+    final safeChild = child;
+
+    if (safeChild is ElevatedButton) {
+      final elevatedButton = safeChild as ElevatedButton;
       button = ElevatedButton(
         onPressed: hasPermission ? onPressed ?? elevatedButton.onPressed : null,
         style: elevatedButton.style,
-        child: elevatedButton.child,
+        child: elevatedButton.child ?? const SizedBox.shrink(),
       );
-    } else if (child is TextButton) {
-      final textButton = child as TextButton;
+    } else if (safeChild is TextButton) {
+      final textButton = safeChild as TextButton;
       button = TextButton(
         onPressed: hasPermission ? onPressed ?? textButton.onPressed : null,
         style: textButton.style,
-        child: textButton.child,
+        child: textButton.child ?? const SizedBox.shrink(),
       );
-    } else if (child is IconButton) {
-      final iconButton = child as IconButton;
+    } else if (safeChild is IconButton) {
+      final iconButton = safeChild as IconButton;
       button = IconButton(
         onPressed: hasPermission ? onPressed ?? iconButton.onPressed : null,
         icon: iconButton.icon,
         tooltip: iconButton.tooltip,
       );
-    } else if (child is FilledButton) {
-      final filledButton = child as FilledButton;
+    } else if (safeChild is FilledButton) {
+      final filledButton = safeChild as FilledButton;
       button = FilledButton(
         onPressed: hasPermission ? onPressed ?? filledButton.onPressed : null,
         style: filledButton.style,
-        child: filledButton.child,
+        child: filledButton.child ?? const SizedBox.shrink(),
       );
     } else {
-      button = child;
+      button = safeChild;
     }
 
     if (!hasPermission && showTooltipWhenDisabled) {
