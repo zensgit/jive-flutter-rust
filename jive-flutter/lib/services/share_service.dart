@@ -10,14 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jive_money/providers/currency_provider.dart';
 
 // Stub for Share class to resolve undefined_identifier errors during cleanup
-class Share {
-  static Future<void> share(String text, {String? subject}) async {
-    // TODO: Implement actual share functionality
-    debugPrint('Share text: $text');
-    debugPrint('Share subject: $subject');
-  }
-
-  static Future<void> shareXFiles(List<XFile> files, {String? text}) async {
+static Future<void> shareXFiles(List<XFile> files, {String? text}) async {
     // TODO: Implement actual share functionality
     debugPrint('Share files: ${files.length} files');
     debugPrint('Share text: $text');
@@ -56,7 +49,7 @@ Jive Money - 您的智能家庭财务管家
 ''';
 
     try {
-      await Share.share(
+      await SharePlus.instance.share(
         shareText,
         subject: '邀请你加入家庭「$familyName」',
       );
@@ -145,7 +138,7 @@ Jive Money - 您的智能家庭财务管家
         );
       } else {
         // 仅分享文字
-        await Share.share(shareText);
+        await SharePlus.instance.share(shareText);
         if (!context.mounted) return;
       }
     } catch (e) {
@@ -183,7 +176,7 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
 ''';
 
     try {
-      await Share.share(shareText);
+      await SharePlus.instance.share(shareText);
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -233,7 +226,7 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
 
     try {
       // 根据平台定制分享内容（统一走系统分享，避免外部依赖）
-      await Share.share(shareContent);
+      await SharePlus.instance.share(shareContent);
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -258,7 +251,7 @@ ${description ?? ''}
 $data
 ''';
 
-      await Share.share(shareText);
+      await SharePlus.instance.share(shareText);
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -290,8 +283,9 @@ $data
     String? text,
   }) async {
     try {
-      final xFiles = images.map((file) => XFile(file.path)).toList();
-      await Share.shareXFiles(xFiles, text: text);
+      final List<dynamic> xFiles =
+          images.map((file) => XFile(file.path)).toList();
+      await Share.shareXFiles(xFiles as List<XFile>, text: text);
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -302,7 +296,7 @@ $data
   static Future<void> _shareToWechat(
       BuildContext context, String content) async {
     // Stub: 使用系统分享
-    await Share.share(content);
+    await SharePlus.instance.share(content);
   }
 
   static String _getRoleDisplayName(family_model.FamilyRole role) {
@@ -512,7 +506,7 @@ class ShareDialog extends StatelessWidget {
                   color: theme.colorScheme.primary,
                   onPressed: onShareMore ??
                       () async {
-                        await Share.share('$content\n\n$url');
+                        await SharePlus.instance.share('$content\n\n$url');
                         if (context.mounted) {
                           Navigator.pop(context);
                         }
