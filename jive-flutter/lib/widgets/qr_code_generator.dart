@@ -195,11 +195,11 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
         // 二维码
         Center(
           child: _isGenerating
-              ? const SizedBox(
+              ? SizedBox(
                   width: widget.size,
                   height: widget.size,
-                  child: Center(
-                    child: CircularProgressIndicator(),
+                  child: const Center(
+                    child: const CircularProgressIndicator(),
                   ),
                 )
               : ScaleTransition(
@@ -229,11 +229,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
                         embeddedImage: widget.logo != null
                             ? AssetImage(widget.logo!)
                             : null,
-                        embeddedImageStyle: const QrEmbeddedImageStyle(
-                          size: Size(60, 60),
-                        ),
                         padding: const EdgeInsets.all(0),
-                        gapless: true,
                       ),
                     ),
                   ),
