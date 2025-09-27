@@ -6,7 +6,7 @@ import 'package:jive_money/models/user.dart';
 import 'package:jive_money/services/invitation_service.dart';
 import 'package:jive_money/providers/family_provider.dart';
 import 'package:jive_money/providers/auth_provider.dart';
-import 'package:jive_money/utils/snackbar_utils.dart';
+// import 'package:jive_money/utils/snackbar_utils.dart';
 
 /// 接受邀请对话框
 class AcceptInvitationDialog extends ConsumerStatefulWidget {
@@ -48,6 +48,9 @@ class _AcceptInvitationDialogState
     });
 
     try {
+      // Capture navigator and messenger before async gaps to avoid using context after await
+      final navigator = Navigator.of(context);
+      final messenger = ScaffoldMessenger.of(context);
       // 调用服务接受邀请
       final success = await _invitationService.acceptInvitation(
         invitationId: invitation.id,
@@ -60,22 +63,24 @@ class _AcceptInvitationDialogState
         if (!context.mounted) return;
 
         // 显示成功消息
-        SnackbarUtils.showSuccess(
-          context,
-          '已成功加入 ${family.name}',
+        messenger.showSnackBar(
+          SnackBar(content: Text('已成功加入 ${family.name}')),
         );
 
         // 关闭对话框
-        Navigator.of(context).pop(true);
+        navigator.pop(true);
 
         // 触发回调
         widget.onAccepted?.call();
       }
     } catch (e) {
       if (mounted) {
-        SnackbarUtils.showError(
-          context,
-          '接受邀请失败: ${e.toString()}',
+        final messenger = ScaffoldMessenger.of(context);
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text('接受邀请失败: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {

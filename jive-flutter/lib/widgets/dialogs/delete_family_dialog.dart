@@ -77,6 +77,9 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
     });
 
     try {
+      // Capture UI handles before async work
+      final navigator = Navigator.of(context);
+      final messenger = ScaffoldMessenger.of(context);
       final familyService = FamilyService();
       await familyService.deleteFamily(widget.family.id);
 
@@ -96,8 +99,8 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
           }
         }
 
-        Navigator.of(context).pop(true);
-        ScaffoldMessenger.of(context).showSnackBar(
+        navigator.pop(true);
+        messenger.showSnackBar(
           SnackBar(
             content: Text('已删除 "${widget.family.name}"'),
             backgroundColor: Colors.green,
@@ -105,7 +108,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
         );
 
         // 导航到Family列表或Dashboard
-        Navigator.of(context).pushNamedAndRemoveUntil(
+        navigator.pushNamedAndRemoveUntil(
           '/dashboard',
           (route) => false,
         );
