@@ -198,8 +198,8 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
               ? SizedBox(
                   width: widget.size,
                   height: widget.size,
-                  child: Center(
-                    child: CircularProgressIndicator(),
+                  child: const Center(
+                    child: const CircularProgressIndicator(),
                   ),
                 )
               : ScaleTransition(
@@ -321,7 +321,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
       width: size ?? 200,
       height: size ?? 200,
       color: backgroundColor ?? Colors.white,
-      child: Center(
+      child: const Center(
         child: Text(
           'QR Code Placeholder',
           style: TextStyle(color: foregroundColor ?? Colors.black),
