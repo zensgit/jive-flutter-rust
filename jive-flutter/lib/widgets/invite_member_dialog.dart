@@ -346,12 +346,12 @@ Jive Money - 集腋记账
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: _copyInviteLink,
-                    icon: Icon(Icons.link),
-                    label: Text('复制邀请链接'),
+                    icon: const Icon(Icons.link),
+                    label: const Text('复制邀请链接'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
                       foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),
@@ -360,12 +360,12 @@ Jive Money - 集腋记账
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     onPressed: _copyEmailContent,
-                    icon: Icon(Icons.email),
-                    label: Text('复制邀请邮件内容'),
+                    icon: const Icon(Icons.email),
+                    label: const Text('复制邀请邮件内容'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.black,
-                      side: BorderSide(color: Colors.black),
-                      padding: EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(color: Colors.black),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),
@@ -374,7 +374,7 @@ Jive Money - 集腋记账
                   width: double.infinity,
                   child: TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Text('关闭'),
+                    child: const Text('关闭'),
                   ),
                 ),
               ],
@@ -418,7 +418,7 @@ Jive Money - 集腋记账
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(
+          SizedBox(
             width: 60,
             child: Text(
               '$label:',

@@ -91,7 +91,7 @@ class TagDemoPage extends ConsumerWidget {
                       label: Text(group.name),
                       backgroundColor: Color(
                               int.parse(group.color!.replaceFirst('#', '0xff')))
-                          .withOpacity(0.2),
+                          .withValues(alpha: 0.2),
                     ),
                   );
                 },

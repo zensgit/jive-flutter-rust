@@ -74,7 +74,6 @@ class PermissionGuard extends ConsumerWidget {
 
   Widget _buildDeniedWidget(BuildContext context) {
     final theme = Theme.of(context);
-
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -133,36 +132,38 @@ class PermissionButton extends ConsumerWidget {
 
     Widget button;
 
-    if (child is ElevatedButton) {
-      final elevatedButton = child as ElevatedButton;
+    final safeChild = child;
+
+    if (safeChild is ElevatedButton) {
+      final elevatedButton = safeChild;
       button = ElevatedButton(
         onPressed: hasPermission ? onPressed ?? elevatedButton.onPressed : null,
         style: elevatedButton.style,
-        child: elevatedButton.child,
+        child: elevatedButton.child ?? const SizedBox.shrink(),
       );
-    } else if (child is TextButton) {
-      final textButton = child as TextButton;
+    } else if (safeChild is TextButton) {
+      final textButton = safeChild;
       button = TextButton(
         onPressed: hasPermission ? onPressed ?? textButton.onPressed : null,
         style: textButton.style,
-        child: textButton.child,
+        child: textButton.child ?? const SizedBox.shrink(),
       );
-    } else if (child is IconButton) {
-      final iconButton = child as IconButton;
+    } else if (safeChild is IconButton) {
+      final iconButton = safeChild;
       button = IconButton(
         onPressed: hasPermission ? onPressed ?? iconButton.onPressed : null,
         icon: iconButton.icon,
         tooltip: iconButton.tooltip,
       );
-    } else if (child is FilledButton) {
-      final filledButton = child as FilledButton;
+    } else if (safeChild is FilledButton) {
+      final filledButton = safeChild;
       button = FilledButton(
         onPressed: hasPermission ? onPressed ?? filledButton.onPressed : null,
         style: filledButton.style,
-        child: filledButton.child,
+        child: filledButton.child ?? const SizedBox.shrink(),
       );
     } else {
-      button = child;
+      button = safeChild;
     }
 
     if (!hasPermission && showTooltipWhenDisabled) {
@@ -189,7 +190,6 @@ class RoleBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final color = _getRoleColor(role);
     final icon = _getRoleIcon(role);
     final label = _getRoleLabel(role);
@@ -280,8 +280,6 @@ class PermissionHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
