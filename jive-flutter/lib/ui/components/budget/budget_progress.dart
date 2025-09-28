@@ -230,7 +230,7 @@ class CompactBudgetProgress extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(
+            SizedBox(
               width: 45,
               child: Text(
                 '${percentage.toStringAsFixed(0)}%',

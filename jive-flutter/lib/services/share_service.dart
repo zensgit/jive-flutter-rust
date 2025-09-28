@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 // screenshot dependency removed to avoid type errors in analyzer phase
 import 'package:jive_money/models/family.dart' as family_model;
 import 'package:jive_money/models/transaction.dart';
@@ -83,54 +82,9 @@ Jive Money - 您的智能家庭财务管家
 ''';
 
     try {
-      if (chartWidget != null) {
-        // 生成图表截图
-        // Note: screenshot functionality is stubbed during analyzer cleanup
-        // final image = await _screenshotController.captureFromWidget(
-        final image = null;
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '$familyName - $period',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                chartWidget,
-                const SizedBox(height: 20),
-                const Text(
-                  'Powered by Jive Money',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-
-        // 保存图片
-        final directory = await getTemporaryDirectory();
-        final imagePath =
-            '${directory.path}/statistics_${DateTime.now().millisecondsSinceEpoch}.png';
-        final imageFile = File(imagePath);
-        // await imageFile.writeAsBytes(image);
-
-        // 分享图片和文字
-        await Share.shareXFiles([XFile(imagePath)], text: shareText);
-      } else {
-        // 仅分享文字
-        await Share.share(shareText);
-        if (!context.mounted) return;
-      }
+      // Stability-first: share text only for now (image capture disabled)
+      await Share.share(shareText);
+      if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
     }
@@ -158,7 +112,7 @@ $icon $typeText记录
 📅 日期：${_formatDate(transaction.date)}
 🏠 账本：$familyName
 
-${transaction.tags.isNotEmpty ? '🏷️ 标签：${transaction.tags.join(', ')}' : ''}
+${(transaction.tags?.isNotEmpty ?? false) ? '🏷️ 标签：${transaction.tags!.join(', ')}' : ''}
 ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : ''}
 
 ━━━━━━━━━━━━━━━━
@@ -180,15 +134,14 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
     String? message,
   }) async {
     try {
+      final messenger = ScaffoldMessenger.of(context);
       await Clipboard.setData(ClipboardData(text: text));
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message ?? '已复制到剪贴板'),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(message ?? '已复制到剪贴板'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     } catch (e) {
       _showError(context, '复制失败: $e');
     }
@@ -257,7 +210,7 @@ $data
   }) async {
     try {
       await Share.shareXFiles(
-        [XFile(file.path, mimeType: mimeType)],
+        [XFile(file.path)],
         text: text,
       );
       if (!context.mounted) return;
@@ -273,7 +226,7 @@ $data
     String? text,
   }) async {
     try {
-      final xFiles = images.map((file) => XFile(file.path)).toList();
+      final List<XFile> xFiles = images.map((file) => XFile(file.path)).toList();
       await Share.shareXFiles(xFiles, text: text);
       if (!context.mounted) return;
     } catch (e) {
@@ -316,14 +269,6 @@ $data
     }
   }
 
-  // Stub methods for missing external dependencies
-  static dynamic ScreenshotController() {
-    return _StubScreenshotController();
-  }
-
-  static dynamic XFile(String path) {
-    return _StubXFile(path);
-  }
 }
 
 /// 社交平台
@@ -578,7 +523,3 @@ class _StubScreenshotController {
   }
 }
 
-class _StubXFile {
-  final String path;
-  _StubXFile(this.path);
-}

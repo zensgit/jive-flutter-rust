@@ -102,7 +102,7 @@ class AccountList extends StatelessWidget {
             itemCount: accounts.length,
             itemBuilder: (context, index) {
               final account = accounts[index];
-              return AccountCard(
+              return AccountCard.fromAccount(
                 account: account,
                 onTap: () => onAccountTap?.call(account),
                 onLongPress: () => onAccountLongPress?.call(account),
@@ -138,7 +138,7 @@ class AccountList extends StatelessWidget {
 
                   // 该类型的账户
                   ...typeAccounts.map(
-                    (account) => AccountCard(
+                    (account) => AccountCard.fromAccount(
                       account: account,
                       onTap: () => onAccountTap?.call(account),
                       onLongPress: () => onAccountLongPress?.call(account),
@@ -306,9 +306,16 @@ class AccountList extends StatelessWidget {
 
   AccountType _toUiType(model.AccountType type) {
     switch (type) {
-      case model.AccountType.asset:
+      // Asset-like accounts
+      case model.AccountType.checking:
+      case model.AccountType.savings:
+      case model.AccountType.cash:
+      case model.AccountType.investment:
+      case model.AccountType.other:
         return AccountType.asset;
-      case model.AccountType.liability:
+      // Liability-like accounts
+      case model.AccountType.creditCard:
+      case model.AccountType.loan:
         return AccountType.liability;
     }
   }
@@ -431,11 +438,10 @@ class GroupedAccountList extends StatelessWidget {
               : null,
           children: accounts
               .map(
-                (account) => AccountCard(
+                (account) => AccountCard.fromAccount(
                   account: account,
                   onTap: () => onAccountTap?.call(account),
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  onLongPress: null,
                 ),
               )
               .toList(),
