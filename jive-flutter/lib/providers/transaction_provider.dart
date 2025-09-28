@@ -292,7 +292,6 @@ class TransactionController extends StateNotifier<TransactionState> {
       await prefs.setStringList("tx_group_collapse", collapsed.toList());
     } catch (_) {}
   }
-  }
 
   /// 更新状态并计算统计数据
   void _updateState(List<Transaction> transactions) {
