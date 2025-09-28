@@ -138,14 +138,14 @@ class PermissionButton extends ConsumerWidget {
       button = ElevatedButton(
         onPressed: hasPermission ? onPressed ?? elevatedButton.onPressed : null,
         style: elevatedButton.style,
-        child: elevatedButton.child,
+        child: elevatedButton.child ?? const SizedBox.shrink(),
       );
     } else if (child is TextButton) {
       final textButton = child as TextButton;
       button = TextButton(
         onPressed: hasPermission ? onPressed ?? textButton.onPressed : null,
         style: textButton.style,
-        child: textButton.child,
+        child: textButton.child ?? const SizedBox.shrink(),
       );
     } else if (child is IconButton) {
       final iconButton = child as IconButton;
@@ -159,7 +159,7 @@ class PermissionButton extends ConsumerWidget {
       button = FilledButton(
         onPressed: hasPermission ? onPressed ?? filledButton.onPressed : null,
         style: filledButton.style,
-        child: filledButton.child,
+        child: filledButton.child ?? const SizedBox.shrink(),
       );
     } else {
       button = child;

@@ -288,20 +288,21 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
   }
 
   Future<void> _generateShareLink() async {
+    final messenger = ScaffoldMessenger.of(context);
     setState(() {
       _isSharing = true;
     });
 
     try {
       final shareCode = await _themeService.shareTheme(widget.theme.id);
-      if (!context.mounted) return;
+      if (!mounted) return;
       setState(() {
         _shareCode = shareCode;
         _shareUrl = 'https://jivemoney.com/theme/import/$shareCode';
         _isSharing = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         const SnackBar(
           content: Text('分享链接生成成功'),
           backgroundColor: Colors.green,
@@ -312,7 +313,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
         _isSharing = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text('生成分享链接失败: $e'),
           backgroundColor: Colors.red,
@@ -322,17 +323,18 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
   }
 
   Future<void> _copyToClipboard() async {
+    final messenger = ScaffoldMessenger.of(context);
     try {
       await _themeService.copyThemeToClipboard(widget.theme.id);
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (!mounted) return;
+      messenger.showSnackBar(
         const SnackBar(
           content: Text('主题数据已复制到剪贴板'),
           backgroundColor: Colors.green,
         ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text('复制失败: $e'),
           backgroundColor: Colors.red,
@@ -342,9 +344,10 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
   }
 
   Future<void> _copyText(String text) async {
+    final messenger = ScaffoldMessenger.of(context);
     await Clipboard.setData(ClipboardData(text: text));
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+    if (!mounted) return;
+    messenger.showSnackBar(
       const SnackBar(
         content: Text('已复制到剪贴板'),
         backgroundColor: Colors.green,
@@ -353,6 +356,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
   }
 
   void _shareToSystem() {
+    final messenger = ScaffoldMessenger.of(context);
     final shareText = '''
 🎨 分享一个 Jive Money 主题
 
@@ -370,7 +374,7 @@ ${widget.theme.description.isNotEmpty ? '描述：${widget.theme.description}\n'
     // 由于是演示，我们将文本复制到剪贴板
     Clipboard.setData(ClipboardData(text: shareText));
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    messenger.showSnackBar(
       const SnackBar(
         content: Text('分享内容已复制到剪贴板，可以粘贴到其他应用分享'),
         backgroundColor: Colors.green,

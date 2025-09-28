@@ -5,7 +5,7 @@ import 'package:jive_money/models/family.dart' as family_model;
 import 'package:jive_money/models/user.dart';
 import 'package:jive_money/services/invitation_service.dart';
 import 'package:jive_money/providers/family_provider.dart';
-import 'package:jive_money/providers/auth_provider.dart';
+// import 'package:jive_money/providers/auth_provider.dart';
 import 'package:jive_money/utils/snackbar_utils.dart';
 
 /// 接受邀请对话框
@@ -90,7 +90,7 @@ class _AcceptInvitationDialogState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currentUser = ref.watch(authStateProvider).value;
+    // final currentUser = ref.watch(authStateProvider).value;
 
     return AlertDialog(
       title: Text(_showConfirmation ? '确认加入' : '邀请详情'),
