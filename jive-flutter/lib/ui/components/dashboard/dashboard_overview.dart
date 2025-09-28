@@ -5,7 +5,7 @@ import 'package:jive_money/ui/components/charts/balance_chart.dart';
 import 'package:jive_money/ui/components/dashboard/summary_card.dart';
 import 'package:jive_money/ui/components/dashboard/quick_actions.dart';
 import 'package:jive_money/ui/components/dashboard/recent_transactions.dart';
-import 'package:jive_money/ui/components/cards/transaction_card.dart';
+import 'package:jive_money/models/transaction.dart';
 
 class DashboardOverview extends StatelessWidget {
   final DashboardData data;
@@ -309,9 +309,9 @@ class DashboardOverview extends StatelessWidget {
 /// 仪表板数据模型
 class DashboardData {
   final List<SummaryCardData> summaryCards;
-  final List<BalanceDataPoint> balanceData;
-  final List<QuickActionData> quickActions;
-  final List<TransactionData> recentTransactions;
+  final List<BalancePoint> balanceData;
+  final List<dynamic> quickActions;
+  final List<Transaction> recentTransactions;
   final List<AccountOverviewData> accounts;
   final List<BudgetOverviewData> budgets;
   final VoidCallback? onViewAllTransactions;

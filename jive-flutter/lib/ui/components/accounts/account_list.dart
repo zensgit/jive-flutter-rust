@@ -102,8 +102,8 @@ class AccountList extends StatelessWidget {
             itemCount: accounts.length,
             itemBuilder: (context, index) {
               final account = accounts[index];
-              return AccountCard(
-                account: account,
+              return AccountCard.fromAccount(
+                      account: account,
                 onTap: () => onAccountTap?.call(account),
                 onLongPress: () => onAccountLongPress?.call(account),
               );
@@ -138,7 +138,7 @@ class AccountList extends StatelessWidget {
 
                   // 该类型的账户
                   ...typeAccounts.map(
-                    (account) => AccountCard(
+                    (account) => AccountCard.fromAccount(
                       account: account,
                       onTap: () => onAccountTap?.call(account),
                       onLongPress: () => onAccountLongPress?.call(account),
@@ -431,8 +431,8 @@ class GroupedAccountList extends StatelessWidget {
               : null,
           children: accounts
               .map(
-                (account) => AccountCard(
-                  account: account,
+                (account) => AccountCard.fromAccount(
+                      account: account,
                   onTap: () => onAccountTap?.call(account),
                   margin:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 4),

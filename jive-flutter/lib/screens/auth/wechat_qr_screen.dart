@@ -96,7 +96,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
         try {
           final userInfo = await WeChatService.simulateGetUserInfo();
           final authResult = await WeChatService.simulateLogin();
-          if (!context.mounted) return;
+          if (!mounted) return;
 
           if (userInfo != null && authResult != null) {
             if (widget.isLogin) {
@@ -108,7 +108,8 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
               });
             } else {
               // 注册流程：跳转到注册表单
-              final result = await Navigator.of(context).push(
+              final navigator = Navigator.of(context);
+              final result = await navigator.push(
                 MaterialPageRoute(
                   builder: (context) => WeChatRegisterFormScreen(
                     weChatUserInfo: userInfo,
@@ -117,10 +118,10 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                 ),
               );
 
-              if (!context.mounted) return;
+              if (!mounted) return;
 
               if (result != null) {
-                Navigator.of(context).pop(result);
+                navigator.pop(result);
               }
             }
           }

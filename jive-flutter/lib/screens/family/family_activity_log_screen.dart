@@ -116,9 +116,8 @@ class _FamilyActivityLogScreenState
 
   Future<void> _loadStatistics() async {
     try {
-      final stats =
-          await _auditService.getActivityStatistics(familyId: widget.familyId);
-      setState(() => _statistics = stats);
+      final statsMap = await _auditService.getActivityStatistics(familyId: widget.familyId);
+      setState(() => _statistics = _parseActivityStatistics(statsMap));
     } catch (e) {
       // 忽略统计加载失败
     }

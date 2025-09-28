@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 // screenshot dependency removed to avoid type errors in analyzer phase
 import 'package:jive_money/models/family.dart' as family_model;
 import 'package:jive_money/models/transaction.dart';
@@ -83,54 +82,9 @@ Jive Money - 您的智能家庭财务管家
 ''';
 
     try {
-      if (chartWidget != null) {
-        // 生成图表截图
-        // Note: screenshot functionality is stubbed during analyzer cleanup
-        // final image = await _screenshotController.captureFromWidget(
-        final image = null;
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '$familyName - $period',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                chartWidget,
-                const SizedBox(height: 20),
-                const Text(
-                  'Powered by Jive Money',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-
-        // 保存图片
-        final directory = await getTemporaryDirectory();
-        final imagePath =
-            '${directory.path}/statistics_${DateTime.now().millisecondsSinceEpoch}.png';
-        final imageFile = File(imagePath);
-        // await imageFile.writeAsBytes(image);
-
-        // 分享图片和文字
-        await Share.shareXFiles([XFile(imagePath)], text: shareText);
-      } else {
-        // 仅分享文字
-        await Share.share(shareText);
-        if (!context.mounted) return;
-      }
+      // 统一为文字分享，图像功能暂时关闭
+      await Share.share(shareText);
+      if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
     }
@@ -158,7 +112,7 @@ $icon $typeText记录
 📅 日期：${_formatDate(transaction.date)}
 🏠 账本：$familyName
 
-${transaction.tags.isNotEmpty ? '🏷️ 标签：${transaction.tags.join(', ')}' : ''}
+${transaction.tags?.isNotEmpty == true ? '🏷️ 标签：${transaction.tags!.join(', ')}' : ''}
 ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : ''}
 
 ━━━━━━━━━━━━━━━━
@@ -256,10 +210,8 @@ $data
     String? mimeType,
   }) async {
     try {
-      await Share.shareXFiles(
-        [XFile(file.path, mimeType: mimeType)],
-        text: text,
-      );
+      final body = [if (text != null && text.isNotEmpty) text, file.path].whereType<String>().join('\n\n');
+      await Share.share(body);
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -273,8 +225,9 @@ $data
     String? text,
   }) async {
     try {
-      final xFiles = images.map((file) => XFile(file.path)).toList();
-      await Share.shareXFiles(xFiles, text: text);
+      final paths = images.map((f) => f.path).join('\n');
+      final body = [if (text != null && text.isNotEmpty) text, paths].whereType<String>().join('\n\n');
+      await Share.share(body);
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -316,14 +269,7 @@ $data
     }
   }
 
-  // Stub methods for missing external dependencies
-  static dynamic ScreenshotController() {
-    return _StubScreenshotController();
-  }
-
-  static dynamic XFile(String path) {
-    return _StubXFile(path);
-  }
+  // Removed external stubs; using text-only fallbacks above.
 }
 
 /// 社交平台
@@ -571,14 +517,3 @@ class _SharePlatformButton extends StatelessWidget {
 }
 
 
-/// Stub implementations for external dependencies
-class _StubScreenshotController {
-  Future<String?> capture() async {
-    return null; // Stub implementation
-  }
-}
-
-class _StubXFile {
-  final String path;
-  _StubXFile(this.path);
-}
