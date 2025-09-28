@@ -25,11 +25,8 @@ class RightClickCopy extends StatelessWidget {
     this.padding,
   });
 
-  void _copy(BuildContext context) async {
+  Future<void> _copyWithMessenger(ScaffoldMessengerState? messenger) async {
     await Clipboard.setData(ClipboardData(text: copyText));
-    if (!context.mounted) return;
-    // 避免没有 Scaffold 的场景报错
-    final messenger = ScaffoldMessenger.maybeOf(context);
     messenger?.hideCurrentSnackBar();
     messenger?.showSnackBar(
       SnackBar(
@@ -42,6 +39,7 @@ class RightClickCopy extends StatelessWidget {
 
   Future<void> _showContextMenu(BuildContext context, Offset position) async {
     final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final messenger = ScaffoldMessenger.maybeOf(context);
     final result = await showMenu<String>(
       context: context,
       position: RelativeRect.fromRect(
@@ -63,7 +61,7 @@ class RightClickCopy extends StatelessWidget {
       ],
     );
     if (result == 'copy') {
-      _copy(context);
+      _copyWithMessenger(messenger);
     }
   }
 
@@ -86,7 +84,8 @@ class RightClickCopy extends StatelessWidget {
       },
       onLongPress: () {
         // 移动端长按直接复制
-        _copy(context);
+        final messenger = ScaffoldMessenger.maybeOf(context);
+        _copyWithMessenger(messenger);
       },
       child: content,
     );
