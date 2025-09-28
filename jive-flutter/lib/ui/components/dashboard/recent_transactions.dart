@@ -5,6 +5,7 @@ import 'package:jive_money/models/transaction.dart';
 import 'package:jive_money/ui/components/cards/transaction_card.dart';
 
 class RecentTransactions extends StatelessWidget {
+  final VoidCallback? onFilter;
   final List<Transaction> transactions;
   final String title;
   final VoidCallback? onViewAll;
@@ -16,6 +17,7 @@ class RecentTransactions extends StatelessWidget {
     this.title = '最近交易',
     this.onViewAll,
     this.maxItems = 5,
+    this.onFilter,
   });
 
   @override
@@ -43,6 +45,12 @@ class RecentTransactions extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
+                if (onFilter != null)
+                  IconButton(
+                    tooltip: "筛选",
+                    icon: const Icon(Icons.filter_list),
+                    onPressed: onFilter,
+                  ),
                 if (onViewAll != null)
                   TextButton(
                     onPressed: onViewAll,
@@ -166,6 +174,12 @@ class GroupedRecentTransactions extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
+                if (onFilter != null)
+                  IconButton(
+                    tooltip: "筛选",
+                    icon: const Icon(Icons.filter_list),
+                    onPressed: onFilter,
+                  ),
                 if (onViewAll != null)
                   TextButton(
                     onPressed: onViewAll,

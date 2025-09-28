@@ -12,6 +12,10 @@ import 'package:jive_money/providers/currency_provider.dart';
 typedef TransactionData = Transaction;
 
 class TransactionList extends ConsumerWidget {
+  // Phase A: lightweight search/group controls
+  final ValueChanged<String>? onSearch;
+  final VoidCallback? onClearSearch;
+  final VoidCallback? onToggleGroup;
   final List<TransactionData> transactions;
   final bool groupByDate;
   final bool showSearchBar;
@@ -33,6 +37,9 @@ class TransactionList extends ConsumerWidget {
     this.onTransactionLongPress,
     this.scrollController,
     this.isLoading = false,
+    this.onSearch,
+    this.onClearSearch,
+    this.onToggleGroup,
   });
 
   @override
@@ -45,9 +52,9 @@ class TransactionList extends ConsumerWidget {
       return _buildEmptyState(context);
     }
 
-    final content = groupByDate
-        ? _buildGroupedList(context, ref)
-        : _buildSimpleList(context, ref);
+    final listContent = groupByDate ? _buildGroupedList(context, ref) : _buildSimpleList(context, ref);
+
+    final content = Column(children: [ if (showSearchBar) _buildSearchBar(context), Expanded(child: listContent), ]);
 
     if (onRefresh != null) {
       return RefreshIndicator(
@@ -57,6 +64,54 @@ class TransactionList extends ConsumerWidget {
     }
 
     return content;
+  }
+
+
+  Widget _buildSearchBar(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: '搜索 描述/备注/收款方…',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: onClearSearch != null
+                    ? IconButton(icon: const Icon(Icons.clear), onPressed: onClearSearch)
+                    : null,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: theme.colorScheme.surface,
+                isDense: true,
+              ),
+              textInputAction: TextInputAction.search,
+              onSubmitted: onSearch,
+            ),
+          ),
+          const SizedBox(width: 8),
+          IconButton(
+            tooltip: groupByDate ? '切换为平铺' : '按日期分组',
+            onPressed: onToggleGroup,
+            icon: Icon(groupByDate ? Icons.view_agenda_outlined : Icons.calendar_today_outlined),
+          ),
+          IconButton(
+            tooltip: '筛选',
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('筛选功能开发中')),
+              );
+            },
+            icon: const Icon(Icons.filter_list),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildEmptyState(BuildContext context) {
@@ -276,6 +331,54 @@ class SwipeableTransactionList extends StatelessWidget {
     }
 
     return groupByDate ? _buildGroupedList(context) : _buildSimpleList(context);
+  }
+
+
+  Widget _buildSearchBar(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: '搜索 描述/备注/收款方…',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: onClearSearch != null
+                    ? IconButton(icon: const Icon(Icons.clear), onPressed: onClearSearch)
+                    : null,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: theme.colorScheme.surface,
+                isDense: true,
+              ),
+              textInputAction: TextInputAction.search,
+              onSubmitted: onSearch,
+            ),
+          ),
+          const SizedBox(width: 8),
+          IconButton(
+            tooltip: groupByDate ? '切换为平铺' : '按日期分组',
+            onPressed: onToggleGroup,
+            icon: Icon(groupByDate ? Icons.view_agenda_outlined : Icons.calendar_today_outlined),
+          ),
+          IconButton(
+            tooltip: '筛选',
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('筛选功能开发中')),
+              );
+            },
+            icon: const Icon(Icons.filter_list),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildEmptyState(BuildContext context) {
