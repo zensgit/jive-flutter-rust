@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jive_money/core/router/app_router.dart';
 import 'package:jive_money/providers/transaction_provider.dart';
-import 'package:jive_money/ui/components/transactions/transaction_list_item.dart';
+import 'package:jive_money/ui/components/transactions/transaction_list.dart';
 import 'package:jive_money/models/transaction.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
@@ -19,6 +19,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
   late TabController _tabController;
   String _selectedFilter = 'all';
   DateTimeRange? _dateRange;
+  bool _groupByDate = true;
 
   @override
   void initState() {
@@ -128,22 +129,19 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
       return _buildEmptyState(type);
     }
 
-    return RefreshIndicator(
+    return TransactionList(
+      transactions: filtered,
+      groupByDate: _groupByDate,
+      showSearchBar: true,
+      onSearch: (q) =>
+          ref.read(transactionControllerProvider.notifier).search(q),
+      onClearSearch: () =>
+          ref.read(transactionControllerProvider.notifier).search(''),
+      onToggleGroup: () => setState(() => _groupByDate = !_groupByDate),
       onRefresh: () =>
           ref.read(transactionControllerProvider.notifier).refresh(),
-      child: ListView.builder(
-        padding: const EdgeInsets.only(bottom: 80),
-        itemCount: filtered.length,
-        itemBuilder: (context, index) {
-          final transaction = filtered[index];
-          return TransactionListItem(
-            transaction: transaction,
-            onTap: () {
-              context.go('${AppRoutes.transactions}/${transaction.id}');
-            },
-          );
-        },
-      ),
+      onTransactionTap: (t) =>
+          context.go('${AppRoutes.transactions}/${t.id}'),
     );
   }
 
