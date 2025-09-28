@@ -54,7 +54,12 @@ class TransactionList extends ConsumerWidget {
 
     final listContent = groupByDate ? _buildGroupedList(context, ref) : _buildSimpleList(context, ref);
 
-    final content = Column(children: [ if (showSearchBar) _buildSearchBar(context), Expanded(child: listContent), ]);
+    final content = Column(
+      children: [
+        if (showSearchBar) _buildSearchBar(context),
+        Expanded(child: listContent),
+      ],
+    );
 
     if (onRefresh != null) {
       return RefreshIndicator(
@@ -65,6 +70,7 @@ class TransactionList extends ConsumerWidget {
 
     return content;
   }
+
 
 
   Widget _buildSearchBar(BuildContext context) {
@@ -332,6 +338,7 @@ class SwipeableTransactionList extends StatelessWidget {
 
     return groupByDate ? _buildGroupedList(context) : _buildSimpleList(context);
   }
+
 
 
   Widget _buildSearchBar(BuildContext context) {
