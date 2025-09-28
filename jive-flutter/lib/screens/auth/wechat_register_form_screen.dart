@@ -84,35 +84,44 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
         _passwordController.text,
       );
 
+      if (!mounted) return;
+      // ignore: use_build_context_synchronously
+      final messenger = ScaffoldMessenger.of(context);
+
+
       if (result.success && result.userData != null) {
         // 注册成功后绑定微信
         final bindResult = await _authService.bindWechat();
-        if (!context.mounted) return;
+        if (!mounted) return;
 
         if (bindResult.success) {
           // 绑定成功，返回成功结果
-          Navigator.of(context).pop({
+          // ignore: use_build_context_synchronously
+          final navigator = Navigator.of(context);
+          navigator.pop({
             'success': true,
             'userData': result.userData,
             'message': '微信注册成功！',
           });
         } else {
           // 绑定失败但账户已创建，提示用户
-          ScaffoldMessenger.of(context).showSnackBar(
+          messenger.showSnackBar(
             SnackBar(
               content: Text('账户创建成功，但微信绑定失败: ${bindResult.message}'),
               backgroundColor: Colors.orange,
             ),
           );
 
-          Navigator.of(context).pop({
+          // ignore: use_build_context_synchronously
+          final navigator = Navigator.of(context);
+          navigator.pop({
             'success': true,
             'userData': result.userData,
             'message': '账户创建成功，请手动绑定微信',
           });
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
             content: Text(result.message ?? '注册失败'),
             backgroundColor: Colors.red,
@@ -120,7 +129,10 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (!mounted) return;
+      // ignore: use_build_context_synchronously
+      final messenger = ScaffoldMessenger.of(context);
+      messenger.showSnackBar(
         SnackBar(
           content: Text('注册过程中发生错误: $e'),
           backgroundColor: Colors.red,

@@ -106,12 +106,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       debugPrint('DEBUG: Login result: $success');
 
       if (mounted) {
+        // ignore: use_build_context_synchronously
+        final messenger = ScaffoldMessenger.of(context);
         if (success) {
           final authState = ref.read(authControllerProvider);
           debugPrint('DEBUG: Login successful, user: ${authState.user?.name}');
 
           // 登录成功，显示欢迎消息
-          ScaffoldMessenger.of(context).showSnackBar(
+          messenger.showSnackBar(
             SnackBar(
               content: Text('欢迎回来，${authState.user?.name ?? '用户'}！'),
               backgroundColor: Colors.green,
@@ -126,7 +128,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           debugPrint('DEBUG: Login failed: ${authState.errorMessage}');
 
           // 登录失败，显示错误消息
-          ScaffoldMessenger.of(context).showSnackBar(
+          messenger.showSnackBar(
             SnackBar(
               content: Text(authState.errorMessage ?? '登录失败'),
               backgroundColor: Colors.red,
@@ -139,7 +141,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       debugPrint('DEBUG: Stack trace: $stack');
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        // ignore: use_build_context_synchronously
+        final messenger = ScaffoldMessenger.of(context);
+        messenger.showSnackBar(
           SnackBar(
             content: Text('登录过程中发生错误: $e'),
             backgroundColor: Colors.red,
@@ -307,7 +311,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   _rememberPassword = false;
                                   _rememberPermanently = false;
                                 });
-                                ScaffoldMessenger.of(context).showSnackBar(
+                                // ignore: use_build_context_synchronously
+                                final messenger = ScaffoldMessenger.of(context);
+                                messenger.showSnackBar(
                                   const SnackBar(
                                     content: Text('已清除保存的登录信息'),
                                     backgroundColor: Colors.blue,
@@ -468,7 +474,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     TextButton(
                       onPressed: () {
                         // TODO: 实现忘记密码功能
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        final messenger = ScaffoldMessenger.of(context);
+                        messenger.showSnackBar(
                           const SnackBar(content: Text('忘记密码功能暂未实现')),
                         );
                       },
@@ -524,7 +531,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         }
                       },
                       onError: (error) {
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        // ignore: use_build_context_synchronously
+                        final messenger = ScaffoldMessenger.of(context);
+                        messenger.showSnackBar(
                           SnackBar(
                             content: Text('微信登录失败: $error'),
                             backgroundColor: Colors.red,

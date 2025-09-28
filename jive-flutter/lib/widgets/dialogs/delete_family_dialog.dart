@@ -91,8 +91,9 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
           if (families.isNotEmpty) {
             // 切换到第一个可用的Family
             await familyService.switchFamily(families.first.family.id);
-            if (!context.mounted) return;
-            ref.refresh(currentFamilyProvider);
+
+            if (!mounted) return;
+            final _ = ref.refresh(currentFamilyProvider);
           }
         }
 
