@@ -130,6 +130,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
     });
 
     final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -156,7 +157,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
                 ),
               );
             }
-            Navigator.pop(context);
+            navigator.pop();
             _loadTemplates();
           } catch (e) {
             if (!mounted) return;
@@ -169,7 +170,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
           }
         },
         onCancel: () {
-          Navigator.pop(context);
+          navigator.pop();
         },
       ),
     );
