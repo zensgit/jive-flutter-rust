@@ -502,11 +502,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       buttonText: '使用微信登录',
                       onSuccess: (authResult, userInfo) async {
                         final result = await _authService.wechatLogin();
-
                         if (!context.mounted) return;
+                        // ignore: use_build_context_synchronously
+                        final messenger = ScaffoldMessenger.of(context);
 
                         if (result.success) {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          messenger.showSnackBar(
                             SnackBar(
                               content:
                                   Text('欢迎回来，${result.userData?.username}！'),
@@ -515,7 +516,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           );
                           context.go(AppRoutes.dashboard);
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          messenger.showSnackBar(
                             SnackBar(
                               content: Text(result.message ?? '微信登录失败'),
                               backgroundColor: Colors.red,
