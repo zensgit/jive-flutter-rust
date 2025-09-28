@@ -50,6 +50,29 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           ],
         ),
         actions: [
+          PopupMenuButton<TransactionGrouping>(
+            tooltip: '分组方式',
+            icon: const Icon(Icons.view_list_outlined),
+            onSelected: (g) {
+              ref.read(transactionControllerProvider.notifier).setGrouping(g);
+              setState(() => _groupByDate = g == TransactionGrouping.date);
+            },
+            itemBuilder: (context) => const [
+              PopupMenuItem(
+                value: TransactionGrouping.date,
+                child: Text('按日期分组'),
+              ),
+              PopupMenuItem(
+                value: TransactionGrouping.category,
+                child: Text('按分类分组'),
+              ),
+              PopupMenuItem(
+                value: TransactionGrouping.account,
+                child: Text('按账户分组'),
+              ),
+            ],
+          ),
+
           IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: _showFilterDialog,
@@ -274,6 +297,29 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           ],
         ),
         actions: [
+          PopupMenuButton<TransactionGrouping>(
+            tooltip: '分组方式',
+            icon: const Icon(Icons.view_list_outlined),
+            onSelected: (g) {
+              ref.read(transactionControllerProvider.notifier).setGrouping(g);
+              setState(() => _groupByDate = g == TransactionGrouping.date);
+            },
+            itemBuilder: (context) => const [
+              PopupMenuItem(
+                value: TransactionGrouping.date,
+                child: Text('按日期分组'),
+              ),
+              PopupMenuItem(
+                value: TransactionGrouping.category,
+                child: Text('按分类分组'),
+              ),
+              PopupMenuItem(
+                value: TransactionGrouping.account,
+                child: Text('按账户分组'),
+              ),
+            ],
+          ),
+
           TextButton(
             onPressed: () {
               setState(() {

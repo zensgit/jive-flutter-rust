@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n        INSERT INTO accounts (\n            id, ledger_id, name, account_type, account_number,\n            institution_name, currency, current_balance, status,\n            is_manual, color, notes, created_at, updated_at\n        ) VALUES (\n            $1, $2, $3, $4, $5, $6, $7, $8, 'active', true, $9, $10, NOW(), NOW()\n        )\n        RETURNING id, ledger_id, name, account_type, account_number, institution_name,\n                  currency, current_balance, available_balance, credit_limit, status,\n                  is_manual, color, notes, created_at, updated_at\n        ",
+  "query": "\n        INSERT INTO accounts (\n            id, ledger_id, name, account_type, account_main_type, account_sub_type,\n            account_number, institution_name, currency, current_balance, status,\n            is_manual, color, notes, created_at, updated_at\n        ) VALUES (\n            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'active', true, $11, $12, NOW(), NOW()\n        )\n        RETURNING id, ledger_id, name, account_type, account_number, institution_name,\n                  currency, current_balance, available_balance, credit_limit, status,\n                  is_manual, color, notes, created_at, updated_at\n        ",
   "describe": {
     "columns": [
       {
@@ -93,6 +93,8 @@
         "Varchar",
         "Varchar",
         "Varchar",
+        "Varchar",
+        "Varchar",
         "Numeric",
         "Varchar",
         "Text"
@@ -117,5 +119,5 @@
       true
     ]
   },
-  "hash": "6c4ba675d6e020498e2081d580abe10e645e36bd63f70c835280564442a0a339"
+  "hash": "0aa53243e6d2529de382cb72e484cfe840b0100c44c5fee103c8d8735ad04dce"
 }

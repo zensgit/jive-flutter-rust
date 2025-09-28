@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 
+pub mod account;
 pub mod audit;
 pub mod family;
 pub mod invitation;
@@ -7,6 +8,8 @@ pub mod membership;
 pub mod permission;
 pub mod transaction;
 
+#[allow(unused_imports)]
+pub use account::{AccountMainType, AccountSubType};
 #[allow(unused_imports)]
 pub use audit::{AuditAction, AuditLog, AuditLogFilter, CreateAuditLogRequest};
 #[allow(unused_imports)]
