@@ -325,7 +325,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               const SizedBox(height: 24),
 
               // 保存按钮
-              const SizedBox(
+              SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
@@ -335,11 +335,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     foregroundColor: Colors.white,
                   ),
                   child: _isLoading
-                      ? CircularProgressIndicator(
+                      ? const CircularProgressIndicator(
                           valueColor:
                               AlwaysStoppedAnimation<Color>(Colors.white),
                         )
-                      : Text(
+                      : const Text(
                           '保存更改',
                           style: TextStyle(fontSize: 16),
                         ),

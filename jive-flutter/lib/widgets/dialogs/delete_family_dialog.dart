@@ -84,7 +84,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
       await familyService.deleteFamily(widget.family.id);
 
       // 刷新Family列表
-      ref.refresh(userFamiliesProvider);
+      final _ = ref.refresh(userFamiliesProvider);
 
       if (mounted) {
         // 如果删除的是当前Family，切换到其他Family或显示空状态
@@ -94,8 +94,8 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
           if (families.isNotEmpty) {
             // 切换到第一个可用的Family
             await familyService.switchFamily(families.first.family.id);
-            if (!context.mounted) return;
-            ref.refresh(currentFamilyProvider);
+            if (!mounted) return;
+            final __ = ref.refresh(currentFamilyProvider);
           }
         }
 

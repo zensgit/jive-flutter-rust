@@ -103,8 +103,8 @@ class BudgetProgress extends StatelessWidget {
                       ),
                     Text(
                       isOverBudget
-                          ? '超支 ${ref.read(currencyProvider.notifier).formatCurrency(-remaining, ref.read(baseCurrencyProvider).code)}'
-                          : '剩余 ${ref.read(currencyProvider.notifier).formatCurrency(remaining, ref.read(baseCurrencyProvider).code)}',
+                          ? '超支 ${remaining.abs().toStringAsFixed(2)}'
+                          : '剩余 ${remaining.toStringAsFixed(2)}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: isOverBudget
                             ? AppConstants.errorColor

@@ -19,7 +19,7 @@ class DeepLinkService {
   Future<void> initialize() async {
     // 处理应用启动时的链接
     try {
-      final initialLink = await uni_links.getInitialLink();
+      final String? initialLink = await uni_links.getInitialLink();
       if (initialLink != null) {
         _handleDeepLink(initialLink);
       }
@@ -36,7 +36,8 @@ class DeepLinkService {
   }
 
   /// 处理深链接
-  void _handleDeepLink(String link) {
+  void _handleDeepLink(String? link) {
+    if (link == null || link.isEmpty) return;
     final uri = Uri.parse(link);
     final data = _parseDeepLink(uri);
 
