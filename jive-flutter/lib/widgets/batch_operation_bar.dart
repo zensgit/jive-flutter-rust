@@ -230,6 +230,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
               // TODO: 实现批量归档
               Navigator.pop(context);
               widget.onCancel();
+              final messenger = ScaffoldMessenger.of(context);
               messenger.showSnackBar(
                 SnackBar(
                   content: Text('已归档 ${widget.selectedIds.length} 个项目'),
@@ -303,6 +304,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
               if (!mounted) return;
               Navigator.pop(context);
               widget.onCancel();
+              final messenger = ScaffoldMessenger.of(context);
               messenger.showSnackBar(
                 SnackBar(
                   content: Text('已删除 ${widget.selectedIds.length} 个项目'),
@@ -381,15 +383,19 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
         ),
         ElevatedButton(
           onPressed: () async {
-            final messenger = ScaffoldMessenger.of(context);
             final provider = ref.read(categoryManagementProvider);
             await provider.batchMoveCategories(
               widget.selectedIds,
               _targetParentId,
             );
             if (!mounted) return;
-            Navigator.pop(context);
+            // ignore: use_build_context_synchronously
+            final navigator = Navigator.of(context);
+            // ignore: use_build_context_synchronously
+            final messenger = ScaffoldMessenger.of(context);
+            navigator.pop();
             widget.onConfirm();
+            // ignore: use_build_context_synchronously
             messenger.showSnackBar(
               SnackBar(
                 content: Text('已移动 ${widget.selectedIds.length} 个分类'),
@@ -463,7 +469,6 @@ class _BatchConvertToTagDialogState
         ),
         ElevatedButton(
           onPressed: () async {
-            final messenger = ScaffoldMessenger.of(context);
             final provider = ref.read(categoryManagementProvider);
 
             for (final categoryId in widget.selectedIds) {
@@ -477,8 +482,12 @@ class _BatchConvertToTagDialogState
               if (!mounted) return;
             }
 
-            Navigator.pop(context);
+            final navigator = Navigator.of(context);
+            // ignore: use_build_context_synchronously
+            final messenger = ScaffoldMessenger.of(context);
+            navigator.pop();
             widget.onConfirm();
+            // ignore: use_build_context_synchronously
             messenger.showSnackBar(
               SnackBar(
                 content: Text('已转换 ${widget.selectedIds.length} 个分类为标签'),

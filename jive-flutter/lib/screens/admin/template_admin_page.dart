@@ -129,8 +129,6 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
       _isCreating = template == null;
     });
 
-    final messenger = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -141,6 +139,8 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
             if (_isCreating) {
               await _categoryService.createTemplate(updatedTemplate);
               if (!mounted) return;
+              // ignore: use_build_context_synchronously
+              final messenger = ScaffoldMessenger.of(context);
               messenger.showSnackBar(
                 const SnackBar(
                   content: Text('模板创建成功'),
@@ -150,6 +150,8 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
             } else {
               await _categoryService.updateTemplate(updatedTemplate.id, updatedTemplate.toJson());
               if (!mounted) return;
+              // ignore: use_build_context_synchronously
+              final messenger = ScaffoldMessenger.of(context);
               messenger.showSnackBar(
                 const SnackBar(
                   content: Text('模板更新成功'),
@@ -157,10 +159,14 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
                 ),
               );
             }
+            // ignore: use_build_context_synchronously
+            final navigator = Navigator.of(context);
             navigator.pop();
             _loadTemplates();
           } catch (e) {
             if (!mounted) return;
+            // ignore: use_build_context_synchronously
+            final messenger = ScaffoldMessenger.of(context);
             messenger.showSnackBar(
               SnackBar(
                 content: Text('保存失败: $e'),
@@ -170,7 +176,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
           }
         },
         onCancel: () {
-          navigator.pop();
+          Navigator.pop(context);
         },
       ),
     );
