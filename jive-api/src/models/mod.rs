@@ -2,6 +2,7 @@
 
 pub mod account;
 pub mod audit;
+pub mod bank;
 pub mod family;
 pub mod invitation;
 pub mod membership;
