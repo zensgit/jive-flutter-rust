@@ -26,6 +26,10 @@ class TransactionList extends ConsumerWidget {
   final Function(TransactionData)? onTransactionLongPress;
   final ScrollController? scrollController;
   final bool isLoading;
+  // Optional formatter for group header amounts (for testability)
+  final String Function(double amount)? formatAmount;
+  // Optional custom item builder for transactions (testability)
+  final Widget Function(TransactionData t)? transactionItemBuilder;
 
   const TransactionList({
     super.key,
@@ -41,6 +45,8 @@ class TransactionList extends ConsumerWidget {
     this.onSearch,
     this.onClearSearch,
     this.onToggleGroup,
+    this.formatAmount,
+    this.transactionItemBuilder,
   });
 
   @override
@@ -168,18 +174,26 @@ class TransactionList extends ConsumerWidget {
   }
 
   Widget _buildSimpleList(BuildContext context, WidgetRef ref) {
+
+  Widget _buildItem(BuildContext context, TransactionData t) {
+    if (transactionItemBuilder != null) {
+      return transactionItemBuilder!(t);
+    }
+    return TransactionCard(
+      transaction: t,
+      onTap: () => onTransactionTap?.call(t),
+      onLongPress: () => onTransactionLongPress?.call(t),
+      showDate: true,
+    );
+  }
+
     return ListView.builder(
       controller: scrollController,
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: transactions.length,
       itemBuilder: (context, index) {
         final transaction = transactions[index];
-        return TransactionCard(
-          transaction: transaction,
-          onTap: () => onTransactionTap?.call(transaction),
-          onLongPress: () => onTransactionLongPress?.call(transaction),
-          showDate: true,
-        );
+        return _buildItem(context, transaction);
       },
     );
   }
@@ -205,12 +219,14 @@ class TransactionList extends ConsumerWidget {
 
             // 该日期的交易
             ...dayTransactions.map(
-              (transaction) => TransactionCard(
-                transaction: transaction,
-                onTap: () => onTransactionTap?.call(transaction),
-                onLongPress: () => onTransactionLongPress?.call(transaction),
-                showDate: false,
-              ),
+              (transaction) => (transactionItemBuilder != null)
+                  ? transactionItemBuilder!(transaction)
+                  : TransactionCard(
+                      transaction: transaction,
+                      onTap: () => onTransactionTap?.call(transaction),
+                      onLongPress: () => onTransactionLongPress?.call(transaction),
+                      showDate: false,
+                    ),
             ),
           ],
         );
@@ -222,9 +238,13 @@ class TransactionList extends ConsumerWidget {
       DateTime date, List<TransactionData> transactions) {
     final total = _calculateDayTotal(transactions);
     final isPositive = total >= 0;
-    final base = ref.watch(baseCurrencyProvider).code;
-    final formatted =
-        ref.read(currencyProvider.notifier).formatCurrency(total.abs(), base);
+    String formatted;
+    if (formatAmount != null) {
+      formatted = formatAmount!(total.abs());
+    } else {
+      final base = ref.watch(baseCurrencyProvider).code;
+      formatted = ref.read(currencyProvider.notifier).formatCurrency(total.abs(), base);
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -354,11 +374,13 @@ class TransactionList extends ConsumerWidget {
             ),
             if (!isCollapsed)
               ...entry.value.map(
-                (t) => TransactionCard(
-                  transaction: t,
-                  onTap: () => onTransactionTap?.call(t),
-                  showDate: true,
-                ),
+                (t) => (transactionItemBuilder != null)
+                  ? transactionItemBuilder!(t)
+                  : TransactionCard(
+                      transaction: t,
+                      onTap: () => onTransactionTap?.call(t),
+                      showDate: true,
+                    ),
               ),
           ],
         );
@@ -397,11 +419,13 @@ class TransactionList extends ConsumerWidget {
             ),
             if (!isCollapsed)
               ...entry.value.map(
-                (t) => TransactionCard(
-                  transaction: t,
-                  onTap: () => onTransactionTap?.call(t),
-                  showDate: true,
-                ),
+                (t) => (transactionItemBuilder != null)
+                  ? transactionItemBuilder!(t)
+                  : TransactionCard(
+                      transaction: t,
+                      onTap: () => onTransactionTap?.call(t),
+                      showDate: true,
+                    ),
               ),
           ],
         );
@@ -418,9 +442,13 @@ class TransactionList extends ConsumerWidget {
     VoidCallback onToggle,
   ) {
     final isPositive = total >= 0;
-    final base = ref.watch(baseCurrencyProvider).code;
-    final formatted =
-        ref.read(currencyProvider.notifier).formatCurrency(total.abs(), base);
+    String formatted;
+    if (formatAmount != null) {
+      formatted = formatAmount!(total.abs());
+    } else {
+      final base = ref.watch(baseCurrencyProvider).code;
+      formatted = ref.read(currencyProvider.notifier).formatCurrency(total.abs(), base);
+    }
     return InkWell(
       onTap: onToggle,
       child: Container(
