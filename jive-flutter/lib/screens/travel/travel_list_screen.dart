@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/travel_provider.dart';
-import '../../models/travel_event.dart';
+import 'package:jive_money/providers/travel_provider.dart';
+import 'package:jive_money/models/travel_event.dart';
 import 'travel_detail_screen.dart';
 import 'travel_create_dialog.dart';
 

@@ -37,14 +37,11 @@ class TransactionList extends ConsumerWidget {
     this.onTransactionLongPress,
     this.scrollController,
     this.isLoading = false,
-<<<<<<< HEAD
-=======
     this.onSearch,
     this.onClearSearch,
     this.onToggleGroup,
     this.formatAmount,
     this.transactionItemBuilder,
->>>>>>> fd1e712 (flutter: fix transactions grouping flag; make TransactionList grouping testable and re-enable widget test)
   });
 
   @override
@@ -102,9 +99,22 @@ class TransactionList extends ConsumerWidget {
     );
   }
 
-  Widget _buildSimpleList(BuildContext context, WidgetRef ref) {
-
+  
   Widget _buildItem(BuildContext context, TransactionData t) {
+    if (transactionItemBuilder != null) {
+      return transactionItemBuilder!(t);
+    }
+    return TransactionCard(
+      transaction: t,
+      onTap: () => onTransactionTap?.call(t),
+      onLongPress: () => onTransactionLongPress?.call(t),
+      showDate: true,
+    );
+  }
+
+Widget _buildSimpleList(BuildContext context, WidgetRef ref) {
+/*helper_removed*/
+
     if (transactionItemBuilder != null) {
       return transactionItemBuilder!(t);
     }
@@ -272,12 +282,10 @@ class TransactionList extends ConsumerWidget {
     return weekdays[date.weekday - 1];
   }
 
-<<<<<<< HEAD
   String _formatAmount(double amount) {
     final sign = amount >= 0 ? '+' : '';
     return '$sign¥${amount.abs().toStringAsFixed(2)}';
   }
-=======
 
   // ---- Category grouping ----
   Widget _buildGroupedByCategory(BuildContext context, WidgetRef ref) {
@@ -434,7 +442,6 @@ class TransactionList extends ConsumerWidget {
     return Map.fromEntries(entries);
   }
 
->>>>>>> fd1e712 (flutter: fix transactions grouping flag; make TransactionList grouping testable and re-enable widget test)
 }
 
 /// 可滑动删除的交易列表

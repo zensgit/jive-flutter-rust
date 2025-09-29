@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
-import '../models/travel_event.dart';
-import '../services/api_service.dart';
+import 'package:jive_money/models/travel_event.dart';
+import 'package:jive_money/services/api_service.dart';
+import 'package:jive_money/core/network/http_client.dart';
 
 class TravelProvider extends ChangeNotifier {
   final ApiService _apiService;
@@ -34,6 +34,9 @@ class TravelProvider extends ChangeNotifier {
     }
   }
 
+  // 获取Dio实例
+  get _dio => HttpClient.instance.dio;
+
   // 加载旅行列表
   Future<void> loadTravelEvents() async {
     _isLoading = true;
@@ -41,7 +44,7 @@ class TravelProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.dio.get('/api/v1/travel/events');
+      final response = await _dio.get('/api/v1/travel/events');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
         _travelEvents = data.map((json) => TravelEvent.fromJson(json)).toList();
@@ -65,7 +68,7 @@ class TravelProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.dio.get('/api/v1/travel/events/$travelId');
+      final response = await _dio.get('/api/v1/travel/events/$travelId');
       if (response.statusCode == 200) {
         _currentTravel = TravelEvent.fromJson(response.data);
 
@@ -91,7 +94,7 @@ class TravelProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.dio.post(
+      final response = await _dio.post(
         '/api/v1/travel/events',
         data: input.toJson(),
       );
@@ -120,7 +123,7 @@ class TravelProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.dio.put(
+      final response = await _dio.put(
         '/api/v1/travel/events/$travelId',
         data: input.toJson(),
       );
@@ -160,7 +163,7 @@ class TravelProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.dio.delete('/api/v1/travel/events/$travelId');
+      final response = await _dio.delete('/api/v1/travel/events/$travelId');
 
       if (response.statusCode == 204 || response.statusCode == 200) {
         _travelEvents.removeWhere((t) => t.id == travelId);
@@ -186,7 +189,7 @@ class TravelProvider extends ChangeNotifier {
   // 激活旅行
   Future<bool> activateTravel(String travelId) async {
     try {
-      final response = await _apiService.dio.post(
+      final response = await _dio.post(
         '/api/v1/travel/events/$travelId/activate',
       );
 
@@ -206,7 +209,7 @@ class TravelProvider extends ChangeNotifier {
   // 完成旅行
   Future<bool> completeTravel(String travelId) async {
     try {
-      final response = await _apiService.dio.post(
+      final response = await _dio.post(
         '/api/v1/travel/events/$travelId/complete',
       );
 
@@ -226,7 +229,7 @@ class TravelProvider extends ChangeNotifier {
   // 加载旅行统计
   Future<void> loadStatistics(String travelId) async {
     try {
-      final response = await _apiService.dio.get(
+      final response = await _dio.get(
         '/api/v1/travel/events/$travelId/statistics',
       );
 
@@ -241,7 +244,7 @@ class TravelProvider extends ChangeNotifier {
   // 加载预算列表
   Future<void> loadBudgets(String travelId) async {
     try {
-      final response = await _apiService.dio.get(
+      final response = await _dio.get(
         '/api/v1/travel/events/$travelId/budgets',
       );
 
@@ -257,7 +260,7 @@ class TravelProvider extends ChangeNotifier {
   // 设置分类预算
   Future<bool> setBudget(String travelId, String categoryId, double amount, String? currencyCode) async {
     try {
-      final response = await _apiService.dio.post(
+      final response = await _dio.post(
         '/api/v1/travel/events/$travelId/budgets',
         data: {
           'category_id': categoryId,
@@ -283,7 +286,7 @@ class TravelProvider extends ChangeNotifier {
   // 关联交易到旅行
   Future<bool> attachTransactions(String travelId, List<String> transactionIds) async {
     try {
-      final response = await _apiService.dio.post(
+      final response = await _dio.post(
         '/api/v1/travel/events/$travelId/transactions',
         data: {
           'transaction_ids': transactionIds,
@@ -306,7 +309,7 @@ class TravelProvider extends ChangeNotifier {
   // 取消关联交易
   Future<bool> detachTransactions(String travelId, List<String> transactionIds) async {
     try {
-      final response = await _apiService.dio.delete(
+      final response = await _dio.delete(
         '/api/v1/travel/events/$travelId/transactions',
         data: {
           'transaction_ids': transactionIds,

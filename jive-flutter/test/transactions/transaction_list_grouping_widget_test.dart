@@ -12,10 +12,10 @@ import 'package:jive_money/ui/components/cards/transaction_card.dart';
 class _DummyTransactionService extends TransactionService {}
 
 class _TestController extends TransactionController {
-  _TestController({
+  _TestController(Ref ref, {
     TransactionGrouping grouping = TransactionGrouping.category,
     Set<String> collapsed = const {},
-  }) : super(_DummyTransactionService()) {
+  }) : super(ref, _DummyTransactionService()) {
     // Skip network on init
     state = state.copyWith(
       transactions: const [],
@@ -68,16 +68,10 @@ void main() {
         ),
       ];
 
-      final controller = _TestController(
-        grouping: TransactionGrouping.category,
-        collapsed: {},
-      );
-
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            transactionControllerProvider
-                .overrideWith((ref) => controller),
+            transactionControllerProvider.overrideWith((ref) => _TestController(ref, grouping: TransactionGrouping.category, collapsed: {})),
           ],
           child: MaterialApp(
             home: Scaffold(
