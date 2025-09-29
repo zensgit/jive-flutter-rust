@@ -24,6 +24,11 @@ class TravelEvent with _$TravelEvent {
     @Default(0) int transactionCount,
     double? totalAmount,
     String? travelTagId,
+
+    // Additional fields for UI
+    @Default(TravelEventStatus.upcoming) TravelEventStatus status,
+    double? budget,
+    @Default('CNY') String currency,
   }) = _TravelEvent;
 
   factory TravelEvent.fromJson(Map<String, dynamic> json) =>

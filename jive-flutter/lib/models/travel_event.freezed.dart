@@ -34,7 +34,11 @@ mixin _$TravelEvent {
   DateTime? get updatedAt => throw _privateConstructorUsedError; // 统计信息
   int get transactionCount => throw _privateConstructorUsedError;
   double? get totalAmount => throw _privateConstructorUsedError;
-  String? get travelTagId => throw _privateConstructorUsedError;
+  String? get travelTagId =>
+      throw _privateConstructorUsedError; // Additional fields for UI
+  TravelEventStatus get status => throw _privateConstructorUsedError;
+  double? get budget => throw _privateConstructorUsedError;
+  String get currency => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -63,7 +67,10 @@ abstract class $TravelEventCopyWith<$Res> {
       DateTime? updatedAt,
       int transactionCount,
       double? totalAmount,
-      String? travelTagId});
+      String? travelTagId,
+      TravelEventStatus status,
+      double? budget,
+      String currency});
 }
 
 /// @nodoc
@@ -94,6 +101,9 @@ class _$TravelEventCopyWithImpl<$Res, $Val extends TravelEvent>
     Object? transactionCount = null,
     Object? totalAmount = freezed,
     Object? travelTagId = freezed,
+    Object? status = null,
+    Object? budget = freezed,
+    Object? currency = null,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -156,6 +166,18 @@ class _$TravelEventCopyWithImpl<$Res, $Val extends TravelEvent>
           ? _value.travelTagId
           : travelTagId // ignore: cast_nullable_to_non_nullable
               as String?,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as TravelEventStatus,
+      budget: freezed == budget
+          ? _value.budget
+          : budget // ignore: cast_nullable_to_non_nullable
+              as double?,
+      currency: null == currency
+          ? _value.currency
+          : currency // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -183,7 +205,10 @@ abstract class _$$TravelEventImplCopyWith<$Res>
       DateTime? updatedAt,
       int transactionCount,
       double? totalAmount,
-      String? travelTagId});
+      String? travelTagId,
+      TravelEventStatus status,
+      double? budget,
+      String currency});
 }
 
 /// @nodoc
@@ -212,6 +237,9 @@ class __$$TravelEventImplCopyWithImpl<$Res>
     Object? transactionCount = null,
     Object? totalAmount = freezed,
     Object? travelTagId = freezed,
+    Object? status = null,
+    Object? budget = freezed,
+    Object? currency = null,
   }) {
     return _then(_$TravelEventImpl(
       id: freezed == id
@@ -274,6 +302,18 @@ class __$$TravelEventImplCopyWithImpl<$Res>
           ? _value.travelTagId
           : travelTagId // ignore: cast_nullable_to_non_nullable
               as String?,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as TravelEventStatus,
+      budget: freezed == budget
+          ? _value.budget
+          : budget // ignore: cast_nullable_to_non_nullable
+              as double?,
+      currency: null == currency
+          ? _value.currency
+          : currency // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -296,7 +336,10 @@ class _$TravelEventImpl implements _TravelEvent {
       this.updatedAt,
       this.transactionCount = 0,
       this.totalAmount,
-      this.travelTagId})
+      this.travelTagId,
+      this.status = TravelEventStatus.upcoming,
+      this.budget,
+      this.currency = 'CNY'})
       : _travelCategoryIds = travelCategoryIds;
 
   factory _$TravelEventImpl.fromJson(Map<String, dynamic> json) =>
@@ -344,10 +387,19 @@ class _$TravelEventImpl implements _TravelEvent {
   final double? totalAmount;
   @override
   final String? travelTagId;
+// Additional fields for UI
+  @override
+  @JsonKey()
+  final TravelEventStatus status;
+  @override
+  final double? budget;
+  @override
+  @JsonKey()
+  final String currency;
 
   @override
   String toString() {
-    return 'TravelEvent(id: $id, name: $name, description: $description, startDate: $startDate, endDate: $endDate, location: $location, isActive: $isActive, autoTag: $autoTag, travelCategoryIds: $travelCategoryIds, ledgerId: $ledgerId, createdAt: $createdAt, updatedAt: $updatedAt, transactionCount: $transactionCount, totalAmount: $totalAmount, travelTagId: $travelTagId)';
+    return 'TravelEvent(id: $id, name: $name, description: $description, startDate: $startDate, endDate: $endDate, location: $location, isActive: $isActive, autoTag: $autoTag, travelCategoryIds: $travelCategoryIds, ledgerId: $ledgerId, createdAt: $createdAt, updatedAt: $updatedAt, transactionCount: $transactionCount, totalAmount: $totalAmount, travelTagId: $travelTagId, status: $status, budget: $budget, currency: $currency)';
   }
 
   @override
@@ -380,7 +432,11 @@ class _$TravelEventImpl implements _TravelEvent {
             (identical(other.totalAmount, totalAmount) ||
                 other.totalAmount == totalAmount) &&
             (identical(other.travelTagId, travelTagId) ||
-                other.travelTagId == travelTagId));
+                other.travelTagId == travelTagId) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.budget, budget) || other.budget == budget) &&
+            (identical(other.currency, currency) ||
+                other.currency == currency));
   }
 
   @JsonKey(ignore: true)
@@ -401,7 +457,10 @@ class _$TravelEventImpl implements _TravelEvent {
       updatedAt,
       transactionCount,
       totalAmount,
-      travelTagId);
+      travelTagId,
+      status,
+      budget,
+      currency);
 
   @JsonKey(ignore: true)
   @override
@@ -433,7 +492,10 @@ abstract class _TravelEvent implements TravelEvent {
       final DateTime? updatedAt,
       final int transactionCount,
       final double? totalAmount,
-      final String? travelTagId}) = _$TravelEventImpl;
+      final String? travelTagId,
+      final TravelEventStatus status,
+      final double? budget,
+      final String currency}) = _$TravelEventImpl;
 
   factory _TravelEvent.fromJson(Map<String, dynamic> json) =
       _$TravelEventImpl.fromJson;
@@ -468,6 +530,12 @@ abstract class _TravelEvent implements TravelEvent {
   double? get totalAmount;
   @override
   String? get travelTagId;
+  @override // Additional fields for UI
+  TravelEventStatus get status;
+  @override
+  double? get budget;
+  @override
+  String get currency;
   @override
   @JsonKey(ignore: true)
   _$$TravelEventImplCopyWith<_$TravelEventImpl> get copyWith =>

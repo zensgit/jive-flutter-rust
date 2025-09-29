@@ -30,6 +30,10 @@ _$TravelEventImpl _$$TravelEventImplFromJson(Map<String, dynamic> json) =>
       transactionCount: (json['transactionCount'] as num?)?.toInt() ?? 0,
       totalAmount: (json['totalAmount'] as num?)?.toDouble(),
       travelTagId: json['travelTagId'] as String?,
+      status: $enumDecodeNullable(_$TravelEventStatusEnumMap, json['status']) ??
+          TravelEventStatus.upcoming,
+      budget: (json['budget'] as num?)?.toDouble(),
+      currency: json['currency'] as String? ?? 'CNY',
     );
 
 Map<String, dynamic> _$$TravelEventImplToJson(_$TravelEventImpl instance) =>
@@ -49,7 +53,17 @@ Map<String, dynamic> _$$TravelEventImplToJson(_$TravelEventImpl instance) =>
       'transactionCount': instance.transactionCount,
       'totalAmount': instance.totalAmount,
       'travelTagId': instance.travelTagId,
+      'status': _$TravelEventStatusEnumMap[instance.status]!,
+      'budget': instance.budget,
+      'currency': instance.currency,
     };
+
+const _$TravelEventStatusEnumMap = {
+  TravelEventStatus.upcoming: 'upcoming',
+  TravelEventStatus.active: 'active',
+  TravelEventStatus.completed: 'completed',
+  TravelEventStatus.cancelled: 'cancelled',
+};
 
 _$TravelEventTemplateImpl _$$TravelEventTemplateImplFromJson(
         Map<String, dynamic> json) =>

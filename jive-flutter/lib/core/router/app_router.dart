@@ -26,6 +26,9 @@ import 'package:jive_money/screens/family/family_members_screen.dart';
 import 'package:jive_money/screens/family/family_settings_screen.dart';
 import 'package:jive_money/screens/family/family_dashboard_screen.dart';
 import 'package:jive_money/providers/ledger_provider.dart';
+import 'package:jive_money/screens/travel/travel_list_screen.dart';
+import 'package:jive_money/providers/travel_provider.dart';
+import 'package:jive_money/services/api_service.dart';
 
 /// 路由路径常量
 class AppRoutes {
@@ -44,6 +47,9 @@ class AppRoutes {
   static const budgets = '/budgets';
   static const budgetDetail = '/budgets/:id';
   static const budgetAdd = '/budgets/add';
+  static const travel = '/travel';
+  static const travelDetail = '/travel/:id';
+  static const travelAdd = '/travel/add';
   static const settings = '/settings';
   static const profile = '/settings/profile';
   static const security = '/settings/security';
@@ -186,6 +192,40 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) {
                   final id = state.pathParameters['id']!;
                   return BudgetDetailScreen(budgetId: id);
+                },
+              ),
+            ],
+          ),
+
+          // 旅行模式
+          GoRoute(
+            path: AppRoutes.travel,
+            builder: (context, state) {
+              // 确保 TravelProvider 可用
+              return ProviderScope(
+                overrides: [
+                  travelProviderProvider.overrideWith((ref) {
+                    final apiService = ref.read(apiServiceProvider);
+                    return TravelProvider(service: apiService);
+                  }),
+                ],
+                child: const TravelListScreen(),
+              );
+            },
+            routes: [
+              GoRoute(
+                path: 'add',
+                builder: (context, state) => const Scaffold(
+                  body: Center(child: Text('添加旅行')),
+                ),
+              ),
+              GoRoute(
+                path: ':id',
+                builder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return Scaffold(
+                    body: Center(child: Text('旅行详情: $id')),
+                  );
                 },
               ),
             ],
@@ -421,3 +461,9 @@ class PreferencesScreen extends StatelessWidget {
     return const Scaffold(body: Center(child: Text('偏好设置')));
   }
 }
+
+// TravelProvider Provider
+final travelProviderProvider = Provider<TravelProvider>((ref) {
+  final apiService = ref.read(apiServiceProvider);
+  return TravelProvider(service: apiService);
+});
