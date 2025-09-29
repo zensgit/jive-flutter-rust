@@ -18,3 +18,4 @@ pub mod currency_handler;
 pub mod currency_handler_enhanced;
 pub mod tag_handler;
 pub mod category_handler;
+pub mod travel;
