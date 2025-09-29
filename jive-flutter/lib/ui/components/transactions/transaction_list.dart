@@ -7,6 +7,7 @@ import 'package:jive_money/models/transaction.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/providers/transaction_provider.dart';
 
 // 类型别名以兼容现有代码
 typedef TransactionData = Transaction;
@@ -52,7 +53,12 @@ class TransactionList extends ConsumerWidget {
       return _buildEmptyState(context);
     }
 
-    final listContent = groupByDate ? _buildGroupedList(context, ref) : _buildSimpleList(context, ref);
+    final grouping = ref.watch(transactionControllerProvider).grouping;
+    final listContent = grouping == TransactionGrouping.date
+        ? _buildGroupedList(context, ref)
+        : (grouping == TransactionGrouping.category
+            ? _buildGroupedByCategory(context, ref)
+            : _buildGroupedByAccount(context, ref));
 
     final content = Column(
       children: [
@@ -315,6 +321,158 @@ class TransactionList extends ConsumerWidget {
   String _formatWeekday(DateTime date) {
     const weekdays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
     return weekdays[date.weekday - 1];
+  }
+
+  String _formatAmount(double amount) {
+    final sign = amount >= 0 ? '+' : '';
+    return '$sign¥${amount.abs().toStringAsFixed(2)}';
+  }
+
+  // ---- Category grouping ----
+  Widget _buildGroupedByCategory(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final groups = _groupTransactionsByCategory();
+    final collapsed = ref.watch(transactionControllerProvider).groupCollapse;
+    return ListView.builder(
+      controller: scrollController,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: groups.length,
+      itemBuilder: (context, index) {
+        final entry = groups.entries.elementAt(index);
+        final title = entry.key ?? '未分类';
+        final collapseKey = 'category:$title';
+        final isCollapsed = collapsed.contains(collapseKey);
+        final total = _calculateDayTotal(entry.value);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildGroupHeader(
+              ref,
+              theme,
+              title,
+              total,
+              isCollapsed,
+              () => ref
+                  .read(transactionControllerProvider.notifier)
+                  .toggleGroupCollapse(collapseKey),
+            ),
+            if (!isCollapsed)
+              ...entry.value.map(
+                (t) => TransactionCard(
+                  transaction: t,
+                  onTap: () => onTransactionTap?.call(t),
+                  showDate: true,
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ---- Account grouping ----
+  Widget _buildGroupedByAccount(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final groups = _groupTransactionsByAccount();
+    final collapsed = ref.watch(transactionControllerProvider).groupCollapse;
+    return ListView.builder(
+      controller: scrollController,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: groups.length,
+      itemBuilder: (context, index) {
+        final entry = groups.entries.elementAt(index);
+        final accountId = entry.key ?? '';
+        final collapseKey = 'account:$accountId';
+        final isCollapsed = collapsed.contains(collapseKey);
+        final title = accountId.isEmpty ? '账户 (未知)' : '账户 $accountId';
+        final total = _calculateDayTotal(entry.value);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildGroupHeader(
+              ref,
+              theme,
+              title,
+              total,
+              isCollapsed,
+              () => ref
+                  .read(transactionControllerProvider.notifier)
+                  .toggleGroupCollapse(collapseKey),
+            ),
+            if (!isCollapsed)
+              ...entry.value.map(
+                (t) => TransactionCard(
+                  transaction: t,
+                  onTap: () => onTransactionTap?.call(t),
+                  showDate: true,
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildGroupHeader(
+    WidgetRef ref,
+    ThemeData theme,
+    String title,
+    double total,
+    bool collapsed,
+    VoidCallback onToggle,
+  ) {
+    final isPositive = total >= 0;
+    final base = ref.watch(baseCurrencyProvider).code;
+    final formatted =
+        ref.read(currencyProvider.notifier).formatCurrency(total.abs(), base);
+    return InkWell(
+      onTap: onToggle,
+      child: Container(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          children: [
+            Icon(collapsed ? Icons.chevron_right : Icons.expand_more, size: 20),
+            const SizedBox(width: 4),
+            Expanded(
+              child: Text(
+                title,
+                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+              ),
+            ),
+            Text(
+              '${isPositive ? '+' : '-'}$formatted',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: isPositive ? AppConstants.successColor : AppConstants.errorColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Map<String?, List<TransactionData>> _groupTransactionsByCategory() {
+    final Map<String?, List<TransactionData>> grouped = {};
+    for (final t in transactions) {
+      final key = t.category;
+      (grouped[key] ??= []).add(t);
+    }
+    final entries = grouped.entries.toList()
+      ..sort((a, b) => (a.key ?? '').compareTo(b.key ?? ''));
+    return Map.fromEntries(entries);
+  }
+
+  Map<String?, List<TransactionData>> _groupTransactionsByAccount() {
+    final Map<String?, List<TransactionData>> grouped = {};
+    for (final t in transactions) {
+      final key = t.accountId;
+      (grouped[key] ??= []).add(t);
+    }
+    final entries = grouped.entries.toList()
+      ..sort((a, b) => (a.key ?? '').compareTo(b.key ?? ''));
+    return Map.fromEntries(entries);
   }
 
   String _formatAmount(double amount) {
