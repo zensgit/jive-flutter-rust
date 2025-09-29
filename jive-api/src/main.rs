@@ -252,6 +252,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         // 银行管理 API
         .route("/api/v1/banks", get(banks::list_banks))
+        .route("/api/v1/banks/version", get(banks::get_banks_version))
 
         // 交易管理 API
         .route("/api/v1/transactions", get(list_transactions))

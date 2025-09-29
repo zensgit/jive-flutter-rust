@@ -3,7 +3,8 @@ use axum::{
     response::Json,
 };
 use serde::Deserialize;
-use sqlx::{PgPool, QueryBuilder};
+use serde::Serialize;
+use sqlx::{PgPool, QueryBuilder, Row};
 
 use crate::error::{ApiError, ApiResult};
 use crate::models::bank::Bank;
@@ -68,4 +69,30 @@ pub async fn list_banks(
     }
 
     Ok(Json(response))
+}
+
+#[derive(Debug, Serialize)]
+pub struct BanksVersionResponse {
+    pub version: String,
+    pub count: i64,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
+}
+
+/// GET /api/v1/banks/version — return latest banks metadata (if present)
+pub async fn get_banks_version(
+    State(pool): State<PgPool>,
+) -> ApiResult<Json<BanksVersionResponse>> {
+    let row = sqlx::query(
+        r#"SELECT version, total_count, updated_at
+           FROM banks_metadata ORDER BY id DESC LIMIT 1"#,
+    )
+    .fetch_one(&pool)
+    .await
+    .map_err(|_| ApiError::NotFound("Banks metadata not found".into()))?;
+
+    Ok(Json(BanksVersionResponse {
+        version: row.get("version"),
+        count: row.get("total_count"),
+        updated_at: row.get("updated_at"),
+    }))
 }
