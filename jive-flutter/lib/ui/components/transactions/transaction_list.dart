@@ -323,10 +323,6 @@ class TransactionList extends ConsumerWidget {
     return weekdays[date.weekday - 1];
   }
 
-  String _formatAmount(double amount) {
-    final sign = amount >= 0 ? '+' : '';
-    return '$sign¥${amount.abs().toStringAsFixed(2)}';
-  }
 
   // ---- Category grouping ----
   Widget _buildGroupedByCategory(BuildContext context, WidgetRef ref) {
@@ -475,10 +471,6 @@ class TransactionList extends ConsumerWidget {
     return Map.fromEntries(entries);
   }
 
-  String _formatAmount(double amount) {
-    final sign = amount >= 0 ? '+' : '';
-    return '$sign¥${amount.abs().toStringAsFixed(2)}';
-  }
 }
 
 /// 可滑动删除的交易列表
