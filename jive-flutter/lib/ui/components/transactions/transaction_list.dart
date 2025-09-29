@@ -21,6 +21,10 @@ class TransactionList extends ConsumerWidget {
   final Function(TransactionData)? onTransactionLongPress;
   final ScrollController? scrollController;
   final bool isLoading;
+  // Optional formatter for group header amounts (for testability)
+  final String Function(double amount)? formatAmount;
+  // Optional custom item builder for transactions (testability)
+  final Widget Function(TransactionData t)? transactionItemBuilder;
 
   const TransactionList({
     super.key,
@@ -33,6 +37,14 @@ class TransactionList extends ConsumerWidget {
     this.onTransactionLongPress,
     this.scrollController,
     this.isLoading = false,
+<<<<<<< HEAD
+=======
+    this.onSearch,
+    this.onClearSearch,
+    this.onToggleGroup,
+    this.formatAmount,
+    this.transactionItemBuilder,
+>>>>>>> fd1e712 (flutter: fix transactions grouping flag; make TransactionList grouping testable and re-enable widget test)
   });
 
   @override
@@ -91,18 +103,26 @@ class TransactionList extends ConsumerWidget {
   }
 
   Widget _buildSimpleList(BuildContext context, WidgetRef ref) {
+
+  Widget _buildItem(BuildContext context, TransactionData t) {
+    if (transactionItemBuilder != null) {
+      return transactionItemBuilder!(t);
+    }
+    return TransactionCard(
+      transaction: t,
+      onTap: () => onTransactionTap?.call(t),
+      onLongPress: () => onTransactionLongPress?.call(t),
+      showDate: true,
+    );
+  }
+
     return ListView.builder(
       controller: scrollController,
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: transactions.length,
       itemBuilder: (context, index) {
         final transaction = transactions[index];
-        return TransactionCard(
-          transaction: transaction,
-          onTap: () => onTransactionTap?.call(transaction),
-          onLongPress: () => onTransactionLongPress?.call(transaction),
-          showDate: true,
-        );
+        return _buildItem(context, transaction);
       },
     );
   }
@@ -128,12 +148,14 @@ class TransactionList extends ConsumerWidget {
 
             // 该日期的交易
             ...dayTransactions.map(
-              (transaction) => TransactionCard(
-                transaction: transaction,
-                onTap: () => onTransactionTap?.call(transaction),
-                onLongPress: () => onTransactionLongPress?.call(transaction),
-                showDate: false,
-              ),
+              (transaction) => (transactionItemBuilder != null)
+                  ? transactionItemBuilder!(transaction)
+                  : TransactionCard(
+                      transaction: transaction,
+                      onTap: () => onTransactionTap?.call(transaction),
+                      onLongPress: () => onTransactionLongPress?.call(transaction),
+                      showDate: false,
+                    ),
             ),
           ],
         );
@@ -145,9 +167,13 @@ class TransactionList extends ConsumerWidget {
       DateTime date, List<TransactionData> transactions) {
     final total = _calculateDayTotal(transactions);
     final isPositive = total >= 0;
-    final base = ref.watch(baseCurrencyProvider).code;
-    final formatted =
-        ref.read(currencyProvider.notifier).formatCurrency(total.abs(), base);
+    String formatted;
+    if (formatAmount != null) {
+      formatted = formatAmount!(total.abs());
+    } else {
+      final base = ref.watch(baseCurrencyProvider).code;
+      formatted = ref.read(currencyProvider.notifier).formatCurrency(total.abs(), base);
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -246,10 +272,169 @@ class TransactionList extends ConsumerWidget {
     return weekdays[date.weekday - 1];
   }
 
+<<<<<<< HEAD
   String _formatAmount(double amount) {
     final sign = amount >= 0 ? '+' : '';
     return '$sign¥${amount.abs().toStringAsFixed(2)}';
   }
+=======
+
+  // ---- Category grouping ----
+  Widget _buildGroupedByCategory(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final groups = _groupTransactionsByCategory();
+    final collapsed = ref.watch(transactionControllerProvider).groupCollapse;
+    return ListView.builder(
+      controller: scrollController,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: groups.length,
+      itemBuilder: (context, index) {
+        final entry = groups.entries.elementAt(index);
+        final title = entry.key ?? '未分类';
+        final collapseKey = 'category:$title';
+        final isCollapsed = collapsed.contains(collapseKey);
+        final total = _calculateDayTotal(entry.value);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildGroupHeader(
+              ref,
+              theme,
+              title,
+              total,
+              isCollapsed,
+              () => ref
+                  .read(transactionControllerProvider.notifier)
+                  .toggleGroupCollapse(collapseKey),
+            ),
+            if (!isCollapsed)
+              ...entry.value.map(
+                (t) => (transactionItemBuilder != null)
+                  ? transactionItemBuilder!(t)
+                  : TransactionCard(
+                      transaction: t,
+                      onTap: () => onTransactionTap?.call(t),
+                      showDate: true,
+                    ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ---- Account grouping ----
+  Widget _buildGroupedByAccount(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final groups = _groupTransactionsByAccount();
+    final collapsed = ref.watch(transactionControllerProvider).groupCollapse;
+    return ListView.builder(
+      controller: scrollController,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: groups.length,
+      itemBuilder: (context, index) {
+        final entry = groups.entries.elementAt(index);
+        final accountId = entry.key ?? '';
+        final collapseKey = 'account:$accountId';
+        final isCollapsed = collapsed.contains(collapseKey);
+        final title = accountId.isEmpty ? '账户 (未知)' : '账户 $accountId';
+        final total = _calculateDayTotal(entry.value);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildGroupHeader(
+              ref,
+              theme,
+              title,
+              total,
+              isCollapsed,
+              () => ref
+                  .read(transactionControllerProvider.notifier)
+                  .toggleGroupCollapse(collapseKey),
+            ),
+            if (!isCollapsed)
+              ...entry.value.map(
+                (t) => (transactionItemBuilder != null)
+                  ? transactionItemBuilder!(t)
+                  : TransactionCard(
+                      transaction: t,
+                      onTap: () => onTransactionTap?.call(t),
+                      showDate: true,
+                    ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildGroupHeader(
+    WidgetRef ref,
+    ThemeData theme,
+    String title,
+    double total,
+    bool collapsed,
+    VoidCallback onToggle,
+  ) {
+    final isPositive = total >= 0;
+    String formatted;
+    if (formatAmount != null) {
+      formatted = formatAmount!(total.abs());
+    } else {
+      final base = ref.watch(baseCurrencyProvider).code;
+      formatted = ref.read(currencyProvider.notifier).formatCurrency(total.abs(), base);
+    }
+    return InkWell(
+      onTap: onToggle,
+      child: Container(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          children: [
+            Icon(collapsed ? Icons.chevron_right : Icons.expand_more, size: 20),
+            const SizedBox(width: 4),
+            Expanded(
+              child: Text(
+                title,
+                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+              ),
+            ),
+            Text(
+              '${isPositive ? '+' : '-'}$formatted',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: isPositive ? AppConstants.successColor : AppConstants.errorColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Map<String?, List<TransactionData>> _groupTransactionsByCategory() {
+    final Map<String?, List<TransactionData>> grouped = {};
+    for (final t in transactions) {
+      final key = t.category;
+      (grouped[key] ??= []).add(t);
+    }
+    final entries = grouped.entries.toList()
+      ..sort((a, b) => (a.key ?? '').compareTo(b.key ?? ''));
+    return Map.fromEntries(entries);
+  }
+
+  Map<String?, List<TransactionData>> _groupTransactionsByAccount() {
+    final Map<String?, List<TransactionData>> grouped = {};
+    for (final t in transactions) {
+      final key = t.accountId;
+      (grouped[key] ??= []).add(t);
+    }
+    final entries = grouped.entries.toList()
+      ..sort((a, b) => (a.key ?? '').compareTo(b.key ?? ''));
+    return Map.fromEntries(entries);
+  }
+
+>>>>>>> fd1e712 (flutter: fix transactions grouping flag; make TransactionList grouping testable and re-enable widget test)
 }
 
 /// 可滑动删除的交易列表
