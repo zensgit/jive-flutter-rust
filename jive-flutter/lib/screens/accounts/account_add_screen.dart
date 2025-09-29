@@ -47,7 +47,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentLedger = ref.watch(currentLedgerProvider);
+    // Using read below for ledger id on save; no need to watch here.
 
     return Scaffold(
       appBar: AppBar(
@@ -408,7 +408,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
 
     try {
       // TODO: 调用API保存账户
-      final account = {
+      final _account = {
         'name': _nameController.text,
         'type': _selectedType,
         'balance': double.parse(_balanceController.text),
@@ -425,7 +425,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
         'ledger_id': ref.read(currentLedgerProvider)?.id,
       };
 
-      // 显示成功消息
+      // 显示成功消息（TODO: 实际保存后再提示）
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('账户已创建')),
       );
