@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jive_money/providers/transaction_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jive_money/services/api/transaction_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,7 +12,7 @@ class _DummyTransactionService extends TransactionService {}
 
 /// Test controller that skips network loading on init.
 class _TestTransactionController extends TransactionController {
-  _TestTransactionController() : super(_DummyTransactionService());
+  _TestTransactionController(Ref ref) : super(ref, _DummyTransactionService());
 
   @override
   Future<void> loadTransactions() async {
@@ -38,7 +39,10 @@ void main() {
     });
 
     test('setGrouping persists to SharedPreferences', () async {
-      final controller = _TestTransactionController();
+      final container = ProviderContainer(overrides: [
+        transactionControllerProvider.overrideWith((ref) => _TestTransactionController(ref)),
+      ]);
+      final controller = container.read(transactionControllerProvider.notifier);
 
       // Default should be date
       expect(controller.state.grouping, TransactionGrouping.date);
@@ -54,7 +58,10 @@ void main() {
     });
 
     test('toggleGroupCollapse persists collapsed keys', () async {
-      final controller = _TestTransactionController();
+      final container = ProviderContainer(overrides: [
+        transactionControllerProvider.overrideWith((ref) => _TestTransactionController(ref)),
+      ]);
+      final controller = container.read(transactionControllerProvider.notifier);
       const key = 'category:未分类';
 
       // Toggle on (collapse)

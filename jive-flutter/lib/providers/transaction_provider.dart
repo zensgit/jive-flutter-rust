@@ -4,6 +4,7 @@ import 'package:jive_money/services/api/transaction_service.dart';
 import 'package:jive_money/models/transaction.dart';
 import 'package:jive_money/models/transaction_filter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
 
 /// 交易状态
 enum TransactionGrouping { date, category, account }
@@ -63,9 +64,10 @@ class TransactionState {
 
 /// 交易控制器
 class TransactionController extends StateNotifier<TransactionState> {
+  final Ref ref;
   final TransactionService _transactionService;
 
-  TransactionController(this._transactionService)
+  TransactionController(this.ref, this._transactionService)
       : super(const TransactionState()) {
     loadTransactions();
     _loadViewPrefs();
@@ -257,7 +259,7 @@ class TransactionController extends StateNotifier<TransactionState> {
   Future<void> _loadViewPrefs() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final groupingStr = prefs.getString("tx_grouping");
+      final groupingStr = prefs.getString(_groupingKey(ref.read(currentLedgerProvider)?.id));
       TransactionGrouping grouping = state.grouping;
       if (groupingStr != null) {
         grouping = TransactionGrouping.values.firstWhere(
@@ -266,7 +268,7 @@ class TransactionController extends StateNotifier<TransactionState> {
         );
       }
       final collapsedList =
-          prefs.getStringList("tx_group_collapse") ?? const <String>[];
+          prefs.getStringList(_collapseKey(ref.read(currentLedgerProvider)?.id)) ?? const <String>[];
       if (grouping != state.grouping ||
           collapsedList.length != state.groupCollapse.length) {
         state = state.copyWith(
@@ -282,14 +284,14 @@ class TransactionController extends StateNotifier<TransactionState> {
   Future<void> _persistGrouping() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString("tx_grouping", state.grouping.name);
+      await prefs.setString(_groupingKey(ref.read(currentLedgerProvider)?.id), state.grouping.name);
     } catch (_) {}
   }
 
   Future<void> _persistGroupCollapse(Set<String> collapsed) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList("tx_group_collapse", collapsed.toList());
+      await prefs.setStringList(_collapseKey(ref.read(currentLedgerProvider)?.id), collapsed.toList());
     } catch (_) {}
   }
 
@@ -377,6 +379,20 @@ class TransactionController extends StateNotifier<TransactionState> {
       return true;
     }).toList();
   }
+
+
+  // Public: reload view prefs (used when ledger switches)
+  Future<void> reloadViewPrefs() async => _loadViewPrefs();
+
+  String _groupingKey(String? ledgerId) =>
+      (ledgerId != null && ledgerId.isNotEmpty)
+          ? 'tx_grouping:' + ledgerId
+          : 'tx_grouping';
+
+  String _collapseKey(String? ledgerId) =>
+      (ledgerId != null && ledgerId.isNotEmpty)
+          ? 'tx_group_collapse:' + ledgerId
+          : 'tx_group_collapse';
 }
 
 /// Provider定义
@@ -387,7 +403,13 @@ final transactionServiceProvider = Provider<TransactionService>((ref) {
 final transactionControllerProvider =
     StateNotifierProvider<TransactionController, TransactionState>((ref) {
   final service = ref.watch(transactionServiceProvider);
-  return TransactionController(service);
+  final controller = TransactionController(ref, service);
+  ref.listen(currentLedgerProvider, (previous, next) {
+    if (previous?.id != next?.id) {
+      controller.reloadViewPrefs();
+    }
+  });
+  return controller;
 });
 
 /// 便捷访问
