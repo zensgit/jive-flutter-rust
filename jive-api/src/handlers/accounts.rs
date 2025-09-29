@@ -225,18 +225,19 @@ pub async fn create_account(
     let account = sqlx::query!(
         r#"
         INSERT INTO accounts (
-            id, ledger_id, name, account_type, account_number,
+            id, ledger_id, bank_id, name, account_type, account_number,
             institution_name, currency, current_balance, status,
             is_manual, color, notes, created_at, updated_at
         ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8, 'active', true, $9, $10, NOW(), NOW()
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, 'active', true, $10, $11, NOW(), NOW()
         )
-        RETURNING id, ledger_id, name, account_type, account_number, institution_name,
+        RETURNING id, ledger_id, bank_id, name, account_type, account_number, institution_name,
                   currency, current_balance, available_balance, credit_limit, status,
                   is_manual, color, notes, created_at, updated_at
         "#,
         id,
         req.ledger_id,
+        req.bank_id,
         req.name,
         req.account_type,
         req.account_number,
@@ -329,6 +330,11 @@ pub async fn update_account(
         query.push_bind(notes);
     }
 
+    if let Some(bank_id) = &req.bank_id {
+        query.push(", bank_id = ");
+        query.push_bind(bank_id);
+    }
+
     if let Some(is_archived) = req.is_archived {
         if is_archived {
             query.push(", deleted_at = NOW()");
@@ -339,7 +345,7 @@ pub async fn update_account(
 
     query.push(" WHERE id = ");
     query.push_bind(id);
-    query.push(" RETURNING id, ledger_id, name, account_type, account_number, institution_name, currency, current_balance, available_balance, credit_limit, status, is_manual, color, icon, notes, created_at, updated_at");
+    query.push(" RETURNING id, ledger_id, bank_id, name, account_type, account_number, institution_name, currency, current_balance, available_balance, credit_limit, status, is_manual, color, icon, notes, created_at, updated_at");
 
     let account = query
         .build()
@@ -350,6 +356,7 @@ pub async fn update_account(
     let response = AccountResponse {
         id: account.get("id"),
         ledger_id: account.get("ledger_id"),
+        bank_id: account.get("bank_id"),
         name: account.get("name"),
         account_type: account.get("account_type"),
         account_number: account.get("account_number"),
