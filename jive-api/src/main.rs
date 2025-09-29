@@ -274,6 +274,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/payees/suggestions", get(get_payee_suggestions))
         .route("/api/v1/payees/statistics", get(get_payee_statistics))
         .route("/api/v1/payees/merge", post(merge_payees))
+
+        // 静态资源：银行图标
+        .nest_service("/static/bank_icons", ServeDir::new("jive-api/static/bank_icons"))
         
         // 规则引擎 API
         .route("/api/v1/rules", get(list_rules))
