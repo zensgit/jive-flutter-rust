@@ -230,8 +230,10 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
               final navigator = Navigator.of(context);
               final messenger = ScaffoldMessenger.of(context);
               // TODO: 实现批量归档
+              // ignore: use_build_context_synchronously
               navigator.pop();
               widget.onCancel();
+              // ignore: use_build_context_synchronously
               messenger.showSnackBar(
                 SnackBar(
                   content: Text('已归档 ${widget.selectedIds.length} 个项目'),
