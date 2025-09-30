@@ -242,7 +242,7 @@ $data
     String? text,
   }) async {
     try {
-      final xFiles = images.map((file) => XFile(file.path)).toList();
+      final List<XFile> xFiles = images.map((file) => XFile(file.path)).toList();
       await _doShare(ShareParams(files: xFiles, text: text));
       if (!context.mounted) return;
     } catch (e) {
