@@ -9,21 +9,21 @@ import 'package:jive_money/models/account.dart' as model;
 typedef AccountData = model.Account;
 
   // Model<->UI AccountType adapter
-  model.AccountType _toModelAccountType(AccountType t) {
+  model.AccountType _toModelAccountType(UiAccountType t) {
     switch (t) {
-      case AccountType.asset:
-        return model.AccountType.asset;
-      case AccountType.liability:
-        return model.AccountType.liability;
+      case UiAccountType.asset:
+        return model.UiAccountType.asset;
+      case UiAccountType.liability:
+        return model.UiAccountType.liability;
     }
   }
 
-  AccountType _toUiAccountType(model.AccountType t) {
+  UiAccountType _toUiAccountType(model.AccountType t) {
     switch (t) {
-      case model.AccountType.asset:
-        return AccountType.asset;
-      case model.AccountType.liability:
-        return AccountType.liability;
+      case model.UiAccountType.asset:
+        return UiAccountType.asset;
+      case model.UiAccountType.liability:
+        return UiAccountType.liability;
     }
   }
 
@@ -158,7 +158,7 @@ class AccountList extends StatelessWidget {
 
                   // 该类型的账户
                   ...typeAccounts.map(
-                    (account) => AccountCard(
+                    (account) => AccountCard.fromAccount(
                       account: account,
                       onTap: () => onAccountTap?.call(account),
                       onLongPress: () => onAccountLongPress?.call(account),
@@ -175,8 +175,8 @@ class AccountList extends StatelessWidget {
 
   Widget _buildTotalSection(BuildContext context) {
     final theme = Theme.of(context);
-    final totalAssets = _calculateTotal(AccountType.asset);
-    final totalLiabilities = _calculateTotal(AccountType.liability);
+    final totalAssets = _calculateTotal(UiAccountType.asset);
+    final totalLiabilities = _calculateTotal(UiAccountType.liability);
     final netWorth = totalAssets - totalLiabilities;
 
     return Container(
@@ -266,7 +266,7 @@ class AccountList extends StatelessWidget {
   }
 
   Widget _buildTypeHeader(
-      ThemeData theme, AccountType type, List<AccountData> accounts) {
+      ThemeData theme, UiAccountType type, List<AccountData> accounts) {
     final total =
         accounts.fold<double>(0, (sum, account) => sum + account.balance);
 
@@ -300,8 +300,8 @@ class AccountList extends StatelessWidget {
     );
   }
 
-  Map<AccountType, List<AccountData>> _groupAccountsByType() {
-    final Map<AccountType, List<AccountData>> grouped = {};
+  Map<UiAccountType, List<AccountData>> _groupAccountsByType() {
+    final Map<UiAccountType, List<AccountData>> grouped = {};
 
     for (final account in accounts) {
       final key = _toUiAccountType(account.type);
@@ -318,35 +318,35 @@ class AccountList extends StatelessWidget {
     );
   }
 
-  double _calculateTotal(AccountType type) {
+  double _calculateTotal(UiAccountType type) {
     return accounts
         .where((account) => account.type == _toModelAccountType(type))
         .fold(0.0, (sum, account) => sum + account.balance);
   }
 
-  IconData _getTypeIcon(AccountType type) {
+  IconData _getTypeIcon(UiAccountType type) {
     switch (type) {
-      case AccountType.asset:
+      case UiAccountType.asset:
         return Icons.account_balance_wallet;
-      case AccountType.liability:
+      case UiAccountType.liability:
         return Icons.credit_card;
     }
   }
 
-  Color _getTypeColor(AccountType type) {
+  Color _getTypeColor(UiAccountType type) {
     switch (type) {
-      case AccountType.asset:
+      case UiAccountType.asset:
         return AppConstants.successColor;
-      case AccountType.liability:
+      case UiAccountType.liability:
         return AppConstants.errorColor;
     }
   }
 
-  String _getTypeName(AccountType type) {
+  String _getTypeName(UiAccountType type) {
     switch (type) {
-      case AccountType.asset:
+      case UiAccountType.asset:
         return '资产账户';
-      case AccountType.liability:
+      case UiAccountType.liability:
         return '负债账户';
     }
   }
@@ -360,13 +360,13 @@ class AccountList extends StatelessWidget {
 }
 
 /// 账户类型枚举
-enum AccountType {
+enum UiAccountType {
   asset, // 资产
   liability, // 负债
 }
 
 /// 账户子类型枚举
-enum AccountSubType {
+enum UiAccountSubType {
   // 资产子类型
   cash, // 现金
   debitCard, // 借记卡
