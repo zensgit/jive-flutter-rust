@@ -175,7 +175,7 @@ class _CurrencyConverterState extends ConsumerState<CurrencyConverter> {
                 ),
                 const Spacer(),
                 if (_isConverting)
-                  const SizedBox(
+                  SizedBox(
                     width: 16,
                     height: 16,
                     child: CircularProgressIndicator(
