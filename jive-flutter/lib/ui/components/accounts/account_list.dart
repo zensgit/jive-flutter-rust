@@ -9,21 +9,21 @@ import 'package:jive_money/models/account.dart' as model;
 typedef AccountData = model.Account;
 
   // Model<->UI AccountType adapter
-  model.AccountType _toModelAccountType(UiAccountType t) {
+  model.AccountType _toModelAccountType(AccountType t) {
     switch (t) {
-      case UiAccountType.asset:
+      case AccountType.asset:
         return model.AccountType.asset;
-      case UiAccountType.liability:
+      case AccountType.liability:
         return model.AccountType.liability;
     }
   }
 
-  UiAccountType _toUiAccountType(model.AccountType t) {
+  AccountType _toAccountType(model.AccountType t) {
     switch (t) {
       case model.AccountType.asset:
-        return UiAccountType.asset;
+        return AccountType.asset;
       case model.AccountType.liability:
-        return UiAccountType.liability;
+        return AccountType.liability;
     }
   }
 
@@ -175,8 +175,8 @@ class AccountList extends StatelessWidget {
 
   Widget _buildTotalSection(BuildContext context) {
     final theme = Theme.of(context);
-    final totalAssets = _calculateTotal(UiAccountType.asset);
-    final totalLiabilities = _calculateTotal(UiAccountType.liability);
+    final totalAssets = _calculateTotal(AccountType.asset);
+    final totalLiabilities = _calculateTotal(AccountType.liability);
     final netWorth = totalAssets - totalLiabilities;
 
     return Container(
@@ -266,7 +266,7 @@ class AccountList extends StatelessWidget {
   }
 
   Widget _buildTypeHeader(
-      ThemeData theme, UiAccountType type, List<AccountData> accounts) {
+      ThemeData theme, AccountType type, List<AccountData> accounts) {
     final total =
         accounts.fold<double>(0, (sum, account) => sum + account.balance);
 
@@ -300,11 +300,11 @@ class AccountList extends StatelessWidget {
     );
   }
 
-  Map<UiAccountType, List<AccountData>> _groupAccountsByType() {
-    final Map<UiAccountType, List<AccountData>> grouped = {};
+  Map<AccountType, List<AccountData>> _groupAccountsByType() {
+    final Map<AccountType, List<AccountData>> grouped = {};
 
     for (final account in accounts) {
-      final key = _toUiAccountType(account.type);
+      final key = _toAccountType(account.type);
       if (!grouped.containsKey(key)) {
         grouped[key] = [];
       }
@@ -318,35 +318,35 @@ class AccountList extends StatelessWidget {
     );
   }
 
-  double _calculateTotal(UiAccountType type) {
+  double _calculateTotal(AccountType type) {
     return accounts
         .where((account) => account.type == _toModelAccountType(type))
         .fold(0.0, (sum, account) => sum + account.balance);
   }
 
-  IconData _getTypeIcon(UiAccountType type) {
+  IconData _getTypeIcon(AccountType type) {
     switch (type) {
-      case UiAccountType.asset:
+      case AccountType.asset:
         return Icons.account_balance_wallet;
-      case UiAccountType.liability:
+      case AccountType.liability:
         return Icons.credit_card;
     }
   }
 
-  Color _getTypeColor(UiAccountType type) {
+  Color _getTypeColor(AccountType type) {
     switch (type) {
-      case UiAccountType.asset:
+      case AccountType.asset:
         return AppConstants.successColor;
-      case UiAccountType.liability:
+      case AccountType.liability:
         return AppConstants.errorColor;
     }
   }
 
-  String _getTypeName(UiAccountType type) {
+  String _getTypeName(AccountType type) {
     switch (type) {
-      case UiAccountType.asset:
+      case AccountType.asset:
         return '资产账户';
-      case UiAccountType.liability:
+      case AccountType.liability:
         return '负债账户';
     }
   }
@@ -360,13 +360,13 @@ class AccountList extends StatelessWidget {
 }
 
 /// 账户类型枚举
-enum UiAccountType {
+enum AccountType {
   asset, // 资产
   liability, // 负债
 }
 
 /// 账户子类型枚举
-enum UiAccountSubType {
+enum AccountSubType {
   // 资产子类型
   cash, // 现金
   debitCard, // 借记卡
