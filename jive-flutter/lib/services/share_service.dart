@@ -86,36 +86,8 @@ Jive Money - 您的智能家庭财务管家
       if (chartWidget != null) {
         // 生成图表截图
         // Note: screenshot functionality is stubbed during analyzer cleanup
-        // final image = await _screenshotController.captureFromWidget(
         final image = null;
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '$familyName - $period',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                chartWidget,
-                const SizedBox(height: 20),
-                const Text(
-                  'Powered by Jive Money',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+
 
         // 保存图片
         final directory = await getTemporaryDirectory();

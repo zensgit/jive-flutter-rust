@@ -2,17 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:share_plus_platform_interface/share_plus_platform_interface.dart';
 
 import 'package:jive_money/models/family.dart' as family_model;
 import 'package:jive_money/services/share_service.dart';
-
-class _FakeSharePlus implements SharePlus {
-  @override
-  SharePlusPlatform get delegate => throw UnimplementedError();
-
-  @override
-  set delegate(SharePlusPlatform _) {}
 
   ShareParams? lastParams;
 
