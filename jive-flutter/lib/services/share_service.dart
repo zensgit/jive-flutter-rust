@@ -257,12 +257,7 @@ $data
   }
 
   /// 分享到微信（需要集成微信SDK）
-  static Future<void> _shareToWechat(
-      BuildContext context, String content) async {
-    // Stub: 使用系统分享
-    await _doShare(ShareParams(text: content));
-  }
-
+  
   static String _getRoleDisplayName(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:
@@ -550,7 +545,3 @@ class _StubScreenshotController {
   }
 }
 
-class _StubXFile {
-  final String path;
-  _StubXFile(this.path);
-}
