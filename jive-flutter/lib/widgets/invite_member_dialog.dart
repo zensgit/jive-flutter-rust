@@ -418,11 +418,11 @@ Jive Money - 集腋记账
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(
+          SizedBox(
             width: 60,
             child: Text(
               '$label:',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
