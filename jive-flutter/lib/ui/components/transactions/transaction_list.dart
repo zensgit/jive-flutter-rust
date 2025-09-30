@@ -6,7 +6,6 @@ import 'package:jive_money/ui/components/loading/loading_widget.dart';
 import 'package:jive_money/models/transaction.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jive_money/providers/currency_provider.dart';
 
 // 类型别名以兼容现有代码
 typedef TransactionData = Transaction;
