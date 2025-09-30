@@ -299,7 +299,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             TextButton(
                               onPressed: () async {
                                 final messenger = ScaffoldMessenger.of(context);
-onPressed: () async {
                                 // 清除保存的凭据
                                 await _storageService
                                     .clearRememberedCredentials();
@@ -506,9 +505,7 @@ onPressed: () async {
                       buttonText: '使用微信登录',
                       onSuccess: (authResult, userInfo) async {
                         final messenger = ScaffoldMessenger.of(context);
-onSuccess: (authResult, userInfo) async {
                         final router = GoRouter.of(context);
-onSuccess: (authResult, userInfo) async {
                         final result = await _authService.wechatLogin();
 
                         if (!mounted) return;
@@ -516,10 +513,30 @@ onSuccess: (authResult, userInfo) async {
                         if (result.success) {
                           messenger.showSnackBar(
                             SnackBar(
-                              content:
-                                  Text('欢迎回来，${result.userData?.username}！'),
+                              content: Text('欢迎回来，\${result.userData?.username}！'),
                               backgroundColor: Colors.green,
                             ),
+                          );
+                          router.go(AppRoutes.dashboard);
+                        } else {
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(result.message ?? '微信登录失败'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
+                      onError: (error) {
+                        final messenger = ScaffoldMessenger.of(context);
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text('微信登录失败: \$error'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      },
+                    ),
                           );
                           router.go(AppRoutes.dashboard);
                         } else {
