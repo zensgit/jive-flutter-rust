@@ -28,9 +28,11 @@ void main() {
 
   group('ShareService smoke tests', () {
     testWidgets('shareFamilyInvitation sends expected text', (tester) async {
-      final fake = _FakeSharePlus();
-      // ignore: invalid_use_of_internal_member
-      SharePlus.instance.delegate = _FakeDelegate(fake);
+      ShareParams? last;
+      ShareService.setDoShareForTest((params) async {
+        last = params;
+        return const ShareResult('', ShareResultStatus.success);
+      });
 
       await tester.pumpWidget(
         MaterialApp(
@@ -54,17 +56,19 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      expect(fake.lastParams, isNotNull);
-      final text = fake.lastParams!.text ?? '';
+      expect(last, isNotNull);
+      final text = last!.text ?? '';
       expect(text, contains('示例家庭'));
       expect(text, contains('ABCD1234'));
       expect(text, contains('邀请你加入'));
     });
 
     testWidgets('shareToSocialMedia includes hashtags and url', (tester) async {
-      final fake = _FakeSharePlus();
-      // ignore: invalid_use_of_internal_member
-      SharePlus.instance.delegate = _FakeDelegate(fake);
+      ShareParams? last;
+      ShareService.setDoShareForTest((params) async {
+        last = params;
+        return const ShareResult('', ShareResultStatus.success);
+      });
 
       await tester.pumpWidget(
         const MaterialApp(home: SizedBox.shrink()),
@@ -79,8 +83,8 @@ void main() {
         hashtags: const ['A', 'B'],
       );
 
-      expect(fake.lastParams, isNotNull);
-      final text = fake.lastParams!.text ?? '';
+      expect(last, isNotNull);
+      final text = last!.text ?? '';
       expect(text, contains('Hello World'));
       expect(text, contains('#A #B'));
       expect(text, contains('https://example.com'));
@@ -88,9 +92,3 @@ void main() {
   });
 }
 
-class _FakeDelegate extends SharePlusPlatform {
-  final _FakeSharePlus fake;
-  _FakeDelegate(this.fake);
-  @override
-  Future<ShareResult> share(ShareParams params) => fake.share(params);
-}
