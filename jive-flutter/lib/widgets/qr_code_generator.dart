@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:cross_file/cross_file.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:path_provider/path_provider.dart';
@@ -198,7 +199,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
                   width: widget.size,
                   height: widget.size,
                   child: const Center(
-                    child: const CircularProgressIndicator(),
+                    child: CircularProgressIndicator(),
                   ),
                 )
               : ScaleTransition(
@@ -299,34 +300,6 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
       ],
     );
   }
-
-  // Stub methods for missing external dependencies
-  dynamic XFile(String path) {
-    return _StubXFile(path);
-  }
-
-  Widget QrImageView({
-    required String data,
-    dynamic version,
-    double? size,
-    Color? backgroundColor,
-    Color? foregroundColor,
-    dynamic errorCorrectionLevel,
-    dynamic embeddedImage,
-    double? embeddedImageSizeRatio,
-    EdgeInsets? padding,
-  }) {
-    return Container(
-      width: size ?? 200,
-      height: size ?? 200,
-      color: backgroundColor ?? Colors.white,
-      child: Center(
-        child: Text(
-          'QR Code Placeholder',
-          style: TextStyle(color: foregroundColor ?? Colors.black),
-        ),
-      ),
-    );
   }
 }
 
@@ -479,12 +452,12 @@ class InvitationQrCodeDialog extends StatelessWidget {
                     icon: const Icon(Icons.share),
                     label: const Text('分享'),
                     onPressed: () async {
-                      await Share.share(
+                      await SharePlus.instance.share(ShareParams(text: 
                         '邀请你加入家庭「$familyName」\n\n'
                         '邀请码：$inviteCode\n'
                         '点击链接加入：$inviteLink\n\n'
                         '有效期：$daysLeft 天',
-                      );
+                      ));
                     },
                   ),
                 ),
