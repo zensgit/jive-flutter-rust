@@ -122,7 +122,7 @@ class AccountList extends StatelessWidget {
             itemCount: accounts.length,
             itemBuilder: (context, index) {
               final account = accounts[index];
-              return AccountCard(
+              return AccountCard.fromAccount(
                 account: account,
                 onTap: () => onAccountTap?.call(account),
                 onLongPress: () => onAccountLongPress?.call(account),
