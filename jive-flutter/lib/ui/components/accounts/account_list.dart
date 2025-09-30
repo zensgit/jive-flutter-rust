@@ -421,11 +421,9 @@ class GroupedAccountList extends StatelessWidget {
               : null,
           children: accounts
               .map(
-                (account) => AccountCard(
+                (account) => AccountCard.fromAccount(
                   account: account,
                   onTap: () => onAccountTap?.call(account),
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 ),
               )
               .toList(),
