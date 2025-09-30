@@ -2,11 +2,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:share_plus_platform_interface/share_plus_platform_interface.dart';
 
 import 'package:jive_money/models/family.dart' as family_model;
 import 'package:jive_money/services/share_service.dart';
 
-class _FakeSharePlus extends SharePlus {
+class _FakeSharePlus implements SharePlus {
+  @override
+  SharePlusPlatform get delegate => throw UnimplementedError();
+
+  @override
+  set delegate(SharePlusPlatform _) {}
+
   ShareParams? lastParams;
 
   @override
@@ -22,7 +29,8 @@ void main() {
   group('ShareService smoke tests', () {
     testWidgets('shareFamilyInvitation sends expected text', (tester) async {
       final fake = _FakeSharePlus();
-      SharePlus.instance = fake;
+      // ignore: invalid_use_of_internal_member
+      SharePlus.instance.delegate = _FakeDelegate(fake);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -55,7 +63,8 @@ void main() {
 
     testWidgets('shareToSocialMedia includes hashtags and url', (tester) async {
       final fake = _FakeSharePlus();
-      SharePlus.instance = fake;
+      // ignore: invalid_use_of_internal_member
+      SharePlus.instance.delegate = _FakeDelegate(fake);
 
       await tester.pumpWidget(
         const MaterialApp(home: SizedBox.shrink()),
@@ -77,4 +86,11 @@ void main() {
       expect(text, contains('https://example.com'));
     });
   });
+}
+
+class _FakeDelegate extends SharePlusPlatform {
+  final _FakeSharePlus fake;
+  _FakeDelegate(this.fake);
+  @override
+  Future<ShareResult> share(ShareParams params) => fake.share(params);
 }

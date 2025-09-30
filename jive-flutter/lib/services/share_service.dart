@@ -252,9 +252,8 @@ $data
     String? mimeType,
   }) async {
     try {
-      await Share.shareXFiles(
-        [XFile(file.path, mimeType: mimeType)],
-        text: text,
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(file.path)], text: text),
       );
       if (!context.mounted) return;
     } catch (e) {
@@ -270,7 +269,7 @@ $data
   }) async {
     try {
       final xFiles = images.map((file) => XFile(file.path)).toList();
-      await Share.shareXFiles(xFiles, text: text);
+      await SharePlus.instance.share(ShareParams(files: xFiles, text: text));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -281,7 +280,7 @@ $data
   static Future<void> _shareToWechat(
       BuildContext context, String content) async {
     // Stub: 使用系统分享
-    await Share.share(content);
+    await SharePlus.instance.share(ShareParams(text: content));
   }
 
   static String _getRoleDisplayName(family_model.FamilyRole role) {
