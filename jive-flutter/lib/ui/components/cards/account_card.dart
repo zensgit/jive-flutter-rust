@@ -282,23 +282,6 @@ class AccountCard extends ConsumerWidget {
   }
 
   // _getCurrencySymbol no longer used; currency formatting is centralized.
-  String _getCurrencySymbol() {
-    switch (currency.toUpperCase()) {
-      case 'CNY':
-        return '¥';
-      case 'USD':
-        return '\$';
-      case 'EUR':
-        return '€';
-      case 'JPY':
-        return '¥';
-      case 'GBP':
-        return '£';
-      default:
-        return '¥';
-    }
-  }
-
   String _formatLastSync() {
     if (lastSyncAt == null) return '从未';
 
