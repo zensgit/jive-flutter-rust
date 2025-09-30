@@ -223,7 +223,8 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
                         version: QrVersions.auto,
                         size: widget.size,
                         backgroundColor: qrBackgroundColor,
-                        foregroundColor: qrForegroundColor,
+                        eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square),
+                        dataModuleStyle: QrDataModuleStyle(color: qrForegroundColor, dataModuleShape: QrDataModuleShape.square),
                         errorCorrectionLevel: QrErrorCorrectLevel.H,
                         embeddedImage: widget.logo != null
                             ? AssetImage(widget.logo!)
