@@ -12,17 +12,17 @@ typedef AccountData = model.Account;
   model.AccountType _toModelAccountType(UiAccountType t) {
     switch (t) {
       case UiAccountType.asset:
-        return model.UiAccountType.asset;
+        return model.AccountType.asset;
       case UiAccountType.liability:
-        return model.UiAccountType.liability;
+        return model.AccountType.liability;
     }
   }
 
   UiAccountType _toUiAccountType(model.AccountType t) {
     switch (t) {
-      case model.UiAccountType.asset:
+      case model.AccountType.asset:
         return UiAccountType.asset;
-      case model.UiAccountType.liability:
+      case model.AccountType.liability:
         return UiAccountType.liability;
     }
   }
