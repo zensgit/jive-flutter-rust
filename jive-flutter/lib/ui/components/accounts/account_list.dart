@@ -3,10 +3,30 @@ import 'package:flutter/material.dart';
 import 'package:jive_money/core/constants/app_constants.dart';
 import 'package:jive_money/ui/components/cards/account_card.dart';
 import 'package:jive_money/ui/components/loading/loading_widget.dart';
-import 'package:jive_money/models/account.dart';
+import 'package:jive_money/models/account.dart' as model;
 
 // 类型别名以兼容现有代码
-typedef AccountData = Account;
+typedef AccountData = model.Account;
+
+  // Model<->UI AccountType adapter
+  model.AccountType _toModelAccountType(AccountType t) {
+    switch (t) {
+      case AccountType.asset:
+        return model.AccountType.asset;
+      case AccountType.liability:
+        return model.AccountType.liability;
+    }
+  }
+
+  AccountType _toUiAccountType(model.AccountType t) {
+    switch (t) {
+      case model.AccountType.asset:
+        return AccountType.asset;
+      case model.AccountType.liability:
+        return AccountType.liability;
+    }
+  }
+
 
 class AccountList extends StatelessWidget {
   final List<AccountData> accounts;
@@ -284,10 +304,11 @@ class AccountList extends StatelessWidget {
     final Map<AccountType, List<AccountData>> grouped = {};
 
     for (final account in accounts) {
-      if (!grouped.containsKey(account.type)) {
-        grouped[account.type] = [];
+      final key = _toUiAccountType(account.type);
+      if (!grouped.containsKey(key)) {
+        grouped[key] = [];
       }
-      grouped[account.type]!.add(account);
+      grouped[key]!.add(account);
     }
 
     // 按类型排序：资产、负债
@@ -299,7 +320,7 @@ class AccountList extends StatelessWidget {
 
   double _calculateTotal(AccountType type) {
     return accounts
-        .where((account) => account.type == type)
+        .where((account) => account.type == _toModelAccountType(type))
         .fold(0.0, (sum, account) => sum + account.balance);
   }
 
