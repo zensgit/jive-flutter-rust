@@ -256,9 +256,7 @@ $data
     String? mimeType,
   }) async {
     try {
-      await SharePlus.instance.share(
-        ShareParams(files: [XFile(file.path)], text: text),
-      );
+      await _doShare(ShareParams(files: [XFile(file.path)], text: text));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
