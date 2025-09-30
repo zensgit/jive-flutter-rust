@@ -9,23 +9,12 @@ import 'package:jive_money/models/transaction.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jive_money/providers/currency_provider.dart';
 
-// Stub for Share class to resolve undefined_identifier errors during cleanup
-class Share {
-  static Future<void> share(String text, {String? subject}) async {
-    // TODO: Implement actual share functionality
-    debugPrint('Share text: $text');
-    debugPrint('Share subject: $subject');
-  }
-
-  static Future<void> shareXFiles(List<XFile> files, {String? text}) async {
-    // TODO: Implement actual share functionality
-    debugPrint('Share files: ${files.length} files');
-    debugPrint('Share text: $text');
-  }
-}
-
 /// 分享服务
 class ShareService {
+
+  static Future<ShareResult> Function(ShareParams) _doShare = (params) => SharePlus.instance.share(params);
+  static void setDoShareForTest(Future<ShareResult> Function(ShareParams) f) { _doShare = f; }
+
 
   /// 分享家庭邀请
   static Future<void> shareFamilyInvitation({
@@ -56,10 +45,7 @@ Jive Money - 您的智能家庭财务管家
 ''';
 
     try {
-      await Share.share(
-        shareText,
-        subject: '邀请你加入家庭「$familyName」',
-      );
+      await _doShare(ShareParams(text: shareText, subject: '邀请你加入家庭「$familyName」'));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -100,36 +86,8 @@ Jive Money - 您的智能家庭财务管家
       if (chartWidget != null) {
         // 生成图表截图
         // Note: screenshot functionality is stubbed during analyzer cleanup
-        // final image = await _screenshotController.captureFromWidget(
         final image = null;
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '$familyName - $period',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                chartWidget,
-                const SizedBox(height: 20),
-                const Text(
-                  'Powered by Jive Money',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+
 
         // 保存图片
         final directory = await getTemporaryDirectory();
@@ -139,13 +97,10 @@ Jive Money - 您的智能家庭财务管家
         // await imageFile.writeAsBytes(image);
 
         // 分享图片和文字
-        await Share.shareXFiles(
-          [XFile(imagePath)],
-          text: shareText,
-        );
+        await _doShare(ShareParams(files: [XFile(imagePath)], text: shareText));
       } else {
         // 仅分享文字
-        await Share.share(shareText);
+        await _doShare(ShareParams(text: shareText));
         if (!context.mounted) return;
       }
     } catch (e) {
@@ -175,7 +130,7 @@ $icon $typeText记录
 📅 日期：${_formatDate(transaction.date)}
 🏠 账本：$familyName
 
-${transaction.tags.isNotEmpty ? '🏷️ 标签：${transaction.tags.join(', ')}' : ''}
+${transaction.tags?.isNotEmpty == true ? '🏷️ 标签：${transaction.tags!.join(', ')}' : ''}
 ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : ''}
 
 ━━━━━━━━━━━━━━━━
@@ -183,7 +138,7 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
 ''';
 
     try {
-      await Share.share(shareText);
+      await _doShare(ShareParams(text: shareText));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -233,7 +188,7 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
 
     try {
       // 根据平台定制分享内容（统一走系统分享，避免外部依赖）
-      await Share.share(shareContent);
+      await _doShare(ShareParams(text: shareContent));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -258,7 +213,7 @@ ${description ?? ''}
 $data
 ''';
 
-      await Share.share(shareText);
+      await _doShare(ShareParams(text: shareText));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -273,10 +228,7 @@ $data
     String? mimeType,
   }) async {
     try {
-      await Share.shareXFiles(
-        [XFile(file.path, mimeType: mimeType)],
-        text: text,
-      );
+      await _doShare(ShareParams(files: [XFile(file.path)], text: text));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -290,8 +242,8 @@ $data
     String? text,
   }) async {
     try {
-      final xFiles = images.map((file) => XFile(file.path)).toList();
-      await Share.shareXFiles(xFiles, text: text);
+      final List<XFile> xFiles = images.map((file) => XFile(file.path)).toList();
+      await _doShare(ShareParams(files: xFiles, text: text));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -302,7 +254,7 @@ $data
   static Future<void> _shareToWechat(
       BuildContext context, String content) async {
     // Stub: 使用系统分享
-    await Share.share(content);
+    await _doShare(ShareParams(text: content));
   }
 
   static String _getRoleDisplayName(family_model.FamilyRole role) {
@@ -338,9 +290,6 @@ $data
     return _StubScreenshotController();
   }
 
-  static dynamic XFile(String path) {
-    return _StubXFile(path);
-  }
 }
 
 /// 社交平台

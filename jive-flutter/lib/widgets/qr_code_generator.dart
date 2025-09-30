@@ -87,9 +87,8 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
       await imageFile.writeAsBytes(image);
 
       // 分享
-      await Share.shareXFiles(
-        [XFile(imagePath)],
-        text: '${widget.title}\n${widget.subtitle ?? ''}\n${widget.data}',
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(imagePath)], text: '${widget.title}\n${widget.subtitle ?? ''}\n${widget.data}'),
       );
 
       // 触发回调
@@ -198,8 +197,8 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
               ? SizedBox(
                   width: widget.size,
                   height: widget.size,
-                  child: Center(
-                    child: CircularProgressIndicator(),
+                  child: const Center(
+                    child: const CircularProgressIndicator(),
                   ),
                 )
               : ScaleTransition(
