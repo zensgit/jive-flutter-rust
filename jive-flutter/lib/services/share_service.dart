@@ -461,7 +461,7 @@ class ShareDialog extends StatelessWidget {
                   color: theme.colorScheme.primary,
                   onPressed: onShareMore ??
                       () async {
-                        await Share.share('$content\n\n$url');
+                        await SharePlus.instance.share(ShareParams(text: '$content\n\n${url ?? ''}'));
                         if (context.mounted) {
                           Navigator.pop(context);
                         }
