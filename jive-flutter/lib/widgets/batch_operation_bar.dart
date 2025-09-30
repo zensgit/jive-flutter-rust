@@ -307,8 +307,10 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
               final messenger = ScaffoldMessenger.of(context);
               await provider.batchDeleteCategories(widget.selectedIds);
               if (!mounted) return;
+              // ignore: use_build_context_synchronously
               navigator.pop();
               widget.onCancel();
+              // ignore: use_build_context_synchronously
               messenger.showSnackBar(
                 SnackBar(
                   content: Text('已删除 ${widget.selectedIds.length} 个项目'),
