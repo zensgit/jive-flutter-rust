@@ -284,7 +284,7 @@ class AccountList extends StatelessWidget {
     final Map<AccountType, List<AccountData>> grouped = {};
 
     for (final account in accounts) {
-      final key = _toAccountType(account.type);
+      final key = _toUiAccountType(account.type);
       if (!grouped.containsKey(key)) {
         grouped[key] = [];
       }
@@ -373,7 +373,7 @@ enum AccountSubType {
     }
   }
 
-  AccountType _toAccountType(model.AccountType t) {
+  AccountType _toUiAccountType(model.AccountType t) {
     switch (t) {
       case model.AccountType.asset:
         return AccountType.asset;
