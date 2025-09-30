@@ -290,9 +290,6 @@ $data
     return _StubScreenshotController();
   }
 
-  static dynamic XFile(String path) {
-    return _StubXFile(path);
-  }
 }
 
 /// 社交平台
