@@ -8,26 +8,6 @@ import 'package:jive_money/models/account.dart' as model;
 // 类型别名以兼容现有代码
 typedef AccountData = model.Account;
 
-  // Model<->UI AccountType adapter
-  model.AccountType _toModelAccountType(AccountType t) {
-    switch (t) {
-      case AccountType.asset:
-        return model.AccountType.asset;
-      case AccountType.liability:
-        return model.AccountType.liability;
-    }
-  }
-
-  AccountType _toAccountType(model.AccountType t) {
-    switch (t) {
-      case model.AccountType.asset:
-        return AccountType.asset;
-      case model.AccountType.liability:
-        return AccountType.liability;
-    }
-  }
-
-
 class AccountList extends StatelessWidget {
   final List<AccountData> accounts;
   final bool groupByType;
@@ -380,6 +360,28 @@ enum AccountSubType {
   loan, // 贷款
   mortgage, // 房贷
 }
+
+
+  // Model<->UI AccountType adapter (moved below enums for analyzer)
+// Model<->UI AccountType adapter
+  model.AccountType _toModelAccountType(AccountType t) {
+    switch (t) {
+      case AccountType.asset:
+        return model.AccountType.asset;
+      case AccountType.liability:
+        return model.AccountType.liability;
+    }
+  }
+
+  AccountType _toAccountType(model.AccountType t) {
+    switch (t) {
+      case model.AccountType.asset:
+        return AccountType.asset;
+      case model.AccountType.liability:
+        return AccountType.liability;
+    }
+  }
+
 
 /// 账户分组列表
 class GroupedAccountList extends StatelessWidget {
