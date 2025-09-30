@@ -284,7 +284,7 @@ $data
   static Future<void> _shareToWechat(
       BuildContext context, String content) async {
     // Stub: 使用系统分享
-    await SharePlus.instance.share(ShareParams(text: content));
+    await _doShare(ShareParams(text: content));
   }
 
   static String _getRoleDisplayName(family_model.FamilyRole role) {
