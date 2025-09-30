@@ -471,6 +471,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     TextButton(
                       onPressed: () {
                         // TODO: 实现忘记密码功能
+                        final messenger = ScaffoldMessenger.of(context);
                         messenger.showSnackBar(
                           const SnackBar(content: Text('忘记密码功能暂未实现')),
                         );
@@ -532,27 +533,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         messenger.showSnackBar(
                           SnackBar(
                             content: Text('微信登录失败: \$error'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      },
-                    ),
-                          );
-                          router.go(AppRoutes.dashboard);
-                        } else {
-                          messenger.showSnackBar(
-                            SnackBar(
-                              content: Text(result.message ?? '微信登录失败'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      },
-                      onError: (error) {
-                        final messenger = ScaffoldMessenger.of(context);
-                        messenger.showSnackBar(
-                          SnackBar(
-                            content: Text('微信登录失败: $error'),
                             backgroundColor: Colors.red,
                           ),
                         );
