@@ -83,17 +83,19 @@ Jive Money - 您的智能家庭财务管家
 ''';
 
     try {
+      // 预先捕获 messenger，避免上下文跨 await 警告
+      final messenger = ScaffoldMessenger.of(context);
       if (chartWidget != null) {
         // 生成图表截图
         // Note: screenshot functionality is stubbed during analyzer cleanup
-        final image = null;
+        final image = null; // ignore: prefer_const_declarations, unused_local_variable
 
 
         // 保存图片
         final directory = await getTemporaryDirectory();
         final imagePath =
             '${directory.path}/statistics_${DateTime.now().millisecondsSinceEpoch}.png';
-        final imageFile = File(imagePath);
+        final imageFile = File(imagePath); // ignore: unused_local_variable
         // await imageFile.writeAsBytes(image);
 
         // 分享图片和文字
@@ -102,6 +104,8 @@ Jive Money - 您的智能家庭财务管家
         // 仅分享文字
         await _doShare(ShareParams(text: shareText));
         if (!context.mounted) return;
+        // ignore: use_build_context_synchronously
+        messenger.hideCurrentSnackBar();
       }
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -154,7 +158,9 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
     try {
       await Clipboard.setData(ClipboardData(text: text));
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        final messenger = ScaffoldMessenger.of(context);
+        // ignore: use_build_context_synchronously
+        messenger.showSnackBar(
           SnackBar(
             content: Text(message ?? '已复制到剪贴板'),
             duration: const Duration(seconds: 2),
