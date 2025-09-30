@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:cross_file/cross_file.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:path_provider/path_provider.dart';
@@ -301,7 +300,6 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
       ],
     );
   }
-  }
 }
 
 /// 操作按钮
@@ -514,9 +512,3 @@ class _InfoRow extends StatelessWidget {
   }
 }
 
-
-// Stub implementation for XFile
-class _StubXFile {
-  final String path;
-  _StubXFile(this.path);
-}
