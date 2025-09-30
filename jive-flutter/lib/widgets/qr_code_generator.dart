@@ -320,7 +320,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
       width: size ?? 200,
       height: size ?? 200,
       color: backgroundColor ?? Colors.white,
-      child: const Center(
+      child: Center(
         child: Text(
           'QR Code Placeholder',
           style: TextStyle(color: foregroundColor ?? Colors.black),
