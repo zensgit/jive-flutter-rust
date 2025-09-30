@@ -7,7 +7,6 @@ import 'package:jive_money/models/transaction.dart';
 import 'package:jive_money/providers/transaction_provider.dart';
 import 'package:jive_money/services/api/transaction_service.dart';
 import 'package:jive_money/ui/components/transactions/transaction_list.dart';
-import 'package:jive_money/ui/components/cards/transaction_card.dart';
 
 class _DummyTransactionService extends TransactionService {}
 

@@ -40,6 +40,9 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
   Future<void> _deleteFamily() async {
     if (!_isNameValid) return;
 
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
     // 二次确认
     final secondConfirm = await showDialog<bool>(
       context: context,
@@ -81,7 +84,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
       await familyService.deleteFamily(widget.family.id);
 
       // 刷新Family列表
-      ref.refresh(userFamiliesProvider);
+      final _ = ref.refresh(userFamiliesProvider);
 
       if (mounted) {
         // 如果删除的是当前Family，切换到其他Family或显示空状态
@@ -91,13 +94,13 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
           if (families.isNotEmpty) {
             // 切换到第一个可用的Family
             await familyService.switchFamily(families.first.family.id);
-            if (!context.mounted) return;
-            ref.refresh(currentFamilyProvider);
+            if (!mounted) return;
+            final _ = ref.refresh(currentFamilyProvider);
           }
         }
 
-        Navigator.of(context).pop(true);
-        ScaffoldMessenger.of(context).showSnackBar(
+        navigator.pop(true);
+        messenger.showSnackBar(
           SnackBar(
             content: Text('已删除 "${widget.family.name}"'),
             backgroundColor: Colors.green,
@@ -105,7 +108,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
         );
 
         // 导航到Family列表或Dashboard
-        Navigator.of(context).pushNamedAndRemoveUntil(
+        navigator.pushNamedAndRemoveUntil(
           '/dashboard',
           (route) => false,
         );
