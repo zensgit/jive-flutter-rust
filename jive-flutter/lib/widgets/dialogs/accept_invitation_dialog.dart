@@ -6,7 +6,6 @@ import 'package:jive_money/models/user.dart';
 import 'package:jive_money/services/invitation_service.dart';
 import 'package:jive_money/providers/family_provider.dart';
 import 'package:jive_money/providers/auth_provider.dart';
-import 'package:jive_money/utils/snackbar_utils.dart';
 
 /// 接受邀请对话框
 class AcceptInvitationDialog extends ConsumerStatefulWidget {
@@ -48,6 +47,8 @@ class _AcceptInvitationDialogState
     });
 
     try {
+      final messenger = ScaffoldMessenger.of(context);
+      final navigator = Navigator.of(context);
       // 调用服务接受邀请
       final success = await _invitationService.acceptInvitation(
         invitationId: invitation.id,
@@ -57,25 +58,27 @@ class _AcceptInvitationDialogState
       if (success && mounted) {
         // 刷新家庭列表
         await ref.read(familyControllerProvider.notifier).loadUserFamilies();
-        if (!context.mounted) return;
+        if (!mounted) return;
 
         // 显示成功消息
-        SnackbarUtils.showSuccess(
-          context,
-          '已成功加入 ${family.name}',
+        messenger.hideCurrentSnackBar();
+        messenger.showSnackBar(
+          SnackBar(content: Text('已成功加入 ${family.name}')),
         );
-
         // 关闭对话框
-        Navigator.of(context).pop(true);
+        navigator.pop(true);
 
         // 触发回调
         widget.onAccepted?.call();
       }
     } catch (e) {
       if (mounted) {
-        SnackbarUtils.showError(
-          context,
-          '接受邀请失败: ${e.toString()}',
+        final messengerErr = ScaffoldMessenger.of(context);
+        messengerErr.showSnackBar(
+          SnackBar(
+            content: Text('接受邀请失败: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -90,8 +93,6 @@ class _AcceptInvitationDialogState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currentUser = ref.watch(authStateProvider).value;
-
     return AlertDialog(
       title: Text(_showConfirmation ? '确认加入' : '邀请详情'),
       content: SingleChildScrollView(
