@@ -26,10 +26,9 @@ class RightClickCopy extends StatelessWidget {
   });
 
   void _copy(BuildContext context) async {
+    final messenger = ScaffoldMessenger.maybeOf(context);
     await Clipboard.setData(ClipboardData(text: copyText));
     if (!context.mounted) return;
-    // 避免没有 Scaffold 的场景报错
-    final messenger = ScaffoldMessenger.maybeOf(context);
     messenger?.hideCurrentSnackBar();
     messenger?.showSnackBar(
       SnackBar(
