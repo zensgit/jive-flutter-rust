@@ -121,7 +121,69 @@ Widget _buildSimpleList(BuildContext context, WidgetRef ref) {
     );
   }
 
+
+
+  Widget _buildGroupedList(BuildContext context, WidgetRef ref) {
+    final grouped = _groupTransactionsByDate(transactions);
+    final theme = Theme.of(context);
+    return ListView.builder(
+      controller: scrollController,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: grouped.length,
+      itemBuilder: (context, index) {
+        final entry = grouped.entries.elementAt(index);
+        final date = entry.key;
+        final dayTxs = entry.value;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Text(
+                _formatDateTL(date),
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            ...dayTxs.map((t) => transactionItemBuilder != null
+                ? transactionItemBuilder!(t)
+                : TransactionCard(
+                    transaction: t,
+                    onTap: () => onTransactionTap?.call(t),
+                    onLongPress: () => onTransactionLongPress?.call(t),
+                    showDate: false,
+                  )),
+          ],
+        );
+      },
+    );
+  }
+
+  Map<DateTime, List<TransactionData>> _groupTransactionsByDate(
+      List<TransactionData> list) {
+    final Map<DateTime, List<TransactionData>> grouped = {};
+    for (final t in list) {
+      final d = DateTime(t.date.year, t.date.month, t.date.day);
+      (grouped[d] ??= []).add(t);
+    }
+    final entries = grouped.entries.toList()..sort((a, b) => b.key.compareTo(a.key));
+    return Map.fromEntries(entries);
+  }
+
+  String _formatDateTL(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    if (date == today) return '今天';
+    if (date == yesterday) return '昨天';
+    if (date.year == now.year) return '${date.month}月${date.day}日';
+    return '${date.year}年${date.month}月${date.day}日';
+  }
+}
+
 /// 可滑动删除的交易列表
+
 class SwipeableTransactionList extends StatelessWidget {
   final List<TransactionData> transactions;
   final Function(TransactionData) onDelete;
@@ -203,7 +265,7 @@ class SwipeableTransactionList extends StatelessWidget {
   Widget _buildSwipeableItem(
       BuildContext context, TransactionData transaction) {
     return Dismissible(
-      key: Key(transaction.id),
+      key: ValueKey(transaction.id ?? "unknown"),
       direction: DismissDirection.horizontal,
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.endToStart) {
