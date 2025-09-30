@@ -300,7 +300,7 @@ class AccountList extends StatelessWidget {
 
   double _calculateTotal(AccountType type) {
     return accounts
-        .where((account) => account.type == _toModelAccountType(type))
+        .where((account) => _matchesLocalType(type, account.type))
         .fold(0.0, (sum, account) => sum + account.balance);
   }
 
@@ -362,24 +362,22 @@ enum AccountSubType {
 }
 
 
-  // Model<->UI AccountType adapter (moved below enums for analyzer)
-// Model<->UI AccountType adapter
-  model.AccountType _toModelAccountType(AccountType t) {
+  // Model<->UI AccountType adapter
+  // Map model.AccountType (checking/savings/creditCard/loan/...) to local grouping (asset/liability)
+  AccountType _toUiAccountType(model.AccountType t) {
     switch (t) {
-      case AccountType.asset:
-        return model.AccountType.asset;
-      case AccountType.liability:
-        return model.AccountType.liability;
+      case model.AccountType.creditCard:
+      case model.AccountType.loan:
+        return AccountType.liability;
+      default:
+        return AccountType.asset;
     }
   }
 
-  AccountType _toUiAccountType(model.AccountType t) {
-    switch (t) {
-      case model.AccountType.asset:
-        return AccountType.asset;
-      case model.AccountType.liability:
-        return AccountType.liability;
-    }
+  bool _matchesLocalType(AccountType localType, model.AccountType modelType) {
+    final isLiability = modelType == model.AccountType.creditCard || modelType == model.AccountType.loan;
+    if (localType == AccountType.liability) return isLiability;
+    return !isLiability;
   }
 
 
