@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:jive_money/services/api/family_service.dart';
+import 'dart:async';
 
 /// 家庭设置服务 - 负责设置的持久化和同步
 class FamilySettingsService extends ChangeNotifier {
@@ -66,7 +67,7 @@ class FamilySettingsService extends ChangeNotifier {
     ));
 
     // 尝试同步
-    _syncToServer();
+    unawaited(_syncToServer());
 
     notifyListeners();
   }
@@ -115,7 +116,7 @@ class FamilySettingsService extends ChangeNotifier {
       timestamp: DateTime.now(),
     ));
 
-    _syncToServer();
+    unawaited(_syncToServer());
     notifyListeners();
   }
 
@@ -137,7 +138,7 @@ class FamilySettingsService extends ChangeNotifier {
       timestamp: DateTime.now(),
     ));
 
-    _syncToServer();
+    unawaited(_syncToServer());
     notifyListeners();
   }
 
@@ -179,7 +180,7 @@ class FamilySettingsService extends ChangeNotifier {
             if (change.type == ChangeType.update) {
               success = await _familyService.updateFamilySettings(
                 change.entityId,
-                FamilySettings.fromJson(change.data!),
+                FamilySettings.fromJson(change.data!).toJson(),
               );
             } else if (change.type == ChangeType.delete) {
               success =
@@ -225,7 +226,7 @@ class FamilySettingsService extends ChangeNotifier {
 
   /// 强制同步
   Future<void> forceSync() async {
-    await _syncToServer();
+    unawaited(_syncToServer());
   }
 
   /// 从服务器拉取最新设置
