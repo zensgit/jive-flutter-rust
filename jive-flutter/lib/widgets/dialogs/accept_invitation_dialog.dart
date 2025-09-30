@@ -71,13 +71,6 @@ class _AcceptInvitationDialogState
 
         // 触发回调
         widget.onAccepted?.call();
-          '已成功加入 ${family.name}'), backgroundColor: Colors.red,);
-
-        // 关闭对话框
-        navigator.pop(true);
-
-        // 触发回调
-        widget.onAccepted?.call();
       }
     } catch (e) {
       if (mounted) {

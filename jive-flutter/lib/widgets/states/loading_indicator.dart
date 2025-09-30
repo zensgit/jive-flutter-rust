@@ -26,7 +26,7 @@ class LoadingIndicator extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(
+            SizedBox(
               width: size,
               height: size,
               child: CircularProgressIndicator(
@@ -35,7 +35,7 @@ class LoadingIndicator extends StatelessWidget {
               ),
             ),
             if (message != null) ...[
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Text(
                 message!,
                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -115,7 +115,7 @@ class LoadingButton extends StatelessWidget {
       onPressed: isLoading ? null : onPressed,
       style: style,
       child: isLoading
-          ? const SizedBox(
+          ? SizedBox(
               width: loadingSize,
               height: loadingSize,
               child: CircularProgressIndicator(
