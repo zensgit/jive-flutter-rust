@@ -6,15 +6,6 @@ import 'package:share_plus/share_plus.dart';
 import 'package:jive_money/models/family.dart' as family_model;
 import 'package:jive_money/services/share_service.dart';
 
-  ShareParams? lastParams;
-
-  @override
-  Future<ShareResult> share(ShareParams params) async {
-    lastParams = params;
-    return const ShareResult(ShareResultStatus.success);
-  }
-}
-
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -83,4 +74,3 @@ void main() {
     });
   });
 }
-
