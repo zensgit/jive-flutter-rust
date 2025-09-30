@@ -135,11 +135,13 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
       builder: (context) => _TemplateEditorDialog(
         template: template,
         onSave: (updatedTemplate) async {
+          final messenger = ScaffoldMessenger.of(context);
+          final navigator = Navigator.of(context);
           try {
             if (_isCreating) {
               await _categoryService.createTemplate(updatedTemplate);
-              if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
+              if (!mounted) return;
+              messenger.showSnackBar(
                 const SnackBar(
                   content: Text('模板创建成功'),
                   backgroundColor: Colors.green,
@@ -147,19 +149,19 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
               );
             } else {
               await _categoryService.updateTemplate(updatedTemplate.id, updatedTemplate.toJson());
-              if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
+              if (!mounted) return;
+              messenger.showSnackBar(
                 const SnackBar(
                   content: Text('模板更新成功'),
                   backgroundColor: Colors.green,
                 ),
               );
             }
-            Navigator.pop(context);
+            navigator.pop();
             _loadTemplates();
           } catch (e) {
-            if (!context.mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
+            if (!mounted) return;
+            messenger.showSnackBar(
               SnackBar(
                 content: Text('保存失败: $e'),
                 backgroundColor: Colors.red,
@@ -168,7 +170,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
           }
         },
         onCancel: () {
-          Navigator.pop(context);
+          navigator.pop();
         },
       ),
     );
@@ -197,10 +199,11 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
     );
 
     if (confirmed == true) {
+      final messenger = ScaffoldMessenger.of(context);
       try {
         await _categoryService.deleteTemplate(template.id);
-        if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        if (!mounted) return;
+        messenger.showSnackBar(
           const SnackBar(
             content: Text('模板已删除'),
             backgroundColor: Colors.green,
@@ -208,8 +211,8 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
         );
         _loadTemplates();
       } catch (e) {
-        if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        if (!mounted) return;
+        messenger.showSnackBar(
           SnackBar(
             content: Text('删除失败: $e'),
             backgroundColor: Colors.red,
@@ -221,10 +224,11 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
 
   Future<void> _toggleFeatured(SystemCategoryTemplate template) async {
     try {
+      final messenger = ScaffoldMessenger.of(context);
       template.setFeatured(!template.isFeatured);
       await _categoryService.updateTemplate(template.id, {'isFeatured': !template.isFeatured});
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (!mounted) return;
+      messenger.showSnackBar(
         SnackBar(
           content: Text(
             template.isFeatured ? '已设为精选' : '已取消精选',
@@ -233,8 +237,8 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
       );
       _loadTemplates();
     } catch (e) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (!mounted) return;
+      messenger.showSnackBar(
         SnackBar(
           content: Text('操作失败: $e'),
           backgroundColor: Colors.red,
