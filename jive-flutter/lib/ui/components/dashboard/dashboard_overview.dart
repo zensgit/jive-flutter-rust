@@ -1,5 +1,8 @@
-// 仪表板概览组件
 import 'package:flutter/material.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/ui/components/charts/balance_chart.dart';
+import 'package:jive_money/ui/components/dashboard/summary_card.dart';
+import 'package:jive_money/ui/components/dashboard/quick_actions.dart';
 import 'package:jive_money/ui/components/dashboard/recent_transactions.dart';
 import 'package:jive_money/models/transaction.dart';
 
