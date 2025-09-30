@@ -191,7 +191,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
             ),
           ),
           const SizedBox(width: 8),
-          const SizedBox(
+          SizedBox(
             width: 32,
             child: Text(
               value.toInt().toString(),
