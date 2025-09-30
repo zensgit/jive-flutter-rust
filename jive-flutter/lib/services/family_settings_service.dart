@@ -226,7 +226,7 @@ class FamilySettingsService extends ChangeNotifier {
 
   /// 强制同步
   Future<void> forceSync() async {
-    await unawaited(_syncToServer());
+    unawaited(_syncToServer());
   }
 
   /// 从服务器拉取最新设置
