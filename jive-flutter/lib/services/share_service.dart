@@ -12,6 +12,10 @@ import 'package:jive_money/providers/currency_provider.dart';
 /// 分享服务
 class ShareService {
 
+  static Future<ShareResult> Function(ShareParams) _doShare = (params) => SharePlus.instance.share(params);
+  static void setDoShareForTest(Future<ShareResult> Function(ShareParams) f) { _doShare = f; }
+
+
   /// 分享家庭邀请
   static Future<void> shareFamilyInvitation({
     required BuildContext context,
@@ -41,7 +45,7 @@ Jive Money - 您的智能家庭财务管家
 ''';
 
     try {
-      await SharePlus.instance.share(ShareParams(text: shareText, subject: '邀请你加入家庭「$familyName」'));
+      await _doShare(ShareParams(text: shareText, subject: '邀请你加入家庭「$familyName」'));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -121,10 +125,10 @@ Jive Money - 您的智能家庭财务管家
         // await imageFile.writeAsBytes(image);
 
         // 分享图片和文字
-        await SharePlus.instance.share(ShareParams(files: [XFile(imagePath)], text: shareText));
+        await _doShare(ShareParams(files: [XFile(imagePath)], text: shareText));
       } else {
         // 仅分享文字
-        await SharePlus.instance.share(ShareParams(text: shareText));
+        await _doShare(ShareParams(text: shareText));
         if (!context.mounted) return;
       }
     } catch (e) {
@@ -154,7 +158,7 @@ $icon $typeText记录
 📅 日期：${_formatDate(transaction.date)}
 🏠 账本：$familyName
 
-${transaction.tags.isNotEmpty ? '🏷️ 标签：${transaction.tags.join(', ')}' : ''}
+${transaction.tags?.isNotEmpty == true ? '🏷️ 标签：${transaction.tags!.join(', ')}' : ''}
 ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : ''}
 
 ━━━━━━━━━━━━━━━━
@@ -162,7 +166,7 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
 ''';
 
     try {
-      await SharePlus.instance.share(ShareParams(text: shareText));
+      await _doShare(ShareParams(text: shareText));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -212,7 +216,7 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
 
     try {
       // 根据平台定制分享内容（统一走系统分享，避免外部依赖）
-      await SharePlus.instance.share(ShareParams(text: shareContent));
+      await _doShare(ShareParams(text: shareContent));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -237,7 +241,7 @@ ${description ?? ''}
 $data
 ''';
 
-      await SharePlus.instance.share(ShareParams(text: shareText));
+      await _doShare(ShareParams(text: shareText));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -269,7 +273,7 @@ $data
   }) async {
     try {
       final xFiles = images.map((file) => XFile(file.path)).toList();
-      await SharePlus.instance.share(ShareParams(files: xFiles, text: text));
+      await _doShare(ShareParams(files: xFiles, text: text));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
