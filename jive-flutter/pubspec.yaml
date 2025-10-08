@@ -78,7 +78,7 @@ dependencies:
 
   web_socket_channel: any
   mailer: any
-  share_plus: any
+  share_plus: ^12.0.0
   screenshot: any
   uni_links: any
   qr_flutter: any
