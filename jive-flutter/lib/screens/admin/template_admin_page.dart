@@ -129,6 +129,8 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
       _isCreating = template == null;
     });
 
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -170,7 +172,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
           }
         },
         onCancel: () {
-          Navigator.pop(context);
+          navigator.pop();
         },
       ),
     );
@@ -200,6 +202,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
     );
 
     if (confirmed == true) {
+      final messenger = ScaffoldMessenger.of(context);
       try {
         await _categoryService.deleteTemplate(template.id);
         if (!mounted) return;
@@ -225,6 +228,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
   Future<void> _toggleFeatured(SystemCategoryTemplate template) async {
     final messenger = ScaffoldMessenger.of(context);
     try {
+      final messenger = ScaffoldMessenger.of(context);
       template.setFeatured(!template.isFeatured);
       await _categoryService.updateTemplate(template.id, {'isFeatured': !template.isFeatured});
       if (!mounted) return;

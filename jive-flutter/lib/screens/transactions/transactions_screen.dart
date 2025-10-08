@@ -80,6 +80,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
     TransactionState transactionState,
     String type,
   ) {
+    // Determine grouping mode locally for this list render
+    final groupByDate =
+        transactionState.grouping == TransactionGrouping.date;
     if (transactionState.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
