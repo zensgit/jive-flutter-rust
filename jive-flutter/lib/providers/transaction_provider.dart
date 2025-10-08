@@ -6,6 +6,7 @@ import 'package:jive_money/models/transaction_filter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jive_money/providers/ledger_provider.dart';
 
+/// 交易分组方式
 enum TransactionGrouping { date, category, account }
 
 class TransactionState {
@@ -17,7 +18,7 @@ class TransactionState {
   final int totalCount;
   final double totalIncome;
   final double totalExpense;
-
+  // Phase B scaffolding: grouping + collapsed groups
   final TransactionGrouping grouping;
   final Set<String> groupCollapse;
 
@@ -302,7 +303,7 @@ class TransactionController extends StateNotifier<TransactionState> {
     state = state.copyWith(error: null);
   }
 
-  /// 设置分组方式（Phase B）
+  /// 更新状态并计算统计数据
   void _updateState(List<Transaction> transactions) {
     final filteredTransactions = state.filter != null
         ? _filterTransactions(transactions, state.filter!)
