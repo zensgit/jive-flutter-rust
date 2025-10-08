@@ -86,7 +86,10 @@ class DashboardScreen extends ConsumerWidget {
             RecentTransactions(
               transactions: recentTransactions,
               onViewAll: () {
-                // 导航到交易页面
+                context.go(AppRoutes.transactions);
+              },
+              onFilter: () {
+                context.go(AppRoutes.transactions);
               },
             ),
             const SizedBox(height: 24),
