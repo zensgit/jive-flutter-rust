@@ -101,3 +101,16 @@ impl From<AuthError> for ApiError {
         }
     }
 }
+
+/// 实现sqlx::Error到ApiError的转换
+impl From<sqlx::Error> for ApiError {
+    fn from(err: sqlx::Error) -> Self {
+        match err {
+            sqlx::Error::RowNotFound => ApiError::NotFound("Resource not found".to_string()),
+            sqlx::Error::Database(db_err) => {
+                ApiError::DatabaseError(db_err.message().to_string())
+            }
+            _ => ApiError::DatabaseError(err.to_string()),
+        }
+    }
+}

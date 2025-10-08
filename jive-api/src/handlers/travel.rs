@@ -13,10 +13,99 @@ use rust_decimal::Decimal;
 use chrono::{DateTime, NaiveDate, Utc};
 
 use crate::{auth::Claims, error::{ApiError, ApiResult}};
-use jive_core::domain::{
-    CreateTravelEventInput, UpdateTravelEventInput, AttachTransactionsInput,
-    UpsertTravelBudgetInput, TravelSettings, TravelStatus, TransactionFilter,
-};
+
+/// 旅行设置
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct TravelSettings {
+    pub auto_tag: Option<bool>,
+    pub notify_budget: Option<bool>,
+}
+
+/// 交易过滤器
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TransactionFilter {
+    pub start_date: Option<NaiveDate>,
+    pub end_date: Option<NaiveDate>,
+    pub categories: Option<Vec<Uuid>>,
+    pub min_amount: Option<Decimal>,
+    pub max_amount: Option<Decimal>,
+}
+
+/// 创建旅行事件输入
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CreateTravelEventInput {
+    pub trip_name: String,
+    pub start_date: NaiveDate,
+    pub end_date: NaiveDate,
+    pub total_budget: Option<Decimal>,
+    pub budget_currency_code: Option<String>,
+    pub home_currency_code: String,
+    pub settings: Option<TravelSettings>,
+}
+
+impl CreateTravelEventInput {
+    pub fn validate(&self) -> Result<(), String> {
+        if self.trip_name.trim().is_empty() {
+            return Err("Trip name cannot be empty".to_string());
+        }
+        if self.start_date > self.end_date {
+            return Err("Start date must be before end date".to_string());
+        }
+        Ok(())
+    }
+}
+
+/// 更新旅行事件输入
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UpdateTravelEventInput {
+    pub trip_name: Option<String>,
+    pub start_date: Option<NaiveDate>,
+    pub end_date: Option<NaiveDate>,
+    pub total_budget: Option<Decimal>,
+    pub budget_currency_code: Option<String>,
+    pub settings: Option<TravelSettings>,
+}
+
+impl UpdateTravelEventInput {
+    pub fn validate(&self) -> Result<(), String> {
+        if let Some(ref name) = self.trip_name {
+            if name.trim().is_empty() {
+                return Err("Trip name cannot be empty".to_string());
+            }
+        }
+        Ok(())
+    }
+}
+
+/// 附加交易输入
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AttachTransactionsInput {
+    pub transaction_ids: Option<Vec<Uuid>>,
+    pub filter: Option<TransactionFilter>,
+}
+
+/// 更新旅行预算输入
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UpsertTravelBudgetInput {
+    pub category_id: Uuid,
+    pub budget_amount: Decimal,
+    pub budget_currency_code: Option<String>,
+    pub alert_threshold: Option<Decimal>,
+}
+
+impl UpsertTravelBudgetInput {
+    pub fn validate(&self) -> Result<(), String> {
+        if self.budget_amount < Decimal::ZERO {
+            return Err("Budget amount cannot be negative".to_string());
+        }
+        if let Some(threshold) = self.alert_threshold {
+            if threshold < Decimal::ZERO || threshold > Decimal::from(1) {
+                return Err("Alert threshold must be between 0 and 1".to_string());
+            }
+        }
+        Ok(())
+    }
+}
 
 /// 旅行事件实体（数据库映射）
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
@@ -28,8 +117,8 @@ pub struct TravelEvent {
     pub start_date: NaiveDate,
     pub end_date: NaiveDate,
     pub total_budget: Option<Decimal>,
-    pub budget_currency_id: Option<Uuid>,
-    pub home_currency_id: Uuid,
+    pub budget_currency_code: Option<String>,
+    pub home_currency_code: String,
     pub tag_group_id: Option<Uuid>,
     pub settings: serde_json::Value,
     pub total_spent: Decimal,
@@ -47,7 +136,7 @@ pub struct TravelBudget {
     pub travel_event_id: Uuid,
     pub category_id: Uuid,
     pub budget_amount: Decimal,
-    pub budget_currency_id: Option<Uuid>,
+    pub budget_currency_code: Option<String>,
     pub spent_amount: Decimal,
     pub spent_amount_home_currency: Decimal,
     pub alert_threshold: Decimal,
@@ -113,12 +202,14 @@ pub async fn create_travel_event(
 
     // 创建旅行事件
     let settings_json = serde_json::to_value(&input.settings.unwrap_or_default())
-        .map_err(|e| ApiError::InternalError(e.to_string()))?;
+        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    let user_id = claims.user_id()?;
 
     let event = sqlx::query_as::<_, TravelEvent>(
         "INSERT INTO travel_events (
             family_id, trip_name, status, start_date, end_date,
-            total_budget, budget_currency_id, home_currency_id,
+            total_budget, budget_currency_code, home_currency_code,
             settings, created_by
         ) VALUES ($1, $2, 'planning', $3, $4, $5, $6, $7, $8, $9)
         RETURNING *"
@@ -128,10 +219,10 @@ pub async fn create_travel_event(
     .bind(input.start_date)
     .bind(input.end_date)
     .bind(input.total_budget)
-    .bind(input.budget_currency_id)
-    .bind(input.home_currency_id)
+    .bind(&input.budget_currency_code)
+    .bind(&input.home_currency_code)
     .bind(settings_json)
-    .bind(claims.user_id)
+    .bind(user_id)
     .fetch_one(&pool)
     .await?;
 
@@ -169,12 +260,12 @@ pub async fn update_travel_event(
     if let Some(total_budget) = input.total_budget {
         event.total_budget = Some(total_budget);
     }
-    if let Some(budget_currency_id) = input.budget_currency_id {
-        event.budget_currency_id = Some(budget_currency_id);
+    if let Some(budget_currency_code) = input.budget_currency_code {
+        event.budget_currency_code = Some(budget_currency_code);
     }
     if let Some(settings) = input.settings {
         event.settings = serde_json::to_value(&settings)
-            .map_err(|e| ApiError::InternalError(e.to_string()))?;
+            .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     }
 
     // 更新数据库
@@ -184,7 +275,7 @@ pub async fn update_travel_event(
             start_date = $3,
             end_date = $4,
             total_budget = $5,
-            budget_currency_id = $6,
+            budget_currency_code = $6,
             settings = $7,
             updated_at = NOW()
         WHERE id = $1
@@ -195,7 +286,7 @@ pub async fn update_travel_event(
     .bind(event.start_date)
     .bind(event.end_date)
     .bind(event.total_budget)
-    .bind(event.budget_currency_id)
+    .bind(&event.budget_currency_code)
     .bind(&event.settings)
     .fetch_one(&pool)
     .await?;
@@ -232,7 +323,7 @@ pub async fn list_travel_events(
         "SELECT * FROM travel_events WHERE family_id = $1"
     );
 
-    if let Some(status) = &query.status {
+    if let Some(_status) = &query.status {
         sql.push_str(" AND status = $2");
     }
     sql.push_str(" ORDER BY created_at DESC");
@@ -396,6 +487,7 @@ pub async fn attach_transactions(
     .await?
     .ok_or_else(|| ApiError::NotFound("Travel event not found".to_string()))?;
 
+    let user_id = claims.user_id()?;
     let mut transaction_ids = Vec::new();
 
     // 使用提供的交易ID
@@ -435,7 +527,7 @@ pub async fn attach_transactions(
         )
         .bind(travel_id)
         .bind(transaction_id)
-        .bind(claims.user_id)
+        .bind(user_id)
         .execute(&pool)
         .await?;
 
@@ -457,7 +549,7 @@ pub async fn attach_transactions(
 /// 分离交易
 pub async fn detach_transaction(
     State(pool): State<PgPool>,
-    claims: Claims,
+    _claims: Claims,
     Path((travel_id, transaction_id)): Path<(Uuid, Uuid)>,
 ) -> ApiResult<StatusCode> {
     sqlx::query(
@@ -503,12 +595,12 @@ pub async fn upsert_travel_budget(
     let budget = sqlx::query_as::<_, TravelBudget>(
         "INSERT INTO travel_budgets (
             travel_event_id, category_id, budget_amount,
-            budget_currency_id, alert_threshold
+            budget_currency_code, alert_threshold
         ) VALUES ($1, $2, $3, $4, $5)
         ON CONFLICT (travel_event_id, category_id)
         DO UPDATE SET
             budget_amount = EXCLUDED.budget_amount,
-            budget_currency_id = EXCLUDED.budget_currency_id,
+            budget_currency_code = EXCLUDED.budget_currency_code,
             alert_threshold = EXCLUDED.alert_threshold,
             updated_at = NOW()
         RETURNING *"
@@ -516,7 +608,7 @@ pub async fn upsert_travel_budget(
     .bind(travel_id)
     .bind(input.category_id)
     .bind(input.budget_amount)
-    .bind(input.budget_currency_id)
+    .bind(&input.budget_currency_code)
     .bind(input.alert_threshold.unwrap_or(Decimal::new(8, 1))) // 0.8
     .fetch_one(&pool)
     .await?;
@@ -560,8 +652,17 @@ pub async fn get_travel_statistics(
     .await?
     .ok_or_else(|| ApiError::NotFound("Travel event not found".to_string()))?;
 
+    // 分类支出查询结果结构
+    #[derive(Debug, sqlx::FromRow)]
+    struct CategorySpendingRow {
+        category_id: Uuid,
+        category_name: String,
+        amount: Decimal,
+        transaction_count: i64,
+    }
+
     // 获取分类支出
-    let category_spending = sqlx::query!(
+    let category_spending: Vec<CategorySpendingRow> = sqlx::query_as(
         r#"
         SELECT
             c.id as category_id,
@@ -569,25 +670,26 @@ pub async fn get_travel_statistics(
             COALESCE(SUM(t.amount), 0) as amount,
             COUNT(t.id) as transaction_count
         FROM categories c
+        JOIN ledgers l ON c.ledger_id = l.id
         LEFT JOIN (
             SELECT t.* FROM transactions t
             JOIN travel_transactions tt ON t.id = tt.transaction_id
             WHERE tt.travel_event_id = $1 AND t.deleted_at IS NULL
         ) t ON c.id = t.category_id
-        WHERE c.family_id = $2
+        WHERE l.family_id = $2
         GROUP BY c.id, c.name
         HAVING COUNT(t.id) > 0
         ORDER BY amount DESC
-        "#,
-        travel_id,
-        claims.family_id
+        "#
     )
+    .bind(travel_id)
+    .bind(claims.family_id)
     .fetch_all(&pool)
     .await?;
 
     let total = event.total_spent;
     let categories: Vec<CategorySpending> = category_spending.into_iter().map(|row| {
-        let amount = Decimal::from_i64_retain(row.amount.unwrap_or(0)).unwrap_or_default();
+        let amount = row.amount;
         let percentage = if total.is_zero() {
             Decimal::ZERO
         } else {
@@ -599,7 +701,7 @@ pub async fn get_travel_statistics(
             category_name: row.category_name,
             amount,
             percentage,
-            transaction_count: row.transaction_count.unwrap_or(0) as i32,
+            transaction_count: row.transaction_count as i32,
         }
     }).collect();
 

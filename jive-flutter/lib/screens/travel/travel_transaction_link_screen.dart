@@ -42,8 +42,8 @@ class _TravelTransactionLinkScreenState extends ConsumerState<TravelTransactionL
 
     try {
       // Load all transactions within the travel date range
-      final transactionService = ref.read(transactionNotifierProvider.notifier);
-      final allTransactions = await transactionService.loadTransactions();
+      final transactionState = ref.read(transactionControllerProvider);
+      final allTransactions = transactionState.transactions;
 
       // Filter transactions by date range
       final filteredTransactions = allTransactions.where((t) {
@@ -226,32 +226,42 @@ class _TravelTransactionLinkScreenState extends ConsumerState<TravelTransactionL
                       final transaction = _availableTransactions[index];
                       final isSelected = _selectedTransactionIds.contains(transaction.id);
 
-                      return CheckboxListTile(
-                        value: isSelected,
-                        onChanged: (value) {
-                          setState(() {
-                            if (value == true) {
-                              _selectedTransactionIds.add(transaction.id!);
-                            } else {
-                              _selectedTransactionIds.remove(transaction.id);
-                            }
-                          });
-                        },
-                        title: Text(transaction.payee ?? '未知商家'),
+                      return ListTile(
+                        leading: Checkbox(
+                          value: isSelected,
+                          onChanged: (value) {
+                            setState(() {
+                              if (value == true) {
+                                _selectedTransactionIds.add(transaction.id!);
+                              } else {
+                                _selectedTransactionIds.remove(transaction.id);
+                              }
+                            });
+                          },
+                        ),
+                        title: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 16,
+                              backgroundColor: transaction.amount < 0
+                                  ? Colors.red[100]
+                                  : Colors.green[100],
+                              child: Icon(
+                                transaction.amount < 0
+                                    ? Icons.arrow_downward
+                                    : Icons.arrow_upward,
+                                color: transaction.amount < 0 ? Colors.red : Colors.green,
+                                size: 16,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(transaction.payee ?? '未知商家'),
+                            ),
+                          ],
+                        ),
                         subtitle: Text(
                           '${dateFormat.format(transaction.date)} • 账户${transaction.accountId ?? "未知"}',
-                        ),
-                        secondary: CircleAvatar(
-                          backgroundColor: transaction.amount < 0
-                              ? Colors.red[100]
-                              : Colors.green[100],
-                          child: Icon(
-                            transaction.amount < 0
-                                ? Icons.arrow_downward
-                                : Icons.arrow_upward,
-                            color: transaction.amount < 0 ? Colors.red : Colors.green,
-                            size: 20,
-                          ),
                         ),
                         trailing: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -276,6 +286,15 @@ class _TravelTransactionLinkScreenState extends ConsumerState<TravelTransactionL
                               ),
                           ],
                         ),
+                        onTap: () {
+                          setState(() {
+                            if (isSelected) {
+                              _selectedTransactionIds.remove(transaction.id);
+                            } else {
+                              _selectedTransactionIds.add(transaction.id!);
+                            }
+                          });
+                        },
                       );
                     },
                   ),
