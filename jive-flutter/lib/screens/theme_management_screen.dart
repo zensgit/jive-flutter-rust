@@ -396,6 +396,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
   }
 
   void _handleMenuAction(String action) async {
+    final messenger = ScaffoldMessenger.of(context);
     switch (action) {
       case 'import_clipboard':
         await _importFromClipboard();
@@ -456,6 +457,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
   }
 
   Future<void> _createNewTheme() async {
+    final messenger = ScaffoldMessenger.of(context);
     final result = await Navigator.of(context).push<models.CustomThemeData>(
       MaterialPageRoute(
         builder: (context) => const CustomThemeEditor(),
@@ -474,6 +476,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
   }
 
   Future<void> _editTheme(models.CustomThemeData theme) async {
+    final messenger = ScaffoldMessenger.of(context);
     final result = await Navigator.of(context).push<models.CustomThemeData>(
       MaterialPageRoute(
         builder: (context) => CustomThemeEditor(theme: theme),
@@ -530,11 +533,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
     try {
       await _themeService.copyThemeToClipboard(theme.id);
       if (!mounted) return;
-<<<<<<< HEAD
-      ScaffoldMessenger.of(context).showSnackBar(
-=======
       messenger.showSnackBar(
->>>>>>> origin/main
         const SnackBar(
           content: Text('主题已复制到剪贴板'),
           backgroundColor: Colors.green,
@@ -553,11 +552,6 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
   Future<void> _deleteTheme(models.CustomThemeData theme) async {
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
-<<<<<<< HEAD
-=======
-    final navigator = Navigator.of(context);
-    final messenger = ScaffoldMessenger.of(context);
->>>>>>> origin/main
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -584,11 +578,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
       try {
         await _themeService.deleteCustomTheme(theme.id);
         if (!mounted) return;
-<<<<<<< HEAD
-        ScaffoldMessenger.of(context).showSnackBar(
-=======
         messenger.showSnackBar(
->>>>>>> origin/main
           SnackBar(
             content: Text('主题"${theme.name}"已删除'),
             backgroundColor: Colors.orange,
@@ -715,11 +705,6 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
   Future<void> _resetToDefault() async {
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
-<<<<<<< HEAD
-=======
-    final navigator = Navigator.of(context);
-    final messenger = ScaffoldMessenger.of(context);
->>>>>>> origin/main
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -745,11 +730,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
     if (confirmed == true) {
       await _themeService.resetToSystemTheme();
       if (!mounted) return;
-<<<<<<< HEAD
-      ScaffoldMessenger.of(context).showSnackBar(
-=======
       messenger.showSnackBar(
->>>>>>> origin/main
         const SnackBar(
           content: Text('已重置为系统默认主题'),
           backgroundColor: Colors.green,
