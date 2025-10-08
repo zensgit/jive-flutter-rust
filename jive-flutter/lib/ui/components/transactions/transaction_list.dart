@@ -269,55 +269,6 @@ class SwipeableTransactionList extends StatelessWidget {
     return groupByDate ? _buildGroupedList(context) : _buildSimpleList(context);
   }
 
-
-
-  Widget _buildSearchBar(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: '搜索 描述/备注/收款方…',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: onClearSearch != null
-                    ? IconButton(icon: const Icon(Icons.clear), onPressed: onClearSearch)
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: theme.colorScheme.surface,
-                isDense: true,
-              ),
-              textInputAction: TextInputAction.search,
-              onSubmitted: onSearch,
-            ),
-          ),
-          const SizedBox(width: 8),
-          IconButton(
-            tooltip: groupByDate ? '切换为平铺' : '按日期分组',
-            onPressed: onToggleGroup,
-            icon: Icon(groupByDate ? Icons.view_agenda_outlined : Icons.calendar_today_outlined),
-          ),
-          IconButton(
-            tooltip: '筛选',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('筛选功能开发中')),
-              );
-            },
-            icon: const Icon(Icons.filter_list),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildEmptyState(BuildContext context) {
     return const TransactionList(
       transactions: [],
