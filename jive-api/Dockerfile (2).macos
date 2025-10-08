@@ -1,0 +1,48 @@
+# MacOS M4 (ARM64) 专用Dockerfile
+# 使用预编译的二进制文件方式，避免SQLx编译问题
+
+FROM debian:bookworm-slim
+
+# 安装运行时依赖
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libssl3 \
+    libpq5 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# 创建非root用户
+RUN useradd -m -u 1001 -s /bin/bash jive
+
+WORKDIR /app
+
+# 注意：需要先在MacOS本地编译
+# cargo build --release --bin jive-api
+
+# 复制MacOS编译的二进制文件（需要交叉编译到Linux ARM64）
+# 或者使用Docker内编译的方式
+COPY target/release/jive-api /app/jive-api || echo "需要先本地编译"
+
+# 复制配置文件
+COPY .env.example /app/.env.example
+
+# 创建必要目录
+RUN mkdir -p /app/logs /app/static && \
+    chown -R jive:jive /app && \
+    chmod +x /app/jive-api || true
+
+USER jive
+
+# 环境变量（使用host.docker.internal连接MacOS本地服务）
+ENV RUST_LOG=info \
+    API_PORT=8012 \
+    HOST=0.0.0.0 \
+    DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/jive_money \
+    REDIS_URL=redis://host.docker.internal:6379
+
+EXPOSE 8012
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8012/health || exit 1
+
+CMD ["./jive-api"]

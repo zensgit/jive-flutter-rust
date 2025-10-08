@@ -3,8 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jive_money/services/api/transaction_service.dart';
 import 'package:jive_money/models/transaction.dart';
 import 'package:jive_money/models/transaction_filter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
 
-/// 交易状态
+/// 交易分组方式
+enum TransactionGrouping { date, category, account }
+
 class TransactionState {
   final List<Transaction> transactions;
   final List<Transaction> filteredTransactions;
@@ -14,6 +18,9 @@ class TransactionState {
   final int totalCount;
   final double totalIncome;
   final double totalExpense;
+  // Phase B scaffolding: grouping + collapsed groups
+  final TransactionGrouping grouping;
+  final Set<String> groupCollapse;
 
   const TransactionState({
     this.transactions = const [],
@@ -24,6 +31,8 @@ class TransactionState {
     this.totalCount = 0,
     this.totalIncome = 0.0,
     this.totalExpense = 0.0,
+    this.grouping = TransactionGrouping.date,
+    this.groupCollapse = const {},
   });
 
   TransactionState copyWith({
@@ -35,6 +44,8 @@ class TransactionState {
     int? totalCount,
     double? totalIncome,
     double? totalExpense,
+    TransactionGrouping? grouping,
+    Set<String>? groupCollapse,
   }) {
     return TransactionState(
       transactions: transactions ?? this.transactions,
@@ -45,17 +56,21 @@ class TransactionState {
       totalCount: totalCount ?? this.totalCount,
       totalIncome: totalIncome ?? this.totalIncome,
       totalExpense: totalExpense ?? this.totalExpense,
+      grouping: grouping ?? this.grouping,
+      groupCollapse: groupCollapse ?? this.groupCollapse,
     );
   }
 }
 
 /// 交易控制器
 class TransactionController extends StateNotifier<TransactionState> {
+  final Ref ref;
   final TransactionService _transactionService;
 
-  TransactionController(this._transactionService)
+  TransactionController(this.ref, this._transactionService)
       : super(const TransactionState()) {
     loadTransactions();
+    _loadViewPrefs();
   }
 
   /// 加载交易列表
@@ -77,6 +92,73 @@ class TransactionController extends StateNotifier<TransactionState> {
   Future<void> refresh() async {
     await loadTransactions();
   }
+
+  /// 分组设置
+  void setGrouping(TransactionGrouping grouping) {
+    if (state.grouping == grouping) return;
+    state = state.copyWith(grouping: grouping);
+    _persistGrouping();
+  }
+
+  /// 切换组折叠
+  void toggleGroupCollapse(String key) {
+    final collapsed = Set<String>.from(state.groupCollapse);
+    if (collapsed.contains(key)) {
+      collapsed.remove(key);
+    } else {
+      collapsed.add(key);
+    }
+    state = state.copyWith(groupCollapse: collapsed);
+    _persistGroupCollapse(collapsed);
+  }
+
+  // 视图偏好加载
+  Future<void> _loadViewPrefs() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final ledgerId = ref.read(currentLedgerProvider)?.id;
+      final groupingStr = prefs.getString(_groupingKey(ledgerId));
+      var grouping = state.grouping;
+      if (groupingStr != null) {
+        grouping = TransactionGrouping.values.firstWhere(
+          (g) => g.name == groupingStr,
+          orElse: () => TransactionGrouping.date,
+        );
+      }
+      final collapsedList =
+          prefs.getStringList(_collapseKey(ledgerId)) ?? const <String>[];
+      state = state.copyWith(
+        grouping: grouping,
+        groupCollapse: collapsedList.toSet(),
+      );
+    } catch (_) {}
+  }
+
+  Future<void> _persistGrouping() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final ledgerId = ref.read(currentLedgerProvider)?.id;
+      await prefs.setString(_groupingKey(ledgerId), state.grouping.name);
+    } catch (_) {}
+  }
+
+  Future<void> _persistGroupCollapse(Set<String> collapsed) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final ledgerId = ref.read(currentLedgerProvider)?.id;
+      await prefs.setStringList(_collapseKey(ledgerId), collapsed.toList());
+    } catch (_) {}
+  }
+
+  String _groupingKey(String? ledgerId) =>
+      (ledgerId != null && ledgerId.isNotEmpty)
+          ? 'tx_grouping:' + ledgerId
+          : 'tx_grouping';
+
+  String _collapseKey(String? ledgerId) =>
+      (ledgerId != null && ledgerId.isNotEmpty)
+          ? 'tx_group_collapse:' + ledgerId
+          : 'tx_group_collapse';
 
   /// 添加交易
   Future<bool> addTransaction(Map<String, dynamic> data) async {
@@ -315,7 +397,13 @@ final transactionServiceProvider = Provider<TransactionService>((ref) {
 final transactionControllerProvider =
     StateNotifierProvider<TransactionController, TransactionState>((ref) {
   final service = ref.watch(transactionServiceProvider);
-  return TransactionController(service);
+  final controller = TransactionController(ref, service);
+  ref.listen(currentLedgerProvider, (prev, next) {
+    if (prev?.id != next?.id) {
+      controller._loadViewPrefs();
+    }
+  });
+  return controller;
 });
 
 /// 便捷访问

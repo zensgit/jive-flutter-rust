@@ -1,8 +1,10 @@
 // 预算进度组件
 import 'package:flutter/material.dart';
 import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jive_money/providers/currency_provider.dart';
 
-class BudgetProgress extends StatelessWidget {
+class BudgetProgress extends ConsumerWidget {
   final String category;
   final double budgeted;
   final double spent;
@@ -31,7 +33,7 @@ class BudgetProgress extends StatelessWidget {
   bool get isOverBudget => spent > budgeted;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final progressColor = _getProgressColor();
 
