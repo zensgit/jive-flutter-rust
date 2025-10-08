@@ -27,8 +27,7 @@ import 'package:jive_money/screens/family/family_settings_screen.dart';
 import 'package:jive_money/screens/family/family_dashboard_screen.dart';
 import 'package:jive_money/providers/ledger_provider.dart';
 import 'package:jive_money/screens/travel/travel_list_screen.dart';
-import 'package:jive_money/providers/travel_provider.dart';
-import 'package:jive_money/services/api_service.dart';
+// Travel provider imports removed - handled in individual screens
 
 /// 路由路径常量
 class AppRoutes {
@@ -200,18 +199,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           // 旅行模式
           GoRoute(
             path: AppRoutes.travel,
-            builder: (context, state) {
-              // 确保 TravelProvider 可用
-              return ProviderScope(
-                overrides: [
-                  travelProviderProvider.overrideWith((ref) {
-                    final apiService = ref.read(apiServiceProvider);
-                    return TravelProvider(service: apiService);
-                  }),
-                ],
-                child: const TravelListScreen(),
-              );
-            },
+            builder: (context, state) => const TravelListScreen(),
             routes: [
               GoRoute(
                 path: 'add',
@@ -462,8 +450,5 @@ class PreferencesScreen extends StatelessWidget {
   }
 }
 
-// TravelProvider Provider
-final travelProviderProvider = Provider<TravelProvider>((ref) {
-  final apiService = ref.read(apiServiceProvider);
-  return TravelProvider(service: apiService);
-});
+// TravelProvider is now handled by travelServiceProvider in travel_provider.dart
+// Old provider removed to avoid conflicts
