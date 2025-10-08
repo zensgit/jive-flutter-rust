@@ -150,8 +150,9 @@ class _FamilyPermissionsEditorScreenState
     try {
       // 从服务器加载权限配置
       final permissions =
-          await _familyService.getFamilyPermissions(widget.familyId);
-      final customRoles = await _familyService.getCustomRoles(widget.familyId);
+          await _familyService.getFamilyPermissions(familyId: widget.familyId);
+      final customRoles =
+          await _familyService.getCustomRoles(familyId: widget.familyId);
 
       setState(() {
         _rolePermissions = permissions;
@@ -289,10 +290,8 @@ class _FamilyPermissionsEditorScreenState
               setState(() => _isLoading = true);
 
               try {
-                final success = await _familyService.deleteCustomRole(
-                  widget.familyId,
-                  roleId,
-                );
+                await _familyService.deleteCustomRole(roleId);
+                final success = true;
 
                 if (success) {
                   setState(() {

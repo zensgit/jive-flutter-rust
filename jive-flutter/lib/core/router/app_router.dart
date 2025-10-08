@@ -11,6 +11,7 @@ import 'package:jive_money/screens/home/home_screen.dart';
 import 'package:jive_money/screens/dashboard/dashboard_screen.dart';
 import 'package:jive_money/screens/transactions/transactions_screen.dart';
 import 'package:jive_money/screens/accounts/accounts_screen.dart';
+import 'package:jive_money/screens/accounts/user_assets_screen.dart';
 import 'package:jive_money/screens/budgets/budgets_screen.dart';
 import 'package:jive_money/screens/settings/settings_screen.dart';
 import 'package:jive_money/screens/settings/theme_settings_screen.dart';
@@ -28,6 +29,7 @@ import 'package:jive_money/providers/ledger_provider.dart';
 
 /// 路由路径常量
 class AppRoutes {
+  static const userAssets = '/accounts/assets';
   static const splash = '/';
   static const login = '/login';
   static const register = '/register';
@@ -152,6 +154,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: AppRoutes.accounts,
             builder: (context, state) => const AccountsScreen(),
             routes: [
+              GoRoute(
+                path: 'assets',
+                builder: (context, state) => const UserAssetsScreen(),
+              ),
               GoRoute(
                 path: 'add',
                 builder: (context, state) => const AccountAddScreen(),
