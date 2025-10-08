@@ -309,6 +309,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
         ),
       );
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isSharing = false;
       });
@@ -334,6 +335,7 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
         ),
       );
     } catch (e) {
+      if (!mounted) return;
       messenger.showSnackBar(
         SnackBar(
           content: Text('复制失败: $e'),
