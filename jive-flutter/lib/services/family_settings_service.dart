@@ -178,12 +178,6 @@ class FamilySettingsService extends ChangeNotifier {
         switch (change.entityType) {
           case 'family_settings':
             if (change.type == ChangeType.update) {
-<<<<<<< HEAD
-              await _familyService.updateFamilySettings();
-              success = true;
-            } else if (change.type == ChangeType.delete) {
-              await _familyService.deleteFamilySettings();
-=======
               await _familyService.updateFamilySettings(
                 change.entityId,
                 FamilySettings.fromJson(change.data!).toJson(),
@@ -191,7 +185,6 @@ class FamilySettingsService extends ChangeNotifier {
               success = true;
             } else if (change.type == ChangeType.delete) {
               await _familyService.deleteFamilySettings(change.entityId);
->>>>>>> origin/main
               success = true;
             }
             break;

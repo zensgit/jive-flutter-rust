@@ -17,6 +17,7 @@ use std::sync::Arc;
 use tokio::net::TcpListener;
 use tower::ServiceBuilder;
 use tower_http::{
+    services::ServeDir,
     trace::TraceLayer,
 };
 use tracing::{info, warn, error};
@@ -30,6 +31,7 @@ use jive_money_api::{handlers, services, ws};
 // 导入处理器
 use handlers::template_handler::*;
 use handlers::accounts::*;
+use handlers::banks;
 use handlers::transactions::*;
 use handlers::payees::*;
 use handlers::rules::*;
@@ -248,7 +250,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/accounts/:id", put(update_account))
         .route("/api/v1/accounts/:id", delete(delete_account))
         .route("/api/v1/accounts/statistics", get(get_account_statistics))
-        
+
+        // 银行管理 API
+        .route("/api/v1/banks", get(banks::list_banks))
+        .route("/api/v1/banks/version", get(banks::get_banks_version))
+
         // 交易管理 API
         .route("/api/v1/transactions", get(list_transactions))
         .route("/api/v1/transactions", post(create_transaction))
@@ -284,6 +290,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/payees/suggestions", get(get_payee_suggestions))
         .route("/api/v1/payees/statistics", get(get_payee_statistics))
         .route("/api/v1/payees/merge", post(merge_payees))
+
+        // 静态资源：银行图标
+        .nest_service("/static/bank_icons", ServeDir::new("jive-api/static/bank_icons"))
         
         // 规则引擎 API
         .route("/api/v1/rules", get(list_rules))
@@ -389,7 +398,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/categories/import", post(category_handler::batch_import_templates))
 
         // 静态文件
-        .route("/static/icons/*path", get(serve_icon));
+        .route("/static/icons/*path", get(serve_icon))
+        .nest_service("/static/bank_icons", ServeDir::new("static/bank_icons"));
 
     // 可选 Demo 占位符接口（按特性开关）
     #[cfg(feature = "demo_endpoints")]

@@ -1,5 +1,6 @@
 pub mod template_handler;
 pub mod accounts;
+pub mod banks;
 pub mod transactions;
 pub mod payees;
 pub mod rules;
