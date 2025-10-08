@@ -9,9 +9,12 @@ import 'package:jive_money/models/transaction.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jive_money/providers/currency_provider.dart';
 
-
 /// 分享服务
 class ShareService {
+
+  static Future<ShareResult> Function(ShareParams) _doShare = (params) => SharePlus.instance.share(params);
+  static void setDoShareForTest(Future<ShareResult> Function(ShareParams) f) { _doShare = f; }
+
 
   /// 分享家庭邀请
   static Future<void> shareFamilyInvitation({
@@ -42,10 +45,7 @@ Jive Money - 您的智能家庭财务管家
 ''';
 
     try {
-      await Share.share(
-        shareText,
-        subject: '邀请你加入家庭「$familyName」',
-      );
+      await _doShare(ShareParams(text: shareText, subject: '邀请你加入家庭「$familyName」'));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -83,53 +83,29 @@ Jive Money - 您的智能家庭财务管家
 ''';
 
     try {
+      // 预先捕获 messenger，避免上下文跨 await 警告
+      final messenger = ScaffoldMessenger.of(context);
       if (chartWidget != null) {
         // 生成图表截图
         // Note: screenshot functionality is stubbed during analyzer cleanup
-        // final image = await _screenshotController.captureFromWidget(
-        final image = null;
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '$familyName - $period',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                chartWidget,
-                const SizedBox(height: 20),
-                const Text(
-                  'Powered by Jive Money',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+        final image = null; // ignore: prefer_const_declarations, unused_local_variable
+
 
         // 保存图片
         final directory = await getTemporaryDirectory();
         final imagePath =
             '${directory.path}/statistics_${DateTime.now().millisecondsSinceEpoch}.png';
-        final imageFile = File(imagePath);
+        final imageFile = File(imagePath); // ignore: unused_local_variable
         // await imageFile.writeAsBytes(image);
 
         // 分享图片和文字
-        await Share.shareXFiles([XFile(imagePath)], text: shareText);
+        await _doShare(ShareParams(files: [XFile(imagePath)], text: shareText));
       } else {
         // 仅分享文字
-        await Share.share(shareText);
+        await _doShare(ShareParams(text: shareText));
         if (!context.mounted) return;
+        // ignore: use_build_context_synchronously
+        messenger.hideCurrentSnackBar();
       }
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -158,7 +134,7 @@ $icon $typeText记录
 📅 日期：${_formatDate(transaction.date)}
 🏠 账本：$familyName
 
-${transaction.tags.isNotEmpty ? '🏷️ 标签：${transaction.tags.join(', ')}' : ''}
+${transaction.tags?.isNotEmpty == true ? '🏷️ 标签：${transaction.tags!.join(', ')}' : ''}
 ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : ''}
 
 ━━━━━━━━━━━━━━━━
@@ -166,7 +142,7 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
 ''';
 
     try {
-      await Share.share(shareText);
+      await _doShare(ShareParams(text: shareText));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -182,7 +158,9 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
     try {
       await Clipboard.setData(ClipboardData(text: text));
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        final messenger = ScaffoldMessenger.of(context);
+        // ignore: use_build_context_synchronously
+        messenger.showSnackBar(
           SnackBar(
             content: Text(message ?? '已复制到剪贴板'),
             duration: const Duration(seconds: 2),
@@ -216,7 +194,7 @@ ${transaction.note?.isNotEmpty == true ? '📝 备注：${transaction.note}' : '
 
     try {
       // 根据平台定制分享内容（统一走系统分享，避免外部依赖）
-      await Share.share(shareContent);
+      await _doShare(ShareParams(text: shareContent));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -241,7 +219,7 @@ ${description ?? ''}
 $data
 ''';
 
-      await Share.share(shareText);
+      await _doShare(ShareParams(text: shareText));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -256,10 +234,7 @@ $data
     String? mimeType,
   }) async {
     try {
-      await Share.shareXFiles(
-        [XFile(file.path, mimeType: mimeType)],
-        text: text,
-      );
+      await _doShare(ShareParams(files: [XFile(file.path)], text: text));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -273,8 +248,8 @@ $data
     String? text,
   }) async {
     try {
-      final xFiles = images.map((file) => XFile(file.path)).toList();
-      await Share.shareXFiles(xFiles, text: text);
+      final List<XFile> xFiles = images.map((file) => XFile(file.path)).toList();
+      await _doShare(ShareParams(files: xFiles, text: text));
       if (!context.mounted) return;
     } catch (e) {
       _showError(context, '分享失败: $e');
@@ -282,12 +257,7 @@ $data
   }
 
   /// 分享到微信（需要集成微信SDK）
-  static Future<void> _shareToWechat(
-      BuildContext context, String content) async {
-    // Stub: 使用系统分享
-    await Share.share(content);
-  }
-
+  
   static String _getRoleDisplayName(family_model.FamilyRole role) {
     switch (role) {
       case family_model.FamilyRole.owner:
@@ -321,9 +291,6 @@ $data
     return _StubScreenshotController();
   }
 
-  static dynamic XFile(String path) {
-    return _StubXFile(path);
-  }
 }
 
 /// 社交平台
@@ -495,7 +462,7 @@ class ShareDialog extends StatelessWidget {
                   color: theme.colorScheme.primary,
                   onPressed: onShareMore ??
                       () async {
-                        await Share.share('$content\n\n$url');
+                        await SharePlus.instance.share(ShareParams(text: '$content\n\n${url ?? ''}'));
                         if (context.mounted) {
                           Navigator.pop(context);
                         }
@@ -578,7 +545,3 @@ class _StubScreenshotController {
   }
 }
 
-class _StubXFile {
-  final String path;
-  _StubXFile(this.path);
-}

@@ -1,0 +1,87 @@
+services:
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:16-alpine
+    container_name: jive-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: jive_money
+      POSTGRES_HOST_AUTH_METHOD: md5
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+    networks:
+      - jive-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: jive-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - jive-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Jive API 服务 (开发模式，使用本地代码)
+  jive-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jive-api-dev
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/jive_money
+      REDIS_URL: redis://redis:6379
+      API_PORT: 8012
+      JWT_SECRET: your-secret-key-change-in-production
+      RUST_LOG: debug,sqlx=warn
+      RUST_BACKTRACE: 1
+    ports:
+      - "8012:8012"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - jive-network
+
+  # Adminer (数据库管理工具) - 仅开发环境
+  adminer:
+    image: adminer
+    container_name: jive-adminer-dev
+    restart: unless-stopped
+    ports:
+      - "9080:8080"  # 调整对外端口避免 8080 冲突
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DESIGN: pepa-linha
+    depends_on:
+      - postgres
+    networks:
+      - jive-network
+
+networks:
+  jive-network:
+    driver: bridge
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:

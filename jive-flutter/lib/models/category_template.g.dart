@@ -71,5 +71,8 @@ const _$CategoryGroupEnumMap = {
   CategoryGroup.entertainmentSocial: 'entertainmentSocial',
   CategoryGroup.education: 'education',
   CategoryGroup.finance: 'finance',
+  CategoryGroup.healthEducation: 'healthEducation',
+  CategoryGroup.financial: 'financial',
+  CategoryGroup.business: 'business',
   CategoryGroup.other: 'other',
 };
