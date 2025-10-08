@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../../models/travel_event.dart';
-import '../../models/transaction.dart';
-import '../../providers/travel_provider.dart';
-import '../../providers/transaction_provider.dart';
-import '../../screens/travel/travel_edit_screen.dart';
-import '../../screens/travel/travel_transaction_link_screen.dart';
-import '../../screens/travel/travel_budget_screen.dart';
-import '../../screens/travel/travel_statistics_widget.dart';
-import '../../ui/components/transactions/transaction_list.dart';
-import '../../utils/currency_formatter.dart';
+import 'package:jive_money/models/travel_event.dart';
+import 'package:jive_money/models/transaction.dart';
+import 'package:jive_money/providers/travel_provider.dart';
+import 'package:jive_money/screens/travel/travel_edit_screen.dart';
+import 'package:jive_money/screens/travel/travel_transaction_link_screen.dart';
+import 'package:jive_money/screens/travel/travel_budget_screen.dart';
+import 'package:jive_money/screens/travel/travel_statistics_widget.dart';
+import 'package:jive_money/services/export/travel_export_service.dart';
+import 'package:jive_money/utils/currency_formatter.dart';
 
 class TravelDetailScreen extends ConsumerStatefulWidget {
   final TravelEvent event;
@@ -25,6 +24,7 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
   late TravelEvent _event;
   List<Transaction> _transactions = [];
   bool _isLoading = true;
+  final TravelExportService _exportService = TravelExportService();
 
   @override
   void initState() {
@@ -80,6 +80,43 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
     }
   }
 
+  Future<void> _exportData(String format) async {
+    try {
+      switch (format) {
+        case 'csv':
+          await _exportService.exportToCSV(
+            event: _event,
+            transactions: _transactions,
+          );
+          break;
+        case 'html':
+          await _exportService.exportToHTML(
+            event: _event,
+            transactions: _transactions,
+          );
+          break;
+        case 'json':
+          await _exportService.exportToJSON(
+            event: _event,
+            transactions: _transactions,
+          );
+          break;
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('导出成功 (${format.toUpperCase()})')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('导出失败: $e')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -106,6 +143,43 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
                 _loadData();
               }
             },
+          ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.download),
+            tooltip: '导出报告',
+            onSelected: _exportData,
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'csv',
+                child: Row(
+                  children: [
+                    Icon(Icons.table_chart, size: 20),
+                    SizedBox(width: 8),
+                    Text('导出为 CSV'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'html',
+                child: Row(
+                  children: [
+                    Icon(Icons.web, size: 20),
+                    SizedBox(width: 8),
+                    Text('导出为 HTML'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'json',
+                child: Row(
+                  children: [
+                    Icon(Icons.code, size: 20),
+                    SizedBox(width: 8),
+                    Text('导出为 JSON'),
+                  ],
+                ),
+              ),
+            ],
           ),
           IconButton(
             icon: const Icon(Icons.edit),
