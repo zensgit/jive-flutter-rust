@@ -56,6 +56,7 @@ impl AuthService {
         &self,
         request: RegisterRequest,
     ) -> Result<UserContext, ServiceError> {
+        tracing::info!(target: "auth_service", email = %request.email, username = ?request.username, "register_with_family: start");
         // Check if email already exists
         let exists = sqlx::query_scalar::<_, bool>(
             "SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)"
@@ -119,8 +120,14 @@ impl AuthService {
         
         // Note: We need to commit the user first to use FamilyService
         tx.commit().await?;
-        
-        let family = family_service.create_family(user_id, family_request).await?;
+        tracing::info!(target: "auth_service", user_id = %user_id, "register_with_family: user created, creating family");
+        let family = match family_service.create_family(user_id, family_request).await {
+            Ok(f) => f,
+            Err(e) => {
+                tracing::error!(target: "auth_service", error = ?e, user_id = %user_id, "register_with_family: create_family failed");
+                return Err(e);
+            }
+        };
         
         // Update user's current family
         sqlx::query(
@@ -131,6 +138,7 @@ impl AuthService {
         .execute(&self.pool)
         .await?;
         
+        tracing::info!(target: "auth_service", user_id = %user_id, family_id = %family.id, "register_with_family: success");
         Ok(UserContext {
             user_id,
             email: request.email,

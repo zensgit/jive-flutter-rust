@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  # PostgreSQL数据库（使用不同端口避免冲突）
+  postgres:
+    image: postgres:16-alpine
+    container_name: jive-postgres-docker
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: jive_money
+    ports:
+      - "5433:5432"  # 使用5433端口避免与本地PostgreSQL冲突
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    networks:
+      - jive-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis缓存（使用不同端口避免冲突）
+  redis:
+    image: redis:7-alpine
+    container_name: jive-redis-docker
+    restart: unless-stopped
+    ports:
+      - "6380:6379"  # 使用6380端口避免冲突
+    volumes:
+      - redis_data:/data
+    networks:
+      - jive-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Jive API（在容器内编译，支持热重载）
+  jive-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.ubuntu
+    container_name: jive-api
+    restart: unless-stopped
+    environment:
+      # 连接到Docker内的数据库和Redis
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/jive_money
+      REDIS_URL: redis://redis:6379
+      # API配置
+      API_PORT: 8012
+      HOST: 0.0.0.0
+      RUST_LOG: info
+      # JWT配置
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-this}
+      JWT_EXPIRY: 86400
+      # CORS配置
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3021}
+    ports:
+      - "8012:8012"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - jive-network
+    volumes:
+      # 开发时挂载源码，支持热重载
+      - ./src:/app/src:cached
+      - ./Cargo.toml:/app/Cargo.toml:cached
+      - ./Cargo.lock:/app/Cargo.lock:cached
+      - cargo_cache:/usr/local/cargo/registry
+      - target_cache:/app/target
+      - ./logs:/app/logs
+      - ./static:/app/static
+
+  # Adminer - 数据库管理工具（开发环境）
+  adminer:
+    image: adminer:latest
+    container_name: jive-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    networks:
+      - jive-network
+    depends_on:
+      - postgres
+
+networks:
+  jive-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  cargo_cache:
+  target_cache:

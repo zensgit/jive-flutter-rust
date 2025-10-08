@@ -1,0 +1,50 @@
+# Flutter Web 开发环境 Dockerfile
+FROM ubuntu:22.04
+
+# 设置工作目录
+WORKDIR /app
+
+# 安装必要的系统依赖
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    unzip \
+    xz-utils \
+    zip \
+    libglu1-mesa \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# 下载并安装 Flutter SDK
+ENV FLUTTER_VERSION=3.16.0
+RUN wget -O flutter.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz \
+    && tar xf flutter.tar.xz \
+    && mv flutter /opt/flutter \
+    && rm flutter.tar.xz
+
+# 设置 Flutter 环境变量
+ENV PATH="/opt/flutter/bin:${PATH}"
+ENV FLUTTER_HOME="/opt/flutter"
+
+# 预下载 Flutter 依赖
+RUN flutter doctor -v
+RUN flutter config --enable-web
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制项目文件
+COPY pubspec.* ./
+RUN flutter pub get
+
+# 复制源码
+COPY . .
+
+# 构建 Web 应用
+RUN flutter build web
+
+# 暴露端口
+EXPOSE 3000
+
+# 启动命令
+CMD ["flutter", "run", "-d", "web-server", "--web-port", "3000", "--web-hostname", "0.0.0.0"]

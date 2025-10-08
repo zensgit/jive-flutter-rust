@@ -15,7 +15,6 @@ class SourceBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = _labelFor(source);
-    final cs = Theme.of(context).colorScheme;
     final color = _colorFor(context, source);
     return Container(
       padding: padding,

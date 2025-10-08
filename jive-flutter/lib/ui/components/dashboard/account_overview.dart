@@ -38,7 +38,7 @@ class AccountOverview extends ConsumerWidget {
     }
 
     // 按类型分组账户
-    final Map<AccountType, List<Account>> groupedAccounts = {};
+    // final Map<AccountType, List<Account>> groupedAccounts = {};
     double totalAssets = accountState.totalAssets;
     double totalLiabilities = accountState.totalLiabilities;
 
