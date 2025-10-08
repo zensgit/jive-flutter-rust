@@ -522,7 +522,7 @@ class TravelExportService {
       await file.writeAsString(content);
 
       // Share the file
-      await SharePlus.shareXFiles(
+      await Share.shareXFiles(
         [XFile(file.path, mimeType: mimeType)],
         subject: 'Travel Report Export',
         text: 'Travel report exported from Jive Money',

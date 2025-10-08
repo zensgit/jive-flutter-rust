@@ -8,6 +8,7 @@ import 'package:jive_money/screens/travel/travel_edit_screen.dart';
 import 'package:jive_money/screens/travel/travel_transaction_link_screen.dart';
 import 'package:jive_money/screens/travel/travel_budget_screen.dart';
 import 'package:jive_money/screens/travel/travel_statistics_widget.dart';
+import 'package:jive_money/screens/travel/travel_photo_gallery_screen.dart';
 import 'package:jive_money/services/export/travel_export_service.dart';
 import 'package:jive_money/utils/currency_formatter.dart';
 
@@ -127,6 +128,20 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
       appBar: AppBar(
         title: Text(_event.name),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.photo_library),
+            tooltip: '照片',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TravelPhotoGalleryScreen(
+                    travelEvent: _event,
+                  ),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.account_balance_wallet),
             tooltip: '预算管理',
