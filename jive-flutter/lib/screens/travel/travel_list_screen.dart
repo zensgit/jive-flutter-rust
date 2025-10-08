@@ -1,140 +1,133 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:jive_money/providers/travel_provider.dart';
 import 'package:jive_money/models/travel_event.dart';
-import 'package:jive_money/core/router/app_router.dart';
+import 'travel_detail_screen.dart';
+import 'travel_create_dialog.dart';
 
-class TravelListScreen extends ConsumerStatefulWidget {
-  const TravelListScreen({super.key});
+class TravelListScreen extends StatefulWidget {
+  const TravelListScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<TravelListScreen> createState() => _TravelListScreenState();
+  State<TravelListScreen> createState() => _TravelListScreenState();
 }
 
-class _TravelListScreenState extends ConsumerState<TravelListScreen> {
+class _TravelListScreenState extends State<TravelListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // 加载旅行列表
+    Future.microtask(() {
+      context.read<TravelProvider>().loadTravelEvents();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final eventsAsync = ref.watch(travelEventsProvider);
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('旅行记录'),
+        title: const Text('旅行模式'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () => context.push(AppRoutes.travelAdd),
+            onPressed: _showCreateDialog,
           ),
         ],
       ),
-      body: eventsAsync.when(
-        data: (events) => _buildEventsList(events),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 48, color: Colors.red),
-              const SizedBox(height: 16),
-              Text('加载失败: ${error.toString()}'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => ref.refresh(travelEventsProvider),
-                child: const Text('重试'),
-              ),
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(AppRoutes.travelAdd),
-        icon: const Icon(Icons.flight_takeoff),
-        label: const Text('新建旅行'),
-      ),
-    );
-  }
+      body: Consumer<TravelProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-  Widget _buildEventsList(List<TravelEvent> events) {
-    if (events.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.travel_explore,
-              size: 96,
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              '还没有旅行记录',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '点击下方按钮创建你的第一个旅行',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+          if (provider.travelEvents.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.flight_takeoff,
+                    size: 80,
+                    color: Theme.of(context).colorScheme.secondary,
                   ),
+                  const SizedBox(height: 16),
+                  Text(
+                    '还没有旅行计划',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  const Text('点击右上角创建你的第一个旅行'),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: _showCreateDialog,
+                    icon: const Icon(Icons.add),
+                    label: const Text('创建旅行'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () => provider.loadTravelEvents(),
+            child: ListView.builder(
+              padding: const EdgeInsets.all(8),
+              itemCount: provider.travelEvents.length,
+              itemBuilder: (context, index) {
+                final travel = provider.travelEvents[index];
+                return _TravelCard(
+                  travel: travel,
+                  onTap: () => _navigateToDetail(travel),
+                );
+              },
             ),
-          ],
-        ),
-      );
-    }
-
-    // Group events by status
-    final activeEvents = events.where((e) => e.status == TravelEventStatus.active).toList();
-    final upcomingEvents = events.where((e) => e.status == TravelEventStatus.upcoming).toList();
-    final completedEvents = events.where((e) => e.status == TravelEventStatus.completed).toList();
-
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        if (activeEvents.isNotEmpty) ...[
-          _buildSectionHeader('正在进行', Icons.flight, Colors.green),
-          ...activeEvents.map((event) => _buildEventCard(event)),
-          const SizedBox(height: 24),
-        ],
-        if (upcomingEvents.isNotEmpty) ...[
-          _buildSectionHeader('即将开始', Icons.schedule, Colors.orange),
-          ...upcomingEvents.map((event) => _buildEventCard(event)),
-          const SizedBox(height: 24),
-        ],
-        if (completedEvents.isNotEmpty) ...[
-          _buildSectionHeader('已完成', Icons.check_circle, Colors.grey),
-          ...completedEvents.map((event) => _buildEventCard(event)),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildSectionHeader(String title, IconData icon, Color color) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: color),
-          const SizedBox(width: 8),
-          Text(
-            title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildEventCard(TravelEvent event) {
+  void _showCreateDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => const TravelCreateDialog(),
+    ).then((result) {
+      if (result == true) {
+        // 刷新列表
+        context.read<TravelProvider>().loadTravelEvents();
+      }
+    });
+  }
+
+  void _navigateToDetail(TravelEvent travel) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TravelDetailScreen(travelId: travel.id),
+      ),
+    );
+  }
+}
+
+class _TravelCard extends StatelessWidget {
+  final TravelEvent travel;
+  final VoidCallback onTap;
+
+  const _TravelCard({
+    Key? key,
+    required this.travel,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final statusColor = _getStatusColor(event.status);
+    final colorScheme = theme.colorScheme;
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: InkWell(
-        onTap: () => context.push('${AppRoutes.travel}/${event.id}'),
+        onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -145,57 +138,52 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      event.name,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      travel.tripName,
+                      style: theme.textTheme.titleLarge,
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: statusColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      _getStatusText(event.status),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: statusColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+                  _StatusChip(status: travel.status),
                 ],
               ),
-              if (event.description?.isNotEmpty ?? false) ...[
-                const SizedBox(height: 8),
-                Text(
-                  event.description!,
-                  style: theme.textTheme.bodyMedium,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.calendar_today, size: 16, color: theme.colorScheme.onSurfaceVariant),
+                  Icon(Icons.calendar_today,
+                    size: 16,
+                    color: colorScheme.onSurfaceVariant),
                   const SizedBox(width: 4),
                   Text(
-                    '${_formatDate(event.startDate)} - ${_formatDate(event.endDate)}',
-                    style: theme.textTheme.bodySmall,
-                  ),
-                  const Spacer(),
-                  if (event.budget != null) ...[
-                    Icon(Icons.account_balance_wallet, size: 16, color: theme.colorScheme.onSurfaceVariant),
-                    const SizedBox(width: 4),
-                    Text(
-                      '预算: ${event.budget!.toStringAsFixed(0)} ${event.currency}',
-                      style: theme.textTheme.bodySmall,
+                    '${_formatDate(travel.startDate)} - ${_formatDate(travel.endDate)}',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
                     ),
-                  ],
+                  ),
+                  const SizedBox(width: 16),
+                  Icon(Icons.timer_outlined,
+                    size: 16,
+                    color: colorScheme.onSurfaceVariant),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${travel.durationDays}天',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
+              if (travel.totalBudget != null) ...[
+                const SizedBox(height: 12),
+                _BudgetProgress(travel: travel),
+              ],
+              if (travel.transactionCount > 0) ...[
+                const SizedBox(height: 8),
+                Text(
+                  '${travel.transactionCount} 笔交易',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -203,33 +191,127 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
     );
   }
 
-  Color _getStatusColor(TravelEventStatus status) {
-    switch (status) {
-      case TravelEventStatus.upcoming:
-        return Colors.orange;
-      case TravelEventStatus.active:
-        return Colors.green;
-      case TravelEventStatus.completed:
-        return Colors.grey;
-      case TravelEventStatus.cancelled:
-        return Colors.red;
-    }
-  }
-
-  String _getStatusText(TravelEventStatus status) {
-    switch (status) {
-      case TravelEventStatus.upcoming:
-        return '即将开始';
-      case TravelEventStatus.active:
-        return '进行中';
-      case TravelEventStatus.completed:
-        return '已完成';
-      case TravelEventStatus.cancelled:
-        return '已取消';
-    }
-  }
-
   String _formatDate(DateTime date) {
-    return '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
+    return '${date.month}月${date.day}日';
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  final String status;
+
+  const _StatusChip({
+    Key? key,
+    required this.status,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    Color backgroundColor;
+    Color textColor;
+    String label;
+
+    switch (status.toLowerCase()) {
+      case 'planning':
+        backgroundColor = Colors.blue.shade100;
+        textColor = Colors.blue.shade800;
+        label = '计划中';
+        break;
+      case 'active':
+        backgroundColor = Colors.green.shade100;
+        textColor = Colors.green.shade800;
+        label = '进行中';
+        break;
+      case 'completed':
+        backgroundColor = Colors.grey.shade200;
+        textColor = Colors.grey.shade700;
+        label = '已完成';
+        break;
+      case 'cancelled':
+        backgroundColor = Colors.red.shade100;
+        textColor = Colors.red.shade800;
+        label = '已取消';
+        break;
+      default:
+        backgroundColor = Colors.grey.shade200;
+        textColor = Colors.grey.shade700;
+        label = status;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: textColor,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+class _BudgetProgress extends StatelessWidget {
+  final TravelEvent travel;
+
+  const _BudgetProgress({
+    Key? key,
+    required this.travel,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (travel.totalBudget == null || travel.totalBudget == 0) {
+      return const SizedBox.shrink();
+    }
+
+    final percentage = travel.budgetUsagePercent ?? 0;
+    final isOverBudget = percentage > 100;
+    final progressColor = isOverBudget
+      ? Colors.red
+      : (percentage > 80 ? Colors.orange : Colors.green);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '预算: ${travel.budgetCurrencyCode ?? 'USD'} ${travel.totalBudget?.toStringAsFixed(0)}',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            Text(
+              '${percentage.toStringAsFixed(0)}%',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: progressColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: (percentage / 100).clamp(0, 1),
+            backgroundColor: Colors.grey.shade200,
+            valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+            minHeight: 6,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '已花费: ${travel.homeCurrencyCode} ${travel.totalSpent.toStringAsFixed(0)}',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
   }
 }

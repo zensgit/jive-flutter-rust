@@ -106,11 +106,9 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
 
   Future<void> _loadStatistics() async {
     try {
-      final stats = await _auditService.getAuditStatistics(
-        familyId: widget.familyId,
-      );
+      final stats = await _auditService.getAuditStatistics(familyId: widget.familyId);
       setState(() {
-        _statistics = AuditLogStatistics.fromJson(stats);
+        _statistics = stats;
       });
     } catch (e) {
       // 统计信息加载失败不影响主功能

@@ -1,0 +1,80 @@
+# 多架构Dockerfile - 支持AMD64和ARM64
+# 在Docker容器内编译，避免主机系统差异
+FROM rust:latest AS builder
+
+# 安装构建依赖
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# 先复制依赖文件，利用Docker层缓存
+COPY Cargo.toml Cargo.lock ./
+
+# 创建源码占位文件，先编译依赖
+RUN mkdir src && \
+    echo "fn main() {println!(\"placeholder\");}" > src/main.rs && \
+    echo "fn main() {}" > src/main_simple.rs && \
+    echo "fn main() {}" > src/main_simple_ws.rs && \
+    echo "fn main() {}" > src/main_with_ws.rs
+
+# 编译依赖（这一步会缓存）
+RUN cargo build --release --bin jive-api || true
+
+# 删除占位文件
+RUN rm -rf src
+
+# 复制真实源码
+COPY src ./src
+
+# 复制环境文件
+COPY .env.example ./
+
+# 重新编译（只编译源码，依赖已缓存）
+# 使用环境变量跳过SQLx编译时检查
+ENV SQLX_OFFLINE=false
+RUN touch src/main.rs && \
+    cargo build --release --bin jive-api || \
+    (echo "Warning: Build with SQLx checks failed, retrying without checks..." && \
+     SQLX_OFFLINE=true cargo build --release --bin jive-api)
+
+# 运行阶段 - 最小化镜像
+FROM debian:bookworm-slim
+
+# 安装运行时依赖
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libssl3 \
+    libpq5 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# 创建非root用户
+RUN useradd -m -u 1001 -s /bin/bash jive
+
+WORKDIR /app
+
+# 从构建阶段复制二进制文件
+COPY --from=builder /app/target/release/jive-api /app/jive-api
+COPY --from=builder /app/.env.example /app/.env.example
+
+# 创建必要目录
+RUN mkdir -p /app/logs /app/static && \
+    chown -R jive:jive /app
+
+USER jive
+
+# 默认环境变量
+ENV RUST_LOG=info \
+    API_PORT=8012 \
+    HOST=0.0.0.0
+
+EXPOSE 8012
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8012/health || exit 1
+
+CMD ["./jive-api"]

@@ -40,7 +40,7 @@ class SecondaryButton extends StatelessWidget {
         onPressed: isEnabled ? onPressed : null,
         style: OutlinedButton.styleFrom(
           foregroundColor: textColor ?? theme.primaryColor,
-          padding: padding ?? EdgeInsets.symmetric(horizontal: 24),
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 24),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
           ),

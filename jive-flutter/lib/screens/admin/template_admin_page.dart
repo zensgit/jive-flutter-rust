@@ -129,18 +129,20 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
       _isCreating = template == null;
     });
 
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => _TemplateEditorDialog(
         template: template,
         onSave: (updatedTemplate) async {
+          final messenger = ScaffoldMessenger.of(context);
+          final navigator = Navigator.of(context);
           try {
             if (_isCreating) {
               await _categoryService.createTemplate(updatedTemplate);
               if (!mounted) return;
-              // ignore: use_build_context_synchronously
-              final messenger = ScaffoldMessenger.of(context);
               messenger.showSnackBar(
                 const SnackBar(
                   content: Text('模板创建成功'),
@@ -150,8 +152,6 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
             } else {
               await _categoryService.updateTemplate(updatedTemplate.id, updatedTemplate.toJson());
               if (!mounted) return;
-              // ignore: use_build_context_synchronously
-              final messenger = ScaffoldMessenger.of(context);
               messenger.showSnackBar(
                 const SnackBar(
                   content: Text('模板更新成功'),
@@ -159,14 +159,10 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
                 ),
               );
             }
-            // ignore: use_build_context_synchronously
-            final navigator = Navigator.of(context);
             navigator.pop();
             _loadTemplates();
           } catch (e) {
             if (!mounted) return;
-            // ignore: use_build_context_synchronously
-            final messenger = ScaffoldMessenger.of(context);
             messenger.showSnackBar(
               SnackBar(
                 content: Text('保存失败: $e'),
@@ -176,7 +172,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
           }
         },
         onCancel: () {
-          Navigator.pop(context);
+          navigator.pop();
         },
       ),
     );
@@ -206,6 +202,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
     );
 
     if (confirmed == true) {
+      final messenger = ScaffoldMessenger.of(context);
       try {
         await _categoryService.deleteTemplate(template.id);
         if (!mounted) return;
@@ -231,6 +228,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
   Future<void> _toggleFeatured(SystemCategoryTemplate template) async {
     final messenger = ScaffoldMessenger.of(context);
     try {
+      final messenger = ScaffoldMessenger.of(context);
       template.setFeatured(!template.isFeatured);
       await _categoryService.updateTemplate(template.id, {'isFeatured': !template.isFeatured});
       if (!mounted) return;
