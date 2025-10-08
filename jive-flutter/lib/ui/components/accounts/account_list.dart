@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:jive_money/core/constants/app_constants.dart';
 import 'package:jive_money/ui/components/cards/account_card.dart';
 import 'package:jive_money/ui/components/loading/loading_widget.dart';
-import 'package:jive_money/models/account.dart';
+import 'package:jive_money/models/account.dart' as model;
 
 // 类型别名以兼容现有代码
-typedef AccountData = Account;
+typedef AccountData = model.Account;
 
 class AccountList extends StatelessWidget {
   final List<AccountData> accounts;
@@ -102,7 +102,7 @@ class AccountList extends StatelessWidget {
             itemCount: accounts.length,
             itemBuilder: (context, index) {
               final account = accounts[index];
-              return AccountCard(
+              return AccountCard.fromAccount(
                 account: account,
                 onTap: () => onAccountTap?.call(account),
                 onLongPress: () => onAccountLongPress?.call(account),
@@ -138,7 +138,7 @@ class AccountList extends StatelessWidget {
 
                   // 该类型的账户
                   ...typeAccounts.map(
-                    (account) => AccountCard(
+                    (account) => AccountCard.fromAccount(
                       account: account,
                       onTap: () => onAccountTap?.call(account),
                       onLongPress: () => onAccountLongPress?.call(account),
@@ -284,10 +284,11 @@ class AccountList extends StatelessWidget {
     final Map<AccountType, List<AccountData>> grouped = {};
 
     for (final account in accounts) {
-      if (!grouped.containsKey(account.type)) {
-        grouped[account.type] = [];
+      final key = _toUiAccountType(account.type);
+      if (!grouped.containsKey(key)) {
+        grouped[key] = [];
       }
-      grouped[account.type]!.add(account);
+      grouped[key]!.add(account);
     }
 
     // 按类型排序：资产、负债
@@ -299,7 +300,7 @@ class AccountList extends StatelessWidget {
 
   double _calculateTotal(AccountType type) {
     return accounts
-        .where((account) => account.type == type)
+        .where((account) => _matchesLocalType(type, account.type))
         .fold(0.0, (sum, account) => sum + account.balance);
   }
 
@@ -359,6 +360,26 @@ enum AccountSubType {
   loan, // 贷款
   mortgage, // 房贷
 }
+
+
+  // Model<->UI AccountType adapter
+  // Map model.AccountType (checking/savings/creditCard/loan/...) to local grouping (asset/liability)
+  AccountType _toUiAccountType(model.AccountType t) {
+    switch (t) {
+      case model.AccountType.creditCard:
+      case model.AccountType.loan:
+        return AccountType.liability;
+      default:
+        return AccountType.asset;
+    }
+  }
+
+  bool _matchesLocalType(AccountType localType, model.AccountType modelType) {
+    final isLiability = modelType == model.AccountType.creditCard || modelType == model.AccountType.loan;
+    if (localType == AccountType.liability) return isLiability;
+    return !isLiability;
+  }
+
 
 /// 账户分组列表
 class GroupedAccountList extends StatelessWidget {
@@ -421,11 +442,9 @@ class GroupedAccountList extends StatelessWidget {
               : null,
           children: accounts
               .map(
-                (account) => AccountCard(
+                (account) => AccountCard.fromAccount(
                   account: account,
                   onTap: () => onAccountTap?.call(account),
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 ),
               )
               .toList(),
