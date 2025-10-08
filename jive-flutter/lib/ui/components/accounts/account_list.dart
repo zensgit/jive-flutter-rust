@@ -304,6 +304,15 @@ class AccountList extends StatelessWidget {
         .fold(0.0, (sum, account) => sum + account.balance);
   }
 
+  AccountType _toUiType(model.AccountType type) {
+    switch (type) {
+      case model.AccountType.asset:
+        return AccountType.asset;
+      case model.AccountType.liability:
+        return AccountType.liability;
+    }
+  }
+
   IconData _getTypeIcon(AccountType type) {
     switch (type) {
       case AccountType.asset:

@@ -106,7 +106,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
 
   Future<void> _loadStatistics() async {
     try {
-      final stats = await _auditService.getAuditStatistics(widget.familyId);
+      final stats = await _auditService.getAuditStatistics(familyId: widget.familyId);
       setState(() {
         _statistics = stats;
       });

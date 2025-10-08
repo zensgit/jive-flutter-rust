@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库 (使用已有本地镜像或系统安装)
+  postgres:
+    image: postgres:15-alpine
+    container_name: jive-postgres-offline
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: jive_money
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5433:5432"  # 使用不同端口避免冲突
+    volumes:
+      - postgres-offline-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d jive_money"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis 缓存 (简化版本)
+  redis:
+    image: redis:7-alpine
+    container_name: jive-redis-offline
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "6380:6379"  # 使用不同端口避免冲突
+    volumes:
+      - redis-offline-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres-offline-data:
+    driver: local
+  redis-offline-data:
+    driver: local
+
+networks:
+  default:
+    name: jive-offline-network

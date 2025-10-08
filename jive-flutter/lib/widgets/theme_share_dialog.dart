@@ -346,9 +346,9 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
   }
 
   Future<void> _copyText(String text) async {
+    final messenger = ScaffoldMessenger.of(context);
     await Clipboard.setData(ClipboardData(text: text));
     if (!mounted) return;
-    final messenger = ScaffoldMessenger.of(context);
     messenger.showSnackBar(
       const SnackBar(
         content: Text('已复制到剪贴板'),

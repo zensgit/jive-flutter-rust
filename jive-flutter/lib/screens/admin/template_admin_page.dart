@@ -129,6 +129,8 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
       _isCreating = template == null;
     });
 
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -177,6 +179,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
   }
 
   Future<void> _deleteTemplate(SystemCategoryTemplate template) async {
+    final messenger = ScaffoldMessenger.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -223,6 +226,7 @@ class _TemplateAdminPageState extends State<TemplateAdminPage>
   }
 
   Future<void> _toggleFeatured(SystemCategoryTemplate template) async {
+    final messenger = ScaffoldMessenger.of(context);
     try {
       final messenger = ScaffoldMessenger.of(context);
       template.setFeatured(!template.isFeatured);

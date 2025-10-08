@@ -722,9 +722,12 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
   }
 
   Future<void> _saveTheme() async {
+    // Capture before awaits to avoid using context across async gaps
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
     if (_nameController.text.trim().isEmpty) {
       // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         const SnackBar(
           content: Text('请输入主题名称'),
           backgroundColor: Colors.red,
@@ -758,10 +761,10 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
       if (!mounted) return;
 
       // ignore: use_build_context_synchronously
-      Navigator.of(context).pop(finalTheme);
+      navigator.pop(finalTheme);
     } catch (e) {
       // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text('保存失败: $e'),
           backgroundColor: Colors.red,

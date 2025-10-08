@@ -80,6 +80,9 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
     });
 
     try {
+      // Capture UI handles before async work
+      final navigator = Navigator.of(context);
+      final messenger = ScaffoldMessenger.of(context);
       final familyService = FamilyService();
       await familyService.deleteFamily(widget.family.id);
 
