@@ -423,6 +423,7 @@ class _AccountAddScreenState extends ConsumerState<AccountAddScreen> {
         'is_default': _isDefault,
         'exclude_from_stats': _excludeFromStats,
         'ledger_id': ref.read(currentLedgerProvider)?.id,
+        'bank_id': _selectedBank?.id,
       };
 
       // 显示成功消息（TODO: 实际保存后再提示）

@@ -185,7 +185,6 @@ class FamilySettingsService extends ChangeNotifier {
               success = true;
             } else if (change.type == ChangeType.delete) {
               await _familyService.deleteFamilySettings(change.entityId);
-
               success = true;
             }
             break;
