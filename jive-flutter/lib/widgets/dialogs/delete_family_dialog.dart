@@ -40,6 +40,9 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
   Future<void> _deleteFamily() async {
     if (!_isNameValid) return;
 
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
     // 二次确认
     final secondConfirm = await showDialog<bool>(
       context: context,
@@ -77,15 +80,17 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
     });
 
     try {
+      // Capture UI handles before async work
+      final navigator = Navigator.of(context);
+      final messenger = ScaffoldMessenger.of(context);
       final familyService = FamilyService();
       await familyService.deleteFamily(widget.family.id);
 
       // 刷新Family列表
       final _ = ref.refresh(userFamiliesProvider);
 
-      if (!mounted) return;
-
-      // 如果删除的是当前Family，切换到其他Family或显示空状态
+      if (mounted) {
+        // 如果删除的是当前Family，切换到其他Family或显示空状态
         final currentFamily = ref.read(currentFamilyProvider);
         if (currentFamily?.id == widget.family.id) {
           final families = ref.read(userFamiliesProvider);
@@ -93,12 +98,10 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
             // 切换到第一个可用的Family
             await familyService.switchFamily(families.first.family.id);
             if (!mounted) return;
-            final __ = ref.refresh(currentFamilyProvider);
+            final _ = ref.refresh(currentFamilyProvider);
           }
         }
 
-        final navigator = Navigator.of(context);
-        final messenger = ScaffoldMessenger.of(context);
         navigator.pop(true);
         messenger.showSnackBar(
           SnackBar(
@@ -112,6 +115,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
           '/dashboard',
           (route) => false,
         );
+      }
     } catch (e) {
       setState(() {
         _isDeleting = false;

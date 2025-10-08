@@ -2,11 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:jive_money/services/api/family_service.dart';
+import 'dart:async';
 
 /// 家庭设置服务 - 负责设置的持久化和同步
 class FamilySettingsService extends ChangeNotifier {
   static const String _keyPrefix = 'family_settings_';
-  static const String _keySyncStatus = 'sync_status';
+  // static const String _keySyncStatus = 'sync_status'; // unused
   static const String _keyLastSync = 'last_sync';
   static const String _keyPendingChanges = 'pending_changes';
 
@@ -66,7 +67,7 @@ class FamilySettingsService extends ChangeNotifier {
     ));
 
     // 尝试同步
-    _syncToServer();
+    unawaited(_syncToServer());
 
     notifyListeners();
   }
@@ -115,7 +116,7 @@ class FamilySettingsService extends ChangeNotifier {
       timestamp: DateTime.now(),
     ));
 
-    _syncToServer();
+    unawaited(_syncToServer());
     notifyListeners();
   }
 
@@ -137,7 +138,7 @@ class FamilySettingsService extends ChangeNotifier {
       timestamp: DateTime.now(),
     ));
 
-    _syncToServer();
+    unawaited(_syncToServer());
     notifyListeners();
   }
 
@@ -177,13 +178,14 @@ class FamilySettingsService extends ChangeNotifier {
         switch (change.entityType) {
           case 'family_settings':
             if (change.type == ChangeType.update) {
-              success = await _familyService.updateFamilySettings(
+              await _familyService.updateFamilySettings(
                 change.entityId,
                 FamilySettings.fromJson(change.data!).toJson(),
               );
+              success = true;
             } else if (change.type == ChangeType.delete) {
-              success =
-                  await _familyService.deleteFamilySettings(change.entityId);
+              await _familyService.deleteFamilySettings(change.entityId);
+              success = true;
             }
             break;
 
@@ -225,7 +227,7 @@ class FamilySettingsService extends ChangeNotifier {
 
   /// 强制同步
   Future<void> forceSync() async {
-    await _syncToServer();
+    unawaited(_syncToServer());
   }
 
   /// 从服务器拉取最新设置
