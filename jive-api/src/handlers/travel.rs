@@ -201,7 +201,7 @@ pub async fn create_travel_event(
     }
 
     // 创建旅行事件
-    let settings_json = serde_json::to_value(&input.settings.unwrap_or_default())
+    let settings_json = serde_json::to_value(input.settings.unwrap_or_default())
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
     let user_id = claims.user_id()?;
