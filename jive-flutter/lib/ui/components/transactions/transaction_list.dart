@@ -6,16 +6,11 @@ import 'package:jive_money/ui/components/loading/loading_widget.dart';
 import 'package:jive_money/models/transaction.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jive_money/providers/currency_provider.dart';
 
 // 类型别名以兼容现有代码
 typedef TransactionData = Transaction;
 
 class TransactionList extends ConsumerWidget {
-  // Phase A: lightweight search/group controls
-  final ValueChanged<String>? onSearch;
-  final VoidCallback? onClearSearch;
-  final VoidCallback? onToggleGroup;
   final List<TransactionData> transactions;
   final bool groupByDate;
   final bool showSearchBar;
@@ -25,6 +20,10 @@ class TransactionList extends ConsumerWidget {
   final Function(TransactionData)? onTransactionLongPress;
   final ScrollController? scrollController;
   final bool isLoading;
+  // Optional formatter for group header amounts (for testability)
+  final String Function(double amount)? formatAmount;
+  // Optional custom item builder for transactions (testability)
+  final Widget Function(TransactionData t)? transactionItemBuilder;
 
   const TransactionList({
     super.key,
@@ -37,9 +36,8 @@ class TransactionList extends ConsumerWidget {
     this.onTransactionLongPress,
     this.scrollController,
     this.isLoading = false,
-    this.onSearch,
-    this.onClearSearch,
-    this.onToggleGroup,
+    this.formatAmount,
+    this.transactionItemBuilder,
   });
 
   @override
@@ -52,14 +50,9 @@ class TransactionList extends ConsumerWidget {
       return _buildEmptyState(context);
     }
 
-    final listContent = groupByDate ? _buildGroupedList(context, ref) : _buildSimpleList(context, ref);
-
-    final content = Column(
-      children: [
-        if (showSearchBar) _buildSearchBar(context),
-        Expanded(child: listContent),
-      ],
-    );
+    final content = groupByDate
+        ? _buildGroupedList(context, ref)
+        : _buildSimpleList(context, ref);
 
     if (onRefresh != null) {
       return RefreshIndicator(
@@ -70,65 +63,6 @@ class TransactionList extends ConsumerWidget {
 
     return content;
   }
-
-  // 顶部搜索/分组切换栏（Phase A）
-  Widget _buildSearchBar(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: '搜索 描述/备注/收款方…',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: onClearSearch != null
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: onClearSearch,
-                      )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: theme.colorScheme.surface,
-                isDense: true,
-              ),
-              textInputAction: TextInputAction.search,
-              onSubmitted: onSearch,
-            ),
-          ),
-          const SizedBox(width: 8),
-          IconButton(
-            tooltip: groupByDate ? '切换为平铺' : '按日期分组',
-            onPressed: onToggleGroup,
-            icon: Icon(
-              groupByDate
-                  ? Icons.view_agenda_outlined
-                  : Icons.calendar_today_outlined,
-            ),
-          ),
-          IconButton(
-            tooltip: '筛选',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('筛选功能开发中')),
-              );
-            },
-            icon: const Icon(Icons.filter_list),
-          ),
-        ],
-      ),
-    );
-  }
-
-
-
-
 
   Widget _buildEmptyState(BuildContext context) {
     final theme = Theme.of(context);
@@ -161,169 +95,94 @@ class TransactionList extends ConsumerWidget {
     );
   }
 
-  Widget _buildSimpleList(BuildContext context, WidgetRef ref) {
+  
+  Widget _buildItem(BuildContext context, TransactionData t) {
+    if (transactionItemBuilder != null) {
+      return transactionItemBuilder!(t);
+    }
+    return TransactionCard(
+      transaction: t,
+      onTap: () => onTransactionTap?.call(t),
+      onLongPress: () => onTransactionLongPress?.call(t),
+      showDate: true,
+    );
+  }
+
+Widget _buildSimpleList(BuildContext context, WidgetRef ref) {
     return ListView.builder(
       controller: scrollController,
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: transactions.length,
       itemBuilder: (context, index) {
-        final transaction = transactions[index];
-        return TransactionCard(
-          transaction: transaction,
-          onTap: () => onTransactionTap?.call(transaction),
-          onLongPress: () => onTransactionLongPress?.call(transaction),
-          showDate: true,
-        );
+        final t = transactions[index];
+        return _buildItem(context, t);
       },
     );
   }
 
-  Widget _buildGroupedList(BuildContext context, WidgetRef ref) {
-    final groupedTransactions = _groupTransactionsByDate();
-    final theme = Theme.of(context);
 
+
+  Widget _buildGroupedList(BuildContext context, WidgetRef ref) {
+    final grouped = _groupTransactionsByDate(transactions);
+    final theme = Theme.of(context);
     return ListView.builder(
       controller: scrollController,
       padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: groupedTransactions.length,
+      itemCount: grouped.length,
       itemBuilder: (context, index) {
-        final group = groupedTransactions.entries.elementAt(index);
-        final date = group.key;
-        final dayTransactions = group.value;
-
+        final entry = grouped.entries.elementAt(index);
+        final date = entry.key;
+        final dayTxs = entry.value;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 日期头部
-            _buildDateHeader(context, ref, theme, date, dayTransactions),
-
-            // 该日期的交易
-            ...dayTransactions.map(
-              (transaction) => TransactionCard(
-                transaction: transaction,
-                onTap: () => onTransactionTap?.call(transaction),
-                onLongPress: () => onTransactionLongPress?.call(transaction),
-                showDate: false,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Text(
+                _formatDateTL(date),
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
+            ...dayTxs.map((t) => transactionItemBuilder != null
+                ? transactionItemBuilder!(t)
+                : TransactionCard(
+                    transaction: t,
+                    onTap: () => onTransactionTap?.call(t),
+                    onLongPress: () => onTransactionLongPress?.call(t),
+                    showDate: false,
+                  )),
           ],
         );
       },
     );
   }
 
-  Widget _buildDateHeader(BuildContext context, WidgetRef ref, ThemeData theme,
-      DateTime date, List<TransactionData> transactions) {
-    final total = _calculateDayTotal(transactions);
-    final isPositive = total >= 0;
-    final base = ref.watch(baseCurrencyProvider).code;
-    final formatted =
-        ref.read(currencyProvider.notifier).formatCurrency(total.abs(), base);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          // 日期
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                _formatDate(date),
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Text(
-                _formatWeekday(date),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
-            ],
-          ),
-
-          const Spacer(),
-
-          // 当日总计
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${transactions.length} 笔交易',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
-              Text(
-                '${total >= 0 ? '+' : '-'}$formatted',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: isPositive
-                      ? AppConstants.successColor
-                      : AppConstants.errorColor,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Map<DateTime, List<TransactionData>> _groupTransactionsByDate() {
+  Map<DateTime, List<TransactionData>> _groupTransactionsByDate(
+      List<TransactionData> list) {
     final Map<DateTime, List<TransactionData>> grouped = {};
-
-    for (final transaction in transactions) {
-      final date = DateTime(
-        transaction.date.year,
-        transaction.date.month,
-        transaction.date.day,
-      );
-
-      if (!grouped.containsKey(date)) {
-        grouped[date] = [];
-      }
-      grouped[date]!.add(transaction);
+    for (final t in list) {
+      final d = DateTime(t.date.year, t.date.month, t.date.day);
+      (grouped[d] ??= []).add(t);
     }
-
-    return Map.fromEntries(
-      grouped.entries.toList()..sort((a, b) => b.key.compareTo(a.key)),
-    );
+    final entries = grouped.entries.toList()..sort((a, b) => b.key.compareTo(a.key));
+    return Map.fromEntries(entries);
   }
 
-  double _calculateDayTotal(List<TransactionData> transactions) {
-    return transactions.fold(0.0, (sum, t) => sum + t.amount);
-  }
-
-  String _formatDate(DateTime date) {
+  String _formatDateTL(DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
-
-    if (date == today) {
-      return '今天';
-    } else if (date == yesterday) {
-      return '昨天';
-    } else if (date.year == now.year) {
-      return '${date.month}月${date.day}日';
-    } else {
-      return '${date.year}年${date.month}月${date.day}日';
-    }
-  }
-
-  String _formatWeekday(DateTime date) {
-    const weekdays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
-    return weekdays[date.weekday - 1];
-  }
-
-  String _formatAmount(double amount) {
-    final sign = amount >= 0 ? '+' : '';
-    return '$sign¥${amount.abs().toStringAsFixed(2)}';
+    if (date == today) return '今天';
+    if (date == yesterday) return '昨天';
+    if (date.year == now.year) return '${date.month}月${date.day}日';
+    return '${date.year}年${date.month}月${date.day}日';
   }
 }
 
 /// 可滑动删除的交易列表
+
 class SwipeableTransactionList extends StatelessWidget {
   final List<TransactionData> transactions;
   final Function(TransactionData) onDelete;
@@ -348,9 +207,6 @@ class SwipeableTransactionList extends StatelessWidget {
 
     return groupByDate ? _buildGroupedList(context) : _buildSimpleList(context);
   }
-
-
-
 
   Widget _buildEmptyState(BuildContext context) {
     return const TransactionList(
@@ -408,7 +264,7 @@ class SwipeableTransactionList extends StatelessWidget {
   Widget _buildSwipeableItem(
       BuildContext context, TransactionData transaction) {
     return Dismissible(
-      key: Key(transaction.id ?? ''),
+      key: ValueKey(transaction.id ?? "unknown"),
       direction: DismissDirection.horizontal,
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.endToStart) {

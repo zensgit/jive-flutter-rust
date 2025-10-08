@@ -485,7 +485,7 @@ class EmailNotificationService extends ChangeNotifier {
   /// 发送单个邮件
   Future<void> _sendEmail(EmailMessage email) async {
     final message = Message()
-      ..from = const Address('noreply@jivemoney.com', 'Jive Money')
+      ..from = const _Address('noreply@jivemoney.com', 'Jive Money')
       ..recipients.add(email.to)
       ..subject = email.subject
       ..html = email.html;

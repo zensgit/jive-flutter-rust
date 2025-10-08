@@ -409,7 +409,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
       case 'eye_comfort':
         await ThemeService().applyEyeComfortTheme();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          messenger.showSnackBar(
             const SnackBar(content: Text('已应用护眼主题')),
           );
         }
@@ -417,7 +417,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
       case 'apply_eye_bluegrey':
         await ThemeService().applyPresetTheme('preset_eye_bluegrey');
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          messenger.showSnackBar(
             const SnackBar(content: Text('已应用护眼·蓝灰')),
           );
         }
@@ -425,7 +425,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
       case 'apply_eye_green':
         await ThemeService().applyPresetTheme('preset_eye_green');
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          messenger.showSnackBar(
             const SnackBar(content: Text('已应用护眼·青绿')),
           );
         }
@@ -433,7 +433,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
       case 'apply_eye_dark':
         await ThemeService().applyPresetTheme('preset_eye_dark');
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          messenger.showSnackBar(
             const SnackBar(content: Text('已应用护眼·夜间')),
           );
         }
@@ -464,7 +464,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
     if (!mounted) return;
 
     if (result != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text('主题"${result.name}"创建成功'),
           backgroundColor: Colors.green,
@@ -482,7 +482,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
     if (!mounted) return;
 
     if (result != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text('主题"${result.name}"已更新'),
           backgroundColor: Colors.green,
@@ -509,14 +509,14 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
       );
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text('主题"${newTheme.name}"创建成功'),
           backgroundColor: Colors.green,
         ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text('复制失败: $e'),
           backgroundColor: Colors.red,
@@ -530,14 +530,14 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
     try {
       await _themeService.copyThemeToClipboard(theme.id);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         const SnackBar(
           content: Text('主题已复制到剪贴板'),
           backgroundColor: Colors.green,
         ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text('导出失败: $e'),
           backgroundColor: Colors.red,
@@ -575,14 +575,14 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
       try {
         await _themeService.deleteCustomTheme(theme.id);
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
             content: Text('主题"${theme.name}"已删除'),
             backgroundColor: Colors.orange,
           ),
         );
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
             content: Text('删除失败: $e'),
             backgroundColor: Colors.red,
@@ -598,14 +598,14 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
       final theme = await _themeService.importThemeFromClipboard();
       if (!mounted) return;
       if (theme != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
             content: Text('主题"${theme.name}"导入成功'),
             backgroundColor: Colors.green,
           ),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           const SnackBar(
             content: Text('剪贴板中没有找到有效的主题数据'),
             backgroundColor: Colors.orange,
@@ -613,7 +613,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text('导入失败: $e'),
           backgroundColor: Colors.red,
@@ -683,14 +683,14 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
         if (!mounted) return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text('主题"${theme.name}"导入成功'),
           backgroundColor: Colors.green,
         ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text('导入失败: $e'),
           backgroundColor: Colors.red,
@@ -727,7 +727,7 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
     if (confirmed == true) {
       await _themeService.resetToSystemTheme();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         const SnackBar(
           content: Text('已重置为系统默认主题'),
           backgroundColor: Colors.green,
