@@ -106,7 +106,6 @@ impl CurrencyService {
             .map(|row| Currency {
                 code: row.code,
                 name: row.name,
-                // symbol 允许为 NULL，默认空串
                 symbol: row.symbol.unwrap_or_default(),
                 decimal_places: row.decimal_places.unwrap_or(2),
                 is_active: row.is_active.unwrap_or(true),
@@ -203,7 +202,6 @@ impl CurrencyService {
             
             Ok(FamilyCurrencySettings {
                 family_id,
-                // base_currency 可能为可空；兜底为 CNY
                 base_currency: settings.base_currency.unwrap_or_else(|| "CNY".to_string()),
                 allow_multi_currency: settings.allow_multi_currency.unwrap_or(false),
                 auto_convert: settings.auto_convert.unwrap_or(false),

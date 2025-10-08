@@ -15,13 +15,15 @@ class TravelEvent with _$TravelEvent {
     required DateTime startDate,
     required DateTime endDate,
     String? location,
-    @Default('planning') String status,
+    String? destination,  // Added for compatibility
+    @Default('planning') String statusString,  // Renamed from status
     @Default(true) bool isActive,
     @Default(false) bool autoTag,
     @Default([]) List<String> travelCategoryIds,
     String? ledgerId,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? notes,  // Added for travel notes
 
     // 统计信息
     @Default(0) int transactionCount,
@@ -30,10 +32,15 @@ class TravelEvent with _$TravelEvent {
 
     // 预算相关
     double? totalBudget,
+    double? budget,  // Added for simpler API
     String? budgetCurrencyCode,
+    @Default('CNY') String currency,  // Added with default
     @Default(0) double totalSpent,
     String? homeCurrencyCode,
     double? budgetUsagePercent,
+
+    // Status enum support
+    TravelEventStatus? status,  // Added direct status enum
   }) = _TravelEvent;
 
   factory TravelEvent.fromJson(Map<String, dynamic> json) =>
@@ -74,7 +81,7 @@ enum TravelTemplateType {
 /// 旅行事件状态
 enum TravelEventStatus {
   upcoming, // 即将开始
-  active, // 进行中
+  ongoing, // 进行中 (changed from active for UI compatibility)
   completed, // 已完成
   cancelled, // 已取消
 }
@@ -186,15 +193,20 @@ class TravelEventTemplateLibrary {
 
 /// 旅行事件扩展方法
 extension TravelEventExtension on TravelEvent {
-  /// 获取旅行状态
-  TravelEventStatus get status {
+  /// 获取旅行状态 (computed if not set)
+  TravelEventStatus get computedStatus {
+    // If status is explicitly set, return it
+    if (status != null) {
+      return status!;
+    }
+    // Otherwise compute based on dates
     final now = DateTime.now();
     if (endDate.isBefore(now)) {
       return TravelEventStatus.completed;
     } else if (startDate.isAfter(now)) {
       return TravelEventStatus.upcoming;
     } else {
-      return TravelEventStatus.active;
+      return TravelEventStatus.ongoing;
     }
   }
 

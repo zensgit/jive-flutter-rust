@@ -41,7 +41,8 @@ use handlers::currency_handler;
 use handlers::currency_handler_enhanced;
 use handlers::tag_handler;
 use handlers::category_handler;
-use handlers::ledgers::{list_ledgers, create_ledger, get_current_ledger, get_ledger, 
+use handlers::travel;
+use handlers::ledgers::{list_ledgers, create_ledger, get_current_ledger, get_ledger,
                          update_ledger, delete_ledger, get_ledger_statistics, get_ledger_members};
 use handlers::family_handler::{list_families, create_family, get_family, update_family, delete_family, join_family, leave_family, request_verification_code, get_family_statistics, get_family_actions, get_role_descriptions, transfer_ownership};
 use handlers::member_handler::{get_family_members, add_member, remove_member, update_member_role, update_member_permissions};
@@ -264,7 +265,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/transactions/:id", delete(delete_transaction))
         .route("/api/v1/transactions/bulk", post(bulk_transaction_operations))
         .route("/api/v1/transactions/statistics", get(get_transaction_statistics))
-        
+
+        // 旅行模式 API
+        .route("/api/v1/travel/events", get(travel::list_travel_events))
+        .route("/api/v1/travel/events", post(travel::create_travel_event))
+        .route("/api/v1/travel/events/active", get(travel::get_active_travel))
+        .route("/api/v1/travel/events/:id", get(travel::get_travel_event))
+        .route("/api/v1/travel/events/:id", put(travel::update_travel_event))
+        .route("/api/v1/travel/events/:id/activate", post(travel::activate_travel))
+        .route("/api/v1/travel/events/:id/complete", post(travel::complete_travel))
+        .route("/api/v1/travel/events/:id/cancel", post(travel::cancel_travel))
+        .route("/api/v1/travel/events/:id/transactions", post(travel::attach_transactions))
+        .route("/api/v1/travel/events/:travel_id/transactions/:transaction_id", delete(travel::detach_transaction))
+        .route("/api/v1/travel/events/:id/budgets", get(travel::get_travel_budgets))
+        .route("/api/v1/travel/events/:id/budgets", post(travel::upsert_travel_budget))
+        .route("/api/v1/travel/events/:id/statistics", get(travel::get_travel_statistics))
+
         // 收款人管理 API
         .route("/api/v1/payees", get(list_payees))
         .route("/api/v1/payees", post(create_payee))
@@ -275,9 +291,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/payees/statistics", get(get_payee_statistics))
         .route("/api/v1/payees/merge", post(merge_payees))
 
-        // 静态资源：银行图标
-        .nest_service("/static/bank_icons", ServeDir::new("jive-api/static/bank_icons"))
-        
         // 规则引擎 API
         .route("/api/v1/rules", get(list_rules))
         .route("/api/v1/rules", post(create_rule))

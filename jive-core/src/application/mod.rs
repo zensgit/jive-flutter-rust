@@ -34,6 +34,7 @@ pub mod scheduled_transaction_service;
 pub mod sync_service;
 pub mod tag_service;
 pub mod transaction_service;
+pub mod travel_service;
 pub mod user_service;
 
 pub use account_service::*;
@@ -52,6 +53,7 @@ pub use scheduled_transaction_service::*;
 pub use sync_service::*;
 pub use tag_service::*;
 pub use transaction_service::*;
+pub use travel_service::*;
 pub use user_service::*;
 
 use crate::error::{JiveError, Result};

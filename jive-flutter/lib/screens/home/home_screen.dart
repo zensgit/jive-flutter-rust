@@ -36,6 +36,11 @@ class _HomeScreenState extends State<HomeScreen> {
       label: '预算',
     ),
     _NavItem(
+      path: AppRoutes.travel,
+      icon: Icons.flight_takeoff,
+      label: '旅行',
+    ),
+    _NavItem(
       path: AppRoutes.settings,
       icon: Icons.settings,
       label: '设置',
