@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jive_money/models/travel_event.dart';
 import 'package:jive_money/services/api_service.dart';
+import 'package:jive_money/services/api/travel_service.dart';
 import 'package:jive_money/core/network/http_client.dart';
+import 'package:jive_money/providers/auth_provider.dart';
 
 class TravelProvider extends ChangeNotifier {
   final ApiService _apiService;
@@ -346,3 +349,20 @@ class TravelProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+// Riverpod provider for ApiService (if not already defined elsewhere)
+final apiServiceProvider = Provider<ApiService>((ref) {
+  return ApiService();
+});
+
+// Riverpod provider for TravelService
+final travelServiceProvider = Provider<TravelService>((ref) {
+  final apiService = ref.watch(apiServiceProvider);
+  return TravelService(apiService);
+});
+
+// Riverpod provider for TravelProvider (ChangeNotifier)
+final travelProviderProvider = ChangeNotifierProvider<TravelProvider>((ref) {
+  final apiService = ref.watch(apiServiceProvider);
+  return TravelProvider(apiService);
+});

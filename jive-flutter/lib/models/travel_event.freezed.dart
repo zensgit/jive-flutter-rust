@@ -26,21 +26,33 @@ mixin _$TravelEvent {
   DateTime get startDate => throw _privateConstructorUsedError;
   DateTime get endDate => throw _privateConstructorUsedError;
   String? get location => throw _privateConstructorUsedError;
-  String get status => throw _privateConstructorUsedError;
+  String? get destination =>
+      throw _privateConstructorUsedError; // Added for compatibility
+  String get statusString =>
+      throw _privateConstructorUsedError; // Renamed from status
   bool get isActive => throw _privateConstructorUsedError;
   bool get autoTag => throw _privateConstructorUsedError;
   List<String> get travelCategoryIds => throw _privateConstructorUsedError;
   String? get ledgerId => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
-  DateTime? get updatedAt => throw _privateConstructorUsedError; // 统计信息
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
+  String? get notes =>
+      throw _privateConstructorUsedError; // Added for travel notes
+// 统计信息
   int get transactionCount => throw _privateConstructorUsedError;
   double? get totalAmount => throw _privateConstructorUsedError;
   String? get travelTagId => throw _privateConstructorUsedError; // 预算相关
   double? get totalBudget => throw _privateConstructorUsedError;
+  double? get budget =>
+      throw _privateConstructorUsedError; // Added for simpler API
   String? get budgetCurrencyCode => throw _privateConstructorUsedError;
+  String get currency =>
+      throw _privateConstructorUsedError; // Added with default
   double get totalSpent => throw _privateConstructorUsedError;
   String? get homeCurrencyCode => throw _privateConstructorUsedError;
-  double? get budgetUsagePercent => throw _privateConstructorUsedError;
+  double? get budgetUsagePercent =>
+      throw _privateConstructorUsedError; // Status enum support
+  TravelEventStatus? get status => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -61,21 +73,26 @@ abstract class $TravelEventCopyWith<$Res> {
       DateTime startDate,
       DateTime endDate,
       String? location,
-      String status,
+      String? destination,
+      String statusString,
       bool isActive,
       bool autoTag,
       List<String> travelCategoryIds,
       String? ledgerId,
       DateTime? createdAt,
       DateTime? updatedAt,
+      String? notes,
       int transactionCount,
       double? totalAmount,
       String? travelTagId,
       double? totalBudget,
+      double? budget,
       String? budgetCurrencyCode,
+      String currency,
       double totalSpent,
       String? homeCurrencyCode,
-      double? budgetUsagePercent});
+      double? budgetUsagePercent,
+      TravelEventStatus? status});
 }
 
 /// @nodoc
@@ -97,21 +114,26 @@ class _$TravelEventCopyWithImpl<$Res, $Val extends TravelEvent>
     Object? startDate = null,
     Object? endDate = null,
     Object? location = freezed,
-    Object? status = null,
+    Object? destination = freezed,
+    Object? statusString = null,
     Object? isActive = null,
     Object? autoTag = null,
     Object? travelCategoryIds = null,
     Object? ledgerId = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
+    Object? notes = freezed,
     Object? transactionCount = null,
     Object? totalAmount = freezed,
     Object? travelTagId = freezed,
     Object? totalBudget = freezed,
+    Object? budget = freezed,
     Object? budgetCurrencyCode = freezed,
+    Object? currency = null,
     Object? totalSpent = null,
     Object? homeCurrencyCode = freezed,
     Object? budgetUsagePercent = freezed,
+    Object? status = freezed,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -138,9 +160,13 @@ class _$TravelEventCopyWithImpl<$Res, $Val extends TravelEvent>
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
               as String?,
-      status: null == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
+      destination: freezed == destination
+          ? _value.destination
+          : destination // ignore: cast_nullable_to_non_nullable
+              as String?,
+      statusString: null == statusString
+          ? _value.statusString
+          : statusString // ignore: cast_nullable_to_non_nullable
               as String,
       isActive: null == isActive
           ? _value.isActive
@@ -166,6 +192,10 @@ class _$TravelEventCopyWithImpl<$Res, $Val extends TravelEvent>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
       transactionCount: null == transactionCount
           ? _value.transactionCount
           : transactionCount // ignore: cast_nullable_to_non_nullable
@@ -182,10 +212,18 @@ class _$TravelEventCopyWithImpl<$Res, $Val extends TravelEvent>
           ? _value.totalBudget
           : totalBudget // ignore: cast_nullable_to_non_nullable
               as double?,
+      budget: freezed == budget
+          ? _value.budget
+          : budget // ignore: cast_nullable_to_non_nullable
+              as double?,
       budgetCurrencyCode: freezed == budgetCurrencyCode
           ? _value.budgetCurrencyCode
           : budgetCurrencyCode // ignore: cast_nullable_to_non_nullable
               as String?,
+      currency: null == currency
+          ? _value.currency
+          : currency // ignore: cast_nullable_to_non_nullable
+              as String,
       totalSpent: null == totalSpent
           ? _value.totalSpent
           : totalSpent // ignore: cast_nullable_to_non_nullable
@@ -198,6 +236,10 @@ class _$TravelEventCopyWithImpl<$Res, $Val extends TravelEvent>
           ? _value.budgetUsagePercent
           : budgetUsagePercent // ignore: cast_nullable_to_non_nullable
               as double?,
+      status: freezed == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as TravelEventStatus?,
     ) as $Val);
   }
 }
@@ -217,21 +259,26 @@ abstract class _$$TravelEventImplCopyWith<$Res>
       DateTime startDate,
       DateTime endDate,
       String? location,
-      String status,
+      String? destination,
+      String statusString,
       bool isActive,
       bool autoTag,
       List<String> travelCategoryIds,
       String? ledgerId,
       DateTime? createdAt,
       DateTime? updatedAt,
+      String? notes,
       int transactionCount,
       double? totalAmount,
       String? travelTagId,
       double? totalBudget,
+      double? budget,
       String? budgetCurrencyCode,
+      String currency,
       double totalSpent,
       String? homeCurrencyCode,
-      double? budgetUsagePercent});
+      double? budgetUsagePercent,
+      TravelEventStatus? status});
 }
 
 /// @nodoc
@@ -251,21 +298,26 @@ class __$$TravelEventImplCopyWithImpl<$Res>
     Object? startDate = null,
     Object? endDate = null,
     Object? location = freezed,
-    Object? status = null,
+    Object? destination = freezed,
+    Object? statusString = null,
     Object? isActive = null,
     Object? autoTag = null,
     Object? travelCategoryIds = null,
     Object? ledgerId = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
+    Object? notes = freezed,
     Object? transactionCount = null,
     Object? totalAmount = freezed,
     Object? travelTagId = freezed,
     Object? totalBudget = freezed,
+    Object? budget = freezed,
     Object? budgetCurrencyCode = freezed,
+    Object? currency = null,
     Object? totalSpent = null,
     Object? homeCurrencyCode = freezed,
     Object? budgetUsagePercent = freezed,
+    Object? status = freezed,
   }) {
     return _then(_$TravelEventImpl(
       id: freezed == id
@@ -292,9 +344,13 @@ class __$$TravelEventImplCopyWithImpl<$Res>
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
               as String?,
-      status: null == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
+      destination: freezed == destination
+          ? _value.destination
+          : destination // ignore: cast_nullable_to_non_nullable
+              as String?,
+      statusString: null == statusString
+          ? _value.statusString
+          : statusString // ignore: cast_nullable_to_non_nullable
               as String,
       isActive: null == isActive
           ? _value.isActive
@@ -320,6 +376,10 @@ class __$$TravelEventImplCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
       transactionCount: null == transactionCount
           ? _value.transactionCount
           : transactionCount // ignore: cast_nullable_to_non_nullable
@@ -336,10 +396,18 @@ class __$$TravelEventImplCopyWithImpl<$Res>
           ? _value.totalBudget
           : totalBudget // ignore: cast_nullable_to_non_nullable
               as double?,
+      budget: freezed == budget
+          ? _value.budget
+          : budget // ignore: cast_nullable_to_non_nullable
+              as double?,
       budgetCurrencyCode: freezed == budgetCurrencyCode
           ? _value.budgetCurrencyCode
           : budgetCurrencyCode // ignore: cast_nullable_to_non_nullable
               as String?,
+      currency: null == currency
+          ? _value.currency
+          : currency // ignore: cast_nullable_to_non_nullable
+              as String,
       totalSpent: null == totalSpent
           ? _value.totalSpent
           : totalSpent // ignore: cast_nullable_to_non_nullable
@@ -352,6 +420,10 @@ class __$$TravelEventImplCopyWithImpl<$Res>
           ? _value.budgetUsagePercent
           : budgetUsagePercent // ignore: cast_nullable_to_non_nullable
               as double?,
+      status: freezed == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as TravelEventStatus?,
     ));
   }
 }
@@ -366,21 +438,26 @@ class _$TravelEventImpl extends _TravelEvent {
       required this.startDate,
       required this.endDate,
       this.location,
-      this.status = 'planning',
+      this.destination,
+      this.statusString = 'planning',
       this.isActive = true,
       this.autoTag = false,
       final List<String> travelCategoryIds = const [],
       this.ledgerId,
       this.createdAt,
       this.updatedAt,
+      this.notes,
       this.transactionCount = 0,
       this.totalAmount,
       this.travelTagId,
       this.totalBudget,
+      this.budget,
       this.budgetCurrencyCode,
+      this.currency = 'CNY',
       this.totalSpent = 0,
       this.homeCurrencyCode,
-      this.budgetUsagePercent})
+      this.budgetUsagePercent,
+      this.status})
       : _travelCategoryIds = travelCategoryIds,
         super._();
 
@@ -400,8 +477,12 @@ class _$TravelEventImpl extends _TravelEvent {
   @override
   final String? location;
   @override
+  final String? destination;
+// Added for compatibility
+  @override
   @JsonKey()
-  final String status;
+  final String statusString;
+// Renamed from status
   @override
   @JsonKey()
   final bool isActive;
@@ -424,6 +505,9 @@ class _$TravelEventImpl extends _TravelEvent {
   final DateTime? createdAt;
   @override
   final DateTime? updatedAt;
+  @override
+  final String? notes;
+// Added for travel notes
 // 统计信息
   @override
   @JsonKey()
@@ -436,7 +520,14 @@ class _$TravelEventImpl extends _TravelEvent {
   @override
   final double? totalBudget;
   @override
+  final double? budget;
+// Added for simpler API
+  @override
   final String? budgetCurrencyCode;
+  @override
+  @JsonKey()
+  final String currency;
+// Added with default
   @override
   @JsonKey()
   final double totalSpent;
@@ -444,10 +535,13 @@ class _$TravelEventImpl extends _TravelEvent {
   final String? homeCurrencyCode;
   @override
   final double? budgetUsagePercent;
+// Status enum support
+  @override
+  final TravelEventStatus? status;
 
   @override
   String toString() {
-    return 'TravelEvent(id: $id, name: $name, description: $description, startDate: $startDate, endDate: $endDate, location: $location, status: $status, isActive: $isActive, autoTag: $autoTag, travelCategoryIds: $travelCategoryIds, ledgerId: $ledgerId, createdAt: $createdAt, updatedAt: $updatedAt, transactionCount: $transactionCount, totalAmount: $totalAmount, travelTagId: $travelTagId, totalBudget: $totalBudget, budgetCurrencyCode: $budgetCurrencyCode, totalSpent: $totalSpent, homeCurrencyCode: $homeCurrencyCode, budgetUsagePercent: $budgetUsagePercent)';
+    return 'TravelEvent(id: $id, name: $name, description: $description, startDate: $startDate, endDate: $endDate, location: $location, destination: $destination, statusString: $statusString, isActive: $isActive, autoTag: $autoTag, travelCategoryIds: $travelCategoryIds, ledgerId: $ledgerId, createdAt: $createdAt, updatedAt: $updatedAt, notes: $notes, transactionCount: $transactionCount, totalAmount: $totalAmount, travelTagId: $travelTagId, totalBudget: $totalBudget, budget: $budget, budgetCurrencyCode: $budgetCurrencyCode, currency: $currency, totalSpent: $totalSpent, homeCurrencyCode: $homeCurrencyCode, budgetUsagePercent: $budgetUsagePercent, status: $status)';
   }
 
   @override
@@ -464,7 +558,10 @@ class _$TravelEventImpl extends _TravelEvent {
             (identical(other.endDate, endDate) || other.endDate == endDate) &&
             (identical(other.location, location) ||
                 other.location == location) &&
-            (identical(other.status, status) || other.status == status) &&
+            (identical(other.destination, destination) ||
+                other.destination == destination) &&
+            (identical(other.statusString, statusString) ||
+                other.statusString == statusString) &&
             (identical(other.isActive, isActive) ||
                 other.isActive == isActive) &&
             (identical(other.autoTag, autoTag) || other.autoTag == autoTag) &&
@@ -476,6 +573,7 @@ class _$TravelEventImpl extends _TravelEvent {
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt) &&
+            (identical(other.notes, notes) || other.notes == notes) &&
             (identical(other.transactionCount, transactionCount) ||
                 other.transactionCount == transactionCount) &&
             (identical(other.totalAmount, totalAmount) ||
@@ -484,14 +582,18 @@ class _$TravelEventImpl extends _TravelEvent {
                 other.travelTagId == travelTagId) &&
             (identical(other.totalBudget, totalBudget) ||
                 other.totalBudget == totalBudget) &&
+            (identical(other.budget, budget) || other.budget == budget) &&
             (identical(other.budgetCurrencyCode, budgetCurrencyCode) ||
                 other.budgetCurrencyCode == budgetCurrencyCode) &&
+            (identical(other.currency, currency) ||
+                other.currency == currency) &&
             (identical(other.totalSpent, totalSpent) ||
                 other.totalSpent == totalSpent) &&
             (identical(other.homeCurrencyCode, homeCurrencyCode) ||
                 other.homeCurrencyCode == homeCurrencyCode) &&
             (identical(other.budgetUsagePercent, budgetUsagePercent) ||
-                other.budgetUsagePercent == budgetUsagePercent));
+                other.budgetUsagePercent == budgetUsagePercent) &&
+            (identical(other.status, status) || other.status == status));
   }
 
   @JsonKey(ignore: true)
@@ -504,21 +606,26 @@ class _$TravelEventImpl extends _TravelEvent {
         startDate,
         endDate,
         location,
-        status,
+        destination,
+        statusString,
         isActive,
         autoTag,
         const DeepCollectionEquality().hash(_travelCategoryIds),
         ledgerId,
         createdAt,
         updatedAt,
+        notes,
         transactionCount,
         totalAmount,
         travelTagId,
         totalBudget,
+        budget,
         budgetCurrencyCode,
+        currency,
         totalSpent,
         homeCurrencyCode,
-        budgetUsagePercent
+        budgetUsagePercent,
+        status
       ]);
 
   @JsonKey(ignore: true)
@@ -543,21 +650,26 @@ abstract class _TravelEvent extends TravelEvent {
       required final DateTime startDate,
       required final DateTime endDate,
       final String? location,
-      final String status,
+      final String? destination,
+      final String statusString,
       final bool isActive,
       final bool autoTag,
       final List<String> travelCategoryIds,
       final String? ledgerId,
       final DateTime? createdAt,
       final DateTime? updatedAt,
+      final String? notes,
       final int transactionCount,
       final double? totalAmount,
       final String? travelTagId,
       final double? totalBudget,
+      final double? budget,
       final String? budgetCurrencyCode,
+      final String currency,
       final double totalSpent,
       final String? homeCurrencyCode,
-      final double? budgetUsagePercent}) = _$TravelEventImpl;
+      final double? budgetUsagePercent,
+      final TravelEventStatus? status}) = _$TravelEventImpl;
   const _TravelEvent._() : super._();
 
   factory _TravelEvent.fromJson(Map<String, dynamic> json) =
@@ -576,8 +688,10 @@ abstract class _TravelEvent extends TravelEvent {
   @override
   String? get location;
   @override
-  String get status;
-  @override
+  String? get destination;
+  @override // Added for compatibility
+  String get statusString;
+  @override // Renamed from status
   bool get isActive;
   @override
   bool get autoTag;
@@ -589,7 +703,10 @@ abstract class _TravelEvent extends TravelEvent {
   DateTime? get createdAt;
   @override
   DateTime? get updatedAt;
-  @override // 统计信息
+  @override
+  String? get notes;
+  @override // Added for travel notes
+// 统计信息
   int get transactionCount;
   @override
   double? get totalAmount;
@@ -598,13 +715,19 @@ abstract class _TravelEvent extends TravelEvent {
   @override // 预算相关
   double? get totalBudget;
   @override
+  double? get budget;
+  @override // Added for simpler API
   String? get budgetCurrencyCode;
   @override
+  String get currency;
+  @override // Added with default
   double get totalSpent;
   @override
   String? get homeCurrencyCode;
   @override
   double? get budgetUsagePercent;
+  @override // Status enum support
+  TravelEventStatus? get status;
   @override
   @JsonKey(ignore: true)
   _$$TravelEventImplCopyWith<_$TravelEventImpl> get copyWith =>

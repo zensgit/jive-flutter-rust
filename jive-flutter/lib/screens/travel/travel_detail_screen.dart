@@ -6,6 +6,9 @@ import '../../models/transaction.dart';
 import '../../providers/travel_provider.dart';
 import '../../providers/transaction_provider.dart';
 import '../../screens/travel/travel_edit_screen.dart';
+import '../../screens/travel/travel_transaction_link_screen.dart';
+import '../../screens/travel/travel_budget_screen.dart';
+import '../../screens/travel/travel_statistics_widget.dart';
 import '../../ui/components/transactions/transaction_list.dart';
 import '../../utils/currency_formatter.dart';
 
@@ -88,6 +91,23 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
         title: Text(_event.name),
         actions: [
           IconButton(
+            icon: const Icon(Icons.account_balance_wallet),
+            tooltip: '预算管理',
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TravelBudgetScreen(
+                    travelEvent: _event,
+                  ),
+                ),
+              );
+              if (result == true) {
+                _loadData();
+              }
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.edit),
             onPressed: _navigateToEdit,
           ),
@@ -116,16 +136,16 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
                               ),
                               Chip(
                                 label: Text(
-                                  _getStatusLabel(_event.status),
+                                  _getStatusLabel(_event.status ?? TravelEventStatus.upcoming),
                                   style: const TextStyle(fontSize: 12),
                                 ),
-                                backgroundColor: _getStatusColor(_event.status),
+                                backgroundColor: _getStatusColor(_event.status ?? TravelEventStatus.upcoming),
                               ),
                             ],
                           ),
                           const SizedBox(height: 16),
 
-                          _buildInfoRow(Icons.location_on, '目的地', _event.destination),
+                          _buildInfoRow(Icons.location_on, '目的地', _event.destination ?? _event.location ?? '未知'),
                           if (_event.description != null)
                             _buildInfoRow(Icons.description, '描述', _event.description!),
                           _buildInfoRow(
@@ -292,11 +312,20 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
                                 style: theme.textTheme.titleLarge,
                               ),
                               TextButton.icon(
-                                icon: const Icon(Icons.add),
-                                label: const Text('添加交易'),
-                                onPressed: () {
-                                  // Navigate to add transaction with travel event pre-selected
-                                  // TODO: Implement navigation to transaction form
+                                icon: const Icon(Icons.link),
+                                label: const Text('关联交易'),
+                                onPressed: () async {
+                                  final result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => TravelTransactionLinkScreen(
+                                        travelEvent: _event,
+                                      ),
+                                    ),
+                                  );
+                                  if (result == true) {
+                                    _loadData(); // Reload data after linking transactions
+                                  }
                                 },
                               ),
                             ],
@@ -338,7 +367,7 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
                                   trailing: Text(
                                     currencyFormatter.format(
                                       transaction.amount.abs(),
-                                      transaction.currency ?? _event.currency,
+                                      _event.currency,
                                     ),
                                     style: TextStyle(
                                       color: transaction.amount < 0
@@ -358,6 +387,15 @@ class _TravelDetailScreenState extends ConsumerState<TravelDetailScreen> {
                       ),
                     ),
                   ),
+
+                  // Statistics Section (only show if transactions exist)
+                  if (_transactions.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    TravelStatisticsWidget(
+                      travelEvent: _event,
+                      transactions: _transactions,
+                    ),
+                  ],
                 ],
               ),
             ),

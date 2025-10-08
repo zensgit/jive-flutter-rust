@@ -14,7 +14,8 @@ _$TravelEventImpl _$$TravelEventImplFromJson(Map<String, dynamic> json) =>
       startDate: DateTime.parse(json['startDate'] as String),
       endDate: DateTime.parse(json['endDate'] as String),
       location: json['location'] as String?,
-      status: json['status'] as String? ?? 'planning',
+      destination: json['destination'] as String?,
+      statusString: json['statusString'] as String? ?? 'planning',
       isActive: json['isActive'] as bool? ?? true,
       autoTag: json['autoTag'] as bool? ?? false,
       travelCategoryIds: (json['travelCategoryIds'] as List<dynamic>?)
@@ -28,14 +29,18 @@ _$TravelEventImpl _$$TravelEventImplFromJson(Map<String, dynamic> json) =>
       updatedAt: json['updatedAt'] == null
           ? null
           : DateTime.parse(json['updatedAt'] as String),
+      notes: json['notes'] as String?,
       transactionCount: (json['transactionCount'] as num?)?.toInt() ?? 0,
       totalAmount: (json['totalAmount'] as num?)?.toDouble(),
       travelTagId: json['travelTagId'] as String?,
       totalBudget: (json['totalBudget'] as num?)?.toDouble(),
+      budget: (json['budget'] as num?)?.toDouble(),
       budgetCurrencyCode: json['budgetCurrencyCode'] as String?,
+      currency: json['currency'] as String? ?? 'CNY',
       totalSpent: (json['totalSpent'] as num?)?.toDouble() ?? 0,
       homeCurrencyCode: json['homeCurrencyCode'] as String?,
       budgetUsagePercent: (json['budgetUsagePercent'] as num?)?.toDouble(),
+      status: $enumDecodeNullable(_$TravelEventStatusEnumMap, json['status']),
     );
 
 Map<String, dynamic> _$$TravelEventImplToJson(_$TravelEventImpl instance) =>
@@ -46,22 +51,34 @@ Map<String, dynamic> _$$TravelEventImplToJson(_$TravelEventImpl instance) =>
       'startDate': instance.startDate.toIso8601String(),
       'endDate': instance.endDate.toIso8601String(),
       'location': instance.location,
-      'status': instance.status,
+      'destination': instance.destination,
+      'statusString': instance.statusString,
       'isActive': instance.isActive,
       'autoTag': instance.autoTag,
       'travelCategoryIds': instance.travelCategoryIds,
       'ledgerId': instance.ledgerId,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
+      'notes': instance.notes,
       'transactionCount': instance.transactionCount,
       'totalAmount': instance.totalAmount,
       'travelTagId': instance.travelTagId,
       'totalBudget': instance.totalBudget,
+      'budget': instance.budget,
       'budgetCurrencyCode': instance.budgetCurrencyCode,
+      'currency': instance.currency,
       'totalSpent': instance.totalSpent,
       'homeCurrencyCode': instance.homeCurrencyCode,
       'budgetUsagePercent': instance.budgetUsagePercent,
+      'status': _$TravelEventStatusEnumMap[instance.status],
     };
+
+const _$TravelEventStatusEnumMap = {
+  TravelEventStatus.upcoming: 'upcoming',
+  TravelEventStatus.ongoing: 'ongoing',
+  TravelEventStatus.completed: 'completed',
+  TravelEventStatus.cancelled: 'cancelled',
+};
 
 _$TravelEventTemplateImpl _$$TravelEventTemplateImplFromJson(
         Map<String, dynamic> json) =>

@@ -6,6 +6,7 @@ import '../../providers/travel_provider.dart';
 import '../../utils/currency_formatter.dart';
 import 'travel_edit_screen.dart';
 import 'travel_detail_screen.dart';
+import 'travel_transaction_link_screen.dart';
 
 class TravelListScreen extends ConsumerStatefulWidget {
   const TravelListScreen({Key? key}) : super(key: key);
@@ -160,7 +161,7 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                       style: theme.textTheme.titleLarge,
                     ),
                   ),
-                  _buildStatusChip(event.status),
+                  _buildStatusChip(event.status ?? TravelEventStatus.upcoming),
                 ],
               ),
               const SizedBox(height: 8),
@@ -171,7 +172,7 @@ class _TravelListScreenState extends ConsumerState<TravelListScreen> {
                   Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
                   const SizedBox(width: 4),
                   Text(
-                    event.destination,
+                    event.destination ?? event.location ?? '未知目的地',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: Colors.grey[600],
                     ),

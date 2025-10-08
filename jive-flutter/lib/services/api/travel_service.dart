@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:jive_money/services/api_service.dart';
 import 'package:jive_money/models/travel_event.dart';
+import 'package:jive_money/models/transaction.dart';
 import 'package:jive_money/core/network/http_client.dart';
 
 class TravelService {
@@ -85,6 +86,35 @@ class TravelService {
       );
     } catch (e) {
       throw Exception('Failed to unlink transaction: $e');
+    }
+  }
+
+  // Get transactions for a travel event
+  Future<List<Transaction>> getTransactions(String eventId) async {
+    try {
+      final response = await _apiService.dio.get(
+        '/api/v1/travel/events/$eventId/transactions',
+      );
+      return (response.data as List)
+          .map((json) => Transaction.fromJson(json))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to get travel transactions: $e');
+    }
+  }
+
+  // Update travel budget for a category
+  Future<void> updateBudget(String eventId, String categoryId, double amount) async {
+    try {
+      await _apiService.dio.put(
+        '/api/v1/travel/events/$eventId/budget',
+        data: {
+          'category_id': categoryId,
+          'amount': amount,
+        },
+      );
+    } catch (e) {
+      throw Exception('Failed to update travel budget: $e');
     }
   }
 }

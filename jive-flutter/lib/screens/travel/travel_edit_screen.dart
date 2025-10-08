@@ -42,7 +42,7 @@ class _TravelEditScreenState extends ConsumerState<TravelEditScreen> {
       _startDate = widget.event!.startDate;
       _endDate = widget.event!.endDate;
       _currency = widget.event!.currency;
-      _status = widget.event!.status;
+      _status = widget.event!.status ?? TravelEventStatus.upcoming;
     }
   }
 
@@ -121,7 +121,7 @@ class _TravelEditScreenState extends ConsumerState<TravelEditScreen> {
       if (widget.event == null) {
         await service.createEvent(event);
       } else {
-        await service.updateEvent(event);
+        await service.updateEvent(widget.event!.id!, event);
       }
 
       if (mounted) {
