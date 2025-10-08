@@ -755,7 +755,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
         );
       }
 
-      if (!context.mounted) return;
+      if (!mounted) return;
 
       // ignore: use_build_context_synchronously
       Navigator.of(context).pop(finalTheme);
