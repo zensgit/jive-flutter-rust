@@ -1,7 +1,7 @@
 // 账户卡片组件
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:jive_money/providers/currency_provider.dart';
 import 'package:jive_money/core/constants/app_constants.dart';
 
@@ -64,9 +64,6 @@ class AccountCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final currencyFormatter =
-        NumberFormat.currency(symbol: _getCurrencySymbol());
-
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       elevation: 2,
@@ -284,23 +281,7 @@ class AccountCard extends ConsumerWidget {
     }
   }
 
-  String _getCurrencySymbol() {
-    switch (currency.toUpperCase()) {
-      case 'CNY':
-        return '¥';
-      case 'USD':
-        return '\$';
-      case 'EUR':
-        return '€';
-      case 'JPY':
-        return '¥';
-      case 'GBP':
-        return '£';
-      default:
-        return '¥';
-    }
-  }
-
+  // _getCurrencySymbol no longer used; currency formatting is centralized.
   String _formatLastSync() {
     if (lastSyncAt == null) return '从未';
 

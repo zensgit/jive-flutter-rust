@@ -84,12 +84,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _login() async {
-    if (!_formKey.currentState!.validate()) return;
-
     final messenger = ScaffoldMessenger.of(context);
     final router = GoRouter.of(context);
+    if (!_formKey.currentState!.validate()) return;
 
-    setState(() {      _isLoading = true;
+    setState(() {
+      _isLoading = true;
     });
 
     try {
@@ -159,8 +159,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final messenger = ScaffoldMessenger.of(context);
-    final router = GoRouter.of(context);
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -300,6 +298,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             const Spacer(),
                             TextButton(
                               onPressed: () async {
+                                final messenger = ScaffoldMessenger.of(context);
                                 // 清除保存的凭据
                                 await _storageService
                                     .clearRememberedCredentials();
@@ -472,6 +471,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     TextButton(
                       onPressed: () {
                         // TODO: 实现忘记密码功能
+                        final messenger = ScaffoldMessenger.of(context);
                         messenger.showSnackBar(
                           const SnackBar(content: Text('忘记密码功能暂未实现')),
                         );
@@ -505,15 +505,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     WeChatLoginButton(
                       buttonText: '使用微信登录',
                       onSuccess: (authResult, userInfo) async {
+                        final messenger = ScaffoldMessenger.of(context);
+                        final router = GoRouter.of(context);
                         final result = await _authService.wechatLogin();
 
-                        if (!context.mounted) return;
+                        if (!mounted) return;
 
                         if (result.success) {
                           messenger.showSnackBar(
                             SnackBar(
-                              content:
-                                  Text('欢迎回来，${result.userData?.username}！'),
+                              content: Text('欢迎回来，\${result.userData?.username}！'),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -528,9 +529,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         }
                       },
                       onError: (error) {
+                        final messenger = ScaffoldMessenger.of(context);
                         messenger.showSnackBar(
                           SnackBar(
-                            content: Text('微信登录失败: $error'),
+                            content: Text('微信登录失败: \$error'),
                             backgroundColor: Colors.red,
                           ),
                         );

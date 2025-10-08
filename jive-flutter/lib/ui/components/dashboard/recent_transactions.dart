@@ -138,6 +138,7 @@ class GroupedRecentTransactions extends StatelessWidget {
   final List<Transaction> transactions;
   final String title;
   final VoidCallback? onViewAll;
+  final VoidCallback? onFilter;
   final int maxDays;
 
   const GroupedRecentTransactions({
@@ -145,6 +146,7 @@ class GroupedRecentTransactions extends StatelessWidget {
     required this.transactions,
     this.title = '最近交易',
     this.onViewAll,
+    this.onFilter,
     this.maxDays = 3,
   });
 

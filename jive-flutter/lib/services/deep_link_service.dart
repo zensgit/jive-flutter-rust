@@ -29,7 +29,9 @@ class DeepLinkService {
 
     // 监听应用运行时的链接
     _linkSubscription = uni_links.linkStream.listen((link) {
-      _handleDeepLink(link);
+      final v = link ?? '';
+      if (v.isEmpty) return;
+      _handleDeepLink(v);
     }, onError: (err) {
       debugPrint('Link stream error: $err');
     });

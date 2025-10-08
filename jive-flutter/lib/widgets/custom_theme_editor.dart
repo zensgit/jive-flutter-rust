@@ -613,8 +613,8 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
       );
     });
 
-    final messenger = ScaffoldMessenger.of(context);
-    messenger.showSnackBar(
+    // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('已应用"${preset.name}"模板'),
         backgroundColor: Colors.green,
@@ -726,6 +726,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
     if (_nameController.text.trim().isEmpty) {
+      // ignore: use_build_context_synchronously
       messenger.showSnackBar(
         const SnackBar(
           content: Text('请输入主题名称'),
@@ -757,10 +758,12 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
         );
       }
 
-      if (!context.mounted) return;
+      if (!mounted) return;
 
+      // ignore: use_build_context_synchronously
       navigator.pop(finalTheme);
     } catch (e) {
+      // ignore: use_build_context_synchronously
       messenger.showSnackBar(
         SnackBar(
           content: Text('保存失败: $e'),
