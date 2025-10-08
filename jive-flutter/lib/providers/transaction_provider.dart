@@ -4,14 +4,9 @@ import 'package:jive_money/services/api/transaction_service.dart';
 import 'package:jive_money/models/transaction.dart';
 import 'package:jive_money/models/transaction_filter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-<<<<<<< HEAD
-=======
 import 'package:jive_money/providers/ledger_provider.dart';
 
-enum TransactionGrouping { date, category, account }
->>>>>>> origin/main
-
-/// 交易状态
+/// 交易分组方式
 enum TransactionGrouping { date, category, account }
 
 class TransactionState {
@@ -23,10 +18,7 @@ class TransactionState {
   final int totalCount;
   final double totalIncome;
   final double totalExpense;
-<<<<<<< HEAD
   // Phase B scaffolding: grouping + collapsed groups
-=======
->>>>>>> origin/main
   final TransactionGrouping grouping;
   final Set<String> groupCollapse;
 
@@ -309,65 +301,6 @@ class TransactionController extends StateNotifier<TransactionState> {
   /// 清除错误
   void clearError() {
     state = state.copyWith(error: null);
-  }
-
-  /// 设置分组方式（Phase B）
-  void setGrouping(TransactionGrouping grouping) {
-    if (state.grouping == grouping) return;
-    state = state.copyWith(grouping: grouping);
-    _persistGrouping();
-  }
-
-  /// 切换分组折叠状态（Phase B）
-  void toggleGroupCollapse(String key) {
-    final collapsed = Set<String>.from(state.groupCollapse);
-    if (collapsed.contains(key)) {
-      collapsed.remove(key);
-    } else {
-      collapsed.add(key);
-    }
-    state = state.copyWith(groupCollapse: collapsed);
-    _persistGroupCollapse(collapsed);
-  }
-
-  // ---- View preference persistence (Phase B1) ----
-  Future<void> _loadViewPrefs() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final groupingStr = prefs.getString("tx_grouping");
-      TransactionGrouping grouping = state.grouping;
-      if (groupingStr != null) {
-        grouping = TransactionGrouping.values.firstWhere(
-          (g) => g.name == groupingStr,
-          orElse: () => TransactionGrouping.date,
-        );
-      }
-      final collapsedList =
-          prefs.getStringList("tx_group_collapse") ?? const <String>[];
-      if (grouping != state.grouping ||
-          collapsedList.length != state.groupCollapse.length) {
-        state = state.copyWith(
-          grouping: grouping,
-          groupCollapse: collapsedList.toSet(),
-        );
-      }
-    } catch (_) {
-      // Ignore persistence errors
-    }
-  }
-
-  Future<void> _persistGrouping() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString("tx_grouping", state.grouping.name);
-    } catch (_) {}
-  }
-
-  Future<void> _persistGroupCollapse(Set<String> collapsed) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList("tx_group_collapse", collapsed.toList());
-    } catch (_) {}
   }
 
   /// 更新状态并计算统计数据
