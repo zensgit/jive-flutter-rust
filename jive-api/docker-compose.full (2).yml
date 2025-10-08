@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  # PostgreSQL数据库
+  postgres:
+    image: postgres:16-alpine
+    container_name: jive-postgres-full
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: jive_money
+    ports:
+      - "5434:5432"  # 使用5434端口避免冲突
+    volumes:
+      - postgres_data_full:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+    networks:
+      - jive-network-full
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: jive-redis-full
+    restart: unless-stopped
+    ports:
+      - "6381:6379"  # 使用6381端口避免冲突
+    volumes:
+      - redis_data_full:/data
+    networks:
+      - jive-network-full
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API服务（完全容器化）
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.macos-full
+    container_name: jive-api-full
+    restart: unless-stopped
+    environment:
+      # 使用容器内部网络连接
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/jive_money
+      REDIS_URL: redis://redis:6379
+      # API配置
+      API_PORT: 8012
+      HOST: 0.0.0.0
+      RUST_LOG: info
+      # JWT配置
+      JWT_SECRET: your-secret-key-change-this-in-production
+      JWT_EXPIRY: 86400
+      # CORS配置
+      CORS_ORIGIN: "*"
+      CORS_ALLOW_CREDENTIALS: "false"
+    ports:
+      - "8012:8012"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - jive-network-full
+    volumes:
+      - ./logs:/app/logs
+      - ./static:/app/static
+
+  # 开发工具：数据库管理界面（可选）
+  adminer:
+    image: adminer:4.8.1
+    container_name: jive-adminer-full
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    networks:
+      - jive-network-full
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DESIGN: dracula
+    profiles:
+      - dev
+
+  # 开发工具：Redis管理界面（可选）
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: jive-redis-commander-full
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    networks:
+      - jive-network-full
+    profiles:
+      - dev
+
+networks:
+  jive-network-full:
+    driver: bridge
+
+volumes:
+  postgres_data_full:
+  redis_data_full:

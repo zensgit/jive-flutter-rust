@@ -40,6 +40,9 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
   Future<void> _deleteFamily() async {
     if (!_isNameValid) return;
 
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
     // 二次确认
     final secondConfirm = await showDialog<bool>(
       context: context,
@@ -95,7 +98,7 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
             // 切换到第一个可用的Family
             await familyService.switchFamily(families.first.family.id);
             if (!mounted) return;
-            final __ = ref.refresh(currentFamilyProvider);
+            final _ = ref.refresh(currentFamilyProvider);
           }
         }
 

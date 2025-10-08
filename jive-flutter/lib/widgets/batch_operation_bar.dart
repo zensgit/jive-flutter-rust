@@ -227,9 +227,13 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
           ),
           ElevatedButton(
             onPressed: () async {
+              final navigator = Navigator.of(context);
+              final messenger = ScaffoldMessenger.of(context);
               // TODO: 实现批量归档
-              Navigator.pop(context);
+              // ignore: use_build_context_synchronously
+              navigator.pop();
               widget.onCancel();
+              // ignore: use_build_context_synchronously
               messenger.showSnackBar(
                 SnackBar(
                   content: Text('已归档 ${widget.selectedIds.length} 个项目'),
@@ -299,10 +303,14 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
             ),
             onPressed: () async {
               final provider = ref.read(categoryManagementProvider);
+              final navigator = Navigator.of(context);
+              final messenger = ScaffoldMessenger.of(context);
               await provider.batchDeleteCategories(widget.selectedIds);
               if (!mounted) return;
-              Navigator.pop(context);
+              // ignore: use_build_context_synchronously
+              navigator.pop();
               widget.onCancel();
+              // ignore: use_build_context_synchronously
               messenger.showSnackBar(
                 SnackBar(
                   content: Text('已删除 ${widget.selectedIds.length} 个项目'),
