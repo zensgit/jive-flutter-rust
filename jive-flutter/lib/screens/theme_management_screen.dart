@@ -3,6 +3,7 @@ import 'package:jive_money/models/theme_models.dart' as models;
 import 'package:jive_money/services/theme_service.dart';
 import 'package:jive_money/widgets/theme_preview_card.dart';
 import 'package:jive_money/widgets/theme_share_dialog.dart';
+import 'package:jive_money/widgets/custom_theme_editor.dart';
 
 /// 主题管理页面
 class ThemeManagementScreen extends StatefulWidget {
@@ -529,7 +530,11 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
     try {
       await _themeService.copyThemeToClipboard(theme.id);
       if (!mounted) return;
+<<<<<<< HEAD
+      ScaffoldMessenger.of(context).showSnackBar(
+=======
       messenger.showSnackBar(
+>>>>>>> origin/main
         const SnackBar(
           content: Text('主题已复制到剪贴板'),
           backgroundColor: Colors.green,
@@ -548,8 +553,11 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
   Future<void> _deleteTheme(models.CustomThemeData theme) async {
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
+<<<<<<< HEAD
+=======
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
+>>>>>>> origin/main
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -576,7 +584,11 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
       try {
         await _themeService.deleteCustomTheme(theme.id);
         if (!mounted) return;
+<<<<<<< HEAD
+        ScaffoldMessenger.of(context).showSnackBar(
+=======
         messenger.showSnackBar(
+>>>>>>> origin/main
           SnackBar(
             content: Text('主题"${theme.name}"已删除'),
             backgroundColor: Colors.orange,
@@ -703,8 +715,11 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
   Future<void> _resetToDefault() async {
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
+<<<<<<< HEAD
+=======
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
+>>>>>>> origin/main
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -730,7 +745,11 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
     if (confirmed == true) {
       await _themeService.resetToSystemTheme();
       if (!mounted) return;
+<<<<<<< HEAD
+      ScaffoldMessenger.of(context).showSnackBar(
+=======
       messenger.showSnackBar(
+>>>>>>> origin/main
         const SnackBar(
           content: Text('已重置为系统默认主题'),
           backgroundColor: Colors.green,

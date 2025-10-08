@@ -684,6 +684,14 @@ class CategoryUsage {
   CategoryUsage({required this.name, required this.amount});
 }
 
+
+/// Stub Address class compatible with `const Address(email, name)` usage
+class Address {
+  final String email;
+  final String? name;
+  const Address(this.email, [this.name]);
+}
+
 /// Stub implementation for Message class
 class _StubMessage {
   dynamic from;
