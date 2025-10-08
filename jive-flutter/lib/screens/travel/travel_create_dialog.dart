@@ -447,33 +447,3 @@ class _TemplateChip extends StatelessWidget {
   }
 }
 
-/// 创建旅行事件输入模型
-class CreateTravelEventInput {
-  final String name;
-  final String? description;
-  final DateTime startDate;
-  final DateTime endDate;
-  final String? location;
-  final bool autoTag;
-  final List<String> travelCategoryIds;
-
-  CreateTravelEventInput({
-    required this.name,
-    this.description,
-    required this.startDate,
-    required this.endDate,
-    this.location,
-    required this.autoTag,
-    required this.travelCategoryIds,
-  });
-
-  Map<String, dynamic> toJson() => {
-    'name': name,
-    if (description != null) 'description': description,
-    'start_date': startDate.toIso8601String(),
-    'end_date': endDate.toIso8601String(),
-    if (location != null) 'location': location,
-    'auto_tag': autoTag,
-    'travel_category_ids': travelCategoryIds,
-  };
-}

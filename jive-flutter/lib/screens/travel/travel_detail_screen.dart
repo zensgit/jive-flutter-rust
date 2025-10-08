@@ -741,11 +741,11 @@ class _StatisticsTab extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 16),
-                  _buildStatRow('总花费', '${travel.homeCurrencyCode} ${statistics.totalSpent.toStringAsFixed(2)}'),
-                  _buildStatRow('交易笔数', '${statistics.transactionCount}'),
-                  _buildStatRow('日均花费', '${travel.homeCurrencyCode} ${statistics.dailyAverage.toStringAsFixed(2)}'),
-                  if (statistics.budgetUsage != null)
-                    _buildStatRow('预算使用', '${statistics.budgetUsage!.toStringAsFixed(1)}%'),
+                  _buildStatRow('总花费', '${travel.homeCurrencyCode} ${statistics!.totalSpent.toStringAsFixed(2)}'),
+                  _buildStatRow('交易笔数', '${statistics!.transactionCount}'),
+                  _buildStatRow('日均花费', '${travel.homeCurrencyCode} ${statistics!.dailyAverage.toStringAsFixed(2)}'),
+                  if (statistics!.budgetUsage != null)
+                    _buildStatRow('预算使用', '${statistics!.budgetUsage!.toStringAsFixed(1)}%'),
                 ],
               ),
             ),
@@ -754,13 +754,13 @@ class _StatisticsTab extends StatelessWidget {
           const SizedBox(height: 16),
 
           // 分类统计
-          if (statistics.byCategory.isNotEmpty) ...[
+          if (statistics!.byCategory.isNotEmpty) ...[
             Text(
               '分类统计',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            ...statistics.byCategory.map((category) => Card(
+            ...statistics!.byCategory.map((category) => Card(
                   margin: const EdgeInsets.only(bottom: 8),
                   child: ListTile(
                     title: Text(category.categoryName),
