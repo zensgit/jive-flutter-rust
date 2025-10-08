@@ -8,7 +8,6 @@ class RetryInterceptor extends Interceptor {
   final int maxRetries;
   final Duration baseDelay;
   final Duration maxDelay;
-  static DateTime? _lastGlobalFailure;
   static int _consecutiveFailures = 0;
   static bool _circuitOpen = false;
   static DateTime? _circuitOpenedAt;
@@ -128,7 +127,6 @@ class RetryInterceptor extends Interceptor {
   }
 
   void _recordFailure() {
-    _lastGlobalFailure = DateTime.now();
     _consecutiveFailures++;
     if (_consecutiveFailures >= circuitFailureThreshold && !_circuitOpen) {
       _circuitOpen = true;
