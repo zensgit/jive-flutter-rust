@@ -1,8 +1,10 @@
 // 预算进度组件
 import 'package:flutter/material.dart';
 import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jive_money/providers/currency_provider.dart';
 
-class BudgetProgress extends StatelessWidget {
+class BudgetProgress extends ConsumerWidget {
   final String category;
   final double budgeted;
   final double spent;
@@ -31,7 +33,7 @@ class BudgetProgress extends StatelessWidget {
   bool get isOverBudget => spent > budgeted;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final progressColor = _getProgressColor();
 
@@ -103,8 +105,8 @@ class BudgetProgress extends StatelessWidget {
                       ),
                     Text(
                       isOverBudget
-                          ? '超支 ${ref.read(currencyProvider.notifier).formatCurrency(-remaining, ref.read(baseCurrencyProvider).code)}'
-                          : '剩余 ${ref.read(currencyProvider.notifier).formatCurrency(remaining, ref.read(baseCurrencyProvider).code)}',
+                          ? '超支 ${remaining.abs().toStringAsFixed(2)}'
+                          : '剩余 ${remaining.toStringAsFixed(2)}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: isOverBudget
                             ? AppConstants.errorColor
@@ -230,7 +232,7 @@ class CompactBudgetProgress extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(
+            SizedBox(
               width: 45,
               child: Text(
                 '${percentage.toStringAsFixed(0)}%',

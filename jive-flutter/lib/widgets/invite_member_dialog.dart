@@ -422,7 +422,7 @@ Jive Money - 集腋记账
             width: 60,
             child: Text(
               '$label:',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
