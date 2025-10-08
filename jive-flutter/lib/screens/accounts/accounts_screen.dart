@@ -27,6 +27,12 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
       appBar: AppBar(
         title: const Text('账户管理'),
         actions: [
+          // 资产总览快捷入口（A）
+          IconButton(
+            tooltip: '资产总览',
+            icon: const Icon(Icons.pie_chart_outline),
+            onPressed: () => context.go(AppRoutes.userAssets),
+          ),
           // 视图切换
           IconButton(
             icon: Icon(_viewMode == 'list' ? Icons.folder : Icons.list),
@@ -50,6 +56,9 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                 case 'archive':
                   _navigateToArchived();
                   break;
+                case 'assets':
+                  context.go(AppRoutes.userAssets);
+                  break;
               }
             },
             itemBuilder: (context) => [
@@ -64,6 +73,10 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
               const PopupMenuItem(
                 value: 'archive',
                 child: Text('已归档账户'),
+              ),
+              const PopupMenuItem(
+                value: 'assets',
+                child: Text('资产总览'),
               ),
             ],
           ),

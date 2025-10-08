@@ -6,6 +6,8 @@ part 'travel_event.g.dart';
 /// 旅行事件模型 - 基于maybe-main设计
 @freezed
 class TravelEvent with _$TravelEvent {
+  const TravelEvent._();
+
   const factory TravelEvent({
     String? id,
     required String name,
@@ -13,6 +15,7 @@ class TravelEvent with _$TravelEvent {
     required DateTime startDate,
     required DateTime endDate,
     String? location,
+    @Default('planning') String status,
     @Default(true) bool isActive,
     @Default(false) bool autoTag,
     @Default([]) List<String> travelCategoryIds,
@@ -24,10 +27,21 @@ class TravelEvent with _$TravelEvent {
     @Default(0) int transactionCount,
     double? totalAmount,
     String? travelTagId,
+
+    // 预算相关
+    double? totalBudget,
+    String? budgetCurrencyCode,
+    @Default(0) double totalSpent,
+    String? homeCurrencyCode,
+    double? budgetUsagePercent,
   }) = _TravelEvent;
 
   factory TravelEvent.fromJson(Map<String, dynamic> json) =>
       _$TravelEventFromJson(json);
+
+  // Computed properties
+  String get tripName => name; // alias for compatibility
+  int get durationDays => endDate.difference(startDate).inDays + 1;
 }
 
 /// 旅行事件模板
@@ -199,4 +213,75 @@ extension TravelEventExtension on TravelEvent {
   String get travelTagName {
     return '旅行-$name';
   }
+}
+
+/// 创建旅行事件输入
+@freezed
+class CreateTravelEventInput with _$CreateTravelEventInput {
+  const factory CreateTravelEventInput({
+    required String name,
+    String? description,
+    required DateTime startDate,
+    required DateTime endDate,
+    String? location,
+    @Default(true) bool autoTag,
+    @Default([]) List<String> travelCategoryIds,
+  }) = _CreateTravelEventInput;
+
+  factory CreateTravelEventInput.fromJson(Map<String, dynamic> json) =>
+      _$CreateTravelEventInputFromJson(json);
+}
+
+/// 更新旅行事件输入
+@freezed
+class UpdateTravelEventInput with _$UpdateTravelEventInput {
+  const factory UpdateTravelEventInput({
+    String? name,
+    String? description,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? location,
+    bool? autoTag,
+    List<String>? travelCategoryIds,
+  }) = _UpdateTravelEventInput;
+
+  factory UpdateTravelEventInput.fromJson(Map<String, dynamic> json) =>
+      _$UpdateTravelEventInputFromJson(json);
+}
+
+/// 旅行统计信息
+@freezed
+class TravelStatistics with _$TravelStatistics {
+  const factory TravelStatistics({
+    required double totalSpent,
+    required double totalBudget,
+    required double budgetUsage,
+    required Map<String, double> spentByCategory,
+    required Map<String, double> spentByDay,
+    required int transactionCount,
+    required double averagePerDay,
+  }) = _TravelStatistics;
+
+  factory TravelStatistics.fromJson(Map<String, dynamic> json) =>
+      _$TravelStatisticsFromJson(json);
+}
+
+/// 旅行分类预算
+@freezed
+class TravelBudget with _$TravelBudget {
+  const factory TravelBudget({
+    String? id,
+    required String travelEventId,
+    required String categoryId,
+    required String categoryName,
+    required double budgetAmount,
+    String? budgetCurrencyCode,
+    @Default(0.8) double alertThreshold,
+    @Default(0) double spentAmount,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) = _TravelBudget;
+
+  factory TravelBudget.fromJson(Map<String, dynamic> json) =>
+      _$TravelBudgetFromJson(json);
 }
