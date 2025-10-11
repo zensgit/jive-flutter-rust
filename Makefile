@@ -202,3 +202,8 @@ lint:
 	@echo "检查 Flutter 代码..."
 	@cd jive-flutter && flutter analyze
 	@echo "✅ 代码检查完成"
+
+# API Schema Integration Tests (代理到 jive-api/Makefile)
+api-test-schema:
+	@echo "Running API Schema Integration Tests..."
+	@cd jive-api && $(MAKE) api-test-schema

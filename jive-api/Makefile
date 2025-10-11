@@ -132,6 +132,20 @@ sqlx-check:
 	@echo "Checking SQLx offline cache against current schema..."
 	@SQLX_OFFLINE=true cargo sqlx prepare --check || (echo "SQLx cache out of date. Run 'make sqlx-prepare'" && exit 1)
 
+# Schema Integration Test - 迁移 + 单套件运行
+.PHONY: api-test-schema
+api-test-schema:
+	@echo "Running Schema Integration Tests..."
+	@echo "Setting up test database..."
+	@export DB_PORT=$${DB_PORT:-5433} && \
+	export TEST_DATABASE_URL="postgresql://postgres:postgres@localhost:$${DB_PORT}/jive_money" && \
+	echo "Test DB URL: $${TEST_DATABASE_URL}" && \
+	chmod +x scripts/migrate_local.sh && \
+	./scripts/migrate_local.sh --force && \
+	echo "Running exchange_rate_service_schema_test..." && \
+	SQLX_OFFLINE=true TEST_DATABASE_URL="$${TEST_DATABASE_URL}" \
+	cargo test --test integration exchange_rate_service_schema -- --nocapture --test-threads=1
+
 # 快速启动开发环境
 quick-start: build dev
 	@echo "开发环境已启动！"
