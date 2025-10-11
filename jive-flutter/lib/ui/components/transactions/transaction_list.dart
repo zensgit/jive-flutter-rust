@@ -6,6 +6,8 @@ import 'package:jive_money/ui/components/loading/loading_widget.dart';
 import 'package:jive_money/models/transaction.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/providers/transaction_provider.dart';
 
 // 类型别名以兼容现有代码
 typedef TransactionData = Transaction;
@@ -57,11 +59,23 @@ class TransactionList extends ConsumerWidget {
       return _buildEmptyState(context);
     }
 
-    final listContent = groupByDate ? _buildGroupedList(context, ref) : _buildSimpleList(context, ref);
+    // Determine grouping mode from provider (Phase B1)
+    final grouping = ref.watch(transactionControllerProvider).grouping;
+
+    Widget listContent;
+    if (grouping == TransactionGrouping.date) {
+      listContent = groupByDate
+          ? _buildGroupedListByDate(context, ref)
+          : _buildSimpleList(context, ref);
+    } else if (grouping == TransactionGrouping.category) {
+      listContent = _buildGroupedListByCategory(context, ref);
+    } else {
+      listContent = _buildGroupedListByAccount(context, ref);
+    }
 
     final content = Column(
       children: [
-        if (showSearchBar) _buildSearchBar(context),
+        if (showSearchBar) _buildSearchBar(context, grouping),
         Expanded(child: listContent),
       ],
     );
@@ -77,7 +91,7 @@ class TransactionList extends ConsumerWidget {
   }
 
   // 顶部搜索/分组切换栏（Phase A）
-  Widget _buildSearchBar(BuildContext context) {
+  Widget _buildSearchBar(BuildContext context, TransactionGrouping grouping) {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -109,12 +123,16 @@ class TransactionList extends ConsumerWidget {
           ),
           const SizedBox(width: 8),
           IconButton(
-            tooltip: groupByDate ? '切换为平铺' : '按日期分组',
-            onPressed: onToggleGroup,
+            tooltip: grouping == TransactionGrouping.date
+                ? (groupByDate ? '切换为平铺' : '按日期分组')
+                : '仅日期模式可切换',
+            onPressed: grouping == TransactionGrouping.date ? onToggleGroup : null,
             icon: Icon(
-              groupByDate
-                  ? Icons.view_agenda_outlined
-                  : Icons.calendar_today_outlined,
+              grouping == TransactionGrouping.date
+                  ? (groupByDate
+                      ? Icons.view_agenda_outlined
+                      : Icons.calendar_today_outlined)
+                  : Icons.view_agenda_outlined,
             ),
           ),
           IconButton(
@@ -190,8 +208,6 @@ Widget _buildSimpleList(BuildContext context, WidgetRef ref) {
       },
     );
   }
-
-
 
   Widget _buildGroupedList(BuildContext context, WidgetRef ref) {
     final grouped = _groupTransactionsByDate(transactions);
@@ -438,5 +454,146 @@ class SwipeableTransactionList extends StatelessWidget {
     } else {
       return '${date.year}年${date.month}月${date.day}日';
     }
+  }
+}
+
+
+extension on TransactionList {
+  // 按分类分组
+  Widget _buildGroupedListByCategory(BuildContext context, WidgetRef ref) {
+    final grouped = <String, List<TransactionData>>{};
+    for (final t in transactions) {
+      final key = (t.category != null && t.category!.trim().isNotEmpty)
+          ? t.category!.trim()
+          : '未分类';
+      (grouped[key] ??= <TransactionData>[]).add(t);
+    }
+    final entries = grouped.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+    final theme = Theme.of(context);
+    final collapsed = ref.watch(transactionControllerProvider).groupCollapse;
+    return ListView.builder(
+      controller: scrollController,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: entries.length,
+      itemBuilder: (context, index) {
+        final e = entries[index];
+        final key = 'category:${e.key}';
+        final isCollapsed = collapsed.contains(key);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildGroupHeader(context, ref, theme, e.key, e.value, key, isCollapsed),
+            if (!isCollapsed)
+              ...e.value.map(
+                (t) => TransactionCard(
+                  transaction: t,
+                  onTap: () => onTransactionTap?.call(t),
+                  onLongPress: () => onTransactionLongPress?.call(t),
+                  showDate: true,
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  // 按账户分组（使用账户ID占位）
+  Widget _buildGroupedListByAccount(BuildContext context, WidgetRef ref) {
+    final grouped = <String, List<TransactionData>>{};
+    for (final t in transactions) {
+      final key = (t.accountId != null && t.accountId!.trim().isNotEmpty)
+          ? t.accountId!.trim()
+          : '未知账户';
+      (grouped[key] ??= <TransactionData>[]).add(t);
+    }
+    final entries = grouped.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+    final theme = Theme.of(context);
+    final collapsed = ref.watch(transactionControllerProvider).groupCollapse;
+    return ListView.builder(
+      controller: scrollController,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: entries.length,
+      itemBuilder: (context, index) {
+        final e = entries[index];
+        final key = 'account:${e.key}';
+        final isCollapsed = collapsed.contains(key);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildGroupHeader(context, ref, theme, e.key, e.value, key, isCollapsed),
+            if (!isCollapsed)
+              ...e.value.map(
+                (t) => TransactionCard(
+                  transaction: t,
+                  onTap: () => onTransactionTap?.call(t),
+                  onLongPress: () => onTransactionLongPress?.call(t),
+                  showDate: true,
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildGroupHeader(
+    BuildContext context,
+    WidgetRef ref,
+    ThemeData theme,
+    String title,
+    List<TransactionData> items,
+    String collapseKey,
+    bool isCollapsed,
+  ) {
+    final total = _calculateDayTotal(items);
+    final isPositive = total >= 0;
+    final base = ref.watch(baseCurrencyProvider).code;
+    final formatted =
+        ref.read(currencyProvider.notifier).formatCurrency(total.abs(), base);
+    final sign = total >= 0 ? '+' : '-';
+    return InkWell(
+      onTap: () =>
+          ref.read(transactionControllerProvider.notifier).toggleGroupCollapse(collapseKey),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    '${items.length} 笔交易',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              '$sign$formatted',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: isPositive
+                    ? AppConstants.successColor
+                    : AppConstants.errorColor,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(isCollapsed ? Icons.expand_more : Icons.expand_less),
+          ],
+        ),
+      ),
+    );
   }
 }

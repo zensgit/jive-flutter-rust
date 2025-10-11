@@ -199,9 +199,10 @@ impl CurrencyService {
         if let Some(settings) = settings {
             // 获取支持的货币列表
             let supported = self.get_family_supported_currencies(family_id).await?;
-            
+
             Ok(FamilyCurrencySettings {
                 family_id,
+                // base_currency 可能为可空；兜底为 CNY
                 base_currency: settings.base_currency.unwrap_or_else(|| "CNY".to_string()),
                 allow_multi_currency: settings.allow_multi_currency.unwrap_or(false),
                 auto_convert: settings.auto_convert.unwrap_or(false),
