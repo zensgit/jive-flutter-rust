@@ -76,8 +76,7 @@ class TransactionList extends ConsumerWidget {
     return content;
   }
 
-
-
+  // 顶部搜索/分组切换栏（Phase A）
   Widget _buildSearchBar(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
@@ -91,7 +90,10 @@ class TransactionList extends ConsumerWidget {
                 hintText: '搜索 描述/备注/收款方…',
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: onClearSearch != null
-                    ? IconButton(icon: const Icon(Icons.clear), onPressed: onClearSearch)
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: onClearSearch,
+                      )
                     : null,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -109,7 +111,11 @@ class TransactionList extends ConsumerWidget {
           IconButton(
             tooltip: groupByDate ? '切换为平铺' : '按日期分组',
             onPressed: onToggleGroup,
-            icon: Icon(groupByDate ? Icons.view_agenda_outlined : Icons.calendar_today_outlined),
+            icon: Icon(
+              groupByDate
+                  ? Icons.view_agenda_outlined
+                  : Icons.calendar_today_outlined,
+            ),
           ),
           IconButton(
             tooltip: '筛选',
@@ -124,6 +130,10 @@ class TransactionList extends ConsumerWidget {
       ),
     );
   }
+
+
+
+
 
   Widget _buildEmptyState(BuildContext context) {
     final theme = Theme.of(context);
