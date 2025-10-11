@@ -181,6 +181,17 @@ export JWT_SECRET=$(openssl rand -hex 32)
 
 未设置时（或留空）API 会在开发 / 测试自动使用一个不安全的占位并打印警告，不可在生产依赖该默认值。
 
+### 密码重哈希（bcrypt → Argon2id）
+
+登录成功后，如检测到旧 bcrypt 哈希，系统会在 `REHASH_ON_LOGIN` 未显式关闭时（默认开启）尝试透明升级为 Argon2id：
+
+```bash
+# 关闭重哈希（例如压测环境需要保留原样）
+export REHASH_ON_LOGIN=0
+```
+
+失败不会阻断登录，仅记录 warn 日志。设计说明见 `docs/PASSWORD_REHASH_DESIGN.md`。
+
 ### 超级管理员默认密码说明
 
 仓库历史存在两个默认密码基线：
