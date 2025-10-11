@@ -187,6 +187,12 @@ api-safe:
 	@echo "启动完整版 API (安全 CORS 模式, 端口 $${API_PORT:-8012})..."
 	@cd jive-api && unset CORS_DEV && API_PORT=$${API_PORT:-8012} cargo run --bin jive-api
 
+# Enable local git hooks to run pre-commit (api-lint)
+.PHONY: hooks
+hooks:
+	@git config core.hooksPath .githooks
+	@echo "Git hooks enabled (pre-commit will run make api-lint)"
+
 # 代码格式化
 format:
 	@echo "格式化 Rust 代码..."
