@@ -149,10 +149,6 @@ class TransactionList extends ConsumerWidget {
     );
   }
 
-
-
-
-
   Widget _buildEmptyState(BuildContext context) {
     final theme = Theme.of(context);
 

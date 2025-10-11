@@ -535,7 +535,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         }
                       },
                       onError: (error) {
-                        // ignore: use_build_context_synchronously
                         final messenger = ScaffoldMessenger.of(context);
                         messenger.showSnackBar(
                           SnackBar(

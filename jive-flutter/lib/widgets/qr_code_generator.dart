@@ -300,7 +300,6 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
       ],
     );
   }
-
 }
 
 /// 操作按钮

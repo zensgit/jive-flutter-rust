@@ -392,7 +392,7 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
               _targetParentId,
             );
             if (!mounted) return;
-            navigator.pop();
+            Navigator.pop(context);
             widget.onConfirm();
             messenger.showSnackBar(
               SnackBar(
@@ -470,7 +470,6 @@ class _BatchConvertToTagDialogState
             final messenger = ScaffoldMessenger.of(context);
             final provider = ref.read(categoryManagementProvider);
             final navigator = Navigator.of(context);
-            final messenger = ScaffoldMessenger.of(context);
 
             for (final categoryId in widget.selectedIds) {
               await provider.convertCategoryToTag(
@@ -482,7 +481,7 @@ class _BatchConvertToTagDialogState
               if (!mounted) return;
             }
 
-            navigator.pop();
+            Navigator.pop(context);
             widget.onConfirm();
             messenger.showSnackBar(
               SnackBar(
