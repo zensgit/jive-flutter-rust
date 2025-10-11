@@ -469,12 +469,13 @@ class _BatchConvertToTagDialogState
           onPressed: () async {
             final messenger = ScaffoldMessenger.of(context);
             final provider = ref.read(categoryManagementProvider);
+            final navigator = Navigator.of(context);
+            final messenger = ScaffoldMessenger.of(context);
 
             for (final categoryId in widget.selectedIds) {
-              // TODO: 获取分类名称
               await provider.convertCategoryToTag(
                 categoryId,
-                'Category Name', // 需要从分类获取
+                'Category Name', // TODO: 从分类列表获取真实名称
                 applyToTransactions: _applyToTransactions,
                 deleteCategory: _deleteCategories,
               );
