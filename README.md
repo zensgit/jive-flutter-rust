@@ -86,6 +86,14 @@ cp .env.example .env
 
 2. 根据需要修改 `.env` 文件中的配置
 
+### 本地端口与钩子（建议）
+- 端口约定：本地 Docker/管理脚本默认映射 PostgreSQL 到 `5433`，Redis 到 `6380`，Adminer 到 `9080`；API 默认 `8012`。
+  - `jive-api/docker-compose.dev.yml` 已与 `jive-manager.sh` 对齐：`5433:5432`、`6380:6379`、`9080:8080`。
+- 启用预提交钩子（保证本地提交即跑 SQLx 严格校验与 Clippy）：
+  ```bash
+  make hooks
+  ```
+
 ## 🏗️ 项目结构
 
 ```
