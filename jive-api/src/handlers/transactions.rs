@@ -67,6 +67,7 @@ pub struct ExportTransactionsRequest {
     pub category_id: Option<Uuid>,
     pub start_date: Option<NaiveDate>,
     pub end_date: Option<NaiveDate>,
+    pub include_header: Option<bool>,
 }
 
 /// 导出交易（返回 data:URL 形式的下载链接，避免服务器存储文件）
@@ -199,6 +200,8 @@ pub async fn export_transactions(
     }
 
     // 生成 CSV（core_export 启用时委托核心导出；否则使用本地安全 CSV 生成）
+    let include_header = req.include_header.unwrap_or(true);
+
     #[cfg(feature = "core_export")]
     let (bytes, count_for_audit) = {
         let mapped: Vec<SimpleTransactionExport> = rows
@@ -231,7 +234,7 @@ pub async fn export_transactions(
             .collect();
         let core = CoreExportService {};
         let out = core
-            .generate_csv_simple(&mapped, Some(&CsvExportConfig::default()))
+            .generate_csv_simple(&mapped, Some(&CsvExportConfig::default().with_include_header(include_header)))
             .map_err(|_e| ApiError::InternalServerError)?;
         let mapped_len = mapped.len();
         (out, mapped_len)
@@ -239,7 +242,8 @@ pub async fn export_transactions(
 
     #[cfg(not(feature = "core_export"))]
     let (bytes, count_for_audit) = {
-        let cfg = CsvExportConfig::default();
+        let mut cfg = CsvExportConfig::default();
+        cfg.include_header = include_header;
         let mut out = String::new();
         if cfg.include_header {
             out.push_str(&format!(
@@ -370,6 +374,8 @@ pub async fn export_transactions_csv_stream(
     let rows_all = query.build().fetch_all(&pool).await
         .map_err(|e| ApiError::DatabaseError(format!("查询交易失败: {}", e)))?;
     // Build response body bytes depending on feature flag
+    let include_header = q.include_header.unwrap_or(true);
+
     #[cfg(feature = "core_export")]
     let body_bytes: Vec<u8> = {
         let mapped: Vec<SimpleTransactionExport> = rows_all
@@ -402,13 +408,14 @@ pub async fn export_transactions_csv_stream(
             .collect();
         let core = CoreExportService {};
         core
-            .generate_csv_simple(&mapped, Some(&CsvExportConfig::default()))
+            .generate_csv_simple(&mapped, Some(&CsvExportConfig::default().with_include_header(include_header)))
             .map_err(|_e| ApiError::InternalServerError)?
     };
 
     #[cfg(not(feature = "core_export"))]
     let body_bytes: Vec<u8> = {
-        let cfg = CsvExportConfig::default();
+        let mut cfg = CsvExportConfig::default();
+        cfg.include_header = include_header;
         let mut out = String::new();
         if cfg.include_header {
             out.push_str(&format!(

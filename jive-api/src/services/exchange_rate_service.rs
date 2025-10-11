@@ -82,6 +82,11 @@ impl ExchangeRateService {
         }
     }
 
+    /// Get a reference to the pool (for testing)
+    pub fn pool(&self) -> &Arc<PgPool> {
+        &self.pool
+    }
+
     /// Fetch exchange rates from external API or cache
     pub async fn get_rates(
         &self,
@@ -277,24 +282,46 @@ impl ExchangeRateService {
 
     /// Store rates in database for historical tracking
     async fn store_rates_in_db(&self, rates: &[ExchangeRate]) -> ApiResult<()> {
+        use rust_decimal::Decimal;
+        use uuid::Uuid;
+
         if rates.is_empty() {
             return Ok(());
         }
 
-        // Store rates in the exchange_rates table (if it exists)
+        // Store rates in the exchange_rates table following the schema
+        // Schema: (from_currency, to_currency, rate, source, date, effective_date, is_manual)
+        // Unique constraint: (from_currency, to_currency, date)
         for rate in rates {
+            let rate_decimal = Decimal::from_f64_retain(rate.rate)
+                .unwrap_or_else(|| {
+                    warn!("Failed to convert rate {} to Decimal, using 0", rate.rate);
+                    Decimal::ZERO
+                });
+
+            let date_naive = rate.timestamp.date_naive();
+
             sqlx::query!(
                 r#"
-                INSERT INTO exchange_rates (from_currency, to_currency, rate, rate_date, source)
-                VALUES ($1, $2, $3, $4, $5)
-                ON CONFLICT (from_currency, to_currency, rate_date)
-                DO UPDATE SET rate = $3, source = $5, updated_at = NOW()
+                INSERT INTO exchange_rates (
+                    id, from_currency, to_currency, rate, source,
+                    date, effective_date, is_manual
+                )
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                ON CONFLICT (from_currency, to_currency, date)
+                DO UPDATE SET
+                    rate = EXCLUDED.rate,
+                    source = EXCLUDED.source,
+                    updated_at = CURRENT_TIMESTAMP
                 "#,
+                Uuid::new_v4(),
                 rate.from_currency,
                 rate.to_currency,
-                rate.rate as f64,
-                rate.timestamp.date_naive(),
-                self.api_config.provider
+                rate_decimal,
+                self.api_config.provider,
+                date_naive,
+                date_naive,  // effective_date 与 date 相同
+                false        // 外部API获取的不是手动设置
             )
             .execute(self.pool.as_ref())
             .await

@@ -15,6 +15,7 @@ use crate::services::{CurrencyService};
 use crate::services::exchange_rate_api::ExchangeRateApiService;
 use crate::services::currency_service::{CurrencyPreference};
 use super::family_handler::ApiResponse;
+use crate::AppState;
 
 /// Enhanced Currency model with all fields needed by Flutter
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -107,20 +108,20 @@ pub struct CurrenciesResponse {
 
 /// Get user's currency settings
 pub async fn get_user_currency_settings(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     claims: Claims,
 ) -> ApiResult<Json<ApiResponse<UserCurrencySettings>>> {
     let user_id = claims.user_id()?;
-    
-    // Get user preferences
-    let service = CurrencyService::new(pool.clone());
+
+    // Get user preferences (with Redis caching)
+    let service = CurrencyService::new_with_redis(app_state.pool.clone(), app_state.redis.clone());
     let preferences = service.get_user_currency_preferences(user_id).await
         .map_err(|_| ApiError::InternalServerError)?;
     
     // Get user settings from database or use defaults
     let settings = sqlx::query!(
         r#"
-        SELECT 
+        SELECT
             multi_currency_enabled,
             crypto_enabled,
             base_currency,
@@ -132,7 +133,7 @@ pub async fn get_user_currency_settings(
         "#,
         user_id
     )
-    .fetch_optional(&pool)
+    .fetch_optional(&app_state.pool)
     .await
     .map_err(|_| ApiError::InternalServerError)?;
     
@@ -174,12 +175,12 @@ pub struct UpdateUserCurrencySettingsRequest {
 
 /// Update user's currency settings
 pub async fn update_user_currency_settings(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     claims: Claims,
     Json(req): Json<UpdateUserCurrencySettingsRequest>,
 ) -> ApiResult<Json<ApiResponse<UserCurrencySettings>>> {
     let user_id = claims.user_id()?;
-    
+
     // Upsert user settings
     sqlx::query!(
         r#"
@@ -209,12 +210,12 @@ pub async fn update_user_currency_settings(
         req.show_currency_code,
         req.show_currency_symbol
     )
-    .execute(&pool)
+    .execute(&app_state.pool)
     .await
     .map_err(|_| ApiError::InternalServerError)?;
-    
+
     // Return updated settings
-    get_user_currency_settings(State(pool), claims).await
+    get_user_currency_settings(State(app_state), claims).await
 }
 
 /// Get real-time exchange rates (with caching)
@@ -300,6 +301,12 @@ pub struct DetailedRateItem {
     pub source: String,
     pub is_manual: bool,
     pub manual_rate_expiry: Option<chrono::NaiveDateTime>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub change_24h: Option<Decimal>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub change_7d: Option<Decimal>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub change_30d: Option<Decimal>,
 }
 
 #[derive(Debug, Serialize)]
@@ -377,6 +384,74 @@ pub async fn get_manual_overrides(
     })))
 }
 
+/// Helper: Batch fetch currency crypto status to avoid N+1 queries
+async fn get_currencies_crypto_status(
+    pool: &PgPool,
+    codes: &[String],
+) -> ApiResult<HashMap<String, bool>> {
+    let rows = sqlx::query!(
+        r#"
+        SELECT code, COALESCE(is_crypto, false) as is_crypto
+        FROM currencies
+        WHERE code = ANY($1)
+        "#,
+        codes
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(|_| ApiError::InternalServerError)?;
+
+    let mut map = HashMap::new();
+    for row in rows {
+        map.insert(row.code, row.is_crypto.unwrap_or(false));
+    }
+    Ok(map)
+}
+
+/// Helper: Batch fetch rate details (manual flags and changes) to avoid N+1 queries
+async fn get_batch_rate_details(
+    pool: &PgPool,
+    base: &str,
+    targets: &[String],
+) -> ApiResult<HashMap<String, (bool, Option<chrono::NaiveDateTime>, Option<Decimal>, Option<Decimal>, Option<Decimal>)>> {
+    let rows = sqlx::query!(
+        r#"
+        SELECT DISTINCT ON (to_currency)
+            to_currency,
+            is_manual,
+            manual_rate_expiry,
+            change_24h,
+            change_7d,
+            change_30d
+        FROM exchange_rates
+        WHERE from_currency = $1
+        AND to_currency = ANY($2)
+        AND date = CURRENT_DATE
+        ORDER BY to_currency, updated_at DESC
+        "#,
+        base,
+        targets
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(|_| ApiError::InternalServerError)?;
+
+    let mut map = HashMap::new();
+    for row in rows {
+        map.insert(
+            row.to_currency,
+            (
+                row.is_manual.unwrap_or(false),
+                row.manual_rate_expiry.map(|dt| dt.naive_utc()),
+                row.change_24h,
+                row.change_7d,
+                row.change_30d,
+            )
+        );
+    }
+    Ok(map)
+}
+
 /// Get detailed batch rates (supports fiat and crypto) with source label
 pub async fn get_detailed_batch_rates(
     State(pool): State<PgPool>,
@@ -390,8 +465,19 @@ pub async fn get_detailed_batch_rates(
         .filter(|c| c != &base)
         .collect();
 
-    // Determine crypto vs fiat for base and targets
-    let base_is_crypto = is_crypto_currency(&pool, &base).await?;
+    // 🚀 OPTIMIZATION 1: Batch fetch all currency crypto statuses
+    let all_codes: Vec<String> = std::iter::once(base.clone())
+        .chain(targets.clone())
+        .collect();
+    let crypto_status_map = get_currencies_crypto_status(&pool, &all_codes).await?;
+    let base_is_crypto = crypto_status_map.get(&base).copied().unwrap_or(false);
+
+    // 🚀 OPTIMIZATION 2: Batch fetch all rate details upfront
+    let rate_details_map = if !targets.is_empty() {
+        get_batch_rate_details(&pool, &base, &targets).await?
+    } else {
+        HashMap::new()
+    };
     let mut result: HashMap<String, DetailedRateItem> = HashMap::new();
 
     // Helper closures
@@ -415,9 +501,10 @@ pub async fn get_detailed_batch_rates(
         // Source map lives outside for later access
 
         // Determine which targets are fiat (we only need fiat->fiat rates here)
+        // 🚀 Use pre-fetched crypto status instead of individual queries
         let mut fiat_targets: Vec<String> = Vec::new();
         for t in targets.iter() {
-            if !is_crypto_currency(&pool, t).await.unwrap_or(false) {
+            if !crypto_status_map.get(t).copied().unwrap_or(false) {
                 fiat_targets.push(t.clone());
             }
         }
@@ -465,7 +552,8 @@ pub async fn get_detailed_batch_rates(
     let usd = "USD".to_string();
 
     for tgt in targets.iter() {
-        let tgt_is_crypto = is_crypto_currency(&pool, tgt).await?;
+        // 🚀 Use pre-fetched crypto status instead of individual query
+        let tgt_is_crypto = crypto_status_map.get(tgt).copied().unwrap_or(false);
         let rate_and_source = if !base_is_crypto && !tgt_is_crypto {
             // fiat -> fiat
             if let Some((ref rates_map, _)) = fiat_rates {
@@ -501,24 +589,65 @@ pub async fn get_detailed_batch_rates(
             }
         } else if !base_is_crypto && tgt_is_crypto {
             // fiat -> crypto: need price(tgt, base), then invert: 1 base = (1/price) tgt
-            let codes = vec![tgt.as_str()];
-            if let Ok(prices) = api.fetch_crypto_prices(codes.clone(), &base).await {
-                let provider = api.cached_crypto_source(&[tgt.as_str()], base.as_str()).unwrap_or_else(|| "crypto".to_string());
-                prices.get(tgt).map(|price| (Decimal::ONE / *price, provider))
+            // 🔥 FIX: Try database cache first (1 hour), then external API, then fallback to older cache (24 hours)
+
+            // Step 1: Try recent database cache (within 1 hour)
+            tracing::debug!("Step 1: Checking 1-hour cache for {}->{}", tgt, base);
+            if let Some((db_rate, db_source)) = get_recent_crypto_rate_from_db(&pool, tgt, &base).await {
+                tracing::debug!("✅ Step 1 SUCCESS: Using recent DB cache for {}->{}: rate={}", tgt, base, db_rate);
+                Some((Decimal::ONE / db_rate, db_source))
             } else {
-                // fallback via USD
-                if crypto_prices_cache.is_none() {
-                    if let Ok(p) = api.fetch_crypto_prices(vec![tgt.as_str()], &usd).await {
-                        crypto_prices_cache = Some((p.clone(), "coingecko".to_string()));
+                tracing::debug!("❌ Step 1 FAILED: No recent cache for {}->{}", tgt, base);
+                // Step 2: Try external API (CoinGecko)
+                tracing::debug!("Step 2: Trying external API for {}->{}", tgt, base);
+                let codes = vec![tgt.as_str()];
+                if let Ok(prices) = api.fetch_crypto_prices(codes.clone(), &base).await {
+                    tracing::debug!("✅ Step 2 SUCCESS: Got price from external API for {}", tgt);
+                    let provider = api.cached_crypto_source(&[tgt.as_str()], base.as_str()).unwrap_or_else(|| "crypto".to_string());
+                    prices.get(tgt).map(|price| (Decimal::ONE / *price, provider))
+                } else {
+                    tracing::debug!("❌ Step 2 FAILED: External API failed for {}", tgt);
+                    // Step 3: Try fallback via USD cross-rate
+                    tracing::debug!("Step 3: Trying USD cross-rate for {}", tgt);
+                    if crypto_prices_cache.is_none() {
+                        if let Ok(p) = api.fetch_crypto_prices(vec![tgt.as_str()], &usd).await {
+                            tracing::debug!("✅ Step 3: Got USD price for {}", tgt);
+                            crypto_prices_cache = Some((p.clone(), "coingecko".to_string()));
+                        } else {
+                            tracing::debug!("❌ Step 3: USD price fetch failed for {}", tgt);
+                        }
+                    }
+                    if let (Some((ref cp, _)), Some((ref fr, ref provider))) = (&crypto_prices_cache, &fiat_rates) {
+                        if let (Some(p_tgt_usd), Some(usd_to_base)) = (cp.get(tgt), fr.get(&base)) {
+                            tracing::debug!("✅ Step 3 SUCCESS: Calculated cross-rate for {}", tgt);
+                            // price(tgt, base) = p_tgt_usd / usd_to_base; then invert for base->tgt
+                            let price_tgt_base = *p_tgt_usd / *usd_to_base;
+                            Some((Decimal::ONE / price_tgt_base, provider.clone()))
+                        } else {
+                            tracing::debug!("❌ Step 3 FAILED: Cross-rate calculation failed for {}", tgt);
+                            // Step 4: Final fallback - use older database cache (within 24 hours)
+                            tracing::debug!("Step 4: Trying 24-hour fallback cache for {}->{}", tgt, base);
+                            let fallback = get_fallback_crypto_rate_from_db(&pool, tgt, &base).await;
+                            if fallback.is_some() {
+                                tracing::debug!("✅ Step 4 SUCCESS: Using 24-hour fallback cache for {}", tgt);
+                            } else {
+                                tracing::warn!("❌ Step 4 FAILED: No fallback cache available for {}->{}", tgt, base);
+                            }
+                            fallback.map(|(rate, source)| (Decimal::ONE / rate, source))
+                        }
+                    } else {
+                        tracing::debug!("❌ Step 3 SKIPPED: No fiat rates or USD price available");
+                        // Step 4: Final fallback - use older database cache (within 24 hours)
+                        tracing::debug!("Step 4: Trying 24-hour fallback cache for {}->{}", tgt, base);
+                        let fallback = get_fallback_crypto_rate_from_db(&pool, tgt, &base).await;
+                        if fallback.is_some() {
+                            tracing::debug!("✅ Step 4 SUCCESS: Using 24-hour fallback cache for {}", tgt);
+                        } else {
+                            tracing::warn!("❌ Step 4 FAILED: No fallback cache available for {}->{}", tgt, base);
+                        }
+                        fallback.map(|(rate, source)| (Decimal::ONE / rate, source))
                     }
                 }
-                if let (Some((ref cp, _)), Some((ref fr, ref provider))) = (&crypto_prices_cache, &fiat_rates) {
-                    if let (Some(p_tgt_usd), Some(usd_to_base)) = (cp.get(tgt), fr.get(&base)) {
-                        // price(tgt, base) = p_tgt_usd / usd_to_base; then invert for base->tgt
-                        let price_tgt_base = *p_tgt_usd / *usd_to_base;
-                        Some((Decimal::ONE / price_tgt_base, provider.clone()))
-                    } else { None }
-                } else { None }
             }
         } else {
             // crypto -> crypto: use USD cross
@@ -533,29 +662,21 @@ pub async fn get_detailed_batch_rates(
         };
 
         if let Some((rate, source)) = rate_and_source {
-            // Lookup manual flags from DB for this pair on business date (today)
-            let row = sqlx::query(
-                r#"
-                SELECT is_manual, manual_rate_expiry
-                FROM exchange_rates
-                WHERE from_currency = $1 AND to_currency = $2 AND date = CURRENT_DATE
-                ORDER BY updated_at DESC
-                LIMIT 1
-                "#,
-            )
-            .bind(&base)
-            .bind(tgt)
-            .fetch_optional(&pool)
-            .await
-            .map_err(|_| ApiError::InternalServerError)?;
+            // 🚀 Use pre-fetched rate details instead of individual query
+            let (is_manual, manual_rate_expiry, change_24h, change_7d, change_30d) =
+                rate_details_map.get(tgt)
+                    .copied()
+                    .unwrap_or((false, None, None, None, None));
 
-            let (is_manual, manual_rate_expiry) = if let Some(r) = row {
-                let is_manual: Option<bool> = r.get("is_manual");
-                let mre: Option<chrono::DateTime<Utc>> = r.get("manual_rate_expiry");
-                (is_manual.unwrap_or(false), mre.map(|dt| dt.naive_utc()))
-            } else { (false, None) };
-
-            result.insert(tgt.clone(), DetailedRateItem { rate, source, is_manual, manual_rate_expiry });
+            result.insert(tgt.clone(), DetailedRateItem {
+                rate,
+                source,
+                is_manual,
+                manual_rate_expiry,
+                change_24h,
+                change_7d,
+                change_30d,
+            });
         }
     }
 
@@ -599,7 +720,9 @@ pub async fn get_crypto_prices(
     let mut last_updated: Option<chrono::NaiveDateTime> = None;
     
     for row in prices {
-        let price = Decimal::ONE / row.price;
+        // 直接使用数据库中的价格，不要反转
+        // 数据库存储的是: 1 crypto = X fiat (例如: 1 BTC = 474171 CNY)
+        let price = row.price;
         crypto_prices.insert(row.crypto_code, price);
         // created_at 可能为可空；为空时使用当前时间
         let created_naive = row
@@ -708,26 +831,27 @@ pub struct CryptoPricesResponse {
 
 /// Convert between any two currencies (fiat or crypto)
 pub async fn convert_currency(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     Json(req): Json<ConvertCurrencyRequest>,
 ) -> ApiResult<Json<ApiResponse<ConvertCurrencyResponse>>> {
-    let service = CurrencyService::new(pool.clone());
-    
+    // ✅ Use Redis-enabled CurrencyService
+    let service = CurrencyService::new_with_redis(app_state.pool.clone(), app_state.redis.clone());
+
     // Check if either is crypto
-    let from_is_crypto = is_crypto_currency(&pool, &req.from).await?;
-    let to_is_crypto = is_crypto_currency(&pool, &req.to).await?;
-    
+    let from_is_crypto = is_crypto_currency(&app_state.pool, &req.from).await?;
+    let to_is_crypto = is_crypto_currency(&app_state.pool, &req.to).await?;
+
     let rate = if from_is_crypto || to_is_crypto {
         // Handle crypto conversion
-        get_crypto_rate(&pool, &req.from, &req.to).await?
+        get_crypto_rate(&app_state.pool, &req.from, &req.to).await?
     } else {
-        // Regular fiat conversion
+        // Regular fiat conversion (with Redis caching!)
         service.get_exchange_rate(&req.from, &req.to, None).await
             .map_err(|_| ApiError::NotFound("Exchange rate not found".to_string()))?
     };
-    
+
     let converted_amount = req.amount * rate;
-    
+
     Ok(Json(ApiResponse::success(ConvertCurrencyResponse {
         from: req.from.clone(),
         to: req.to.clone(),
@@ -923,4 +1047,73 @@ use rust_decimal::prelude::FromStr;
 
 fn decimal_from_str(s: &str) -> Decimal {
     Decimal::from_str(s).unwrap_or(Decimal::ZERO)
+}
+
+/// Get recent crypto rate from database (within 1 hour)
+/// Returns rate as crypto->fiat (e.g., BTC->CNY means "1 BTC = X CNY")
+async fn get_recent_crypto_rate_from_db(
+    pool: &PgPool,
+    crypto_code: &str,
+    fiat_code: &str,
+) -> Option<(Decimal, String)> {
+    let result = sqlx::query(
+        r#"
+        SELECT rate, source
+        FROM exchange_rates
+        WHERE from_currency = $1
+        AND to_currency = $2
+        AND updated_at > NOW() - INTERVAL '1 hour'
+        ORDER BY updated_at DESC
+        LIMIT 1
+        "#,
+    )
+    .bind(crypto_code)
+    .bind(fiat_code)
+    .fetch_optional(pool)
+    .await
+    .ok()?;
+
+    result.map(|r| {
+        let rate: Decimal = r.get("rate");
+        // Always mark as cached to distinguish from live API data
+        (rate, "crypto-cached-1h".to_string())
+    })
+}
+
+/// Fallback: Get crypto rate from database (within 24 hours) when external API fails
+async fn get_fallback_crypto_rate_from_db(
+    pool: &PgPool,
+    crypto_code: &str,
+    fiat_code: &str,
+) -> Option<(Decimal, String)> {
+    let result = sqlx::query(
+        r#"
+        SELECT rate, source, updated_at
+        FROM exchange_rates
+        WHERE from_currency = $1
+        AND to_currency = $2
+        AND updated_at > NOW() - INTERVAL '24 hours'
+        ORDER BY updated_at DESC
+        LIMIT 1
+        "#,
+    )
+    .bind(crypto_code)
+    .bind(fiat_code)
+    .fetch_optional(pool)
+    .await
+    .ok()?;
+
+    result.map(|r| {
+        let rate: Decimal = r.get("rate");
+        let updated_at: chrono::DateTime<Utc> = r.get("updated_at");
+        let age_hours = (chrono::Utc::now() - updated_at).num_hours();
+        tracing::info!(
+            "Using fallback crypto rate for {}->{}: rate={}, age={} hours",
+            crypto_code,
+            fiat_code,
+            rate,
+            age_hours
+        );
+        (rate, format!("crypto-cached-{}h", age_hours))
+    })
 }

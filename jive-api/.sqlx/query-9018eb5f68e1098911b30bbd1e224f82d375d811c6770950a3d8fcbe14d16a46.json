@@ -1,0 +1,77 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT id, from_currency, to_currency, rate, source,\n                   effective_date, created_at,\n                   change_24h, change_7d, change_30d\n            FROM exchange_rates\n            WHERE from_currency = $1\n            AND to_currency = $2\n            ORDER BY effective_date DESC\n            LIMIT 1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "from_currency",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "to_currency",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "rate",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "source",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "effective_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 6,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 7,
+        "name": "change_24h",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 8,
+        "name": "change_7d",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 9,
+        "name": "change_30d",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "9018eb5f68e1098911b30bbd1e224f82d375d811c6770950a3d8fcbe14d16a46"
+}

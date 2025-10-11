@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:jive_money/services/auth_service.dart';
 import 'package:jive_money/services/storage_service.dart';
 import 'package:jive_money/widgets/wechat_login_button.dart';
+import 'package:jive_money/widgets/auth/auth_text_field.dart';
 import 'package:jive_money/core/router/app_router.dart';
 import 'package:jive_money/providers/auth_provider.dart';
 
@@ -16,7 +17,6 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController(text: 'superadmin@jive.money');
   final _passwordController = TextEditingController(text: 'admin123');
   bool _isPasswordVisible = false;
@@ -26,6 +26,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _rememberPermanently = false;
   final AuthService _authService = AuthService();
   final StorageService _storageService = StorageService();
+
+  String? _emailError;
+  String? _passwordError;
 
   @override
   void initState() {
@@ -83,22 +86,63 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
+  bool _validate() {
+    setState(() {
+      _emailError = null;
+      _passwordError = null;
+    });
+
+    bool isValid = true;
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    if (email.isEmpty) {
+      setState(() {
+        _emailError = '请输入用户名或邮箱地址';
+      });
+      isValid = false;
+    } else {
+      bool isEmail = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(email);
+      bool isUsername = RegExp(r'^[a-zA-Z0-9_\u4e00-\u9fa5]+$').hasMatch(email) &&
+                       email.length >= 3 && email.length <= 20;
+
+      if (!isEmail && !isUsername) {
+        setState(() {
+          _emailError = '请输入有效的用户名或邮箱地址';
+        });
+        isValid = false;
+      }
+    }
+
+    if (password.isEmpty) {
+      setState(() {
+        _passwordError = '请输入密码';
+      });
+      isValid = false;
+    } else if (password.length < 6) {
+      setState(() {
+        _passwordError = '密码至少6位';
+      });
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
   Future<void> _login() async {
     final messenger = ScaffoldMessenger.of(context);
     final router = GoRouter.of(context);
-    if (!_formKey.currentState!.validate()) return;
+
+    if (!_validate()) return;
 
     setState(() {
       _isLoading = true;
     });
 
     try {
-      // 保存登录凭据
       await _saveCredentials();
-
       debugPrint('DEBUG: Starting login for ${_emailController.text.trim()}');
 
-      // 使用AuthController的login方法
       final success = await ref.read(authControllerProvider.notifier).login(
             email: _emailController.text.trim(),
             password: _passwordController.text,
@@ -112,7 +156,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           final authState = ref.read(authControllerProvider);
           debugPrint('DEBUG: Login successful, user: ${authState.user?.name}');
 
-          // 登录成功，显示欢迎消息
           messenger.showSnackBar(
             SnackBar(
               content: Text('欢迎回来，${authState.user?.name ?? '用户'}！'),
@@ -120,14 +163,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
           );
 
-          // 直接跳转到仪表板
           debugPrint('DEBUG: Navigating to dashboard');
           router.go(AppRoutes.dashboard);
         } else {
           final authState = ref.read(authControllerProvider);
           debugPrint('DEBUG: Login failed: ${authState.errorMessage}');
 
-          // 登录失败，显示错误消息
           messenger.showSnackBar(
             SnackBar(
               content: Text(authState.errorMessage ?? '登录失败'),
@@ -161,441 +202,260 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: ConstrainedBox(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Center(
+            child: Container(
               constraints: const BoxConstraints(maxWidth: 400),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Logo 和标题
-                    SvgPicture.asset(
-                      'assets/images/Jiva.svg',
-                      width: 80,
-                      height: 80,
-                    ),
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Jive Money',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const Text(
-                      '集腋记账',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 48),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 40),
 
-                    // 用户名或邮箱输入框
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                        labelText: '用户名或邮箱',
-                        hintText: '请输入用户名或邮箱地址',
-                        prefixIcon: Icon(Icons.person),
-                        border: OutlineInputBorder(),
-                        helperText: '支持用户名或邮箱地址登录',
-                      ),
-                      autocorrect: false,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return '请输入用户名或邮箱地址';
-                        }
-                        // 检查是否为有效的邮箱格式
-                        bool isEmail = RegExp(
-                                r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-                            .hasMatch(value);
-                        // 检查是否为有效的用户名格式
-                        bool isUsername =
-                            RegExp(r'^[a-zA-Z0-9_\u4e00-\u9fa5]+$')
-                                    .hasMatch(value) &&
-                                value.length >= 3 &&
-                                value.length <= 20;
+                  // Logo
+                  SvgPicture.asset(
+                    'assets/images/Jiva.svg',
+                    width: 80,
+                    height: 80,
+                  ),
+                  const SizedBox(height: 24),
 
-                        if (!isEmail && !isUsername) {
-                          return '请输入有效的用户名或邮箱地址';
-                        }
-                        return null;
-                      },
+                  // 标题
+                  const Text(
+                    'Jive Money',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
                     ),
-                    const SizedBox(height: 16),
-
-                    // 密码输入框
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                        labelText: '密码',
-                        prefixIcon: const Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isPasswordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _isPasswordVisible = !_isPasswordVisible;
-                            });
-                          },
-                        ),
-                        border: const OutlineInputBorder(),
-                      ),
-                      obscureText: !_isPasswordVisible,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return '请输入密码';
-                        }
-                        if (value.length < 6) {
-                          return '密码至少6位';
-                        }
-                        return null;
-                      },
+                    textAlign: TextAlign.center,
+                  ),
+                  const Text(
+                    '集腋记账',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
                     ),
-                    const SizedBox(height: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 48),
 
-                    // 记住密码选项
-                    Column(
-                      children: [
+                  const Text('用户名或邮箱', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                  const SizedBox(height: 8),
+                  AuthTextField(
+                    controller: _emailController,
+                    hintText: '请输入用户名或邮箱地址',
+                    icon: Icons.person,
+                    errorText: _emailError,
+                    enabled: !_isLoading,
+                    textInputAction: TextInputAction.next,
+                    autofillHints: const [AutofillHints.username, AutofillHints.email],
+                    onSubmitted: (_) {},
+                  ),
+                  const SizedBox(height: 16),
+
+                  const Text('密码', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                  const SizedBox(height: 8),
+                  AuthTextField(
+                    controller: _passwordController,
+                    hintText: '请输入密码',
+                    icon: Icons.lock,
+                    obscureText: !_isPasswordVisible,
+                    enableToggleObscure: true,
+                    onObscureToggled: (newObscure) {
+                      setState(() {
+                        // newObscure = true => 内容被隐藏 => _isPasswordVisible = false
+                        _isPasswordVisible = !newObscure;
+                      });
+                    },
+                    errorText: _passwordError,
+                    enabled: !_isLoading,
+                    textInputAction: TextInputAction.done,
+                    autofillHints: const [AutofillHints.password],
+                    onSubmitted: (_) => _isLoading ? null : _login(),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 记住我选项
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _rememberMe,
+                        onChanged: _isLoading ? null : (value) {
+                          setState(() {
+                            _rememberMe = value ?? false;
+                            if (!_rememberMe) {
+                              _rememberPassword = false;
+                              _rememberPermanently = false;
+                            }
+                          });
+                        },
+                      ),
+                      const Text('记住用户名'),
+                      const Spacer(),
+                      if (_rememberMe)
                         Row(
                           children: [
                             Checkbox(
-                              value: _rememberMe,
-                              onChanged: (value) {
+                              value: _rememberPassword,
+                              onChanged: _isLoading ? null : (value) {
                                 setState(() {
-                                  _rememberMe = value ?? false;
-                                  if (!_rememberMe) {
-                                    _rememberPassword = false;
-                                    _rememberPermanently = false;
-                                  }
+                                  _rememberPassword = value ?? false;
                                 });
                               },
-                            ),
-                            const Text('记住账号'),
-                            const SizedBox(width: 16),
-                            Checkbox(
-                              value: _rememberPassword && _rememberMe,
-                              onChanged: _rememberMe
-                                  ? (value) {
-                                      setState(() {
-                                        _rememberPassword = value ?? false;
-                                      });
-                                    }
-                                  : null,
                             ),
                             const Text('记住密码'),
-                            const Spacer(),
-                            TextButton(
-                              onPressed: () async {
-                                final messenger = ScaffoldMessenger.of(context);
-                                // 清除保存的凭据
-                                await _storageService
-                                    .clearRememberedCredentials();
-                                if (!mounted) return;
-                                setState(() {
-                                  _emailController.clear();
-                                  _passwordController.clear();
-                                  _rememberMe = false;
-                                  _rememberPassword = false;
-                                  _rememberPermanently = false;
-                                });
-                                messenger.showSnackBar(
-                                  const SnackBar(
-                                    content: Text('已清除保存的登录信息'),
-                                    backgroundColor: Colors.blue,
-                                  ),
-                                );
-                              },
-                              child: const Text(
-                                '清除',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                            ),
                           ],
                         ),
-                        // 永久记住选项（测试专用）
-                        if (_rememberPassword)
+                    ],
+                  ),
+
+                  // 永久记住选项
+                  if (_rememberMe && _rememberPassword)
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: _rememberPermanently ? Colors.red[50] : Colors.orange[50],
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: _rememberPermanently ? Colors.red.shade200 : Colors.orange.shade200,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Row(
                             children: [
-                              const SizedBox(width: 12),
+                              Icon(
+                                _rememberPermanently ? Icons.warning : Icons.security,
+                                size: 16,
+                                color: _rememberPermanently ? Colors.red[700] : Colors.orange[700],
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                '安全选项',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: _rememberPermanently ? Colors.red[900] : Colors.orange[900],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
                               Checkbox(
                                 value: _rememberPermanently,
-                                onChanged: (value) {
+                                onChanged: _isLoading ? null : (value) {
                                   setState(() {
                                     _rememberPermanently = value ?? false;
                                   });
                                 },
                               ),
-                              const Text(
-                                '永久记住（测试模式）',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.orange,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Icon(
-                                Icons.warning_amber,
-                                size: 16,
-                                color: Colors.orange[600],
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '永不过期',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.orange[700],
-                                ),
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
-
-                    // 安全提示
-                    if (_rememberPassword)
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: _rememberPermanently
-                              ? Colors.red[50]
-                              : Colors.orange[50],
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                              color: _rememberPermanently
-                                  ? Colors.red[200]!
-                                  : Colors.orange[200]!),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  _rememberPermanently
-                                      ? Icons.warning
-                                      : Icons.security,
-                                  size: 16,
-                                  color: _rememberPermanently
-                                      ? Colors.red[600]
-                                      : Colors.orange[600],
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    _rememberPermanently
-                                        ? '⚠️ 永久记住模式 - 测试专用'
-                                        : '密码将保存在本地，请确保设备安全',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: _rememberPermanently
-                                          ? Colors.red[700]
-                                          : Colors.orange[700],
-                                      fontWeight: _rememberPermanently
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      '永久保存密码',
+                                      style: TextStyle(fontWeight: FontWeight.w500),
                                     ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            if (_rememberPermanently) ...[
-                              const SizedBox(height: 4),
-                              Text(
-                                '• 凭据永不过期，适合测试环境\n• 生产环境请取消永久记住选项\n• 定期清除凭据确保安全',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.red[600],
-                                  height: 1.3,
-                                ),
-                              ),
-                            ] else ...[
-                              const SizedBox(height: 4),
-                              Text(
-                                '• 凭据30天后自动过期\n• 仅保存在本地设备',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.orange[600],
-                                  height: 1.3,
+                                    Text(
+                                      _rememberPermanently
+                                          ? '⚠️ 密码将永久保存，请确保设备安全！'
+                                          : '密码将在30天后自动清除',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: _rememberPermanently ? Colors.red[700] : Colors.orange[700],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  const SizedBox(height: 24),
+
+                  // 登录按钮
+                  ElevatedButton(
+                    onPressed: _isLoading ? null : _login,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('登录', style: TextStyle(fontSize: 16)),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // TODO: 微信登录功能待添加回调函数
+                  // WeChatLoginButton(
+                  //   onSuccess: (authResult, userInfo) {},
+                  //   onError: (error) {},
+                  // ),
+
+                  // 登录提示
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.blue[50],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.info, color: Colors.blue[700], size: 16),
+                            const SizedBox(width: 8),
+                            const Text(
+                              '登录说明',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ],
                         ),
-                      ),
-                    const SizedBox(height: 16),
-
-                    // 登录按钮
-                    SizedBox(
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: _isLoading ? null : _login,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
+                        const SizedBox(height: 8),
+                        Text(
+                          '• 默认管理员账号：superadmin@jive.money / admin123\n'
+                          '• 支持用户名或邮箱登录\n'
+                          '• 测试环境已预填充登录信息',
+                          style: TextStyle(fontSize: 12, color: Colors.blue[900]),
                         ),
-                        child: _isLoading
-                            ? const CircularProgressIndicator(
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
-                              )
-                            : const Text(
-                                '登录',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // 注册链接
-                    TextButton(
-                      onPressed: () {
-                        context.push(AppRoutes.register);
-                      },
-                      child: const Text('还没有账户？点击注册'),
-                    ),
-
-                    // 忘记密码链接
-                    TextButton(
-                      onPressed: () {
-                        // TODO: 实现忘记密码功能
-                        final messenger = ScaffoldMessenger.of(context);
-                        messenger.showSnackBar(
-                          const SnackBar(content: Text('忘记密码功能暂未实现')),
-                        );
-                      },
-                      child: const Text('忘记密码？'),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // 分割线
-                    Row(
-                      children: [
-                        const Expanded(child: Divider()),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            '或',
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                        const Expanded(child: Divider()),
                       ],
                     ),
+                  ),
 
-                    const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
-                    // 微信登录按钮
-                    WeChatLoginButton(
-                      buttonText: '使用微信登录',
-                      onSuccess: (authResult, userInfo) async {
-                        final messenger = ScaffoldMessenger.of(context);
-                        final router = GoRouter.of(context);
-                        final result = await _authService.wechatLogin();
-
-                        if (!mounted) return;
-
-                        if (result.success) {
-                          messenger.showSnackBar(
-                            SnackBar(
-                              content: Text('欢迎回来，\${result.userData?.username}！'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                          router.go(AppRoutes.dashboard);
-                        } else {
-                          messenger.showSnackBar(
-                            SnackBar(
-                              content: Text(result.message ?? '微信登录失败'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      },
-                      onError: (error) {
-                        final messenger = ScaffoldMessenger.of(context);
-                        messenger.showSnackBar(
-                          SnackBar(
-                            content: Text('微信登录失败: \$error'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // 系统管理员登录链接
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamed('/admin-login');
-                      },
-                      child: Text(
-                        '系统管理员登录',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.red[600],
-                          decoration: TextDecoration.underline,
-                        ),
+                  // 注册链接
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('还没有账号？'),
+                      TextButton(
+                        onPressed: _isLoading
+                            ? null
+                            : () {
+                                context.go(AppRoutes.register);
+                              },
+                        child: const Text('立即注册'),
                       ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // 登录提示
-                    Card(
-                      color: Colors.blue[50],
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.info,
-                                    color: Colors.blue[700], size: 16),
-                                const SizedBox(width: 8),
-                                const Text(
-                                  '登录说明',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              '• 支持用户名或邮箱地址登录\n'
-                              '• 管理员账户：admin / 密码：admin123\n'
-                              '• 邮箱和密码请填写完整\n'
-                              '• 确保后端API服务正在运行\n'
-                              '• 也可以使用微信登录（模拟）\n'
-                              '• 记住功能：账号+密码（30天）或永久记住（测试用）',
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.blue),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),

@@ -13,6 +13,7 @@ pub mod verification_service;
 pub mod avatar_service;
 pub mod currency_service;
 pub mod exchange_rate_api;
+pub mod exchange_rate_service;
 pub mod scheduled_tasks;
 pub mod tag_service;
 

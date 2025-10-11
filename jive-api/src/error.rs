@@ -24,6 +24,15 @@ pub enum ApiError {
     #[error("Validation error: {0}")]
     ValidationError(String),
 
+    #[error("Configuration error: {0}")]
+    Configuration(String),
+
+    #[error("External service error: {0}")]
+    ExternalService(String),
+
+    #[error("Cache error: {0}")]
+    Cache(String),
+
     #[error("Internal server error")]
     InternalServerError,
 }
@@ -72,6 +81,18 @@ impl IntoResponse for ApiError {
             ApiError::ValidationError(msg) => (
                 StatusCode::UNPROCESSABLE_ENTITY,
                 ApiErrorResponse::new("VALIDATION_ERROR", msg),
+            ),
+            ApiError::Configuration(msg) => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                ApiErrorResponse::new("CONFIGURATION_ERROR", msg),
+            ),
+            ApiError::ExternalService(msg) => (
+                StatusCode::BAD_GATEWAY,
+                ApiErrorResponse::new("EXTERNAL_SERVICE_ERROR", msg),
+            ),
+            ApiError::Cache(msg) => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                ApiErrorResponse::new("CACHE_ERROR", msg),
             ),
             ApiError::InternalServerError => (
                 StatusCode::INTERNAL_SERVER_ERROR,
