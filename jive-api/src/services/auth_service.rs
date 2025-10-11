@@ -137,7 +137,7 @@ impl AuthService {
         .bind(user_id)
         .execute(&self.pool)
         .await?;
-        
+
         tracing::info!(target: "auth_service", user_id = %user_id, family_id = %family.id, "register_with_family: success");
         Ok(UserContext {
             user_id,

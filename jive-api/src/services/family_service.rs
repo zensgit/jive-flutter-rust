@@ -105,7 +105,7 @@ impl FamilyService {
         // Create default ledger
         sqlx::query(
             r#"
-            INSERT INTO ledgers (id, family_id, name, currency, created_by, is_default, created_at, updated_at)
+            INSERT INTO ledgers (id, family_id, name, currency, owner_id, is_default, created_at, updated_at)
             VALUES ($1, $2, $3, $4, $5, true, $6, $7)
             "#
         )

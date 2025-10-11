@@ -123,15 +123,15 @@ pub async fn register(
         .hash_password(req.password.as_bytes(), &salt)
         .map_err(|_| ApiError::InternalServerError)?
         .to_string();
-    
+
     // 创建用户与家庭的 ID
     let user_id = Uuid::new_v4();
     let family_id = Uuid::new_v4();
-    
+
     // 开始事务
     let mut tx = pool.begin().await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     // 先创建用户（避免 families.owner_id 外键约束失败）
     tracing::info!(target: "auth_register", user_id = %user_id, family_id = %family_id, email = %final_email, "Creating user then family with owner_id");
     sqlx::query(
@@ -169,7 +169,7 @@ pub async fn register(
     .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     // 创建默认账本（标记 is_default，记录创建者）
     let ledger_id = Uuid::new_v4();
     sqlx::query(
@@ -184,7 +184,7 @@ pub async fn register(
     .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     // 绑定用户的当前家庭并提交事务
     tracing::info!(target: "auth_register", user_id = %user_id, family_id = %family_id, "Binding current_family_id and committing");
     sqlx::query("UPDATE users SET current_family_id = $1 WHERE id = $2")
