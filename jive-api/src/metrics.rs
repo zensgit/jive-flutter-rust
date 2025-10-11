@@ -39,10 +39,12 @@ pub async fn metrics_handler(
     };
     if let Some(base) = cached_base { return (StatusCode::OK, [(axum::http::header::CONTENT_TYPE, "text/plain; version=0.0.4")], format!("{}{}", base, uptime_line)); }
     let pool: &PgPool = &state.pool;
+
     // Build info gauge (value always 1) emitted once per scrape
     let build_commit = option_env!("GIT_COMMIT").unwrap_or("unknown");
     let build_time = option_env!("BUILD_TIME").unwrap_or("unknown");
     let rustc_version = option_env!("RUSTC_VERSION").unwrap_or("unknown");
+
     // Hash distribution + totals (best-effort)
     let (b2a, b2b, b2y, a2id, total, unknown) = if let Ok(row) = sqlx::query(
         "SELECT \
@@ -92,6 +94,7 @@ pub async fn metrics_handler(
     let s3 = state.metrics.export_dur_stream_le_3.load(std::sync::atomic::Ordering::Relaxed);
     let s10 = state.metrics.export_dur_stream_le_10.load(std::sync::atomic::Ordering::Relaxed);
     let sinf = state.metrics.export_dur_stream_le_inf.load(std::sync::atomic::Ordering::Relaxed);
+
     let bcrypt_total = b2a + b2b + b2y;
 
     let mut buf = String::new();
