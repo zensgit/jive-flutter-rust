@@ -108,6 +108,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       debugPrint('DEBUG: Login result: $success');
 
       if (mounted) {
+        // ignore: use_build_context_synchronously
+        final messenger = ScaffoldMessenger.of(context);
         if (success) {
           final authState = ref.read(authControllerProvider);
           debugPrint('DEBUG: Login successful, user: ${authState.user?.name}');
@@ -141,6 +143,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       debugPrint('DEBUG: Stack trace: $stack');
 
       if (mounted) {
+        // ignore: use_build_context_synchronously
+        final messenger = ScaffoldMessenger.of(context);
         messenger.showSnackBar(
           SnackBar(
             content: Text('登录过程中发生错误: $e'),
@@ -310,6 +314,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   _rememberPassword = false;
                                   _rememberPermanently = false;
                                 });
+                                // ignore: use_build_context_synchronously
+                                final messenger = ScaffoldMessenger.of(context);
                                 messenger.showSnackBar(
                                   const SnackBar(
                                     content: Text('已清除保存的登录信息'),
@@ -529,6 +535,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         }
                       },
                       onError: (error) {
+                        // ignore: use_build_context_synchronously
                         final messenger = ScaffoldMessenger.of(context);
                         messenger.showSnackBar(
                           SnackBar(

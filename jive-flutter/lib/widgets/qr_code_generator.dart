@@ -300,6 +300,7 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
       ],
     );
   }
+
 }
 
 /// 操作按钮
@@ -511,4 +512,3 @@ class _InfoRow extends StatelessWidget {
     );
   }
 }
-

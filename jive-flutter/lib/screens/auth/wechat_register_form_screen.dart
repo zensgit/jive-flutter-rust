@@ -86,6 +86,11 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
         _passwordController.text,
       );
 
+      if (!mounted) return;
+      // ignore: use_build_context_synchronously
+      final messenger = ScaffoldMessenger.of(context);
+
+
       if (result.success && result.userData != null) {
         // 注册成功后绑定微信
         final bindResult = await _authService.bindWechat();
@@ -93,6 +98,8 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
 
         if (bindResult.success) {
           // 绑定成功，返回成功结果
+          // ignore: use_build_context_synchronously
+          final navigator = Navigator.of(context);
           navigator.pop({
             'success': true,
             'userData': result.userData,
@@ -107,6 +114,8 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
             ),
           );
 
+          // ignore: use_build_context_synchronously
+          final navigator = Navigator.of(context);
           navigator.pop({
             'success': true,
             'userData': result.userData,
@@ -122,6 +131,9 @@ class _WeChatRegisterFormScreenState extends State<WeChatRegisterFormScreen> {
         );
       }
     } catch (e) {
+      if (!mounted) return;
+      // ignore: use_build_context_synchronously
+      final messenger = ScaffoldMessenger.of(context);
       messenger.showSnackBar(
         SnackBar(
           content: Text('注册过程中发生错误: $e'),

@@ -92,6 +92,7 @@ class _AcceptInvitationDialogState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return AlertDialog(
       title: Text(_showConfirmation ? '确认加入' : '邀请详情'),
       content: SingleChildScrollView(

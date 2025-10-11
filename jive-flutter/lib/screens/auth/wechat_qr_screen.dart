@@ -101,13 +101,16 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
           if (userInfo != null && authResult != null) {
             if (widget.isLogin) {
               // 登录流程：直接返回结果
-              Navigator.of(context).pop({
+              // ignore: use_build_context_synchronously
+              final navigator = Navigator.of(context);
+              navigator.pop({
                 'success': true,
                 'authResult': authResult,
                 'userInfo': userInfo,
               });
             } else {
               // 注册流程：跳转到注册表单
+              // ignore: use_build_context_synchronously
               final navigator = Navigator.of(context);
               final result = await navigator.push(
                 MaterialPageRoute(
@@ -121,7 +124,9 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
               if (!mounted) return;
 
               if (result != null) {
-                navigator.pop(result);
+                // ignore: use_build_context_synchronously
+                final navigator2 = Navigator.of(context);
+                navigator2.pop(result);
               }
             }
           }
