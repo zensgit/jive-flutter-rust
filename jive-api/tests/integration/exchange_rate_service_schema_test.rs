@@ -16,63 +16,56 @@ use sqlx::Row;
 use uuid::Uuid;
 use tracing::warn;
 
-use jive_money_api::services::exchange_rate_service::{
-    ExchangeRate, ExchangeRateService,
-};
+// Import types directly without re-exporting through services module
+use jive_money_api::services::currency_service::ExchangeRate;
 use jive_money_api::error::ApiResult;
 
-// Test-only extension trait for ExchangeRateService
-trait ExchangeRateServiceTestExt {
-    async fn store_rates_in_db_test(&self, rates: &[ExchangeRate]) -> ApiResult<()>;
-}
-
-impl ExchangeRateServiceTestExt for ExchangeRateService {
-    async fn store_rates_in_db_test(&self, rates: &[ExchangeRate]) -> ApiResult<()> {
-        if rates.is_empty() {
-            return Ok(());
-        }
-
-        for rate in rates {
-            let rate_decimal = Decimal::from_f64_retain(rate.rate)
-                .unwrap_or_else(|| {
-                    warn!("Failed to convert rate {} to Decimal, using 0", rate.rate);
-                    Decimal::ZERO
-                });
-
-            let date_naive = rate.timestamp.date_naive();
-
-            sqlx::query!(
-                r#"
-                INSERT INTO exchange_rates (
-                    id, from_currency, to_currency, rate, source,
-                    date, effective_date, is_manual
-                )
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-                ON CONFLICT (from_currency, to_currency, date)
-                DO UPDATE SET
-                    rate = EXCLUDED.rate,
-                    source = EXCLUDED.source,
-                    updated_at = CURRENT_TIMESTAMP
-                "#,
-                Uuid::new_v4(),
-                rate.from_currency,
-                rate.to_currency,
-                rate_decimal,
-                "test-provider",
-                date_naive,
-                date_naive,
-                false
-            )
-            .execute(self.pool().as_ref())
-            .await
-            .map_err(|e| {
-                warn!("Failed to store test rate in DB: {}", e);
-                e
-            })?;
-        }
-
-        Ok(())
+// Test-only helper to store rates without using sqlx::query! macro (avoids offline cache requirement)
+async fn store_test_rates(pool: &sqlx::PgPool, rates: &[ExchangeRate]) -> ApiResult<()> {
+    if rates.is_empty() {
+        return Ok(());
     }
+
+    for rate in rates {
+        let rate_decimal = Decimal::from_f64_retain(rate.rate)
+            .unwrap_or_else(|| {
+                warn!("Failed to convert rate {} to Decimal, using 0", rate.rate);
+                Decimal::ZERO
+            });
+
+        let date_naive = rate.timestamp.date_naive();
+
+        sqlx::query(
+            r#"
+            INSERT INTO exchange_rates (
+                id, from_currency, to_currency, rate, source,
+                date, effective_date, is_manual
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ON CONFLICT (from_currency, to_currency, date)
+            DO UPDATE SET
+                rate = EXCLUDED.rate,
+                source = EXCLUDED.source,
+                updated_at = CURRENT_TIMESTAMP
+            "#
+        )
+        .bind(Uuid::new_v4())
+        .bind(&rate.from_currency)
+        .bind(&rate.to_currency)
+        .bind(rate_decimal)
+        .bind("test-provider")
+        .bind(date_naive)
+        .bind(date_naive)
+        .bind(false)
+        .execute(pool)
+        .await
+        .map_err(|e| {
+            warn!("Failed to store test rate in DB: {}", e);
+            e
+        })?;
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]
@@ -89,14 +82,11 @@ mod tests {
             .expect("Failed to connect to test database")
     }
 
-    /// Test that ExchangeRateService can successfully write to exchange_rates table
+    /// Test that we can successfully write to exchange_rates table
     /// with all required fields matching the database schema
     #[tokio::test]
     async fn test_exchange_rate_service_store_schema_alignment() {
         let pool = create_test_pool().await;
-
-        // Create ExchangeRateService with no Redis (Redis is optional for this test)
-        let service = ExchangeRateService::new(Arc::new(pool.clone()), None);
 
         // Create test exchange rates with various scenarios
         let test_rates = vec![
@@ -123,9 +113,9 @@ mod tests {
             },
         ];
 
-        // Act: Store rates in database using the service
-        service.store_rates_in_db_test(&test_rates).await
-            .expect("store_rates_in_db should succeed");
+        // Act: Store rates in database
+        store_test_rates(&pool, &test_rates).await
+            .expect("store_test_rates should succeed");
 
         // Assert: Verify all rates were stored with correct schema
         for expected_rate in &test_rates {
@@ -204,7 +194,6 @@ mod tests {
     #[tokio::test]
     async fn test_exchange_rate_service_on_conflict_update() {
         let pool = create_test_pool().await;
-        let service = ExchangeRateService::new(Arc::new(pool.clone()), None);
 
         // First insert
         let initial_rate = vec![ExchangeRate {
@@ -214,7 +203,7 @@ mod tests {
             timestamp: Utc::now(),
         }];
 
-        service.store_rates_in_db_test(&initial_rate).await
+        store_test_rates(&pool, &initial_rate).await
             .expect("First insert should succeed");
 
         // Get initial updated_at timestamp
@@ -240,7 +229,7 @@ mod tests {
             timestamp: Utc::now(),
         }];
 
-        service.store_rates_in_db_test(&updated_rate).await
+        store_test_rates(&pool, &updated_rate).await
             .expect("Update should succeed via ON CONFLICT");
 
         // Verify the rate was updated, not duplicated
@@ -379,7 +368,7 @@ mod tests {
                 timestamp: Utc::now(),
             }];
 
-            service.store_rates_in_db_test(&test_rate).await
+            store_test_rates(&pool, &test_rate).await
                 .expect(&format!("Should store {} precision test", name));
 
             // Verify precision - since all tests use same USD->CNY, just check the latest
