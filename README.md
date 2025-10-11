@@ -161,6 +161,60 @@ make api-dev-docker-db
 # 查看日志
 make logs
 
+# 健康检查
+curl -s http://localhost:8012/health
+
+# 管理数据库（Adminer）
+# 打开 http://localhost:9080 ，使用 postgres/postgres 登录，数据库 jive_money
+
+# 停止 Docker 开发栈
+make db-dev-down
+```
+
+### JWT 密钥配置
+
+环境变量 `JWT_SECRET` 用于签发与验证访问令牌：
+
+```bash
+export JWT_SECRET=$(openssl rand -hex 32)
+```
+
+未设置时（或留空）API 会在开发 / 测试自动使用一个不安全的占位并打印警告，不可在生产依赖该默认值。
+
+### 超级管理员默认密码说明
+
+仓库历史存在两个默认密码基线：
+
+| 密码 | 出现来源 | 当前优先级 |
+|------|----------|------------|
+| `admin123` | 早期迁移：`005_create_superadmin.sql` / `006_update_superadmin_password.sql` / `016_fix_families_member_count_and_superadmin.sql` | 旧（可能仍在本地旧库残留） |
+| `SuperAdmin@123` | 后续迁移：`009_create_superadmin_user.sql` 与补偿脚本 | 新（建议统一） |
+
+实际生效取决于"最后一次在你的数据库中执行成功的迁移顺序"。如果你基于较新的全量迁移（包含 009 及之后）初始化数据库，默认应为 `SuperAdmin@123`（Argon2）。如果本地数据库较早创建，仍可能是 `admin123`（bcrypt 或 Argon2）。
+
+判定与处理建议：
+1. 直接尝试两次登录（先 `SuperAdmin@123`，再 `admin123`）。
+2. 若均失败，可在本地用工具重置：
+   ```bash
+   cargo run -p jive-money-api --bin hash_password -- SuperAdmin@123
+   # 得到哈希后：
+   psql "$DATABASE_URL" -c "UPDATE users SET password_hash='<HASH>' WHERE LOWER(email)='superadmin@jive.money';"
+   ```
+3. 重置后立即登录并修改为你的本地私有密码（不要提交哈希）。
+
+注意事项：
+- 重新"干净"初始化数据库（删除数据卷 / 新建数据库）后会再次回到迁移脚本指定的默认值。
+- 请勿将生产环境实际超级管理员密码写入仓库或日志。
+- 如果团队决定最终统一为 `SuperAdmin@123` 以外的基线，请新增新的迁移并在此表格中更新来源说明。
+
+快速登录测试（假设使用新基线）：
+```bash
+curl -s -X POST http://localhost:8012/api/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"superadmin@jive.money","password":"SuperAdmin@123"}'
+```
+若返回 JSON 含 `token` 字段表示成功。生产中请务必改成强随机密码并限制暴露。
+
 ## 🧪 本地CI（不占用GitHub Actions分钟）
 
 当你的GitHub Actions分钟不足时，可以使用本地CI脚本模拟CI流程：
