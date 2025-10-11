@@ -27,6 +27,7 @@ use redis::Client as RedisClient;
 
 // 使用库中的模块
 use jive_money_api::{handlers, services, ws};
+mod metrics;
 
 // 导入处理器
 use handlers::template_handler::*;
@@ -280,6 +281,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/travel/events/:id/budgets", get(travel::get_travel_budgets))
         .route("/api/v1/travel/events/:id/budgets", post(travel::upsert_travel_budget))
         .route("/api/v1/travel/events/:id/statistics", get(travel::get_travel_statistics))
+
+        // Metrics endpoint
+        .route("/metrics", get(metrics::metrics_handler))
 
         // 收款人管理 API
         .route("/api/v1/payees", get(list_payees))
