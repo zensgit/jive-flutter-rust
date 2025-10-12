@@ -41,12 +41,15 @@ class RightClickCopy extends StatelessWidget {
   }
 
   Future<void> _showContextMenu(BuildContext context, Offset position) async {
-    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-    final result = await showMenu<String>(
+    final overlayBox = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+
+    final result = // ignore: use_build_context_synchronously (pre-captured messenger, no context use after await)
+    await showMenu<String>(
       context: context,
       position: RelativeRect.fromRect(
         Rect.fromLTWH(position.dx, position.dy, 0, 0),
-        Offset.zero & overlay.size,
+        Offset.zero & overlayBox.size,
       ),
       items: const [
         PopupMenuItem<String>(
@@ -63,8 +66,20 @@ class RightClickCopy extends StatelessWidget {
       ],
     );
     if (result == 'copy') {
-      _copy(context);
+      await _copyWithMessenger(messenger);
     }
+  }
+
+  Future<void> _copyWithMessenger(ScaffoldMessenger? messenger) async {
+    await Clipboard.setData(ClipboardData(text: copyText));
+    messenger?.hideCurrentSnackBar();
+    messenger?.showSnackBar(
+      SnackBar(
+        content: Text(successMessage),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -86,7 +101,8 @@ class RightClickCopy extends StatelessWidget {
       },
       onLongPress: () {
         // 移动端长按直接复制
-        _copy(context);
+        final messenger = ScaffoldMessenger.maybeOf(context);
+        _copyWithMessenger(messenger);
       },
       child: content,
     );

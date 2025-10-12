@@ -194,10 +194,10 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
         // 二维码
         Center(
           child: _isGenerating
-              ? const SizedBox(
+              ? SizedBox(
                   width: widget.size,
                   height: widget.size,
-                  child: Center(
+                  child: const Center(
                     child: CircularProgressIndicator(),
                   ),
                 )
@@ -298,35 +298,6 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
           ),
         ],
       ],
-    );
-  }
-
-  // Stub methods for missing external dependencies
-  dynamic XFile(String path) {
-    return _StubXFile(path);
-  }
-
-  Widget QrImageView({
-    required String data,
-    dynamic version,
-    double? size,
-    Color? backgroundColor,
-    Color? foregroundColor,
-    dynamic errorCorrectionLevel,
-    dynamic embeddedImage,
-    double? embeddedImageSizeRatio,
-    EdgeInsets? padding,
-  }) {
-    return Container(
-      width: size ?? 200,
-      height: size ?? 200,
-      color: backgroundColor ?? Colors.white,
-      child: Center(
-        child: Text(
-          'QR Code Placeholder',
-          style: TextStyle(color: foregroundColor ?? Colors.black),
-        ),
-      ),
     );
   }
 }

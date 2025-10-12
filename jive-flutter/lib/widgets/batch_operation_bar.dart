@@ -227,10 +227,12 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
           ),
           ElevatedButton(
             onPressed: () async {
+              final messenger = ScaffoldMessenger.of(context);
               // TODO: 实现批量归档
               Navigator.pop(context);
               widget.onCancel();
-              ScaffoldMessenger.of(context).showSnackBar(
+              // ignore: use_build_context_synchronously
+              messenger.showSnackBar(
                 SnackBar(
                   content: Text('已归档 ${widget.selectedIds.length} 个项目'),
                 ),
@@ -298,12 +300,16 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
             onPressed: () async {
+              final messenger = ScaffoldMessenger.of(context);
+              final navigator = Navigator.of(context);
               final provider = ref.read(categoryManagementProvider);
               await provider.batchDeleteCategories(widget.selectedIds);
-              if (!context.mounted) return;
-              Navigator.pop(context);
+              if (!mounted) return;
+              // ignore: use_build_context_synchronously
+              navigator.pop();
               widget.onCancel();
-              ScaffoldMessenger.of(context).showSnackBar(
+              // ignore: use_build_context_synchronously
+              messenger.showSnackBar(
                 SnackBar(
                   content: Text('已删除 ${widget.selectedIds.length} 个项目'),
                   action: SnackBarAction(
@@ -381,15 +387,19 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
         ),
         ElevatedButton(
           onPressed: () async {
+            final messenger = ScaffoldMessenger.of(context);
+            final navigator = Navigator.of(context);
             final provider = ref.read(categoryManagementProvider);
             await provider.batchMoveCategories(
               widget.selectedIds,
               _targetParentId,
             );
             if (!mounted) return;
-            Navigator.pop(context);
+            // ignore: use_build_context_synchronously
+            navigator.pop();
             widget.onConfirm();
-            ScaffoldMessenger.of(context).showSnackBar(
+            // ignore: use_build_context_synchronously
+            messenger.showSnackBar(
               SnackBar(
                 content: Text('已移动 ${widget.selectedIds.length} 个分类'),
               ),
@@ -462,6 +472,8 @@ class _BatchConvertToTagDialogState
         ),
         ElevatedButton(
           onPressed: () async {
+            final messenger = ScaffoldMessenger.of(context);
+            final navigator = Navigator.of(context);
             final provider = ref.read(categoryManagementProvider);
 
             for (final categoryId in widget.selectedIds) {
@@ -472,12 +484,14 @@ class _BatchConvertToTagDialogState
                 applyToTransactions: _applyToTransactions,
                 deleteCategory: _deleteCategories,
               );
-              if (!context.mounted) return;
+              if (!mounted) return;
             }
 
-            Navigator.pop(context);
+            // ignore: use_build_context_synchronously
+            navigator.pop();
             widget.onConfirm();
-            ScaffoldMessenger.of(context).showSnackBar(
+            // ignore: use_build_context_synchronously
+            messenger.showSnackBar(
               SnackBar(
                 content: Text('已转换 ${widget.selectedIds.length} 个分类为标签'),
               ),
