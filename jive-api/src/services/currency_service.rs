@@ -86,7 +86,7 @@ impl CurrencyService {
         let currencies = rows.into_iter().map(|row| Currency {
             code: row.code,
             name: row.name,
-            symbol: row.symbol.unwrap_or_else(|| "".to_string()),
+            symbol: row.symbol.unwrap_or_default(),
             decimal_places: row.decimal_places.unwrap_or(2),
             is_active: row.is_active.unwrap_or(true),
         }).collect();
@@ -181,7 +181,7 @@ impl CurrencyService {
             
             Ok(FamilyCurrencySettings {
                 family_id,
-                base_currency: settings.base_currency,
+                base_currency: settings.base_currency.unwrap_or_else(|| "CNY".to_string()),
                 allow_multi_currency: settings.allow_multi_currency.unwrap_or(false),
                 auto_convert: settings.auto_convert.unwrap_or(false),
                 supported_currencies: supported,
@@ -342,10 +342,10 @@ impl CurrencyService {
         
         let row = sqlx::query!(
             r#"
-            INSERT INTO exchange_rates
-            (id, from_currency, to_currency, rate, source, effective_date)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            ON CONFLICT (id)
+            INSERT INTO exchange_rates 
+            (id, from_currency, to_currency, rate, source, date, effective_date)
+            VALUES ($1, $2, $3, $4, $5, $6, $6)
+            ON CONFLICT (from_currency, to_currency, date)
             DO UPDATE SET 
                 rate = $4,
                 source = $5,
@@ -373,8 +373,8 @@ impl CurrencyService {
             to_currency: row.to_currency,
             rate: row.rate,
             source: row.source.unwrap_or_else(|| "manual".to_string()),
-            effective_date: effective.unwrap_or_else(|| chrono::Utc::now().date_naive()),
-            created_at: created_at,
+            effective_date: effective,
+            created_at: created_at.unwrap_or_else(|| Utc::now()),
         })
     }
     
@@ -427,8 +427,8 @@ impl CurrencyService {
             to_currency: row.to_currency,
             rate: row.rate,
             source: row.source.unwrap_or_else(|| "manual".to_string()),
-            effective_date: row.effective_date.unwrap_or_else(|| chrono::Utc::now().date_naive()),
-            created_at: row.created_at,
+            effective_date: row.effective_date,
+            created_at: row.created_at.unwrap_or_else(|| Utc::now()),
         }).collect())
     }
     
@@ -499,10 +499,10 @@ impl CurrencyService {
                 // 插入或更新汇率
                 let res = sqlx::query!(
                     r#"
-                    INSERT INTO exchange_rates
-                    (id, from_currency, to_currency, rate, source, effective_date)
-                    VALUES ($1, $2, $3, $4, $5, $6)
-                    ON CONFLICT (from_currency, to_currency, effective_date)
+                    INSERT INTO exchange_rates 
+                    (id, from_currency, to_currency, rate, source, date, effective_date)
+                    VALUES ($1, $2, $3, $4, $5, $6, $6)
+                    ON CONFLICT (from_currency, to_currency, date)
                     DO UPDATE SET 
                         rate = $4,
                         source = $5,

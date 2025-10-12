@@ -81,46 +81,13 @@ local-run:
 	cargo run --bin jive-api
 
 local-test:
-	SQLX_OFFLINE=true cargo test --tests -- --nocapture
+	cargo test
 
 fmt:
 	cargo fmt
 
 lint:
 	cargo clippy -- -D warnings
-
-# 便捷：本地迁移与重置
-.PHONY: migrate-local reset-db
-migrate-local:
-	chmod +x scripts/migrate_local.sh
-	./scripts/migrate_local.sh --force
-
-reset-db:
-	chmod +x scripts/reset-db.sh
-	./scripts/reset-db.sh
-
-# 便捷：导出/审计
-.PHONY: export-csv export-csv-stream audit-list audit-clean
-export-csv:
-	@echo "POST 导出 CSV (data:URL)：make export-csv TOKEN=... START=2024-09-01 END=2024-09-30"
-	curl -s -H "Authorization: Bearer $${TOKEN}" -H "Content-Type: application/json" \
-	  -d '{"format":"csv","start_date":"'$${START}'","end_date":"'$${END}'"}' \
-	  http://localhost:$${API_PORT:-8012}/api/v1/transactions/export | jq .
-
-export-csv-stream:
-	@echo "GET 流式导出 CSV：make export-csv-stream TOKEN=..."
-	curl -s -D - -H "Authorization: Bearer $${TOKEN}" \
-	  http://localhost:$${API_PORT:-8012}/api/v1/transactions/export.csv -o /tmp/transactions_export.csv | head -n 20
-
-audit-list:
-	@echo "列出最近 EXPORT 审计 (前 10 条)：make audit-list TOKEN=... FAMILY=..."
-	curl -s -H "Authorization: Bearer $${TOKEN}" \
-	  http://localhost:$${API_PORT:-8012}/api/v1/families/$${FAMILY}/audit-logs?action=EXPORT&entity_type=transactions&limit=10 | jq .
-
-audit-clean:
-	@echo "清理 90 天前审计：make audit-clean TOKEN=... FAMILY=... DAYS=90 LIMIT=1000"
-	curl -s -X POST -H "Authorization: Bearer $${TOKEN}" \
-	  "http://localhost:$${API_PORT:-8012}/api/v1/families/$${FAMILY}/audit-logs/cleanup?older_than_days=$${DAYS:-90}\&limit=$${LIMIT:-1000}" | jq .
 
 # SQLx 离线缓存
 .PHONY: sqlx-prepare sqlx-check
@@ -132,37 +99,9 @@ sqlx-check:
 	@echo "Checking SQLx offline cache against current schema..."
 	@SQLX_OFFLINE=true cargo sqlx prepare --check || (echo "SQLx cache out of date. Run 'make sqlx-prepare'" && exit 1)
 
-# Schema Integration Test - 迁移 + 单套件运行
-.PHONY: api-test-schema
-api-test-schema:
-	@echo "Running Schema Integration Tests..."
-	@echo "Setting up test database..."
-	@export DB_PORT=$${DB_PORT:-5433} && \
-	export TEST_DATABASE_URL="postgresql://postgres:postgres@localhost:$${DB_PORT}/jive_money" && \
-	echo "Test DB URL: $${TEST_DATABASE_URL}" && \
-	chmod +x scripts/migrate_local.sh && \
-	./scripts/migrate_local.sh --force && \
-	echo "Running exchange_rate_service_schema_test..." && \
-	SQLX_OFFLINE=true TEST_DATABASE_URL="$${TEST_DATABASE_URL}" \
-	cargo test --test integration exchange_rate_service_schema -- --nocapture --test-threads=1
-
 # 快速启动开发环境
 quick-start: build dev
 	@echo "开发环境已启动！"
 	@echo "API: http://localhost:8012"
 	@echo "Adminer: http://localhost:8080"
 	@echo "RedisInsight: http://localhost:8001"
-
-# 便捷：导出/审计（支持 include_header 传参）
-.PHONY: export-csv export-csv-stream
-export-csv:
-	@echo "POST 导出 CSV (data:URL)：make export-csv TOKEN=... START=2024-09-01 END=2024-09-30 HEADER=true|false"
-	curl -s -H "Authorization: Bearer $${TOKEN}" -H "Content-Type: application/json" \
-	  -d '{"format":"csv","start_date":"'$${START:-2024-09-01}'","end_date":"'$${END:-2024-09-30}'","include_header":'$${HEADER:-true}'}' \
-	  http://localhost:$${API_PORT:-8012}/api/v1/transactions/export | jq .
-
-export-csv-stream:
-	@echo "GET 流式导出 CSV：make export-csv-stream TOKEN=... HEADER=true|false"
-	curl -s -D - -H "Authorization: Bearer $${TOKEN}" \
-	  "http://localhost:$${API_PORT:-8012}/api/v1/transactions/export.csv?include_header=$${HEADER:-true}" \
-	  -o /tmp/transactions_export.csv | head -n 20

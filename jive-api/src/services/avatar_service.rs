@@ -189,7 +189,7 @@ impl AvatarService {
     /// 获取本地默认头像路径
     pub fn get_local_avatar(index: usize) -> String {
         // 本地预设头像（可以存储在静态资源中）
-        const LOCAL_AVATARS: [&str; 10] = [
+        let local_avatars = vec![
             "/assets/avatars/avatar_01.svg",
             "/assets/avatars/avatar_02.svg",
             "/assets/avatars/avatar_03.svg",
@@ -201,8 +201,10 @@ impl AvatarService {
             "/assets/avatars/avatar_09.svg",
             "/assets/avatars/avatar_10.svg",
         ];
-        let idx = index % LOCAL_AVATARS.len();
-        LOCAL_AVATARS.get(idx).copied().unwrap_or(LOCAL_AVATARS[0]).to_string()
+        
+        local_avatars.get(index % local_avatars.len())
+            .unwrap_or(&local_avatars[0])
+            .to_string()
     }
     
     /// 从名字获取首字母
@@ -224,12 +226,12 @@ impl AvatarService {
                 initials.push(chars[0]);
             }
         } else {
-        // 英文名字，取每个单词的首字母（最多2个）
-        for part in parts.iter().take(2) {
-            if let Some(first_char) = part.chars().next() {
-                initials.push(first_char.to_uppercase().next().unwrap_or(first_char));
+            // 英文名字，取每个单词的首字母（最多2个）
+            for (_, part) in parts.iter().take(2).enumerate() {
+                if let Some(first_char) = part.chars().next() {
+                    initials.push(first_char.to_uppercase().next().unwrap_or(first_char));
+                }
             }
-        }
         }
         
         if initials.is_empty() {
@@ -252,7 +254,7 @@ impl AvatarService {
         let mut rng = rand::thread_rng();
         
         // 确保每种风格至少有一个
-        let styles = [
+        let styles = vec![
             AvatarStyle::Initials,
             AvatarStyle::Animal,
             AvatarStyle::Abstract,

@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/category.dart';
-import '../../models/category_template.dart';
 import '../../providers/category_management_provider.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/ledger_provider.dart';
-import '../../services/api/category_service.dart';
-import '../../services/api/category_service_integrated.dart';
 
 /// 增强版分类管理页面
 /// 实现设计文档中的所有交互功能
@@ -15,18 +12,15 @@ class CategoryManagementEnhancedPage extends StatefulWidget {
   const CategoryManagementEnhancedPage({Key? key}) : super(key: key);
 
   @override
-  State<CategoryManagementEnhancedPage> createState() =>
-      _CategoryManagementEnhancedPageState();
+  State<CategoryManagementEnhancedPage> createState() => _CategoryManagementEnhancedPageState();
 }
 
-class _CategoryManagementEnhancedPageState
-    extends State<CategoryManagementEnhancedPage>
+class _CategoryManagementEnhancedPageState extends State<CategoryManagementEnhancedPage>
     with TickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
-
-  CategoryClassification _selectedClassification =
-      CategoryClassification.expense;
+  
+  CategoryClassification _selectedClassification = CategoryClassification.expense;
   bool _isSelectionMode = false;
   final Set<String> _selectedCategories = {};
   String? _draggedCategoryId;
@@ -38,340 +32,14 @@ class _CategoryManagementEnhancedPageState
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
       setState(() {
-        _selectedClassification =
-            CategoryClassification.values[_tabController.index];
+        _selectedClassification = CategoryClassification.values[_tabController.index];
       });
     });
-
+    
     // 加载分类数据
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CategoryProvider>().loadCategories();
     });
-  }
-
-  Future<void> _showTemplateLibrary() async {
-    // Fetch templates and show a dialog with filters and overrides
-    final templates = await CategoryServiceIntegrated().getAllTemplates(forceRefresh: true);
-    if (!mounted) return;
-
-    await showDialog<void>(
-      context: context,
-      builder: (context) {
-        // Need access to Riverpod providers inside the dialog
-        return Consumer(builder: (context, ref, _) {
-          final selected = <SystemCategoryTemplate>{};
-          String search = '';
-          CategoryClassification? filterClass;
-          CategoryGroup? filterGroup;
-          bool featuredOnly = false;
-          String conflict = 'skip'; // skip|rename|update
-          final overrides = <String, Map<String, dynamic>>{}; // templateId -> { name,color,icon,parent_id }
-
-          bool showPreview = false;
-
-          return StatefulBuilder(builder: (context, setLocalState) {
-            List<SystemCategoryTemplate> filtered = templates.where((t) {
-              final okClass = filterClass == null || t.classification == filterClass;
-              final okSearch = search.isEmpty || t.name.toLowerCase().contains(search.toLowerCase()) || (t.nameEn?.toLowerCase().contains(search.toLowerCase()) ?? false);
-              final okGroup = filterGroup == null || t.categoryGroup == filterGroup;
-              final okFeatured = !featuredOnly || t.isFeatured;
-              return okClass && okSearch && okGroup && okFeatured;
-            }).toList();
-            final ledgerId = ref.read(currentLedgerProvider)?.id;
-            final allCats = ref.read(userCategoriesProvider);
-            final existingNames = <String>{
-              ...allCats.where((c) => c.ledgerId == ledgerId && c.name.isNotEmpty).map((c) => c.name.toLowerCase()),
-            };
-
-            String _predictRename(String base) {
-              var suffix = 2;
-              var candidate = base;
-              while (existingNames.contains(candidate.toLowerCase()) && suffix <= 100) {
-                candidate = '$base ($suffix)';
-                suffix++;
-              }
-              return candidate;
-            }
-
-            return AlertDialog(
-              title: const Text('从模板库导入'),
-              content: SizedBox(
-                width: 520,
-              height: 600,
-              child: Column(
-                children: [
-                  if (!showPreview) ...[
-                    // Filters row
-                    Row(children: [
-                      Expanded(
-                        child: TextField(
-                          decoration: const InputDecoration(prefixIcon: Icon(Icons.search), hintText: '搜索模板'),
-                          onChanged: (v){ setLocalState((){ search = v; }); },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      DropdownButton<CategoryClassification?>(
-                        value: filterClass,
-                        hint: const Text('全部'),
-                        items: const [
-                          DropdownMenuItem(value: null, child: Text('全部')),
-                          DropdownMenuItem(value: CategoryClassification.expense, child: Text('支出')),
-                          DropdownMenuItem(value: CategoryClassification.income, child: Text('收入')),
-                          DropdownMenuItem(value: CategoryClassification.transfer, child: Text('转账')),
-                        ],
-                        onChanged: (v){ setLocalState((){ filterClass = v; }); },
-                      ),
-                    ]),
-                    const SizedBox(height: 8),
-                    Row(children: [
-                      DropdownButton<CategoryGroup?>(
-                        value: filterGroup,
-                        hint: const Text('全部分组'),
-                        items: [
-                          const DropdownMenuItem(value: null, child: Text('全部分组')),
-                          ...CategoryGroup.values.map((g) => DropdownMenuItem(value: g, child: Text(g.displayName)))
-                        ],
-                        onChanged: (v){ setLocalState((){ filterGroup = v; }); },
-                      ),
-                      const SizedBox(width: 12),
-                      Row(children: [
-                        const Text('仅精选'),
-                        Switch(value: featuredOnly, onChanged: (v){ setLocalState((){ featuredOnly = v; }); }),
-                      ]),
-                      const Spacer(),
-                      const Text('冲突策略: '),
-                      const SizedBox(width: 8),
-                      DropdownButton<String>(
-                        value: conflict,
-                        items: const [
-                          DropdownMenuItem(value: 'skip', child: Text('跳过')),
-                          DropdownMenuItem(value: 'rename', child: Text('重命名')),
-                          DropdownMenuItem(value: 'update', child: Text('覆盖')),
-                        ],
-                        onChanged: (v){ if(v!=null) setLocalState((){ conflict = v; }); },
-                      ),
-                    ]),
-                    const Divider(),
-                    // Featured section (quick-pick) when no search and no featuredOnly filter
-                    if (search.isEmpty && !featuredOnly)
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Wrap(
-                          spacing: 8,
-                          runSpacing: 4,
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.only(right: 8),
-                              child: Text('精选推荐:'),
-                            ),
-                            ...templates.where((t) => t.isFeatured).take(8).map((t) => FilterChip(
-                                  label: Text(t.name),
-                                  selected: selected.contains(t),
-                                  onSelected: (val){
-                                    setLocalState((){
-                                      if (val) selected.add(t); else selected.remove(t);
-                                    });
-                                  },
-                                )),
-                          ],
-                        ),
-                      ),
-                    const SizedBox(height: 8),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: filtered.length,
-                        itemBuilder: (context, index) {
-                          final t = filtered[index];
-                          final isSelected = selected.contains(t);
-                          return ListTile(
-                            dense: true,
-                            leading: CircleAvatar(backgroundColor: Colors.grey.shade200, child: Text(t.icon?.isNotEmpty == true ? t.icon!.substring(0,1) : 'C')),
-                            title: Text(t.name),
-                            subtitle: Text(t.classification.name),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  tooltip: '覆写名称/颜色/图标/父分类',
-                                  icon: const Icon(Icons.tune),
-                                  onPressed: () async {
-                                    // Build parent candidates from current categories in ledger
-                                    final parents = (ledgerId == null)
-                                        ? <Category>[]
-                                        : allCats.where((c) => c.ledgerId == ledgerId && c.parentId == null).toList();
-                                    final map = await _editOverridesDialog(context, t, overrides[t.id], parents);
-                                    if (map != null) setLocalState((){ overrides[t.id] = map; });
-                                  },
-                                ),
-                                Icon(isSelected ? Icons.check_box : Icons.check_box_outline_blank),
-                              ],
-                            ),
-                            onTap: () {
-                              setLocalState(() {
-                                if (isSelected) {
-                                  selected.remove(t);
-                                } else {
-                                  selected.add(t);
-                                }
-                              });
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ] else ...[
-                    // Preview screen
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text('预览 (${selected.length} 项)', style: Theme.of(context).textTheme.titleMedium),
-                      ),
-                    ),
-                    Expanded(
-                      child: ListView(
-                        children: selected.map((t) {
-                          final ov = overrides[t.id];
-                          final desiredName = (ov?['name'] as String?)?.trim().isNotEmpty == true ? (ov?['name'] as String) : t.name;
-                          final hasConflict = existingNames.contains(desiredName.toLowerCase());
-                          final action = hasConflict
-                              ? (conflict == 'rename' ? '将重命名为 "${_predictRename(desiredName)}"' : (conflict == 'update' ? '将覆盖同名分类' : '将跳过'))
-                              : '将创建';
-                          return ListTile(
-                            dense: true,
-                            title: Text(desiredName),
-                            subtitle: Text(hasConflict ? '冲突: 已存在同名分类' : '无冲突'),
-                            trailing: Text(action, style: TextStyle(color: hasConflict && conflict=='skip' ? Colors.orange : Colors.green)),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('取消'),
-              ),
-              if (!showPreview)
-                TextButton(
-                  onPressed: selected.isEmpty ? null : () async {
-                    // Optionally call dry-run to get server-side details
-                    try {
-                      final id = ref.read(currentLedgerProvider)?.id;
-                      if (id == null) return;
-                      final items = selected.map((t){ final ov = overrides[t.id]; return { 'template_id': t.id, if (ov!=null) 'overrides': ov };}).toList();
-                      final result = await CategoryService().importTemplatesAdvanced(
-                        ledgerId: id,
-                        items: items,
-                        onConflict: conflict,
-                      );
-                      // If backend later supports dry_run, switch to that for more accurate details
-                    } catch (_) {}
-                    setLocalState((){ showPreview = true; });
-                  },
-                  child: const Text('预览导入'),
-                ),
-              if (showPreview)
-                TextButton(
-                  onPressed: () { setLocalState((){ showPreview = false; }); },
-                  child: const Text('返回编辑'),
-                ),
-              FilledButton(
-                onPressed: selected.isEmpty ? null : () async {
-                  Navigator.pop(context);
-                  try {
-                    // Build advanced items payload
-                    final items = selected.map((t) {
-                      final ov = overrides[t.id];
-                      return {
-                        'template_id': t.id,
-                        if (ov != null) 'overrides': ov,
-                      };
-                    }).toList();
-                    final id = ref.read(currentLedgerProvider)?.id;
-                    if (id == null) {
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('无当前账本，无法导入模板')));
-                      }
-                      return;
-                    }
-                    final result = await CategoryService().importTemplatesAdvanced(
-                      ledgerId: id,
-                      items: items,
-                      onConflict: conflict,
-                    );
-                    if (!mounted) return;
-                    await ref.read(userCategoriesProvider.notifier).refreshFromBackend(ledgerId: id);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('导入完成：新增${result.imported} 跳过${result.skipped} 失败${result.failed}')),
-                    );
-                  } catch (e) {
-                    if (!mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('导入失败：$e')),
-                    );
-                  }
-                },
-                child: Text(showPreview ? '确认导入' : '导入所选'),
-              ),
-            ],
-          );
-        });
-      },
-    );
-  }
-
-  Future<Map<String, dynamic>?> _editOverridesDialog(
-    BuildContext context,
-    SystemCategoryTemplate t,
-    Map<String, dynamic>? current,
-    List<Category> parentCandidates,
-  ) async {
-    final nameCtrl = TextEditingController(text: current?['name'] ?? t.name);
-    final colorCtrl = TextEditingController(text: current?['color'] ?? t.color);
-    final iconCtrl = TextEditingController(text: current?['icon'] ?? (t.icon ?? ''));
-    String? parentId = current?['parent_id'] as String?;
-    final res = await showDialog<Map<String, dynamic>>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text('覆写：${t.name}')
-        ,content: SizedBox(
-          width: 420,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: '名称')),
-              TextField(controller: colorCtrl, decoration: const InputDecoration(labelText: '颜色 #RRGGBB')),
-              TextField(controller: iconCtrl, decoration: const InputDecoration(labelText: '图标标识')),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<String?>(
-                value: parentId,
-                decoration: const InputDecoration(labelText: '父分类（可选）'),
-                items: [
-                  const DropdownMenuItem(value: null, child: Text('无')),
-                  ...parentCandidates.map((c) => DropdownMenuItem(value: c.id, child: Text(c.name)))
-                ],
-                onChanged: (v){ parentId = v; },
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(onPressed: ()=>Navigator.pop(context), child: const Text('取消')),
-          FilledButton(onPressed: ()=>Navigator.pop(context, {
-            'name': nameCtrl.text.trim().isNotEmpty ? nameCtrl.text.trim() : null,
-            'color': colorCtrl.text.trim().isNotEmpty ? colorCtrl.text.trim() : null,
-            'icon': iconCtrl.text.trim().isNotEmpty ? iconCtrl.text.trim() : null,
-            'parent_id': parentId,
-          }), child: const Text('保存')),
-        ],
-      ),
-    );
-    nameCtrl.dispose(); colorCtrl.dispose(); iconCtrl.dispose();
-    return res;
   }
 
   @override
@@ -403,8 +71,9 @@ class _CategoryManagementEnhancedPageState
   /// 构建应用栏
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      title: Text(
-          _isSelectionMode ? '已选择 ${_selectedCategories.length} 个分类' : '分类管理'),
+      title: Text(_isSelectionMode 
+        ? '已选择 ${_selectedCategories.length} 个分类'
+        : '分类管理'),
       actions: [
         // 后端刷新按钮（最小入口）
         Consumer(builder: (context, ref, _) {
@@ -414,9 +83,7 @@ class _CategoryManagementEnhancedPageState
             onPressed: () async {
               final ledger = ref.read(currentLedgerProvider);
               if (ledger?.id != null) {
-                await ref
-                    .read(userCategoriesProvider.notifier)
-                    .refreshFromBackend(ledgerId: ledger!.id!);
+                await ref.read(userCategoriesProvider.notifier).refreshFromBackend(ledgerId: ledger!.id!);
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('已从后端刷新分类')),
@@ -499,13 +166,10 @@ class _CategoryManagementEnhancedPageState
     return Consumer<CategoryProvider>(
       builder: (context, provider, _) {
         final stats = provider.categoryStats;
-
+        
         return Container(
           padding: const EdgeInsets.all(16),
-          color: Theme.of(context)
-              .colorScheme
-              .surfaceContainerHighest
-              .withOpacity(0.3),
+          color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -598,13 +262,12 @@ class _CategoryManagementEnhancedPageState
   Widget _buildCategoryList(CategoryClassification classification) {
     return Consumer<CategoryProvider>(
       builder: (context, provider, _) {
-        final categories =
-            provider.getCategoriesByClassification(classification);
-
+        final categories = provider.getCategoriesByClassification(classification);
+        
         if (categories.isEmpty) {
           return _buildEmptyState();
         }
-
+        
         return ReorderableListView.builder(
           onReorder: (oldIndex, newIndex) {
             _handleReorder(categories, oldIndex, newIndex);
@@ -613,7 +276,7 @@ class _CategoryManagementEnhancedPageState
           itemBuilder: (context, index) {
             final category = categories[index];
             final hasChildren = provider.hasChildren(category.id);
-
+            
             return _CategoryListItem(
               key: ValueKey(category.id),
               category: category,
@@ -623,8 +286,7 @@ class _CategoryManagementEnhancedPageState
               onTap: () => _handleCategoryTap(category),
               onLongPress: () => _enterSelectionMode(category.id),
               onTransactionCountTap: () => _showCategoryTransactions(category),
-              onMenuSelected: (action) =>
-                  _handleCategoryAction(action, category),
+              onMenuSelected: (action) => _handleCategoryAction(action, category),
               onDragStarted: () {
                 setState(() {
                   _draggedCategoryId = category.id;
@@ -660,17 +322,15 @@ class _CategoryManagementEnhancedPageState
           Text(
             '暂无分类',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                ),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             '点击下方按钮创建分类或从模板导入',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
-                ),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+            ),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
@@ -686,7 +346,7 @@ class _CategoryManagementEnhancedPageState
   /// 构建浮动操作按钮
   Widget _buildFloatingActionButtons() {
     if (_isSelectionMode) return const SizedBox.shrink();
-
+    
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -777,9 +437,8 @@ class _CategoryManagementEnhancedPageState
 
   void _selectAll() {
     final provider = context.read<CategoryProvider>();
-    final categories =
-        provider.getCategoriesByClassification(_selectedClassification);
-
+    final categories = provider.getCategoriesByClassification(_selectedClassification);
+    
     setState(() {
       if (_selectedCategories.length == categories.length) {
         _selectedCategories.clear();
@@ -794,12 +453,12 @@ class _CategoryManagementEnhancedPageState
     if (newIndex > oldIndex) {
       newIndex -= 1;
     }
-
+    
     final category = categories[oldIndex];
     context.read<CategoryProvider>().reorderCategory(
-          category.id,
-          newIndex,
-        );
+      category.id,
+      newIndex,
+    );
   }
 
   void _handleDrop(Category draggedCategory, Category targetCategory) {
@@ -810,13 +469,13 @@ class _CategoryManagementEnhancedPageState
       );
       return;
     }
-
+    
     // 更新父级关系
     context.read<CategoryProvider>().updateCategoryParent(
-          draggedCategory.id,
-          targetCategory.id,
-        );
-
+      draggedCategory.id,
+      targetCategory.id,
+    );
+    
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('已将"${draggedCategory.name}"移动到"${targetCategory.name}"'),
@@ -833,18 +492,17 @@ class _CategoryManagementEnhancedPageState
   bool _canAcceptDrop(Category dragged, Category target) {
     // 不能拖到自己
     if (dragged.id == target.id) return false;
-
+    
     // 不能拖到自己的子分类
     final provider = context.read<CategoryProvider>();
     if (provider.isDescendant(target.id, dragged.id)) return false;
-
+    
     // 分类类型必须一致
     if (dragged.classification != target.classification) return false;
-
+    
     // 层级限制：最多两层
-    if (target.parentId != null && provider.hasChildren(dragged.id))
-      return false;
-
+    if (target.parentId != null && provider.hasChildren(dragged.id)) return false;
+    
     return true;
   }
 
@@ -921,7 +579,7 @@ class _CategoryManagementEnhancedPageState
   void _deleteCategory(Category category) {
     final provider = context.read<CategoryProvider>();
     final hasTransactions = category.transactionCount > 0;
-
+    
     if (hasTransactions) {
       showDialog(
         context: context,
@@ -1018,8 +676,7 @@ class _CategoryManagementEnhancedPageState
                 _selectedCategories.clear();
               });
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text('已删除 ${_selectedCategories.length} 个分类')),
+                SnackBar(content: Text('已删除 ${_selectedCategories.length} 个分类')),
               );
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
@@ -1055,15 +712,15 @@ class _StatCard extends StatelessWidget {
         Text(
           value,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
         ),
         Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
       ],
     );
@@ -1106,7 +763,7 @@ class _CategoryListItem extends StatelessWidget {
       onAcceptWithDetails: onAcceptDrop,
       builder: (context, candidateData, rejectedData) {
         final isDropTarget = candidateData.isNotEmpty;
-
+        
         return LongPressDraggable<Category>(
           data: category,
           onDragStarted: onDragStarted,
@@ -1127,13 +784,10 @@ class _CategoryListItem extends StatelessWidget {
                     width: 24,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: Color(
-                          int.parse(category.color.replaceFirst('#', '0xFF'))),
+                      color: Color(int.parse(category.color.replaceFirst('#', '0xFF'))),
                       shape: BoxShape.circle,
                     ),
-                    child: Center(
-                        child: Text(category.icon,
-                            style: const TextStyle(fontSize: 12))),
+                    child: Center(child: Text(category.icon, style: const TextStyle(fontSize: 12))),
                   ),
                   const SizedBox(width: 8),
                   Text(category.name),
@@ -1154,13 +808,10 @@ class _CategoryListItem extends StatelessWidget {
   Widget _buildListTile(BuildContext context, bool isDropTarget) {
     return Container(
       decoration: BoxDecoration(
-        color: isSelected
+        color: isSelected 
             ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3)
             : isDropTarget
-                ? Theme.of(context)
-                    .colorScheme
-                    .secondaryContainer
-                    .withOpacity(0.3)
+                ? Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.3)
                 : null,
         border: isDropTarget
             ? Border.all(color: Theme.of(context).colorScheme.primary, width: 2)
@@ -1176,13 +827,10 @@ class _CategoryListItem extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: Color(
-                      int.parse(category.color.replaceFirst('#', '0xFF'))),
+                  color: Color(int.parse(category.color.replaceFirst('#', '0xFF'))),
                   shape: BoxShape.circle,
                 ),
-                child: Center(
-                    child: Text(category.icon,
-                        style: const TextStyle(fontSize: 20))),
+                child: Center(child: Text(category.icon, style: const TextStyle(fontSize: 20))),
               ),
         title: Text(
           category.name,
@@ -1200,13 +848,9 @@ class _CategoryListItem extends StatelessWidget {
               onTap: onTransactionCountTap,
               borderRadius: BorderRadius.circular(12),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .primaryContainer
-                      .withOpacity(0.3),
+                  color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -1265,7 +909,8 @@ class _CategoryListItem extends StatelessWidget {
                 ],
               ),
             ],
-            if (hasChildren) const Icon(Icons.arrow_drop_down, size: 20),
+            if (hasChildren)
+              const Icon(Icons.arrow_drop_down, size: 20),
           ],
         ),
         onTap: onTap,
@@ -1279,8 +924,7 @@ class _CategoryListItem extends StatelessWidget {
 class _CategoryToTagDialog extends StatefulWidget {
   final Category category;
 
-  const _CategoryToTagDialog({Key? key, required this.category})
-      : super(key: key);
+  const _CategoryToTagDialog({Key? key, required this.category}) : super(key: key);
 
   @override
   State<_CategoryToTagDialog> createState() => _CategoryToTagDialogState();
@@ -1310,8 +954,7 @@ class _CategoryToTagDialogState extends State<_CategoryToTagDialog> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Color(
-                    int.parse(widget.category.color.replaceFirst('#', '0xFF'))),
+                color: Color(int.parse(widget.category.color.replaceFirst('#', '0xFF'))),
                 shape: BoxShape.circle,
               ),
               child: Center(child: Text(widget.category.icon)),
@@ -1352,10 +995,7 @@ class _CategoryToTagDialogState extends State<_CategoryToTagDialog> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .primaryContainer
-                    .withOpacity(0.3),
+                color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -1391,15 +1031,15 @@ class _CategoryToTagDialogState extends State<_CategoryToTagDialog> {
               );
               return;
             }
-
+            
             // 执行转换
             context.read(categoryManagementProvider).convertCategoryToTag(
-                  widget.category.id,
-                  _tagNameController.text.trim(),
-                  applyToTransactions: _applyToTransactions,
-                  deleteCategory: _deleteCategory,
-                );
-
+              widget.category.id,
+              _tagNameController.text.trim(),
+              applyToTransactions: _applyToTransactions,
+              deleteCategory: _deleteCategory,
+            );
+            
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -1430,12 +1070,10 @@ class _CategoryToTagDialogState extends State<_CategoryToTagDialog> {
 class _DuplicateCategoryDialog extends StatefulWidget {
   final Category category;
 
-  const _DuplicateCategoryDialog({Key? key, required this.category})
-      : super(key: key);
+  const _DuplicateCategoryDialog({Key? key, required this.category}) : super(key: key);
 
   @override
-  State<_DuplicateCategoryDialog> createState() =>
-      _DuplicateCategoryDialogState();
+  State<_DuplicateCategoryDialog> createState() => _DuplicateCategoryDialogState();
 }
 
 class _DuplicateCategoryDialogState extends State<_DuplicateCategoryDialog> {
@@ -1472,12 +1110,12 @@ class _DuplicateCategoryDialogState extends State<_DuplicateCategoryDialog> {
               );
               return;
             }
-
+            
             context.read(categoryManagementProvider).duplicateCategory(
-                  widget.category.id,
-                  _nameController.text.trim(),
-                );
-
+              widget.category.id,
+              _nameController.text.trim(),
+            );
+            
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('已创建分类"${_nameController.text.trim()}"')),
@@ -1500,12 +1138,10 @@ class _DuplicateCategoryDialogState extends State<_DuplicateCategoryDialog> {
 class _CategoryDeletionDialog extends StatefulWidget {
   final Category category;
 
-  const _CategoryDeletionDialog({Key? key, required this.category})
-      : super(key: key);
+  const _CategoryDeletionDialog({Key? key, required this.category}) : super(key: key);
 
   @override
-  State<_CategoryDeletionDialog> createState() =>
-      _CategoryDeletionDialogState();
+  State<_CategoryDeletionDialog> createState() => _CategoryDeletionDialogState();
 }
 
 class _CategoryDeletionDialogState extends State<_CategoryDeletionDialog> {
@@ -1520,8 +1156,7 @@ class _CategoryDeletionDialogState extends State<_CategoryDeletionDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-              '分类"${widget.category.name}"有 ${widget.category.transactionCount} 笔交易'),
+          Text('分类"${widget.category.name}"有 ${widget.category.transactionCount} 笔交易'),
           const SizedBox(height: 16),
           const Text('请选择处理方式：'),
           const SizedBox(height: 8),
@@ -1541,25 +1176,20 @@ class _CategoryDeletionDialogState extends State<_CategoryDeletionDialog> {
               padding: const EdgeInsets.only(left: 48, right: 16, bottom: 8),
               child: Consumer<CategoryProvider>(
                 builder: (context, provider, _) {
-                  final categories = provider
-                      .getCategoriesByClassification(
-                        widget.category.classification,
-                      )
-                      .where((c) => c.id != widget.category.id)
-                      .toList();
-
+                  final categories = provider.getCategoriesByClassification(
+                    widget.category.classification,
+                  ).where((c) => c.id != widget.category.id).toList();
+                  
                   return DropdownButtonFormField<String>(
                     decoration: const InputDecoration(
                       labelText: '目标分类',
                       border: OutlineInputBorder(),
                     ),
                     initialValue: _targetCategoryId,
-                    items: categories
-                        .map((c) => DropdownMenuItem(
-                              value: c.id,
-                              child: Text(c.name),
-                            ))
-                        .toList(),
+                    items: categories.map((c) => DropdownMenuItem(
+                      value: c.id,
+                      child: Text(c.name),
+                    )).toList(),
                     onChanged: (value) {
                       setState(() {
                         _targetCategoryId = value;
@@ -1606,10 +1236,10 @@ class _CategoryDeletionDialogState extends State<_CategoryDeletionDialog> {
               );
               return;
             }
-
+            
             // TODO: 执行删除
             final provider = context.read<CategoryProvider>();
-
+            
             switch (_selectedOption) {
               case 'move':
                 provider.deleteCategoryWithMove(
@@ -1624,7 +1254,7 @@ class _CategoryDeletionDialogState extends State<_CategoryDeletionDialog> {
                 provider.deleteCategoryWithUncategorize(widget.category.id);
                 break;
             }
-
+            
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
