@@ -1,14 +1,16 @@
-import 'package:flutter/material.dart' hide ErrorWidget;
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:jive_money/services/api/category_service.dart';
-import 'package:jive_money/models/category_template.dart';
-import 'package:jive_money/ui/components/loading/loading_widget.dart';
-import 'package:jive_money/models/account_classification.dart';
-import 'package:jive_money/widgets/common/error_widget.dart';
+import '../../services/api/category_service.dart';
+import '../../models/category.dart';
+import '../../models/category_template.dart';
+import '../../utils/constants.dart';
+import '../../widgets/common/custom_card.dart';
+import '../../widgets/common/loading_widget.dart';
+import '../../widgets/common/error_widget.dart';
 
 /// 分类模板库页面 - 浏览和导入系统预设分类模板
 class CategoryTemplateLibraryPage extends StatefulWidget {
-  const CategoryTemplateLibraryPage({super.key});
+  const CategoryTemplateLibraryPage({Key? key}) : super(key: key);
 
   @override
   State<CategoryTemplateLibraryPage> createState() =>
@@ -24,7 +26,7 @@ class _CategoryTemplateLibraryPageState
   // 模板数据
   List<SystemCategoryTemplate> _allTemplates = [];
   List<SystemCategoryTemplate> _filteredTemplates = [];
-  final Map<String, List<SystemCategoryTemplate>> _templatesByGroup = {};
+  Map<String, List<SystemCategoryTemplate>> _templatesByGroup = {};
 
   // UI状态
   bool _isLoading = true;
@@ -76,7 +78,7 @@ class _CategoryTemplateLibraryPageState
       _templatesByGroup.clear();
       for (final template in templates) {
         final group = template.categoryGroup;
-        _templatesByGroup.putIfAbsent(group.key, () => []).add(template);
+        _templatesByGroup.putIfAbsent(group, () => []).add(template);
       }
 
       setState(() {
@@ -196,8 +198,7 @@ class _CategoryTemplateLibraryPageState
         // 批量导入模板
         for (final templateId in _selectedTemplateIds) {
           final template = _allTemplates.firstWhere((t) => t.id == templateId);
-          await _categoryService.importTemplateAsCategory(template.id);
-          if (!context.mounted) return;
+          await _categoryService.importTemplateAsCategory(template);
         }
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -271,8 +272,7 @@ class _CategoryTemplateLibraryPageState
 
     if (confirmed == true) {
       try {
-        await _categoryService.importTemplateAsCategory(template.id);
-        if (!context.mounted) return;
+        await _categoryService.importTemplateAsCategory(template);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -372,7 +372,7 @@ class _CategoryTemplateLibraryPageState
         color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -475,7 +475,7 @@ class _CategoryTemplateLibraryPageState
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                color: Theme.of(context).primaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
@@ -617,7 +617,7 @@ class _CategoryTemplateLibraryPageState
       child: Container(
         decoration: BoxDecoration(
           color:
-              isSelected ? color.withValues(alpha: 0.1) : Theme.of(context).cardColor,
+              isSelected ? color.withOpacity(0.1) : Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? color : Colors.grey[300]!,
@@ -625,7 +625,7 @@ class _CategoryTemplateLibraryPageState
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withOpacity(0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -640,7 +640,7 @@ class _CategoryTemplateLibraryPageState
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.2),
+                  color: color.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
@@ -761,7 +761,7 @@ class _CategoryTemplateLibraryPageState
                     decoration: BoxDecoration(
                       color: Color(int.parse(
                               template.color.replaceFirst('#', '0xFF')))
-                          .withValues(alpha: 0.2),
+                          .withOpacity(0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(
@@ -895,7 +895,7 @@ class _CategoryTemplateLibraryPageState
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          const SizedBox(
+          SizedBox(
             width: 80,
             child: Text(
               label,
@@ -936,6 +936,8 @@ class _CategoryTemplateLibraryPageState
         return '支出';
       case AccountClassification.transfer:
         return '转账';
+      default:
+        return '未知';
     }
   }
 }

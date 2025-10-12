@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:jive_money/core/network/http_client.dart';
-import 'package:jive_money/models/family.dart';
-import 'package:jive_money/models/user.dart';
+import '../../core/network/http_client.dart';
+import '../../core/config/api_config.dart';
+import '../../models/family.dart';
+import '../../models/user.dart';
 
 /// Family服务 - 管理多Family功能
 class FamilyService {
@@ -179,11 +180,7 @@ class FamilyService {
   }
 
   /// 获取Family统计信息
-  Future<FamilyStatistics> getFamilyStatistics(
-    String familyId, {
-    String? period,
-    DateTime? date,
-  }) async {
+  Future<FamilyStatistics> getFamilyStatistics(String familyId) async {
     try {
       final response = await _client.get('/families/$familyId/statistics');
 
@@ -206,131 +203,6 @@ class FamilyService {
       return ApiException('网络错误：${error.message}');
     }
     return ApiException('Family服务错误：${error.toString()}');
-  }
-
-  // Stub methods for permissions and audit - TODO: Implement with actual API
-  Future<List<dynamic>> getPermissionAuditLogs(
-    String familyId, {
-    DateTime? startDate,
-    DateTime? endDate,
-  }) async {
-    // Stub implementation
-    return Future.value(<dynamic>[]);
-  }
-
-  Future<Map<String, dynamic>> getPermissionUsageStats({String? familyId}) async {
-    // Stub implementation
-    return Future.value(<String, dynamic>{
-      'total': 0,
-      'byType': <String, int>{},
-      'byUser': <String, int>{},
-    });
-  }
-
-  Future<List<dynamic>> detectPermissionAnomalies({String? familyId}) async {
-    // Stub implementation
-    return Future.value(<dynamic>[]);
-  }
-
-  Future<Map<String, dynamic>> generateComplianceReport({String? familyId}) async {
-    // Stub implementation
-    return Future.value(<String, dynamic>{
-      'compliant': true,
-      'issues': <dynamic>[],
-      'recommendations': <String>[],
-    });
-  }
-
-  Future<Map<String, dynamic>> getFamilyPermissions({String? familyId}) async {
-    // Stub implementation
-    return Future.value(<String, dynamic>{
-      'permissions': <dynamic>[],
-      'roles': <dynamic>[],
-    });
-  }
-
-  Future<List<dynamic>> getCustomRoles({String? familyId}) async {
-    // Stub implementation
-    return Future.value(<dynamic>[]);
-  }
-
-  Future<bool> updateRolePermissions(String familyId, String roleId, List<String> permissions) async {
-    // Stub implementation
-    return Future.value(true);
-  }
-
-  Future<dynamic> createCustomRole(String familyId, dynamic customRole) async {
-    // Stub implementation
-    final name = customRole is String ? customRole : customRole.name ?? 'Custom Role';
-    final permissions = customRole is String ? <String>[] : (customRole.permissions ?? <String>[]);
-    return Future.value({'id': 'stub', 'name': name, 'permissions': permissions});
-  }
-
-  Future<void> deleteCustomRole(String roleId) async {
-    // Stub implementation
-    return Future.value();
-  }
-
-  // Missing methods for dynamic permissions service
-  Future<dynamic> getUserPermissions(String userId, String familyId) async {
-    // Stub implementation
-    return Future.value({
-      'role': 'member',
-      'permissions': <String>[],
-      'userId': userId,
-      'familyId': familyId,
-    });
-  }
-
-  Future<bool> updateUserPermissions(String userId, String familyId, List<String> permissions) async {
-    // Stub implementation
-    return Future.value(true);
-  }
-
-  Future<void> grantTemporaryPermission(String userId, String familyId, String permission, DateTime expiresAt, [String? reason]) async {
-    // Stub implementation
-    return Future.value();
-  }
-
-  Future<void> revokeTemporaryPermission(String userId, String familyId, String permission) async {
-    // Stub implementation
-    return Future.value();
-  }
-
-  Future<void> delegatePermissions(String fromUserId, String toUserId, String familyId, List<String> permissions, [DateTime? expiresAt, String? reason]) async {
-    // Stub implementation
-    return Future.value();
-  }
-
-  Future<void> revokeDelegation(String fromUserId, String toUserId, String familyId) async {
-    // Stub implementation
-    return Future.value();
-  }
-
-  // Missing methods for family settings service
-  Future<dynamic> getFamilySettings(String familyId) async {
-    // Stub implementation
-    return Future.value({
-      'currency': 'CNY',
-      'locale': 'zh-CN',
-      'timezone': 'Asia/Shanghai',
-      'startOfWeek': 1,
-    });
-  }
-
-  Future<void> updateFamilySettings(String familyId, Map<String, dynamic> settings) async {
-    // Stub implementation
-    return Future.value();
-  }
-
-  Future<void> deleteFamilySettings(String familyId) async {
-    // Stub implementation
-    return Future.value();
-  }
-
-  Future<void> updateUserPreferences(String familyId, Map<String, dynamic> preferences) async {
-    // Stub implementation
-    return Future.value();
   }
 }
 
@@ -414,5 +286,5 @@ class ApiException implements Exception {
 
 /// 未授权异常
 class UnauthorizedException extends ApiException {
-  UnauthorizedException(super.message) : super(statusCode: 401);
+  UnauthorizedException(String message) : super(message, statusCode: 401);
 }

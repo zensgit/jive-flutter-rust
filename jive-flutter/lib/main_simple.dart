@@ -5,29 +5,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:jive_money/screens/welcome_screen.dart';
-import 'package:jive_money/screens/auth/login_screen.dart';
-import 'package:jive_money/screens/auth/register_screen.dart';
-import 'package:jive_money/screens/auth/admin_login_screen.dart';
-import 'package:jive_money/services/auth_service.dart';
-import 'package:jive_money/services/storage_service.dart';
-import 'package:jive_money/services/wechat_service.dart';
-import 'package:jive_money/services/theme_service.dart';
-import 'package:jive_money/screens/theme_management_screen.dart';
-import 'package:jive_money/models/theme_models.dart' as models;
-import 'package:jive_money/widgets/wechat_qr_binding_dialog.dart';
-import 'package:jive_money/screens/ai_assistant_page.dart';
-import 'package:jive_money/screens/add_transaction_page.dart';
-import 'package:jive_money/screens/management/currency_management_page_v2.dart';
-import 'package:jive_money/screens/management/currency_selection_page.dart';
-import 'package:jive_money/screens/management/category_management_page.dart';
-import 'package:jive_money/screens/management/category_template_library.dart';
-import 'package:jive_money/screens/admin/template_admin_page.dart';
-import 'package:jive_money/screens/management/tag_management_page.dart';
-import 'package:jive_money/screens/management/payee_management_page.dart';
-import 'package:jive_money/screens/management/travel_event_management_page.dart';
-import 'package:jive_money/screens/management/rules_management_page.dart';
-import 'package:jive_money/widgets/invite_member_dialog.dart';
+import 'screens/welcome_screen.dart';
+import 'screens/auth/login_screen.dart';
+import 'screens/auth/register_screen.dart';
+import 'screens/auth/admin_login_screen.dart';
+import 'services/auth_service.dart';
+import 'services/storage_service.dart';
+import 'services/wechat_service.dart';
+import 'services/theme_service.dart';
+import 'screens/theme_management_screen.dart';
+import 'models/theme_models.dart' as models;
+import 'widgets/wechat_qr_binding_dialog.dart';
+import 'screens/ai_assistant_page.dart';
+import 'screens/add_transaction_page.dart';
+import 'screens/management/currency_management_page_v2.dart';
+import 'screens/management/currency_selection_page.dart';
+import 'screens/management/category_management_page.dart';
+import 'screens/management/category_template_library.dart';
+import 'screens/admin/template_admin_page.dart';
+import 'screens/management/tag_management_page.dart';
+import 'screens/management/payee_management_page.dart';
+import 'screens/management/travel_event_management_page.dart';
+import 'screens/management/rules_management_page.dart';
+import 'widgets/invite_member_dialog.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -156,13 +156,13 @@ class _HomePageState extends State<HomePage> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
+            color: Colors.black.withOpacity(0.08),
             blurRadius: 20,
             offset: const Offset(0, -4),
             spreadRadius: 0,
           ),
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 1,
             offset: const Offset(0, -1),
             spreadRadius: 0,
@@ -172,9 +172,9 @@ class _HomePageState extends State<HomePage> {
       child: ClipPath(
         clipper: _BottomNavClipper(),
         child: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
             ),
@@ -257,21 +257,21 @@ class _HomePageState extends State<HomePage> {
           boxShadow: [
             // 主阴影
             BoxShadow(
-              color: const Color(0xFF00E676).withValues(alpha: 0.4),
+              color: const Color(0xFF00E676).withOpacity(0.4),
               blurRadius: 16,
               offset: const Offset(0, 8),
               spreadRadius: 0,
             ),
             // 内层光晕
             BoxShadow(
-              color: const Color(0xFF00E676).withValues(alpha: 0.2),
+              color: const Color(0xFF00E676).withOpacity(0.2),
               blurRadius: 24,
               offset: const Offset(0, 4),
               spreadRadius: 4,
             ),
             // 顶部高光
             BoxShadow(
-              color: Colors.white.withValues(alpha: 0.2),
+              color: Colors.white.withOpacity(0.2),
               blurRadius: 1,
               offset: const Offset(0, -1),
               spreadRadius: 0,
@@ -282,7 +282,7 @@ class _HomePageState extends State<HomePage> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(34),
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.2),
+              color: Colors.white.withOpacity(0.2),
               width: 1,
             ),
           ),
@@ -290,8 +290,8 @@ class _HomePageState extends State<HomePage> {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(34),
-              splashColor: Colors.white.withValues(alpha: 0.2),
-              highlightColor: Colors.white.withValues(alpha: 0.1),
+              splashColor: Colors.white.withOpacity(0.2),
+              highlightColor: Colors.white.withOpacity(0.1),
               onTap: () {
                 // 添加触觉反馈
                 // HapticFeedback.lightImpact(); // 如果需要的话可以取消注释
@@ -309,7 +309,7 @@ class _HomePageState extends State<HomePage> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.white.withValues(alpha: 0.1),
+                      Colors.white.withOpacity(0.1),
                       Colors.transparent,
                     ],
                     stops: const [0.0, 0.3],
@@ -469,7 +469,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withValues(alpha: 0.1),
+                    color: Colors.blue.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: SvgPicture.asset(
@@ -496,7 +496,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withValues(alpha: 0.1),
+                        color: Colors.orange.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -506,7 +506,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: _isLoading
-                                ? const Row(
+                                ? Row(
                                     children: [
                                       SizedBox(
                                         width: 12,
@@ -518,8 +518,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                                   Colors.orange),
                                         ),
                                       ),
-                                      SizedBox(width: 8),
-                                      Text(
+                                      const SizedBox(width: 8),
+                                      const Text(
                                         '正在加载统计信息...',
                                         style: TextStyle(
                                           color: Colors.black87,
@@ -594,7 +594,7 @@ class _DashboardPageState extends State<DashboardPage> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
+            color: color.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: color, size: 32),
@@ -611,8 +611,8 @@ class _DashboardPageState extends State<DashboardPage> {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: isExpense
-            ? Colors.red.withValues(alpha: 0.1)
-            : Colors.green.withValues(alpha: 0.1),
+            ? Colors.red.withOpacity(0.1)
+            : Colors.green.withOpacity(0.1),
         child: Icon(
           isExpense ? Icons.arrow_downward : Icons.arrow_upward,
           color: isExpense ? Colors.red : Colors.green,
@@ -1020,8 +1020,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
         // 如果需要单独的昵称字段，需要后端API支持
       );
 
-      if (!mounted) return;
-
       if (result.success) {
         setState(() {
           _isEditing = false;
@@ -1042,7 +1040,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
         );
       }
     } catch (e) {
-      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('更新用户信息时发生错误: $e'),
@@ -1662,7 +1659,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           label: const Text('Dissolve'),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.black,
-                            side: const BorderSide(color: Colors.black),
+                            side: BorderSide(color: Colors.black),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                             shape: RoundedRectangleBorder(
@@ -1737,8 +1734,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: _weChatInfo != null
-                              ? Colors.green.withValues(alpha: 0.1)
-                              : Colors.blue.withValues(alpha: 0.1),
+                              ? Colors.green.withOpacity(0.1)
+                              : Colors.blue.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -1767,10 +1764,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.green.withValues(alpha: 0.05),
+                        color: Colors.green.withOpacity(0.05),
                         borderRadius: BorderRadius.circular(8),
                         border:
-                            Border.all(color: Colors.green.withValues(alpha: 0.2)),
+                            Border.all(color: Colors.green.withOpacity(0.2)),
                       ),
                       child: Row(
                         children: [
@@ -1950,7 +1947,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       children: [
         CircleAvatar(
           radius: 16,
-          backgroundColor: color.withValues(alpha: 0.1),
+          backgroundColor: color.withOpacity(0.1),
           child: Icon(icon, color: color, size: 16),
         ),
         const SizedBox(width: 12),
@@ -2008,7 +2005,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   void _showAddMemberDialog() {
     showDialog(
       context: context,
-      builder: (context) => const InviteMemberDialog(),
+      builder: (context) => InviteMemberDialog(),
     );
   }
 
@@ -2017,9 +2014,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue.withValues(alpha: 0.05),
+        color: Colors.blue.withOpacity(0.05),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
+        border: Border.all(color: Colors.blue.withOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -2122,20 +2119,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isCurrentUser
-            ? Colors.green.withValues(alpha: 0.05)
-            : Colors.grey.withValues(alpha: 0.05),
+            ? Colors.green.withOpacity(0.05)
+            : Colors.grey.withOpacity(0.05),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isCurrentUser
-              ? Colors.green.withValues(alpha: 0.2)
-              : Colors.grey.withValues(alpha: 0.2),
+              ? Colors.green.withOpacity(0.2)
+              : Colors.grey.withOpacity(0.2),
         ),
       ),
       child: Row(
         children: [
           CircleAvatar(
             radius: 20,
-            backgroundColor: _getRoleColor(role).withValues(alpha: 0.1),
+            backgroundColor: _getRoleColor(role).withOpacity(0.1),
             child: Text(
               name.substring(0, 1).toUpperCase(),
               style: TextStyle(
@@ -2242,7 +2239,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: _getRoleColor(role).withValues(alpha: 0.1),
+        color: _getRoleColor(role).withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
@@ -2330,7 +2327,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.grey.withValues(alpha: 0.05),
+          color: Colors.grey.withOpacity(0.05),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Center(
@@ -2361,9 +2358,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.05),
+                color: Colors.grey.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+                border: Border.all(color: Colors.grey.withOpacity(0.2)),
               ),
               child: Row(
                 children: [
@@ -2459,7 +2456,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
         onSuccess: () async {
           Navigator.pop(context);
           await _loadWeChatInfo();
-          if (!context.mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('微信绑定成功！'),
@@ -3445,8 +3441,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 onPressed: _isLoading ? null : _changePassword,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 child: _isLoading
@@ -3551,8 +3547,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
     // 模拟API调用
     await Future.delayed(const Duration(seconds: 2));
-
-    if (!mounted) return;
 
     setState(() {
       _isLoading = false;
@@ -3718,7 +3712,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
           // 设备列表
           ...devices
               .map((device) => _buildEnhancedDeviceItem(context, device))
-              ,
+              .toList(),
 
           const SizedBox(height: 80),
         ],
@@ -3734,7 +3728,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
+            color: color.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: color, size: 24),
@@ -3788,7 +3782,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
+            color: Colors.grey.withOpacity(0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -3802,7 +3796,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
+                color: color.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color),
@@ -4210,7 +4204,7 @@ class FamilyManagementPage extends StatelessWidget {
       String name, String role, IconData icon, Color color) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: color.withValues(alpha: 0.1),
+        backgroundColor: color.withOpacity(0.1),
         child: Icon(icon, color: color),
       ),
       title: Text(name),
@@ -4357,7 +4351,6 @@ class DataImportExportPage extends StatelessWidget {
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
-                    _buildExportOption('导出为 CSV', Icons.table_chart),
                     _buildExportOption('导出为 Excel', Icons.table_view),
                     _buildExportOption('导出为 PDF', Icons.picture_as_pdf),
                     _buildExportOption('完整备份', Icons.backup),
@@ -4539,9 +4532,9 @@ class _RemoveMemberDialogState extends State<_RemoveMemberDialog> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.red.withValues(alpha: 0.1),
+              color: Colors.red.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
+              border: Border.all(color: Colors.red.withOpacity(0.2)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -4716,13 +4709,13 @@ class _ChangeRoleDialogState extends State<_ChangeRoleDialog> {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: _selectedRole == role
-                          ? _getRoleColor(role).withValues(alpha: 0.1)
-                          : Colors.grey.withValues(alpha: 0.05),
+                          ? _getRoleColor(role).withOpacity(0.1)
+                          : Colors.grey.withOpacity(0.05),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: _selectedRole == role
                             ? _getRoleColor(role)
-                            : Colors.grey.withValues(alpha: 0.3),
+                            : Colors.grey.withOpacity(0.3),
                         width: _selectedRole == role ? 2 : 1,
                       ),
                     ),
@@ -4865,9 +4858,9 @@ class _DissolveHouseholdDialogState extends State<_DissolveHouseholdDialog> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.red.withValues(alpha: 0.1),
+              color: Colors.red.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+              border: Border.all(color: Colors.red.withOpacity(0.3)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -4900,9 +4893,9 @@ class _DissolveHouseholdDialogState extends State<_DissolveHouseholdDialog> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.orange.withValues(alpha: 0.1),
+              color: Colors.orange.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+              border: Border.all(color: Colors.orange.withOpacity(0.3)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

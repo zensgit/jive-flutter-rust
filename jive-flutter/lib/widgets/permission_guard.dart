@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jive_money/services/permission_service.dart';
-import 'package:jive_money/models/family.dart' as family_model;
+import '../services/permission_service.dart';
+import '../models/family.dart' as family_model;
 
 /// 权限守卫组件 - 根据权限控制UI显示
 class PermissionGuard extends ConsumerWidget {
@@ -74,13 +74,14 @@ class PermissionGuard extends ConsumerWidget {
 
   Widget _buildDeniedWidget(BuildContext context) {
     final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.errorContainer.withValues(alpha: 0.3),
+        color: theme.colorScheme.errorContainer.withOpacity(0.3),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: theme.colorScheme.error.withValues(alpha: 0.3),
+          color: theme.colorScheme.error.withOpacity(0.3),
         ),
       ),
       child: Row(
@@ -132,38 +133,36 @@ class PermissionButton extends ConsumerWidget {
 
     Widget button;
 
-    final safeChild = child;
-
-    if (safeChild is ElevatedButton) {
-      final elevatedButton = safeChild;
+    if (child is ElevatedButton) {
+      final elevatedButton = child as ElevatedButton;
       button = ElevatedButton(
         onPressed: hasPermission ? onPressed ?? elevatedButton.onPressed : null,
         style: elevatedButton.style,
-        child: elevatedButton.child ?? const SizedBox.shrink(),
+        child: elevatedButton.child,
       );
-    } else if (safeChild is TextButton) {
-      final textButton = safeChild;
+    } else if (child is TextButton) {
+      final textButton = child as TextButton;
       button = TextButton(
         onPressed: hasPermission ? onPressed ?? textButton.onPressed : null,
         style: textButton.style,
-        child: textButton.child ?? const SizedBox.shrink(),
+        child: textButton.child,
       );
-    } else if (safeChild is IconButton) {
-      final iconButton = safeChild;
+    } else if (child is IconButton) {
+      final iconButton = child as IconButton;
       button = IconButton(
         onPressed: hasPermission ? onPressed ?? iconButton.onPressed : null,
         icon: iconButton.icon,
         tooltip: iconButton.tooltip,
       );
-    } else if (safeChild is FilledButton) {
-      final filledButton = safeChild;
+    } else if (child is FilledButton) {
+      final filledButton = child as FilledButton;
       button = FilledButton(
         onPressed: hasPermission ? onPressed ?? filledButton.onPressed : null,
         style: filledButton.style,
-        child: filledButton.child ?? const SizedBox.shrink(),
+        child: filledButton.child,
       );
     } else {
-      button = safeChild;
+      button = child;
     }
 
     if (!hasPermission && showTooltipWhenDisabled) {
@@ -190,6 +189,7 @@ class RoleBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final color = _getRoleColor(role);
     final icon = _getRoleIcon(role);
     final label = _getRoleLabel(role);
@@ -197,10 +197,10 @@ class RoleBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.2),
+        color: color.withOpacity(0.2),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withValues(alpha: 0.5),
+          color: color.withOpacity(0.5),
         ),
       ),
       child: Row(
@@ -280,18 +280,22 @@ class PermissionHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.amber.withValues(alpha: 0.1),
+        color: theme.colorScheme.warningContainer.withOpacity(0.3),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.amber[800]!.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: theme.colorScheme.onWarningContainer.withOpacity(0.3),
+        ),
       ),
       child: Row(
         children: [
           Icon(
             Icons.info_outline,
-            color: Colors.amber[800]!,
+            color: theme.colorScheme.onWarningContainer,
             size: 20,
           ),
           const SizedBox(width: 12),
@@ -300,7 +304,7 @@ class PermissionHint extends StatelessWidget {
               customMessage ?? _getDefaultMessage(action),
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.amber[800]!,
+                color: theme.colorScheme.onWarningContainer,
               ),
             ),
           ),

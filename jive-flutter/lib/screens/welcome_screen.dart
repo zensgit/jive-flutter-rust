@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jive_money/core/router/app_router.dart';
+import '../core/router/app_router.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -94,7 +94,7 @@ class WelcomeScreen extends StatelessWidget {
                         backgroundColor: Colors.black,
                         foregroundColor: Colors.white,
                       ),
-                      child: Text(
+                      child: const Text(
                         '登录',
                         style: TextStyle(fontSize: 16),
                       ),
@@ -113,9 +113,9 @@ class WelcomeScreen extends StatelessWidget {
                       },
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.black,
-                        side: BorderSide(color: Colors.black),
+                        side: const BorderSide(color: Colors.black),
                       ),
-                      child: Text(
+                      child: const Text(
                         '注册新账户',
                         style: TextStyle(fontSize: 16),
                       ),

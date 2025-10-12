@@ -1,12 +1,8 @@
 // 账户列表组件
 import 'package:flutter/material.dart';
-import 'package:jive_money/core/constants/app_constants.dart';
-import 'package:jive_money/ui/components/cards/account_card.dart';
-import 'package:jive_money/ui/components/loading/loading_widget.dart';
-import 'package:jive_money/models/account.dart' as model;
-
-// 类型别名以兼容现有代码
-typedef AccountData = model.Account;
+import '../../../core/constants/app_constants.dart';
+import '../cards/account_card.dart';
+import '../loading/loading_widget.dart';
 
 class AccountList extends StatelessWidget {
   final List<AccountData> accounts;
@@ -63,20 +59,20 @@ class AccountList extends StatelessWidget {
           Icon(
             Icons.account_balance_wallet_outlined,
             size: 64,
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+            color: theme.colorScheme.onSurface.withOpacity(0.3),
           ),
           const SizedBox(height: 16),
           Text(
             '暂无账户',
             style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+              color: theme.colorScheme.onSurface.withOpacity(0.5),
             ),
           ),
           const SizedBox(height: 8),
           Text(
             '添加您的第一个账户开始管理财务',
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+              color: theme.colorScheme.onSurface.withOpacity(0.4),
             ),
           ),
           if (onAddAccount != null) ...[
@@ -102,7 +98,7 @@ class AccountList extends StatelessWidget {
             itemCount: accounts.length,
             itemBuilder: (context, index) {
               final account = accounts[index];
-              return AccountCard.fromAccount(
+              return AccountCard(
                 account: account,
                 onTap: () => onAccountTap?.call(account),
                 onLongPress: () => onAccountLongPress?.call(account),
@@ -138,7 +134,7 @@ class AccountList extends StatelessWidget {
 
                   // 该类型的账户
                   ...typeAccounts.map(
-                    (account) => AccountCard.fromAccount(
+                    (account) => AccountCard(
                       account: account,
                       onTap: () => onAccountTap?.call(account),
                       onLongPress: () => onAccountLongPress?.call(account),
@@ -168,7 +164,7 @@ class AccountList extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             theme.primaryColor,
-            theme.primaryColor.withValues(alpha: 0.8),
+            theme.primaryColor.withOpacity(0.8),
           ],
         ),
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
@@ -179,7 +175,7 @@ class AccountList extends StatelessWidget {
           Text(
             '净资产',
             style: theme.textTheme.titleMedium?.copyWith(
-              color: Colors.white.withValues(alpha: 0.9),
+              color: Colors.white.withOpacity(0.9),
             ),
           ),
           const SizedBox(height: 8),
@@ -200,7 +196,7 @@ class AccountList extends StatelessWidget {
                     Text(
                       '总资产',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: Colors.white.withOpacity(0.8),
                       ),
                     ),
                     Text(
@@ -216,7 +212,7 @@ class AccountList extends StatelessWidget {
               Container(
                 width: 1,
                 height: 40,
-                color: Colors.white.withValues(alpha: 0.3),
+                color: Colors.white.withOpacity(0.3),
               ),
               Expanded(
                 child: Column(
@@ -225,7 +221,7 @@ class AccountList extends StatelessWidget {
                     Text(
                       '总负债',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: Colors.white.withOpacity(0.8),
                       ),
                     ),
                     Text(
@@ -284,11 +280,10 @@ class AccountList extends StatelessWidget {
     final Map<AccountType, List<AccountData>> grouped = {};
 
     for (final account in accounts) {
-      final key = _toUiAccountType(account.type);
-      if (!grouped.containsKey(key)) {
-        grouped[key] = [];
+      if (!grouped.containsKey(account.type)) {
+        grouped[account.type] = [];
       }
-      grouped[key]!.add(account);
+      grouped[account.type]!.add(account);
     }
 
     // 按类型排序：资产、负债
@@ -300,17 +295,8 @@ class AccountList extends StatelessWidget {
 
   double _calculateTotal(AccountType type) {
     return accounts
-        .where((account) => _matchesLocalType(type, account.type))
+        .where((account) => account.type == type)
         .fold(0.0, (sum, account) => sum + account.balance);
-  }
-
-  AccountType _toUiType(model.AccountType type) {
-    switch (type) {
-      case model.AccountType.asset:
-        return AccountType.asset;
-      case model.AccountType.liability:
-        return AccountType.liability;
-    }
   }
 
   IconData _getTypeIcon(AccountType type) {
@@ -370,26 +356,6 @@ enum AccountSubType {
   mortgage, // 房贷
 }
 
-
-  // Model<->UI AccountType adapter
-  // Map model.AccountType (checking/savings/creditCard/loan/...) to local grouping (asset/liability)
-  AccountType _toUiAccountType(model.AccountType t) {
-    switch (t) {
-      case model.AccountType.creditCard:
-      case model.AccountType.loan:
-        return AccountType.liability;
-      default:
-        return AccountType.asset;
-    }
-  }
-
-  bool _matchesLocalType(AccountType localType, model.AccountType modelType) {
-    final isLiability = modelType == model.AccountType.creditCard || modelType == model.AccountType.loan;
-    if (localType == AccountType.liability) return isLiability;
-    return !isLiability;
-  }
-
-
 /// 账户分组列表
 class GroupedAccountList extends StatelessWidget {
   final Map<String, List<AccountData>> groupedAccounts;
@@ -428,7 +394,7 @@ class GroupedAccountList extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: theme.primaryColor.withValues(alpha: 0.1),
+                  color: theme.primaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -445,15 +411,17 @@ class GroupedAccountList extends StatelessWidget {
               ? Text(
                   '总计: ${_formatGroupTotal(accounts)}',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                    color: theme.colorScheme.onSurface.withOpacity(0.6),
                   ),
                 )
               : null,
           children: accounts
               .map(
-                (account) => AccountCard.fromAccount(
+                (account) => AccountCard(
                   account: account,
                   onTap: () => onAccountTap?.call(account),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 ),
               )
               .toList(),

@@ -102,9 +102,6 @@ class User {
     return email.split('@').first;
   }
 
-  /// 获取全名（兼容性别名）
-  String get fullName => displayName;
-
   /// 获取头像URL或默认头像
   String get avatarUrl {
     if (avatar != null && avatar!.isNotEmpty) {

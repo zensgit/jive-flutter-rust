@@ -1,7 +1,7 @@
 // 文本输入框组件
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jive_money/core/constants/app_constants.dart';
+import '../../../core/constants/app_constants.dart';
 
 class TextFieldWidget extends StatefulWidget {
   final String? label;
@@ -127,7 +127,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
             fillColor: widget.fillColor ??
                 (widget.enabled
                     ? theme.colorScheme.surface
-                    : theme.disabledColor.withValues(alpha: 0.1)),
+                    : theme.disabledColor.withOpacity(0.1)),
             contentPadding: widget.contentPadding ??
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             border: _buildBorder(theme, false),
@@ -148,7 +148,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
       borderSide: BorderSide(
         color: isFocused
             ? theme.primaryColor
-            : theme.colorScheme.outline.withValues(alpha: 0.3),
+            : theme.colorScheme.outline.withOpacity(0.3),
         width: isFocused ? 2 : 1,
       ),
     );

@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:jive_money/models/exchange_rate.dart';
-import 'package:jive_money/utils/constants.dart';
+import '../models/exchange_rate.dart';
+import '../utils/constants.dart';
 
 /// Service for fetching cryptocurrency prices
 /// Now uses backend API instead of direct external calls
@@ -86,7 +85,9 @@ class CryptoPriceService {
     }
 
     // Fallback to Binance (limited pairs)
-    price ??= await _fetchFromBinance(cryptoCode, fiatCode);
+    if (price == null) {
+      price = await _fetchFromBinance(cryptoCode, fiatCode);
+    }
 
     // Cache the result if successful
     if (price != null) {

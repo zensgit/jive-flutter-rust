@@ -43,11 +43,10 @@ class _InviteMemberDialogState extends State<InviteMemberDialog> {
     try {
       // 模拟发送邀请请求
       await Future.delayed(const Duration(seconds: 2));
-      if (!mounted) return;
 
       // 生成邀请码和链接
       _inviteCode = _generateInviteCode();
-      _inviteLink = 'https://jivemoney.com/invite/$_inviteCode';
+      _inviteLink = 'https://jivemoney.com/invite/${_inviteCode}';
 
       setState(() {
         _showInviteResult = true;
@@ -92,24 +91,24 @@ class _InviteMemberDialogState extends State<InviteMemberDialog> {
 
   // 生成邀请邮件内容
   String _generateEmailContent() {
-    const currentUser = 'superadmin'; // 获取当前用户名
-    const familyName = 'Jive Money Family'; // 获取家庭名称
+    final currentUser = 'superadmin'; // 获取当前用户名
+    final familyName = 'Jive Money Family'; // 获取家庭名称
 
     return '''
 🏠 Jive Money - 家庭财务管理邀请
 
 您好！
 
-$currentUser 邀请您加入 "$familyName" 家庭，一起管理家庭财务。
+${currentUser} 邀请您加入 "${familyName}" 家庭，一起管理家庭财务。
 
-👤 邀请角色：$_selectedRole
-🔑 邀请码：$_inviteCode
-🔗 邀请链接：$_inviteLink
+👤 邀请角色：${_selectedRole}
+🔑 邀请码：${_inviteCode}
+🔗 邀请链接：${_inviteLink}
 
 💡 如何加入：
 1. 点击上方链接，或
 2. 访问 https://jivemoney.com
-3. 注册时输入邀请码：$_inviteCode
+3. 注册时输入邀请码：${_inviteCode}
 
 📱 Jive Money 帮您：
 • 记录和分类每笔收支
@@ -120,7 +119,7 @@ $currentUser 邀请您加入 "$familyName" 家庭，一起管理家庭财务。
 
 ⏰ 此邀请7天内有效，请尽快注册。
 
-如有问题，请联系邀请人：$currentUser
+如有问题，请联系邀请人：${currentUser}
 
 ---
 Jive Money - 集腋记账
@@ -202,9 +201,9 @@ Jive Money - 集腋记账
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.blue.withValues(alpha: 0.1),
+                color: Colors.blue.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
+                border: Border.all(color: Colors.blue.withOpacity(0.2)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -288,9 +287,9 @@ Jive Money - 集腋记账
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.1),
+                color: Colors.grey.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
+                border: Border.all(color: Colors.grey.withOpacity(0.3)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,7 +321,7 @@ Jive Money - 集腋记账
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
+                      border: Border.all(color: Colors.grey.withOpacity(0.3)),
                     ),
                     child: Text(
                       _inviteLink,
@@ -364,7 +363,7 @@ Jive Money - 集腋记账
                     label: const Text('复制邀请邮件内容'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.black,
-                      side: const BorderSide(color: Colors.black),
+                      side: BorderSide(color: Colors.black),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
@@ -386,9 +385,9 @@ Jive Money - 集腋记账
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.1),
+                color: Colors.orange.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange.withValues(alpha: 0.2)),
+                border: Border.all(color: Colors.orange.withOpacity(0.2)),
               ),
               child: Row(
                 children: [

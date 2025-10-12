@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jive_money/providers/currency_provider.dart';
-import 'package:jive_money/models/currency.dart' as model;
+import '../../providers/currency_provider.dart';
+import '../../models/currency.dart' as model;
 
 /// 用户端：统一浏览与管理（启用/禁用）法币+加密币
 class UserCurrencyBrowser extends ConsumerStatefulWidget {
@@ -107,12 +107,10 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
 
   Widget _row(model.Currency c, bool isSelected, String base, ColorScheme cs) {
     // 过滤逻辑应用在构造行前
-    if (_filter == 'enabled' && c.isEnabled == false) {
+    if (_filter == 'enabled' && c.isEnabled == false)
       return const SizedBox.shrink();
-    }
-    if (_filter == 'down' && c.isEnabled != false) {
+    if (_filter == 'down' && c.isEnabled != false)
       return const SizedBox.shrink();
-    }
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       child: ListTile(
@@ -120,7 +118,7 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: cs.surfaceContainerHighest,
+            color: cs.surfaceVariant,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: cs.outlineVariant),
           ),
@@ -149,7 +147,7 @@ class _UserCurrencyBrowserState extends ConsumerState<UserCurrencyBrowser> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                  color: cs.surfaceContainerHighest,
+                  color: cs.surfaceVariant,
                   borderRadius: BorderRadius.circular(4)),
               child: Text(c.symbol,
                   style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12)),

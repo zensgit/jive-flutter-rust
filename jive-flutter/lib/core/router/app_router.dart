@@ -2,36 +2,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jive_money/providers/auth_provider.dart';
-import 'package:jive_money/screens/splash_screen.dart';
-import 'package:jive_money/screens/auth/login_screen.dart';
-import 'package:jive_money/screens/auth/register_screen.dart';
-import 'package:jive_money/screens/auth/registration_wizard.dart';
-import 'package:jive_money/screens/home/home_screen.dart';
-import 'package:jive_money/screens/dashboard/dashboard_screen.dart';
-import 'package:jive_money/screens/transactions/transactions_screen.dart';
-import 'package:jive_money/screens/accounts/accounts_screen.dart';
-import 'package:jive_money/screens/accounts/user_assets_screen.dart';
-import 'package:jive_money/screens/budgets/budgets_screen.dart';
-import 'package:jive_money/screens/settings/settings_screen.dart';
-import 'package:jive_money/screens/settings/theme_settings_screen.dart';
-import 'package:jive_money/screens/settings/profile_settings_screen.dart';
-import 'package:jive_money/screens/currency/exchange_rate_screen.dart';
-import 'package:jive_money/screens/management/currency_management_page_v2.dart';
-import 'package:jive_money/screens/management/user_currency_browser.dart';
-import 'package:jive_money/screens/management/manual_overrides_page.dart';
-import 'package:jive_money/screens/management/tag_management_page.dart';
-import 'package:jive_money/screens/management/category_list_page.dart';
-import 'package:jive_money/screens/family/family_members_screen.dart';
-import 'package:jive_money/screens/family/family_settings_screen.dart';
-import 'package:jive_money/screens/family/family_dashboard_screen.dart';
-import 'package:jive_money/providers/ledger_provider.dart';
-import 'package:jive_money/screens/travel/travel_list_screen.dart';
-// Travel provider imports removed - handled in individual screens
+import '../../providers/auth_provider.dart';
+import '../../screens/splash_screen.dart';
+import '../../screens/auth/login_screen.dart';
+import '../../screens/auth/register_screen.dart';
+import '../../screens/auth/registration_wizard.dart';
+import '../../screens/home/home_screen.dart';
+import '../../screens/dashboard/dashboard_screen.dart';
+import '../../screens/transactions/transactions_screen.dart';
+import '../../screens/transactions/transaction_add_screen.dart';
+import '../../screens/transactions/transaction_detail_screen.dart';
+import '../../screens/accounts/accounts_screen.dart';
+import '../../screens/accounts/account_add_screen.dart';
+import '../../screens/accounts/account_detail_screen.dart';
+import '../../screens/budgets/budgets_screen.dart';
+import '../../screens/settings/settings_screen.dart';
+import '../../screens/settings/theme_settings_screen.dart';
+import '../../screens/settings/profile_settings_screen.dart';
+import '../../screens/currency/exchange_rate_screen.dart';
+import '../../screens/management/currency_management_page_v2.dart';
+import '../../screens/management/user_currency_browser.dart';
+import '../../screens/management/tag_management_page.dart';
+import '../../screens/family/family_members_screen.dart';
+import '../../screens/family/family_settings_screen.dart';
+import '../../screens/family/family_dashboard_screen.dart';
+import '../../providers/ledger_provider.dart';
 
 /// 路由路径常量
 class AppRoutes {
-  static const userAssets = '/accounts/assets';
   static const splash = '/';
   static const login = '/login';
   static const register = '/register';
@@ -46,9 +44,6 @@ class AppRoutes {
   static const budgets = '/budgets';
   static const budgetDetail = '/budgets/:id';
   static const budgetAdd = '/budgets/add';
-  static const travel = '/travel';
-  static const travelDetail = '/travel/:id';
-  static const travelAdd = '/travel/add';
   static const settings = '/settings';
   static const profile = '/settings/profile';
   static const security = '/settings/security';
@@ -57,9 +52,7 @@ class AppRoutes {
   static const exchangeRate = '/settings/exchange-rate';
   static const currencyManagement = '/settings/currency';
   static const userCurrencyBrowser = '/settings/currency/user-browser';
-  static const manualOverrides = '/settings/currency/manual-overrides';
   static const cryptoManagement = '/settings/crypto';
-  static const categoryManagement = '/settings/categories';
 
   // 家庭管理路由
   static const familyMembers = '/family/members';
@@ -160,10 +153,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const AccountsScreen(),
             routes: [
               GoRoute(
-                path: 'assets',
-                builder: (context, state) => const UserAssetsScreen(),
-              ),
-              GoRoute(
                 path: 'add',
                 builder: (context, state) => const AccountAddScreen(),
               ),
@@ -191,29 +180,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) {
                   final id = state.pathParameters['id']!;
                   return BudgetDetailScreen(budgetId: id);
-                },
-              ),
-            ],
-          ),
-
-          // 旅行模式
-          GoRoute(
-            path: AppRoutes.travel,
-            builder: (context, state) => const TravelListScreen(),
-            routes: [
-              GoRoute(
-                path: 'add',
-                builder: (context, state) => const Scaffold(
-                  body: Center(child: Text('添加旅行')),
-                ),
-              ),
-              GoRoute(
-                path: ':id',
-                builder: (context, state) {
-                  final id = state.pathParameters['id']!;
-                  return Scaffold(
-                    body: Center(child: Text('旅行详情: $id')),
-                  );
                 },
               ),
             ],
@@ -255,10 +221,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const CurrencyManagementPageV2(),
               ),
               GoRoute(
-                path: 'currency/manual-overrides',
-                builder: (context, state) => const ManualOverridesPage(),
-              ),
-              GoRoute(
                 path: 'currency/user-browser',
                 builder: (context, state) => const UserCurrencyBrowser(),
               ),
@@ -272,11 +234,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: 'tags',
                 builder: (context, state) => const TagManagementPage(),
               ),
-              // 分类管理
-              GoRoute(
-                path: 'categories',
-                builder: (context, state) => const CategoryListPage(),
-              ),
             ],
           ),
         ],
@@ -289,7 +246,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           // 获取当前选中的账本
           final currentLedger = ref.read(currentLedgerProvider);
           if (currentLedger == null) {
-            return const Scaffold(body: Center(child: Text('错误: 未选择家庭')));
+            return Scaffold(body: Center(child: Text('错误: 未选择家庭')));
           }
           return FamilyMembersScreen(ledger: currentLedger);
         },
@@ -299,7 +256,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final currentLedger = ref.read(currentLedgerProvider);
           if (currentLedger == null) {
-            return const Scaffold(body: Center(child: Text('错误: 未选择家庭')));
+            return Scaffold(body: Center(child: Text('错误: 未选择家庭')));
           }
           return FamilySettingsScreen(ledger: currentLedger);
         },
@@ -309,7 +266,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final currentLedger = ref.read(currentLedgerProvider);
           if (currentLedger == null) {
-            return const Scaffold(body: Center(child: Text('错误: 未选择家庭')));
+            return Scaffold(body: Center(child: Text('错误: 未选择家庭')));
           }
           return FamilyDashboardScreen(ledger: currentLedger);
         },
@@ -449,6 +406,3 @@ class PreferencesScreen extends StatelessWidget {
     return const Scaffold(body: Center(child: Text('偏好设置')));
   }
 }
-
-// TravelProvider is now handled by travelServiceProvider in travel_provider.dart
-// Old provider removed to avoid conflicts

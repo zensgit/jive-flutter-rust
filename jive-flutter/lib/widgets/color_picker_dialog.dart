@@ -41,7 +41,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
     super.initState();
     _selectedColor = widget.initialColor;
     _hexController = TextEditingController(
-      text: _selectedColor.toARGB32().toRadixString(16).substring(2).toUpperCase(),
+      text: _selectedColor.value.toRadixString(16).substring(2).toUpperCase(),
     );
   }
 
@@ -77,10 +77,10 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
             // 十六进制输入
             TextField(
               controller: _hexController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: '十六进制颜色值',
                 hintText: 'FFFFFF',
-                border: const OutlineInputBorder(),
+                border: OutlineInputBorder(),
                 prefixText: '#',
               ),
               maxLength: 6,
@@ -136,19 +136,19 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
       children: [
         _buildSlider(
           'R',
-          (((_selectedColor.r) * 255.0).round() & 0xff).toDouble(),
+          _selectedColor.red.toDouble(),
           Colors.red,
           (value) => _updateColor(red: value.toInt()),
         ),
         _buildSlider(
           'G',
-          (((_selectedColor.g) * 255.0).round() & 0xff).toDouble(),
+          _selectedColor.green.toDouble(),
           Colors.green,
           (value) => _updateColor(green: value.toInt()),
         ),
         _buildSlider(
           'B',
-          (((_selectedColor.b) * 255.0).round() & 0xff).toDouble(),
+          _selectedColor.blue.toDouble(),
           Colors.blue,
           (value) => _updateColor(blue: value.toInt()),
         ),
@@ -170,7 +170,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
             width: 16,
             child: Text(
               label,
-              style: TextStyle(fontWeight: FontWeight.w500),
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
           ),
           const SizedBox(width: 8),
@@ -179,7 +179,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
               data: SliderTheme.of(context).copyWith(
                 activeTrackColor: color,
                 thumbColor: color,
-                inactiveTrackColor: color.withValues(alpha: 0.3),
+                inactiveTrackColor: color.withOpacity(0.3),
               ),
               child: Slider(
                 value: value,
@@ -195,7 +195,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
             width: 32,
             child: Text(
               value.toInt().toString(),
-              style: TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: 12),
               textAlign: TextAlign.right,
             ),
           ),
@@ -209,7 +209,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
       spacing: 8,
       runSpacing: 8,
       children: _presetColors.map((color) {
-        final isSelected = _selectedColor.toARGB32() == color.toARGB32();
+        final isSelected = _selectedColor.value == color.value;
         return InkWell(
           onTap: () => _selectColor(color),
           borderRadius: BorderRadius.circular(6),
@@ -241,7 +241,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
     setState(() {
       _selectedColor = color;
       _hexController.text =
-          color.toARGB32().toRadixString(16).substring(2).toUpperCase();
+          color.value.toRadixString(16).substring(2).toUpperCase();
     });
   }
 
@@ -249,12 +249,12 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
     setState(() {
       _selectedColor = Color.fromARGB(
         255,
-        red ?? (((_selectedColor.r) * 255.0).round() & 0xff),
-        green ?? (((_selectedColor.g) * 255.0).round() & 0xff),
-        blue ?? (((_selectedColor.b) * 255.0).round() & 0xff),
+        red ?? _selectedColor.red,
+        green ?? _selectedColor.green,
+        blue ?? _selectedColor.blue,
       );
       _hexController.text =
-          _selectedColor.toARGB32().toRadixString(16).substring(2).toUpperCase();
+          _selectedColor.value.toRadixString(16).substring(2).toUpperCase();
     });
   }
 

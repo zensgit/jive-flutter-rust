@@ -184,13 +184,11 @@ class UpdateCurrencySettingsRequest {
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     if (baseCurrency != null) json['base_currency'] = baseCurrency;
-    if (allowMultiCurrency != null) {
+    if (allowMultiCurrency != null)
       json['allow_multi_currency'] = allowMultiCurrency;
-    }
     if (autoConvert != null) json['auto_convert'] = autoConvert;
-    if (supportedCurrencies != null) {
+    if (supportedCurrencies != null)
       json['supported_currencies'] = supportedCurrencies;
-    }
     return json;
   }
 }

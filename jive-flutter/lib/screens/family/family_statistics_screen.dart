@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:jive_money/services/api/family_service.dart';
+import '../../models/family.dart' as family_model;
+import '../../providers/family_provider.dart';
+import '../../services/api/family_service.dart';
 import 'package:intl/intl.dart';
 
 /// 家庭统计信息页面
@@ -10,10 +12,10 @@ class FamilyStatisticsScreen extends ConsumerStatefulWidget {
   final String familyName;
 
   const FamilyStatisticsScreen({
-    super.key,
+    Key? key,
     required this.familyId,
     required this.familyName,
-  });
+  }) : super(key: key);
 
   @override
   ConsumerState<FamilyStatisticsScreen> createState() =>
@@ -24,7 +26,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _selectedPeriod = 'month';
-  final DateTime _selectedDate = DateTime.now();
+  DateTime _selectedDate = DateTime.now();
   FamilyStatistics? _statistics;
   bool _isLoading = true;
 
@@ -236,7 +238,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                   const SizedBox(height: 8),
                   LinearProgressIndicator(
                     value: stats.savingsRate / 100,
-                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                    backgroundColor: theme.colorScheme.surfaceVariant,
                     color: _getSavingsRateColor(stats.savingsRate),
                     minHeight: 8,
                   ),
@@ -610,7 +612,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
                             const SizedBox(height: 8),
                             LinearProgressIndicator(
                               value: member.percentage / 100,
-                              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                              backgroundColor: theme.colorScheme.surfaceVariant,
                               minHeight: 4,
                             ),
                           ],
@@ -724,7 +726,7 @@ class _FamilyStatisticsScreenState extends ConsumerState<FamilyStatisticsScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color),
       ),
@@ -857,7 +859,7 @@ class _BudgetProgressCard extends StatelessWidget {
             const SizedBox(height: 8),
             LinearProgressIndicator(
               value: percentage / 100,
-              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+              backgroundColor: theme.colorScheme.surfaceVariant,
               color: isOverBudget ? Colors.red : Colors.blue,
               minHeight: 6,
             ),

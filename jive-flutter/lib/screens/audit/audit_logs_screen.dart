@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jive_money/services/audit_service.dart';
-import 'package:jive_money/utils/date_utils.dart' as date_utils;
-import 'package:jive_money/widgets/permission_guard.dart';
-import 'package:jive_money/services/permission_service.dart';
+import '../../models/audit_log.dart';
+import '../../services/audit_service.dart';
+import '../../utils/date_utils.dart' as date_utils;
+import '../../widgets/permission_guard.dart';
+import '../../services/permission_service.dart';
 
 /// 审计日志页面
 class AuditLogsScreen extends ConsumerStatefulWidget {
@@ -70,7 +71,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
 
     try {
       final logs = await _auditService.getAuditLogs(
-        filterObj: _filter,
+        filter: _filter,
         page: _currentPage,
         pageSize: 20,
       );
@@ -106,7 +107,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
 
   Future<void> _loadStatistics() async {
     try {
-      final stats = await _auditService.getAuditStatistics(familyId: widget.familyId);
+      final stats = await _auditService.getAuditStatistics(widget.familyId);
       setState(() {
         _statistics = stats;
       });
@@ -283,7 +284,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
         gradient: LinearGradient(
           colors: [
             theme.colorScheme.primaryContainer,
-            theme.colorScheme.primaryContainer.withValues(alpha: 0.7),
+            theme.colorScheme.primaryContainer.withOpacity(0.7),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -322,7 +323,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: theme.colorScheme.errorContainer.withValues(alpha: 0.3),
+                color: theme.colorScheme.errorContainer.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -374,7 +375,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
           label,
           style: TextStyle(
             fontSize: 12,
-            color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
+            color: theme.colorScheme.onPrimaryContainer.withOpacity(0.8),
           ),
         ),
       ],
@@ -387,10 +388,10 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
         border: Border(
           bottom: BorderSide(
-            color: theme.colorScheme.outline.withValues(alpha: 0.3),
+            color: theme.colorScheme.outline.withOpacity(0.3),
           ),
         ),
       ),
@@ -565,7 +566,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                         ),
                         decoration: BoxDecoration(
                           color:
-                              theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                              theme.colorScheme.surfaceVariant.withOpacity(0.5),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(

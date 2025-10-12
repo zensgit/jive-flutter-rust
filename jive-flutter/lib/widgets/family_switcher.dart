@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jive_money/models/ledger.dart';
-import 'package:jive_money/providers/ledger_provider.dart';
-import 'package:jive_money/widgets/dialogs/create_family_dialog.dart';
+import '../models/ledger.dart';
+import '../providers/ledger_provider.dart';
+import 'dialogs/create_family_dialog.dart';
 
 /// 家庭切换器组件
 class FamilySwitcher extends ConsumerWidget {
@@ -38,10 +38,10 @@ class FamilySwitcher extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: theme.primaryColor.withValues(alpha: 0.1),
+          color: theme.primaryColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: theme.primaryColor.withValues(alpha: 0.3),
+            color: theme.primaryColor.withOpacity(0.3),
           ),
         ),
         child: Row(
@@ -90,8 +90,8 @@ class FamilySwitcher extends ConsumerWidget {
                     height: 36,
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? theme.primaryColor.withValues(alpha: 0.1)
-                          : Colors.grey.withValues(alpha: 0.1),
+                          ? theme.primaryColor.withOpacity(0.1)
+                          : Colors.grey.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -126,7 +126,7 @@ class FamilySwitcher extends ConsumerWidget {
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.orange.withValues(alpha: 0.2),
+                                  color: Colors.orange.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: const Text(
@@ -188,7 +188,7 @@ class FamilySwitcher extends ConsumerWidget {
               ),
             ),
           );
-        }),
+        }).toList(),
 
         const PopupMenuDivider(),
 
@@ -203,7 +203,7 @@ class FamilySwitcher extends ConsumerWidget {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: Colors.blue.withValues(alpha: 0.1),
+                    color: Colors.blue.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
@@ -251,7 +251,7 @@ class FamilySwitcher extends ConsumerWidget {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: Colors.grey.withValues(alpha: 0.1),
+                    color: Colors.grey.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -305,7 +305,7 @@ class FamilySwitcher extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.grey.withValues(alpha: 0.1),
+        color: Colors.grey.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -327,7 +327,7 @@ class FamilySwitcher extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.1),
+        color: Colors.red.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(

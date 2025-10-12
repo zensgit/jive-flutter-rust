@@ -25,8 +25,10 @@ class RightClickCopy extends StatelessWidget {
     this.padding,
   });
 
-  Future<void> _copyWithMessenger(ScaffoldMessengerState? messenger) async {
+  void _copy(BuildContext context) async {
     await Clipboard.setData(ClipboardData(text: copyText));
+    // 避免没有 Scaffold 的场景报错
+    final messenger = ScaffoldMessenger.maybeOf(context);
     messenger?.hideCurrentSnackBar();
     messenger?.showSnackBar(
       SnackBar(
@@ -38,15 +40,12 @@ class RightClickCopy extends StatelessWidget {
   }
 
   Future<void> _showContextMenu(BuildContext context, Offset position) async {
-    final overlayBox = Overlay.of(context).context.findRenderObject() as RenderBox;
-    final messenger = ScaffoldMessenger.maybeOf(context);
-
-    final result = // ignore: use_build_context_synchronously (pre-captured messenger, no context use after await)
-    await showMenu<String>(
+    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final result = await showMenu<String>(
       context: context,
       position: RelativeRect.fromRect(
         Rect.fromLTWH(position.dx, position.dy, 0, 0),
-        Offset.zero & overlayBox.size,
+        Offset.zero & overlay.size,
       ),
       items: const [
         PopupMenuItem<String>(
@@ -62,20 +61,17 @@ class RightClickCopy extends StatelessWidget {
         ),
       ],
     );
-
     if (result == 'copy') {
-      await _copyWithMessenger(messenger);
+      _copy(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final messenger = ScaffoldMessenger.maybeOf(context);
-
     Widget content = child;
 
     if (showIconOnHover) {
-      content = _HoverCopyIconWrapper(copyText: copyText, child: child);
+      content = _HoverCopyIconWrapper(child: child, copyText: copyText);
     }
 
     content = Padding(
@@ -89,7 +85,7 @@ class RightClickCopy extends StatelessWidget {
       },
       onLongPress: () {
         // 移动端长按直接复制
-        _copyWithMessenger(messenger);
+        _copy(context);
       },
       child: content,
     );
@@ -124,7 +120,7 @@ class _HoverCopyIconWrapperState extends State<_HoverCopyIconWrapper> {
               right: -4,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.55),
+                  color: Colors.black.withOpacity(0.55),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: const Padding(

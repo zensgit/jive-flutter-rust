@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jive_money/models/tag.dart';
-import 'package:jive_money/providers/tag_provider.dart';
+import '../models/tag.dart';
+import '../providers/tag_provider.dart';
 
 class TagGroupDialog extends ConsumerStatefulWidget {
   final TagGroup? group;
@@ -21,7 +21,6 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
   final _nameController = TextEditingController();
   String? _selectedColor;
   bool _isLoading = false;
-  String? _errorMessage;
 
   final List<String> _availableColors = [
     '#e99537',
@@ -70,19 +69,11 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
             const SizedBox(height: 16),
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: '分组名称',
                 hintText: '请输入分组名称',
-                border: const OutlineInputBorder(),
-                errorText: _errorMessage,
-                errorStyle: const TextStyle(
-                  color: Colors.red,
-                  fontSize: 12,
-                ),
+                border: OutlineInputBorder(),
               ),
-              onChanged: (_) => setState(() {
-                _errorMessage = null;
-              }),
             ),
             const SizedBox(height: 16),
             const Text('选择颜色', style: TextStyle(fontWeight: FontWeight.w500)),
@@ -140,17 +131,9 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
   Future<void> _saveGroup() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
-      setState(() {
-        _errorMessage = '请输入分组名称';
-      });
-      return;
-    }
-
-    // 过滤纯空白字符的分组名称
-    if (name.replaceAll(RegExp(r'\s+'), '').isEmpty) {
-      setState(() {
-        _errorMessage = '分组名称不能为空白字符';
-      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('请输入分组名称')),
+      );
       return;
     }
 
@@ -158,20 +141,6 @@ class _TagGroupDialogState extends ConsumerState<TagGroupDialog> {
 
     try {
       final groupNotifier = ref.read(tagGroupsProvider.notifier);
-      final existingGroups = ref.read(tagGroupsProvider);
-
-      // 检查分组名称是否重复
-      final isDuplicate = existingGroups.any((group) =>
-          group.id != widget.group?.id &&
-          group.name.toLowerCase().trim() == name.toLowerCase().trim());
-
-      if (isDuplicate) {
-        setState(() {
-          _isLoading = false;
-          _errorMessage = '分组"$name"已存在，请使用其他名称';
-        });
-        return;
-      }
 
       if (widget.group != null) {
         // 编辑现有分组

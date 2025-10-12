@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jive_money/models/currency.dart' as model;
-import 'package:jive_money/providers/currency_provider.dart';
-import 'package:jive_money/widgets/source_badge.dart';
-import 'package:jive_money/providers/settings_provider.dart';
+import '../../models/currency.dart' as model;
+import '../../providers/currency_provider.dart';
+import '../../models/exchange_rate.dart';
+import '../../widgets/source_badge.dart';
+import '../../providers/settings_provider.dart';
 
 /// 货币选择管理页面
 class CurrencySelectionPage extends ConsumerStatefulWidget {
@@ -187,7 +188,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                    color: cs.surfaceContainerHighest,
+                    color: cs.surfaceVariant,
                     borderRadius: BorderRadius.circular(4)),
                 child: Text(currency.symbol,
                     style: TextStyle(fontSize: dense ? 11 : 12)),
@@ -272,7 +273,7 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: cs.surfaceContainerHighest,
+                          color: cs.surfaceVariant,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(currency.symbol,
@@ -301,31 +302,12 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                         ),
                         const SizedBox(width: 6),
                         SourceBadge(
-                          source: _localRateOverrides.containsKey(currency.code)
-                              ? 'manual'
-                              : (rateObj?.source),
-                        ),
+                            source:
+                                _localRateOverrides.containsKey(currency.code)
+                                    ? 'manual'
+                                    : (rateObj?.source)),
                       ],
                     ),
-                    if (rateObj?.source == 'manual')
-                      Padding(
-                        padding: const EdgeInsets.only(top: 2),
-                        child: Builder(builder: (_) {
-                          final expiry = ref
-                              .read(currencyProvider.notifier)
-                              .manualExpiryFor(currency.code);
-                          final text = expiry != null
-                              ? '手动有效至 ${expiry.year}-${expiry.month.toString().padLeft(2, '0')}-${expiry.day.toString().padLeft(2, '0')} ${expiry.hour.toString().padLeft(2, '0')}:${expiry.minute.toString().padLeft(2, '0')}'
-                              : '手动汇率有效中';
-                          return Text(
-                            text,
-                            style: TextStyle(
-                              fontSize: dense ? 10 : 11,
-                              color: Colors.orange[700],
-                            ),
-                          );
-                        }),
-                      ),
                   ],
                 ],
               ),

@@ -20,7 +20,7 @@ class WebSocketService {
 
   // 消息流
   Stream<WsMessage> get messages =>
-      _messageController?.stream ?? const Stream.empty();
+      _messageController?.stream ?? Stream.empty();
 
   // 连接状态
   bool get isConnected => _isConnected;

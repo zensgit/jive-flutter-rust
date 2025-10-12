@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:jive_money/services/api/family_service.dart';
-import 'dart:async';
+import '../models/family.dart' as family_model;
+import 'api/family_service.dart';
 
 /// 家庭设置服务 - 负责设置的持久化和同步
 class FamilySettingsService extends ChangeNotifier {
   static const String _keyPrefix = 'family_settings_';
-  // static const String _keySyncStatus = 'sync_status'; // unused
+  static const String _keySyncStatus = 'sync_status';
   static const String _keyLastSync = 'last_sync';
   static const String _keyPendingChanges = 'pending_changes';
 
@@ -67,7 +67,7 @@ class FamilySettingsService extends ChangeNotifier {
     ));
 
     // 尝试同步
-    unawaited(_syncToServer());
+    _syncToServer();
 
     notifyListeners();
   }
@@ -116,7 +116,7 @@ class FamilySettingsService extends ChangeNotifier {
       timestamp: DateTime.now(),
     ));
 
-    unawaited(_syncToServer());
+    _syncToServer();
     notifyListeners();
   }
 
@@ -138,7 +138,7 @@ class FamilySettingsService extends ChangeNotifier {
       timestamp: DateTime.now(),
     ));
 
-    unawaited(_syncToServer());
+    _syncToServer();
     notifyListeners();
   }
 
@@ -178,31 +178,22 @@ class FamilySettingsService extends ChangeNotifier {
         switch (change.entityType) {
           case 'family_settings':
             if (change.type == ChangeType.update) {
-<<<<<<< HEAD
-              await _familyService.updateFamilySettings();
-              success = true;
-            } else if (change.type == ChangeType.delete) {
-              await _familyService.deleteFamilySettings();
-=======
-              await _familyService.updateFamilySettings(
+              success = await _familyService.updateFamilySettings(
                 change.entityId,
-                FamilySettings.fromJson(change.data!).toJson(),
+                FamilySettings.fromJson(change.data!),
               );
-              success = true;
             } else if (change.type == ChangeType.delete) {
-              await _familyService.deleteFamilySettings(change.entityId);
->>>>>>> origin/main
-              success = true;
+              success =
+                  await _familyService.deleteFamilySettings(change.entityId);
             }
             break;
 
           case 'user_preferences':
             if (change.type == ChangeType.update) {
-              await _familyService.updateUserPreferences(
+              success = await _familyService.updateUserPreferences(
                 change.entityId,
-                UserPreferences.fromJson(change.data!).toJson(),
+                UserPreferences.fromJson(change.data!),
               );
-              success = true;
             }
             break;
         }
@@ -234,7 +225,7 @@ class FamilySettingsService extends ChangeNotifier {
 
   /// 强制同步
   Future<void> forceSync() async {
-    unawaited(_syncToServer());
+    await _syncToServer();
   }
 
   /// 从服务器拉取最新设置

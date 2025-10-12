@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jive_money/services/auth_service.dart';
-import 'package:jive_money/services/storage_service.dart';
-import 'package:jive_money/widgets/wechat_login_button.dart';
-import 'package:jive_money/core/router/app_router.dart';
-import 'package:jive_money/providers/auth_provider.dart';
+import '../../services/auth_service.dart';
+import '../../services/storage_service.dart';
+import '../../widgets/wechat_login_button.dart';
+import '../../core/router/app_router.dart';
+import '../../providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -84,8 +84,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _login() async {
-    final messenger = ScaffoldMessenger.of(context);
-    final router = GoRouter.of(context);
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -108,14 +106,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       debugPrint('DEBUG: Login result: $success');
 
       if (mounted) {
-        // ignore: use_build_context_synchronously
-        final messenger = ScaffoldMessenger.of(context);
         if (success) {
           final authState = ref.read(authControllerProvider);
           debugPrint('DEBUG: Login successful, user: ${authState.user?.name}');
 
           // 登录成功，显示欢迎消息
-          messenger.showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('欢迎回来，${authState.user?.name ?? '用户'}！'),
               backgroundColor: Colors.green,
@@ -124,13 +120,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
           // 直接跳转到仪表板
           debugPrint('DEBUG: Navigating to dashboard');
-          router.go(AppRoutes.dashboard);
+          context.go(AppRoutes.dashboard);
         } else {
           final authState = ref.read(authControllerProvider);
           debugPrint('DEBUG: Login failed: ${authState.errorMessage}');
 
           // 登录失败，显示错误消息
-          messenger.showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(authState.errorMessage ?? '登录失败'),
               backgroundColor: Colors.red,
@@ -143,9 +139,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       debugPrint('DEBUG: Stack trace: $stack');
 
       if (mounted) {
-        // ignore: use_build_context_synchronously
-        final messenger = ScaffoldMessenger.of(context);
-        messenger.showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('登录过程中发生错误: $e'),
             backgroundColor: Colors.red,
@@ -302,11 +296,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             const Spacer(),
                             TextButton(
                               onPressed: () async {
-                                final messenger = ScaffoldMessenger.of(context);
                                 // 清除保存的凭据
                                 await _storageService
                                     .clearRememberedCredentials();
-                                if (!mounted) return;
                                 setState(() {
                                   _emailController.clear();
                                   _passwordController.clear();
@@ -314,14 +306,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   _rememberPassword = false;
                                   _rememberPermanently = false;
                                 });
-                                // ignore: use_build_context_synchronously
-                                final messenger = ScaffoldMessenger.of(context);
-                                messenger.showSnackBar(
-                                  const SnackBar(
-                                    content: Text('已清除保存的登录信息'),
-                                    backgroundColor: Colors.blue,
-                                  ),
-                                );
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('已清除保存的登录信息'),
+                                      backgroundColor: Colors.blue,
+                                    ),
+                                  );
+                                }
                               },
                               child: const Text(
                                 '清除',
@@ -477,8 +469,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     TextButton(
                       onPressed: () {
                         // TODO: 实现忘记密码功能
-                        final messenger = ScaffoldMessenger.of(context);
-                        messenger.showSnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('忘记密码功能暂未实现')),
                         );
                       },
@@ -511,22 +502,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     WeChatLoginButton(
                       buttonText: '使用微信登录',
                       onSuccess: (authResult, userInfo) async {
-                        final messenger = ScaffoldMessenger.of(context);
-                        final router = GoRouter.of(context);
                         final result = await _authService.wechatLogin();
 
-                        if (!mounted) return;
-
                         if (result.success) {
-                          messenger.showSnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('欢迎回来，\${result.userData?.username}！'),
+                              content:
+                                  Text('欢迎回来，${result.userData?.username}！'),
                               backgroundColor: Colors.green,
                             ),
                           );
-                          router.go(AppRoutes.dashboard);
+                          context.go(AppRoutes.dashboard);
                         } else {
-                          messenger.showSnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(result.message ?? '微信登录失败'),
                               backgroundColor: Colors.red,
@@ -535,10 +523,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         }
                       },
                       onError: (error) {
-                        final messenger = ScaffoldMessenger.of(context);
-                        messenger.showSnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('微信登录失败: \$error'),
+                            content: Text('微信登录失败: $error'),
                             backgroundColor: Colors.red,
                           ),
                         );

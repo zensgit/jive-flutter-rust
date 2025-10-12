@@ -1,0 +1,19 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    INSERT INTO exchange_rates \n                    (id, from_currency, to_currency, rate, source, date, effective_date)\n                    VALUES ($1, $2, $3, $4, $5, $6, $6)\n                    ON CONFLICT (from_currency, to_currency, date)\n                    DO UPDATE SET \n                        rate = $4,\n                        source = $5,\n                        effective_date = $6,\n                        updated_at = CURRENT_TIMESTAMP\n                    ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar",
+        "Varchar",
+        "Numeric",
+        "Varchar",
+        "Date"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "6ad98705e90a43617b8ccfd92136eeb8a9b16dd6d9e17c4a684dad07ed11e230"
+}

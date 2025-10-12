@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:jive_money/utils/string_utils.dart';
+import '../../utils/string_utils.dart';
+import '../../utils/string_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jive_money/models/ledger.dart';
-import 'package:jive_money/providers/ledger_provider.dart';
-import 'package:jive_money/widgets/dialogs/invite_member_dialog.dart';
+import '../../models/ledger.dart';
+import '../../providers/ledger_provider.dart';
+import '../../services/api/ledger_service.dart';
+import '../../widgets/dialogs/invite_member_dialog.dart';
 
 /// 家庭成员管理页面
 class FamilyMembersScreen extends ConsumerStatefulWidget {
@@ -58,7 +60,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
               color: theme.cardColor,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: Colors.black.withOpacity(0.05),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -198,7 +200,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
               // 头像
               CircleAvatar(
                 radius: 28,
-                backgroundColor: _getRoleColor(member.role).withValues(alpha: 0.1),
+                backgroundColor: _getRoleColor(member.role).withOpacity(0.1),
                 backgroundImage:
                     member.avatar != null ? NetworkImage(member.avatar!) : null,
                 child: member.avatar == null
@@ -236,7 +238,7 @@ class _FamilyMembersScreenState extends ConsumerState<FamilyMembersScreen> {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: _getRoleColor(member.role).withValues(alpha: 0.1),
+                            color: _getRoleColor(member.role).withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -780,7 +782,7 @@ class _EditPermissionsDialogState extends State<_EditPermissionsDialog> {
                 setState(() => _selectedRole = value!);
               },
             );
-          }),
+          }).toList(),
         ],
       ),
       actions: [

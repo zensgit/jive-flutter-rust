@@ -119,43 +119,43 @@ class CategoryLibrary {
   static Map<String, List<CategoryTemplate>> getDefaultCategories() {
     return {
       'income': [
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '工资收入',
             nameEn: 'Salary',
             color: '#e99537',
             icon: 'circle-dollar-sign',
             classification: CategoryClassification.income),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '奖金收入',
             nameEn: 'Bonus',
             color: '#e99537',
             icon: 'award',
             classification: CategoryClassification.income),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '投资收益',
             nameEn: 'Investment Returns',
             color: '#e99537',
             icon: 'trending-up',
             classification: CategoryClassification.income),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '副业收入',
             nameEn: 'Side Business',
             color: '#e99537',
             icon: 'briefcase',
             classification: CategoryClassification.income),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '租金收入',
             nameEn: 'Rental Income',
             color: '#e99537',
             icon: 'house',
             classification: CategoryClassification.income),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '利息收入',
             nameEn: 'Interest Income',
             color: '#e99537',
             icon: 'piggy-bank',
             classification: CategoryClassification.income),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '其他收入',
             nameEn: 'Other Income',
             color: '#e99537',
@@ -163,49 +163,49 @@ class CategoryLibrary {
             classification: CategoryClassification.income),
       ],
       'daily_expense': [
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '餐饮美食',
             nameEn: 'Food & Dining',
             color: '#eb5429',
             icon: 'utensils',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '交通出行',
             nameEn: 'Transportation',
             color: '#df4e92',
             icon: 'bus',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '购物消费',
             nameEn: 'Shopping',
             color: '#e99537',
             icon: 'shopping-cart',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '生活用品',
             nameEn: 'Groceries',
             color: '#6471eb',
             icon: 'shopping-bag',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '服装配饰',
             nameEn: 'Clothing',
             color: '#df4e92',
             icon: 'shirt',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '美容美发',
             nameEn: 'Personal Care',
             color: '#4da568',
             icon: 'scissors',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '手机通讯',
             nameEn: 'Phone & Internet',
             color: '#6471eb',
             icon: 'phone',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '数码电器',
             nameEn: 'Electronics',
             color: '#805dee',
@@ -213,37 +213,37 @@ class CategoryLibrary {
             classification: CategoryClassification.expense),
       ],
       'housing': [
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '房租房贷',
             nameEn: 'Rent & Mortgage',
             color: '#db5a54',
             icon: 'house',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '水电煤气',
             nameEn: 'Utilities',
             color: '#db5a54',
             icon: 'lightbulb',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '物业管理',
             nameEn: 'Property Management',
             color: '#db5a54',
             icon: 'building',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '家具家电',
             nameEn: 'Furniture',
             color: '#6471eb',
             icon: 'bed-single',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '装修维修',
             nameEn: 'Home Improvement',
             color: '#6471eb',
             icon: 'hammer',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '家政服务',
             nameEn: 'Home Services',
             color: '#4da568',
@@ -251,31 +251,31 @@ class CategoryLibrary {
             classification: CategoryClassification.expense),
       ],
       'health_education': [
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '医疗保健',
             nameEn: 'Healthcare',
             color: '#4da568',
             icon: 'pill',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '教育培训',
             nameEn: 'Education',
             color: '#61c9ea',
             icon: 'graduation-cap',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '运动健身',
             nameEn: 'Fitness',
             color: '#4da568',
             icon: 'dumbbell',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '保险费用',
             nameEn: 'Insurance',
             color: '#6471eb',
             icon: 'shield-plus',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '书籍文具',
             nameEn: 'Books & Stationery',
             color: '#61c9ea',
@@ -283,37 +283,37 @@ class CategoryLibrary {
             classification: CategoryClassification.expense),
       ],
       'entertainment_social': [
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '娱乐休闲',
             nameEn: 'Entertainment',
             color: '#df4e92',
             icon: 'drama',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '旅游度假',
             nameEn: 'Travel',
             color: '#df4e92',
             icon: 'plane',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '聚餐聚会',
             nameEn: 'Social Dining',
             color: '#eb5429',
             icon: 'users',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '礼品礼金',
             nameEn: 'Gifts & Donations',
             color: '#61c9ea',
             icon: 'gift',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '宠物相关',
             nameEn: 'Pets',
             color: '#4da568',
             icon: 'dog',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '兴趣爱好',
             nameEn: 'Hobbies',
             color: '#c44fe9',
@@ -321,31 +321,31 @@ class CategoryLibrary {
             classification: CategoryClassification.expense),
       ],
       'financial': [
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '信用卡还款',
             nameEn: 'Credit Card Payment',
             color: '#6471eb',
             icon: 'credit-card',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '贷款还款',
             nameEn: 'Loan Payments',
             color: '#6471eb',
             icon: 'credit-card',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '银行手续费',
             nameEn: 'Bank Fees',
             color: '#6471eb',
             icon: 'credit-card',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '投资理财',
             nameEn: 'Investment',
             color: '#e99537',
             icon: 'trending-up',
             classification: CategoryClassification.expense),
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '税费支出',
             nameEn: 'Taxes',
             color: '#db5a54',
@@ -353,7 +353,7 @@ class CategoryLibrary {
             classification: CategoryClassification.expense),
       ],
       'transfer': [
-        const CategoryTemplate(
+        CategoryTemplate(
             name: '账户转账',
             nameEn: 'Transfer',
             color: CategoryColors.transfer,

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jive_money/core/router/app_router.dart';
-import 'package:jive_money/providers/transaction_provider.dart';
-import 'package:jive_money/ui/components/transactions/transaction_list.dart';
-import 'package:jive_money/models/transaction.dart';
+import '../../core/router/app_router.dart';
+import '../../providers/transaction_provider.dart';
+import '../../ui/components/transactions/transaction_list_item.dart';
+import '../../models/transaction.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
   const TransactionsScreen({super.key});
@@ -35,7 +35,6 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
   @override
   Widget build(BuildContext context) {
     final transactionState = ref.watch(transactionControllerProvider);
-    final groupByDate = transactionState.grouping == TransactionGrouping.date;
 
     return Scaffold(
       appBar: AppBar(
@@ -50,32 +49,6 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           ],
         ),
         actions: [
-          PopupMenuButton<TransactionGrouping>(
-            tooltip: '分组方式',
-            icon: const Icon(Icons.view_list_outlined),
-            onSelected: (g) {
-              ref.read(transactionControllerProvider.notifier).setGrouping(g);
-              if (g != TransactionGrouping.date) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("分类/账户分组预览中，暂以平铺显示")),
-                );
-              }
-            },
-            itemBuilder: (context) => const [
-              PopupMenuItem(
-                value: TransactionGrouping.date,
-                child: Text('按日期分组'),
-              ),
-              PopupMenuItem(
-                value: TransactionGrouping.category,
-                child: Text('按分类分组'),
-              ),
-              PopupMenuItem(
-                value: TransactionGrouping.account,
-                child: Text('按账户分组'),
-              ),
-            ],
-          ),
           IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: _showFilterDialog,
@@ -107,9 +80,6 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
     TransactionState transactionState,
     String type,
   ) {
-    // Determine grouping mode locally for this list render
-    final groupByDate =
-        transactionState.grouping == TransactionGrouping.date;
     if (transactionState.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -158,27 +128,22 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
       return _buildEmptyState(type);
     }
 
-    return TransactionList(
-      transactions: filtered,
-      groupByDate: groupByDate,
-      showSearchBar: true,
-      onSearch: (q) =>
-          ref.read(transactionControllerProvider.notifier).search(q),
-      onClearSearch: () =>
-          ref.read(transactionControllerProvider.notifier).search(''),
-      onToggleGroup: () {
-        final next = groupByDate ? TransactionGrouping.account : TransactionGrouping.date;
-        ref.read(transactionControllerProvider.notifier).setGrouping(next);
-        if (next != TransactionGrouping.date) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("非日期分组预览中，暂以平铺显示")),
-          );
-        }
-      },
+    return RefreshIndicator(
       onRefresh: () =>
           ref.read(transactionControllerProvider.notifier).refresh(),
-      onTransactionTap: (t) =>
-          context.go('${AppRoutes.transactions}/${t.id}'),
+      child: ListView.builder(
+        padding: const EdgeInsets.only(bottom: 80),
+        itemCount: filtered.length,
+        itemBuilder: (context, index) {
+          final transaction = filtered[index];
+          return TransactionListItem(
+            transaction: transaction,
+            onTap: () {
+              context.go('${AppRoutes.transactions}/${transaction.id}');
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -283,7 +248,6 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                   firstDate: DateTime(2020),
                   lastDate: DateTime.now(),
                 );
-                if (!context.mounted) return;
                 if (range != null) {
                   setState(() {
                     _dateRange = range;
@@ -311,29 +275,6 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           ],
         ),
         actions: [
-          PopupMenuButton<TransactionGrouping>(
-            tooltip: '分组方式',
-            icon: const Icon(Icons.view_list_outlined),
-            onSelected: (g) {
-              ref.read(transactionControllerProvider.notifier).setGrouping(g);
-              setState(() => _groupByDate = g == TransactionGrouping.date);
-            },
-            itemBuilder: (context) => const [
-              PopupMenuItem(
-                value: TransactionGrouping.date,
-                child: Text('按日期分组'),
-              ),
-              PopupMenuItem(
-                value: TransactionGrouping.category,
-                child: Text('按分类分组'),
-              ),
-              PopupMenuItem(
-                value: TransactionGrouping.account,
-                child: Text('按账户分组'),
-              ),
-            ],
-          ),
-
           TextButton(
             onPressed: () {
               setState(() {
@@ -392,7 +333,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.1),
+                    color: Colors.red.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(Icons.remove, color: Colors.red),
@@ -408,7 +349,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.green.withValues(alpha: 0.1),
+                    color: Colors.green.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(Icons.add, color: Colors.green),
@@ -424,7 +365,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withValues(alpha: 0.1),
+                    color: Colors.blue.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(Icons.swap_horiz, color: Colors.blue),

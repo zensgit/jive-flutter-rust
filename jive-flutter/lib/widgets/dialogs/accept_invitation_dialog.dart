@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jive_money/models/invitation.dart';
-import 'package:jive_money/models/family.dart' as family_model;
-import 'package:jive_money/models/user.dart';
-import 'package:jive_money/services/invitation_service.dart';
-import 'package:jive_money/providers/family_provider.dart';
+import '../../models/invitation.dart';
+import '../../models/family.dart' as family_model;
+import '../../models/user.dart';
+import '../../services/invitation_service.dart';
+import '../../providers/family_provider.dart';
+import '../../providers/auth_provider.dart';
+import '../../utils/snackbar_utils.dart';
 
 /// 接受邀请对话框
 class AcceptInvitationDialog extends ConsumerStatefulWidget {
@@ -46,8 +48,6 @@ class _AcceptInvitationDialogState
     });
 
     try {
-      final messenger = ScaffoldMessenger.of(context);
-      final navigator = Navigator.of(context);
       // 调用服务接受邀请
       final success = await _invitationService.acceptInvitation(
         invitationId: invitation.id,
@@ -56,28 +56,25 @@ class _AcceptInvitationDialogState
 
       if (success && mounted) {
         // 刷新家庭列表
-        await ref.read(familyControllerProvider.notifier).loadUserFamilies();
-        if (!mounted) return;
+        await ref.read(familyProvider.notifier).loadUserFamilies();
 
         // 显示成功消息
-        messenger.hideCurrentSnackBar();
-        messenger.showSnackBar(
-          SnackBar(content: Text('已成功加入 ${family.name}')),
+        SnackbarUtils.showSuccess(
+          context,
+          '已成功加入 ${family.name}',
         );
+
         // 关闭对话框
-        navigator.pop(true);
+        Navigator.of(context).pop(true);
 
         // 触发回调
         widget.onAccepted?.call();
       }
     } catch (e) {
       if (mounted) {
-        final messengerErr = ScaffoldMessenger.of(context);
-        messengerErr.showSnackBar(
-          SnackBar(
-            content: Text('接受邀请失败: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
+        SnackbarUtils.showError(
+          context,
+          '接受邀请失败: ${e.toString()}',
         );
       }
     } finally {
@@ -92,6 +89,8 @@ class _AcceptInvitationDialogState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final currentUser = ref.watch(authStateProvider).value;
+
     return AlertDialog(
       title: Text(_showConfirmation ? '确认加入' : '邀请详情'),
       content: SingleChildScrollView(
@@ -102,7 +101,7 @@ class _AcceptInvitationDialogState
             // 家庭信息卡片
             Card(
               elevation: 0,
-              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -139,8 +138,9 @@ class _AcceptInvitationDialogState
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Text(
-                                '智能记账，理财无忧',
+                              if (family.description?.isNotEmpty ?? false)
+                                Text(
+                                  family.description!,
                                   style: theme.textTheme.bodySmall,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -158,19 +158,19 @@ class _AcceptInvitationDialogState
                         _buildStatItem(
                           context,
                           Icons.people_outline,
-                          '1',
+                          '${family.memberCount}',
                           '成员',
                         ),
                         _buildStatItem(
                           context,
-                          Icons.folder_outlined,
-                          '0',
+                          Icons.folder_outline,
+                          '${family.categoryCount ?? 0}',
                           '分类',
                         ),
                         _buildStatItem(
                           context,
                           Icons.receipt_long_outlined,
-                          '0',
+                          '${family.transactionCount ?? 0}',
                           '交易',
                         ),
                       ],
@@ -187,7 +187,7 @@ class _AcceptInvitationDialogState
               context,
               Icons.person_outline,
               '邀请人',
-              inviter.displayName,
+              inviter.displayName ?? inviter.email,
             ),
 
             _buildInfoRow(
@@ -210,10 +210,10 @@ class _AcceptInvitationDialogState
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer.withValues(alpha: 0.2),
+                  color: theme.colorScheme.primaryContainer.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                    color: theme.colorScheme.primary.withOpacity(0.3),
                   ),
                 ),
                 child: Column(
@@ -259,7 +259,7 @@ class _AcceptInvitationDialogState
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.amber.withValues(alpha: 0.1),
+                  color: theme.colorScheme.warningContainer.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -283,11 +283,11 @@ class _AcceptInvitationDialogState
 
               // 备注输入
               TextField(
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: '备注（可选）',
                   hintText: '添加一条消息给邀请人',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.message_outlined),
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.message_outlined),
                 ),
                 maxLines: 2,
                 onChanged: (value) {

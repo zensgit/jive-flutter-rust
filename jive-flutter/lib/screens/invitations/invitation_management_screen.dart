@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jive_money/models/invitation.dart';
-import 'package:jive_money/models/family.dart' as family_model;
-import 'package:jive_money/services/invitation_service.dart';
-import 'package:jive_money/utils/snackbar_utils.dart';
-import 'package:jive_money/widgets/sheets/generate_invite_code_sheet.dart';
+import '../../models/invitation.dart';
+import '../../models/family.dart' as family_model;
+import '../../services/invitation_service.dart';
+import '../../utils/snackbar_utils.dart';
+import '../../widgets/sheets/generate_invite_code_sheet.dart';
 
 /// 邀请管理页面
 class InvitationManagementScreen extends ConsumerStatefulWidget {
@@ -178,7 +178,7 @@ class _InvitationManagementScreenState
                 gradient: LinearGradient(
                   colors: [
                     theme.colorScheme.primaryContainer,
-                    theme.colorScheme.primaryContainer.withValues(alpha: 0.7),
+                    theme.colorScheme.primaryContainer.withOpacity(0.7),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -276,7 +276,7 @@ class _InvitationManagementScreenState
           label,
           style: TextStyle(
             fontSize: 12,
-            color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
+            color: theme.colorScheme.onPrimaryContainer.withOpacity(0.8),
           ),
         ),
       ],
@@ -324,7 +324,7 @@ class _InvitationManagementScreenState
           child: ListTile(
             leading: CircleAvatar(
               backgroundColor:
-                  _getStatusColor(invitation.status).withValues(alpha: 0.2),
+                  _getStatusColor(invitation.status).withOpacity(0.2),
               child: Icon(
                 _getStatusIcon(invitation.status),
                 color: _getStatusColor(invitation.status),

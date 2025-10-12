@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jive_money/widgets/currency_converter.dart';
 import 'package:jive_money/providers/currency_provider.dart';

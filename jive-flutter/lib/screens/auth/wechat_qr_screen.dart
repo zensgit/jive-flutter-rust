@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:jive_money/services/wechat_service.dart';
-import 'package:jive_money/screens/auth/wechat_register_form_screen.dart';
+import '../../services/wechat_service.dart';
+import 'wechat_register_form_screen.dart';
 
 /// 微信二维码扫描页面
 class WeChatQRScreen extends StatefulWidget {
@@ -96,23 +96,18 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
         try {
           final userInfo = await WeChatService.simulateGetUserInfo();
           final authResult = await WeChatService.simulateLogin();
-          if (!mounted) return;
 
           if (userInfo != null && authResult != null) {
             if (widget.isLogin) {
               // 登录流程：直接返回结果
-              // ignore: use_build_context_synchronously
-              final navigator = Navigator.of(context);
-              navigator.pop({
+              Navigator.of(context).pop({
                 'success': true,
                 'authResult': authResult,
                 'userInfo': userInfo,
               });
             } else {
               // 注册流程：跳转到注册表单
-              // ignore: use_build_context_synchronously
-              final navigator = Navigator.of(context);
-              final result = await navigator.push(
+              final result = await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => WeChatRegisterFormScreen(
                     weChatUserInfo: userInfo,
@@ -121,12 +116,8 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                 ),
               );
 
-              if (!mounted) return;
-
               if (result != null) {
-                // ignore: use_build_context_synchronously
-                final navigator2 = Navigator.of(context);
-                navigator2.pop(result);
+                Navigator.of(context).pop(result);
               }
             }
           }
@@ -182,7 +173,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
+                      color: Colors.black.withOpacity(0.1),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
@@ -265,7 +256,7 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                                   right: 20,
                                   child: Container(
                                     height: 2,
-                                    decoration: const BoxDecoration(
+                                    decoration: BoxDecoration(
                                       gradient: LinearGradient(
                                         colors: [
                                           Colors.transparent,
@@ -295,20 +286,20 @@ class _WeChatQRScreenState extends State<WeChatQRScreen>
                                 decoration: BoxDecoration(
                                   border: Border(
                                     top: isTop
-                                        ? const BorderSide(
+                                        ? BorderSide(
                                             color: Colors.green, width: 3)
                                         : BorderSide.none,
                                     bottom: isTop
                                         ? BorderSide.none
-                                        : const BorderSide(
+                                        : BorderSide(
                                             color: Colors.green, width: 3),
                                     left: isLeft
-                                        ? const BorderSide(
+                                        ? BorderSide(
                                             color: Colors.green, width: 3)
                                         : BorderSide.none,
                                     right: isLeft
                                         ? BorderSide.none
-                                        : const BorderSide(
+                                        : BorderSide(
                                             color: Colors.green, width: 3),
                                   ),
                                 ),

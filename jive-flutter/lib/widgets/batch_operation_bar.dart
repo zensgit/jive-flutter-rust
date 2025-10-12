@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jive_money/providers/category_management_provider.dart';
+import '../models/category.dart';
+import '../models/tag.dart';
+import '../providers/category_management_provider.dart';
 
 /// 批量操作栏
 class BatchOperationBar extends ConsumerStatefulWidget {
@@ -11,13 +13,13 @@ class BatchOperationBar extends ConsumerStatefulWidget {
   final String operationType; // 'category' or 'tag'
 
   const BatchOperationBar({
-    super.key,
+    Key? key,
     required this.selectedIds,
     required this.onCancel,
     required this.onSelectAll,
     required this.isAllSelected,
     this.operationType = 'category',
-  });
+  }) : super(key: key);
 
   @override
   ConsumerState<BatchOperationBar> createState() => _BatchOperationBarState();
@@ -68,7 +70,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
           color: colorScheme.primaryContainer,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: Colors.black.withOpacity(0.1),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -163,7 +165,7 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: Material(
-        color: color.withValues(alpha: 0.1),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
         child: InkWell(
           onTap: onPressed,
@@ -227,14 +229,10 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
           ),
           ElevatedButton(
             onPressed: () async {
-              final navigator = Navigator.of(context);
-              final messenger = ScaffoldMessenger.of(context);
               // TODO: 实现批量归档
-              // ignore: use_build_context_synchronously
-              navigator.pop();
+              Navigator.pop(context);
               widget.onCancel();
-              // ignore: use_build_context_synchronously
-              messenger.showSnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('已归档 ${widget.selectedIds.length} 个项目'),
                 ),
@@ -303,15 +301,10 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
             ),
             onPressed: () async {
               final provider = ref.read(categoryManagementProvider);
-              final navigator = Navigator.of(context);
-              final messenger = ScaffoldMessenger.of(context);
               await provider.batchDeleteCategories(widget.selectedIds);
-              if (!mounted) return;
-              // ignore: use_build_context_synchronously
-              navigator.pop();
+              Navigator.pop(context);
               widget.onCancel();
-              // ignore: use_build_context_synchronously
-              messenger.showSnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('已删除 ${widget.selectedIds.length} 个项目'),
                   action: SnackBarAction(
@@ -337,10 +330,10 @@ class BatchMoveDialog extends ConsumerStatefulWidget {
   final VoidCallback onConfirm;
 
   const BatchMoveDialog({
-    super.key,
+    Key? key,
     required this.selectedIds,
     required this.onConfirm,
-  });
+  }) : super(key: key);
 
   @override
   ConsumerState<BatchMoveDialog> createState() => _BatchMoveDialogState();
@@ -361,7 +354,7 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
           const SizedBox(height: 16),
           // TODO: 添加分类选择器
           DropdownButtonFormField<String>(
-            initialValue: _targetParentId,
+            value: _targetParentId,
             decoration: const InputDecoration(
               labelText: '目标父分类',
               border: OutlineInputBorder(),
@@ -389,16 +382,14 @@ class _BatchMoveDialogState extends ConsumerState<BatchMoveDialog> {
         ),
         ElevatedButton(
           onPressed: () async {
-            final messenger = ScaffoldMessenger.of(context);
             final provider = ref.read(categoryManagementProvider);
             await provider.batchMoveCategories(
               widget.selectedIds,
               _targetParentId,
             );
-            if (!mounted) return;
             Navigator.pop(context);
             widget.onConfirm();
-            messenger.showSnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('已移动 ${widget.selectedIds.length} 个分类'),
               ),
@@ -417,10 +408,10 @@ class BatchConvertToTagDialog extends ConsumerStatefulWidget {
   final VoidCallback onConfirm;
 
   const BatchConvertToTagDialog({
-    super.key,
+    Key? key,
     required this.selectedIds,
     required this.onConfirm,
-  });
+  }) : super(key: key);
 
   @override
   ConsumerState<BatchConvertToTagDialog> createState() =>
@@ -471,7 +462,6 @@ class _BatchConvertToTagDialogState
         ),
         ElevatedButton(
           onPressed: () async {
-            final messenger = ScaffoldMessenger.of(context);
             final provider = ref.read(categoryManagementProvider);
 
             for (final categoryId in widget.selectedIds) {
@@ -482,12 +472,11 @@ class _BatchConvertToTagDialogState
                 applyToTransactions: _applyToTransactions,
                 deleteCategory: _deleteCategories,
               );
-              if (!mounted) return;
             }
 
             Navigator.pop(context);
             widget.onConfirm();
-            messenger.showSnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('已转换 ${widget.selectedIds.length} 个分类为标签'),
               ),

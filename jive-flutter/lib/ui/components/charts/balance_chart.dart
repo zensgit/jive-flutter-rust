@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jive_money/providers/currency_provider.dart';
+import '../../../providers/currency_provider.dart';
 
 class BalanceChart extends ConsumerWidget {
   final List<BalancePoint> data;
@@ -62,7 +62,7 @@ class BalanceChart extends ConsumerWidget {
                   horizontalInterval: _calculateInterval(),
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                      color: theme.dividerColor.withValues(alpha: 0.3),
+                      color: theme.dividerColor.withOpacity(0.3),
                       strokeWidth: 1,
                     );
                   },
@@ -107,7 +107,7 @@ class BalanceChart extends ConsumerWidget {
                     gradient: LinearGradient(
                       colors: [
                         gradientStartColor ?? primaryColor,
-                        gradientEndColor ?? primaryColor.withValues(alpha: 0.3),
+                        gradientEndColor ?? primaryColor.withOpacity(0.3),
                       ],
                     ),
                     barWidth: 3,
@@ -129,8 +129,8 @@ class BalanceChart extends ConsumerWidget {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          (gradientStartColor ?? primaryColor).withValues(alpha: 0.3),
-                          (gradientEndColor ?? primaryColor).withValues(alpha: 0.1),
+                          (gradientStartColor ?? primaryColor).withOpacity(0.3),
+                          (gradientEndColor ?? primaryColor).withOpacity(0.1),
                         ],
                       ),
                     ),
@@ -311,7 +311,7 @@ class BalanceChart extends ConsumerWidget {
         );
       }
 
-      return const LineTooltipItem('', textStyle);
+      return LineTooltipItem('', textStyle);
     }).toList();
   }
 }
@@ -340,7 +340,7 @@ class BalancePoint {
     } else if (difference == 1) {
       return '昨天';
     } else if (difference <= 7) {
-      return '$difference天前';
+      return '${difference}天前';
     } else {
       return '${date.month}/${date.day}';
     }

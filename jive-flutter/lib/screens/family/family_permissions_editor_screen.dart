@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jive_money/models/family.dart' as family_model;
-import 'package:jive_money/services/api/family_service.dart';
-import 'package:jive_money/widgets/loading_overlay.dart';
+import '../../models/family.dart' as family_model;
+import '../../services/api/family_service.dart';
+import '../../providers/auth_provider.dart';
+import '../../widgets/loading_overlay.dart';
 
 /// 权限编辑界面
 class FamilyPermissionsEditorScreen extends ConsumerStatefulWidget {
@@ -10,10 +11,10 @@ class FamilyPermissionsEditorScreen extends ConsumerStatefulWidget {
   final String familyName;
 
   const FamilyPermissionsEditorScreen({
-    super.key,
+    Key? key,
     required this.familyId,
     required this.familyName,
-  });
+  }) : super(key: key);
 
   @override
   ConsumerState<FamilyPermissionsEditorScreen> createState() =>
@@ -150,14 +151,17 @@ class _FamilyPermissionsEditorScreenState
     try {
       // 从服务器加载权限配置
       final permissions =
-          await _familyService.getFamilyPermissions(familyId: widget.familyId);
-      final customRoles =
-          await _familyService.getCustomRoles(familyId: widget.familyId);
+          await _familyService.getFamilyPermissions(widget.familyId);
+      final customRoles = await _familyService.getCustomRoles(widget.familyId);
 
       setState(() {
-        _rolePermissions = permissions;
-              _customRoles = customRoles;
-            });
+        if (permissions != null) {
+          _rolePermissions = permissions;
+        }
+        if (customRoles != null) {
+          _customRoles = customRoles;
+        }
+      });
     } catch (e) {
       _showError('加载权限配置失败: $e');
     } finally {
@@ -290,8 +294,10 @@ class _FamilyPermissionsEditorScreenState
               setState(() => _isLoading = true);
 
               try {
-                await _familyService.deleteCustomRole(roleId);
-                final success = true;
+                final success = await _familyService.deleteCustomRole(
+                  widget.familyId,
+                  roleId,
+                );
 
                 if (success) {
                   setState(() {
@@ -467,7 +473,7 @@ class _FamilyPermissionsEditorScreenState
                 children: [
                   Container(
                     padding: const EdgeInsets.all(16),
-                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                    color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
                     child: const Text(
                       '角色列表',
                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -614,7 +620,7 @@ class _FamilyPermissionsEditorScreenState
         // 头部信息
         Container(
           padding: const EdgeInsets.all(16),
-          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+          color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
           child: Row(
             children: [
               Expanded(
@@ -855,7 +861,7 @@ class _CreateCustomRoleDialogState extends State<_CreateCustomRoleDialog> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              initialValue: _baseRole,
+              value: _baseRole,
               decoration: const InputDecoration(
                 labelText: '基于角色',
                 helperText: '新角色将继承所选角色的权限',

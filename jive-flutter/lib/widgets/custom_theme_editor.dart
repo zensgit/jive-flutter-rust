@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jive_money/models/theme_models.dart' as models;
-import 'package:jive_money/services/theme_service.dart';
-import 'package:jive_money/widgets/color_picker_dialog.dart';
-import 'package:jive_money/widgets/theme_preview_card.dart';
+import '../models/theme_models.dart' as models;
+import '../services/theme_service.dart';
+import 'color_picker_dialog.dart';
+import 'theme_preview_card.dart';
 
 /// 自定义主题编辑器
 class CustomThemeEditor extends StatefulWidget {
@@ -520,7 +520,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
       ),
       subtitle: Text(item.subtitle),
       trailing: Text(
-        '#${item.color.toARGB32().toRadixString(16).substring(2).toUpperCase()}',
+        '#${item.color.value.toRadixString(16).substring(2).toUpperCase()}',
         style: const TextStyle(
           fontFamily: 'monospace',
           fontSize: 12,
@@ -613,8 +613,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
       );
     });
 
-    // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('已应用"${preset.name}"模板'),
         backgroundColor: Colors.green,
@@ -722,12 +721,8 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
   }
 
   Future<void> _saveTheme() async {
-    // Capture before awaits to avoid using context across async gaps
-    final navigator = Navigator.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     if (_nameController.text.trim().isEmpty) {
-      // ignore: use_build_context_synchronously
-      messenger.showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('请输入主题名称'),
           backgroundColor: Colors.red,
@@ -758,13 +753,9 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
         );
       }
 
-      if (!mounted) return;
-
-      // ignore: use_build_context_synchronously
-      navigator.pop(finalTheme);
+      Navigator.of(context).pop(finalTheme);
     } catch (e) {
-      // ignore: use_build_context_synchronously
-      messenger.showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('保存失败: $e'),
           backgroundColor: Colors.red,

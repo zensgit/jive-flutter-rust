@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:jive_money/core/network/http_client.dart';
-import 'package:jive_money/core/network/api_readiness.dart';
-import 'package:jive_money/core/storage/token_storage.dart';
-import 'package:jive_money/models/payee.dart';
-import 'package:jive_money/models/transaction.dart';
-import 'package:jive_money/models/rule.dart';
+import '../core/network/http_client.dart';
+import '../core/network/api_readiness.dart';
+import '../core/storage/token_storage.dart';
+import '../models/payee.dart';
+import '../models/transaction.dart';
+import '../models/rule.dart';
 
 class ApiService {
   // 统一通过 ApiConfig, 在 HttpClient 中已经设置 baseUrl
@@ -56,12 +56,13 @@ class ApiService {
     final hdr = await headers();
     final resp =
         await _run(() => _dio.get(endpoint, options: Options(headers: hdr)));
-    if (resp.statusCode == 200) {
-      return resp.data;
-    } else {
-      throw Exception('GET failed: ${resp.statusCode}');
+    if (resp is Response) {
+      if (resp.statusCode == 200)
+        return resp.data;
+      else
+        throw Exception('GET failed: ${resp.statusCode}');
     }
-      return resp;
+    return resp;
   }
 
   /// Generic POST request
@@ -70,12 +71,13 @@ class ApiService {
     final hdr = await headers();
     final resp = await _run(
         () => _dio.post(endpoint, data: body, options: Options(headers: hdr)));
-    if (resp.statusCode == 200 || resp.statusCode == 201) {
-      return resp.data;
-    } else {
-      throw Exception('POST failed: ${resp.statusCode}');
+    if (resp is Response) {
+      if (resp.statusCode == 200 || resp.statusCode == 201)
+        return resp.data;
+      else
+        throw Exception('POST failed: ${resp.statusCode}');
     }
-      return resp;
+    return resp;
   }
 
   /// Generic PUT request
@@ -84,12 +86,13 @@ class ApiService {
     final hdr = await headers();
     final resp = await _run(
         () => _dio.put(endpoint, data: body, options: Options(headers: hdr)));
-    if (resp.statusCode == 200) {
-      return resp.data;
-    } else {
-      throw Exception('PUT failed: ${resp.statusCode}');
+    if (resp is Response) {
+      if (resp.statusCode == 200)
+        return resp.data;
+      else
+        throw Exception('PUT failed: ${resp.statusCode}');
     }
-      return resp;
+    return resp;
   }
 
   /// Generic DELETE request
@@ -98,12 +101,13 @@ class ApiService {
     final hdr = await headers();
     final resp =
         await _run(() => _dio.delete(endpoint, options: Options(headers: hdr)));
-    if (resp.statusCode == 200 || resp.statusCode == 204) {
-      return resp.data;
-    } else {
-      throw Exception('DELETE failed: ${resp.statusCode}');
+    if (resp is Response) {
+      if (resp.statusCode == 200 || resp.statusCode == 204)
+        return resp.data;
+      else
+        throw Exception('DELETE failed: ${resp.statusCode}');
     }
-      return resp;
+    return resp;
   }
 
   // ==================== Payee管理 ====================
@@ -126,7 +130,7 @@ class ApiService {
     final hdr = await headers();
     final resp = await _run(() => _dio.get('/payees',
         queryParameters: queryParams, options: Options(headers: hdr)));
-    if (resp.statusCode == 200) {
+    if (resp is Response && resp.statusCode == 200) {
       final List data =
           resp.data is List ? resp.data : (resp.data['data'] ?? []);
       return data.map((j) => Payee.fromJson(j)).toList();
@@ -140,7 +144,8 @@ class ApiService {
     final hdr = await headers();
     final resp = await _run(() => _dio.post('/payees',
         data: payee.toJson(), options: Options(headers: hdr)));
-    if ((resp.statusCode == 200 || resp.statusCode == 201)) {
+    if (resp is Response &&
+        (resp.statusCode == 200 || resp.statusCode == 201)) {
       return Payee.fromJson(
           resp.data is Map ? resp.data : json.decode(resp.data));
     }
@@ -153,7 +158,7 @@ class ApiService {
     final hdr = await headers();
     final resp = await _run(() =>
         _dio.put('/payees/$id', data: updates, options: Options(headers: hdr)));
-    if (resp.statusCode == 200) {
+    if (resp is Response && resp.statusCode == 200) {
       return Payee.fromJson(
           resp.data is Map ? resp.data : json.decode(resp.data));
     }
@@ -166,9 +171,8 @@ class ApiService {
     final hdr = await headers();
     final resp = await _run(
         () => _dio.delete('/payees/$id', options: Options(headers: hdr)));
-    if ((resp.statusCode == 200 || resp.statusCode == 204)) {
+    if (resp is Response && (resp.statusCode == 200 || resp.statusCode == 204))
       return;
-    }
     throw Exception('Failed to delete payee');
   }
 
@@ -184,7 +188,7 @@ class ApiService {
     final hdr = await headers();
     final resp = await _run(() => _dio.get('/payees/suggestions',
         queryParameters: queryParams, options: Options(headers: hdr)));
-    if (resp.statusCode == 200) {
+    if (resp is Response && resp.statusCode == 200) {
       final List data =
           resp.data is List ? resp.data : (resp.data['data'] ?? []);
       return data.map((j) => PayeeSuggestion.fromJson(j)).toList();
@@ -202,7 +206,7 @@ class ApiService {
           'source_ids': sourceIds,
         },
         options: Options(headers: hdr)));
-    if (resp.statusCode == 200) {
+    if (resp is Response && resp.statusCode == 200) {
       return Payee.fromJson(
           resp.data is Map ? resp.data : json.decode(resp.data));
     }
@@ -240,7 +244,7 @@ class ApiService {
     final hdr = await headers();
     final resp = await _run(() => _dio.get('/transactions',
         queryParameters: queryParams, options: Options(headers: hdr)));
-    if (resp.statusCode == 200) {
+    if (resp is Response && resp.statusCode == 200) {
       final List data =
           resp.data is List ? resp.data : (resp.data['data'] ?? []);
       return data.map((j) => Transaction.fromJson(j)).toList();
@@ -254,7 +258,8 @@ class ApiService {
     final hdr = await headers();
     final resp = await _run(() => _dio.post('/transactions',
         data: transaction.toJson(), options: Options(headers: hdr)));
-    if ((resp.statusCode == 200 || resp.statusCode == 201)) {
+    if (resp is Response &&
+        (resp.statusCode == 200 || resp.statusCode == 201)) {
       return Transaction.fromJson(
           resp.data is Map ? resp.data : json.decode(resp.data));
     }
@@ -278,7 +283,7 @@ class ApiService {
           'status': status,
         },
         options: Options(headers: hdr)));
-    if (resp.statusCode == 200) return resp.data;
+    if (resp is Response && resp.statusCode == 200) return resp.data;
     throw Exception('Failed to perform bulk operation');
   }
 
@@ -304,7 +309,7 @@ class ApiService {
     final hdr = await headers();
     final resp = await _run(() => _dio.get('/rules',
         queryParameters: queryParams, options: Options(headers: hdr)));
-    if (resp.statusCode == 200) {
+    if (resp is Response && resp.statusCode == 200) {
       final List data =
           resp.data is List ? resp.data : (resp.data['data'] ?? []);
       return data.map((j) => Rule.fromJson(j)).toList();
@@ -318,7 +323,8 @@ class ApiService {
     final hdr = await headers();
     final resp = await _run(() => _dio.post('/rules',
         data: rule.toJson(), options: Options(headers: hdr)));
-    if ((resp.statusCode == 200 || resp.statusCode == 201)) {
+    if (resp is Response &&
+        (resp.statusCode == 200 || resp.statusCode == 201)) {
       return Rule.fromJson(
           resp.data is Map ? resp.data : json.decode(resp.data));
     }
@@ -340,7 +346,7 @@ class ApiService {
           'dry_run': dryRun,
         },
         options: Options(headers: hdr)));
-    if (resp.statusCode == 200) {
+    if (resp is Response && resp.statusCode == 200) {
       final List data =
           resp.data is List ? resp.data : (resp.data['data'] ?? []);
       return data.map((j) => RuleExecutionResult.fromJson(j)).toList();
@@ -354,9 +360,8 @@ class ApiService {
     final hdr = await headers();
     final resp = await _run(
         () => _dio.delete('/rules/$id', options: Options(headers: hdr)));
-    if ((resp.statusCode == 200 || resp.statusCode == 204)) {
+    if (resp is Response && (resp.statusCode == 200 || resp.statusCode == 204))
       return;
-    }
     throw Exception('Failed to delete rule');
   }
 
@@ -378,7 +383,7 @@ class ApiService {
     final hdr = await headers();
     final resp = await _run(() => _dio.get('/accounts',
         queryParameters: queryParams, options: Options(headers: hdr)));
-    if (resp.statusCode == 200) {
+    if (resp is Response && resp.statusCode == 200) {
       final List data =
           resp.data is List ? resp.data : (resp.data['data'] ?? []);
       return data.cast<Map<String, dynamic>>();
@@ -393,7 +398,7 @@ class ApiService {
     final resp = await _run(() => _dio.get('/accounts/statistics',
         queryParameters: {'ledger_id': ledgerId},
         options: Options(headers: hdr)));
-    if (resp.statusCode == 200) return resp.data;
+    if (resp is Response && resp.statusCode == 200) return resp.data;
     throw Exception('Failed to get account statistics');
   }
 
@@ -404,7 +409,7 @@ class ApiService {
     final resp = await _run(() => _dio.get('/transactions/statistics',
         queryParameters: {'ledger_id': ledgerId},
         options: Options(headers: hdr)));
-    if (resp.statusCode == 200) return resp.data;
+    if (resp is Response && resp.statusCode == 200) return resp.data;
     throw Exception('Failed to get transaction statistics');
   }
 
@@ -415,7 +420,7 @@ class ApiService {
     final resp = await _run(() => _dio.get('/payees/statistics',
         queryParameters: {'ledger_id': ledgerId},
         options: Options(headers: hdr)));
-    if (resp.statusCode == 200) return resp.data;
+    if (resp is Response && resp.statusCode == 200) return resp.data;
     throw Exception('Failed to get payee statistics');
   }
 }

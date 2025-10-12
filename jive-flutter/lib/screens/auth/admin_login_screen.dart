@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:jive_money/screens/admin/super_admin_screen.dart';
+import '../admin/super_admin_screen.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -247,13 +248,13 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                           foregroundColor: Colors.white,
                         ),
                         child: _isLoading
-                            ? CircularProgressIndicator(
+                            ? const CircularProgressIndicator(
                                 valueColor:
                                     AlwaysStoppedAnimation<Color>(Colors.white),
                               )
                             : Text(
                                 _showTotpField ? '验证并登录' : '下一步',
-                                style: TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 16),
                               ),
                       ),
                     ),

@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:jive_money/core/config/api_config.dart';
-import 'package:jive_money/core/network/interceptors/auth_interceptor.dart';
-import 'package:jive_money/core/network/interceptors/error_interceptor.dart';
-import 'package:jive_money/core/network/interceptors/logging_interceptor.dart';
-import 'package:jive_money/core/network/interceptors/retry_interceptor.dart';
-import 'package:jive_money/core/network/api_readiness.dart';
+import '../config/api_config.dart';
+import 'interceptors/auth_interceptor.dart';
+import 'interceptors/error_interceptor.dart';
+import 'interceptors/logging_interceptor.dart';
+import 'interceptors/retry_interceptor.dart';
+import 'api_readiness.dart';
 
 /// HTTP客户端单例
 class HttpClient {
@@ -257,6 +257,7 @@ class HttpClient {
       case DioExceptionType.badCertificate:
         return ApiException('证书验证失败');
       case DioExceptionType.unknown:
+      default:
         return ApiException('未知错误：${error.message}');
     }
   }
@@ -323,33 +324,33 @@ class ApiException implements Exception {
 
 /// 错误请求异常
 class BadRequestException extends ApiException {
-  BadRequestException(super.message) : super(statusCode: 400);
+  BadRequestException(String message) : super(message, statusCode: 400);
 }
 
 /// 未授权异常
 class UnauthorizedException extends ApiException {
-  UnauthorizedException(super.message) : super(statusCode: 401);
+  UnauthorizedException(String message) : super(message, statusCode: 401);
 }
 
 /// 禁止访问异常
 class ForbiddenException extends ApiException {
-  ForbiddenException(super.message) : super(statusCode: 403);
+  ForbiddenException(String message) : super(message, statusCode: 403);
 }
 
 /// 资源未找到异常
 class NotFoundException extends ApiException {
-  NotFoundException(super.message) : super(statusCode: 404);
+  NotFoundException(String message) : super(message, statusCode: 404);
 }
 
 /// 验证异常
 class ValidationException extends ApiException {
   final Map<String, dynamic>? errors;
 
-  ValidationException(super.message, this.errors)
-      : super(statusCode: 422, data: errors);
+  ValidationException(String message, this.errors)
+      : super(message, statusCode: 422, data: errors);
 }
 
 /// 服务器异常
 class ServerException extends ApiException {
-  ServerException(super.message) : super(statusCode: 500);
+  ServerException(String message) : super(message, statusCode: 500);
 }

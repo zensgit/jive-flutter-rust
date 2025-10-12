@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jive_money/models/ledger.dart';
-import 'package:jive_money/providers/ledger_provider.dart';
-import 'package:jive_money/utils/string_utils.dart';
+import '../../models/ledger.dart';
+import '../../services/api/ledger_service.dart';
+import '../../providers/ledger_provider.dart';
+import '../../utils/string_utils.dart';
 
 /// 邀请成员对话框
 class InviteMemberDialog extends ConsumerStatefulWidget {
@@ -128,7 +129,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: theme.primaryColor.withValues(alpha: 0.1),
+                color: theme.primaryColor.withOpacity(0.1),
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(16),
                 ),
@@ -240,7 +241,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                                 leading: CircleAvatar(
                                   radius: 16,
                                   backgroundColor:
-                                      theme.primaryColor.withValues(alpha: 0.1),
+                                      theme.primaryColor.withOpacity(0.1),
                                   child: Text(
                                     StringUtils.safeInitial(email),
                                     style: TextStyle(
@@ -263,7 +264,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
 
                       // 角色选择
                       DropdownButtonFormField<LedgerRole>(
-                        initialValue: _selectedRole,
+                        value: _selectedRole,
                         decoration: InputDecoration(
                           labelText: '成员角色',
                           prefixIcon: const Icon(Icons.security),
@@ -330,10 +331,10 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.blue.withValues(alpha: 0.05),
+                          color: Colors.blue.withOpacity(0.05),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: Colors.blue.withValues(alpha: 0.2),
+                            color: Colors.blue.withOpacity(0.2),
                           ),
                         ),
                         child: Column(
@@ -453,7 +454,7 @@ class _InviteMemberDialogState extends ConsumerState<InviteMemberDialog> {
                 color: hasPermission ? Colors.green : Colors.grey[400],
               ),
             );
-          }),
+          }).toList(),
         ],
       ),
     );

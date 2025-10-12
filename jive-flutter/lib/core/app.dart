@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:jive_money/devtools/dev_quick_actions_stub.dart'
-    if (dart.library.html) '../devtools/dev_quick_actions_web.dart';
+import '../devtools/dev_quick_actions.dart';
 
-import 'package:jive_money/core/constants/app_constants.dart';
-import 'package:jive_money/core/theme/app_theme.dart';
-import 'package:jive_money/core/router/app_router.dart';
-import 'package:jive_money/core/localization/app_localizations.dart';
-import 'package:jive_money/features/auth/providers/auth_provider.dart';
-import 'package:jive_money/core/storage/token_storage.dart';
-import 'package:jive_money/core/auth/auth_events.dart';
-import 'package:jive_money/features/settings/providers/settings_provider.dart';
-import 'package:jive_money/providers/currency_provider.dart';
-import 'package:jive_money/providers/settings_provider.dart' as global_settings;
+import 'constants/app_constants.dart';
+import 'theme/app_theme.dart';
+import 'router/app_router.dart';
+import 'localization/app_localizations.dart';
+import '../features/auth/providers/auth_provider.dart';
+import 'storage/token_storage.dart';
+import 'auth/auth_events.dart';
+import '../features/settings/providers/settings_provider.dart';
+import '../providers/currency_provider.dart';
+import '../providers/settings_provider.dart' as global_settings;
 
 /// 主应用类
 class JiveApp extends ConsumerStatefulWidget {
@@ -46,7 +46,7 @@ class _JiveAppState extends ConsumerState<JiveApp> {
     }
     try {
       final settings = ref.read(global_settings.settingsProvider);
-      final autoUpdateRates = settings.autoUpdateRates;
+      final autoUpdateRates = settings.autoUpdateRates ?? true;
       if (autoUpdateRates && mounted) {
         debugPrint('@@ App.init -> refreshing exchange rates');
         await ref.read(currencyProvider.notifier).refreshExchangeRates();
@@ -88,8 +88,8 @@ class _JiveAppState extends ConsumerState<JiveApp> {
 
       // 构建器 - 添加文本缩放控制
       builder: (context, child) {
-        // Debug-only log; avoid heavy string interpolation during build
-        debugPrint('@@ App.builder start');
+        debugPrint(
+            '@@ App.builder start (has Directionality=${Directionality.maybeOf(context) != null})');
 
         // Ensure child is never null and has proper constraints
         final safeChild = child ?? const SizedBox.expand();
@@ -107,7 +107,9 @@ class _JiveAppState extends ConsumerState<JiveApp> {
                     : 12.0;
             final mediaWrapped = MediaQuery(
               data: MediaQuery.of(context).copyWith(
-                textScaler: const TextScaler.linear(1.0),
+                textScaler: TextScaler.linear(
+                  MediaQuery.of(context).textScaler.scale(1.0).clamp(0.9, 1.15),
+                ),
                 padding: MediaQuery.of(context).padding,
               ),
               child: Theme(
@@ -117,16 +119,16 @@ class _JiveAppState extends ConsumerState<JiveApp> {
                       : VisualDensity.adaptivePlatformDensity,
                   cardTheme: Theme.of(context).cardTheme.copyWith(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(radius)),
+                          borderRadius: BorderRadius.circular(radius),
                         ),
                       ),
                   inputDecorationTheme:
                       Theme.of(context).inputDecorationTheme.copyWith(
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(radius)),
+                              borderRadius: BorderRadius.circular(radius),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(radius)),
+                              borderRadius: BorderRadius.circular(radius),
                               borderSide: BorderSide(
                                   color: Theme.of(context).colorScheme.primary),
                             ),
@@ -159,7 +161,7 @@ class _JiveAppState extends ConsumerState<JiveApp> {
     AuthEvents.stream.listen((event) {
       if (event == AuthEvent.unauthorized) {
         // 提示并跳转登录
-        if (mounted && context.mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
                 content: Text('登录已过期，请重新登录'), duration: Duration(seconds: 2)),
@@ -189,7 +191,7 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   /// 加载保存的主题模式
   Future<void> _loadThemeMode() async {
     final settings = _ref.read(settingsProvider);
-    final savedTheme = settings.getThemeMode();
+    final savedTheme = await settings.getThemeMode();
     state = _parseThemeMode(savedTheme);
   }
 
@@ -242,7 +244,7 @@ class LocaleNotifier extends StateNotifier<Locale> {
   /// 加载保存的语言设置
   Future<void> _loadLocale() async {
     final settings = _ref.read(settingsProvider);
-    final savedLanguage = settings.getLanguage();
+    final savedLanguage = await settings.getLanguage();
     if (savedLanguage != null &&
         AppConstants.supportedLanguages.contains(savedLanguage)) {
       state = Locale(savedLanguage);

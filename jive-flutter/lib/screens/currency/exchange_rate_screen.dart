@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jive_money/providers/currency_provider.dart';
-// explicit meta provider
+import '../../providers/currency_provider.dart';
 
 /// Exchange Rate Screen - Auto-refreshes when opened
 class ExchangeRateScreen extends ConsumerStatefulWidget {
@@ -19,16 +18,6 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
   double? _convertedAmount;
   final TextEditingController _amountController =
       TextEditingController(text: '100');
-
-  String _fmt(DateTime dt) {
-    return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}';
-  }
-
-  String _buildSyncLine(catalogMeta) {
-    final sync = catalogMeta.lastSyncAt != null ? _fmt(catalogMeta.lastSyncAt) : '—';
-    final chk = catalogMeta.lastCheckedAt != null ? _fmt(catalogMeta.lastCheckedAt) : '—';
-    return '目录: 上次成功 $sync / 最近检查 $chk';
-  }
 
   @override
   void initState() {
@@ -104,7 +93,6 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
   Widget build(BuildContext context) {
     final currencyNotifier = ref.watch(currencyProvider.notifier);
     final availableCurrencies = currencyNotifier.getAvailableCurrencies();
-    final catalogMeta = ref.watch(currencyCatalogMetaProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -131,10 +119,15 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Catalog fallback indicator (uses new meta provider)
-            if (catalogMeta.usingFallback)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            // Fallback indicator (listen to last fetch log via provider flag if implemented)
+            Consumer(builder: (context, ref, _) {
+              final lastRates = ref.watch(currencyProvider);
+              // 简单判断：如果 provider 内部可暴露 isFallback，可替换为 lastRates.isFallback
+              final isFallback = lastRates.isFallback ?? false;
+              if (!isFallback) return const SizedBox.shrink();
+              return Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 margin: const EdgeInsets.only(bottom: 8),
                 decoration: BoxDecoration(
                   color: Colors.orange.shade100,
@@ -148,9 +141,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        catalogMeta.lastError != null
-                            ? '使用本地内置货币列表：${catalogMeta.lastError}'
-                            : '使用本地内置货币列表（服务器未加载）',
+                        '当前显示离线/备用汇率，可能与实时数值有差异',
                         style: Theme.of(context)
                             .textTheme
                             .bodySmall
@@ -158,41 +149,13 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                       ),
                     ),
                     TextButton(
-                      onPressed: _isRefreshing
-                          ? null
-                          : () => currencyNotifier.refreshCatalog(),
+                      onPressed: _isRefreshing ? null : _refreshRates,
                       child: const Text('重试'),
                     ),
                   ],
                 ),
-              ),
-            // Last sync info
-            if (catalogMeta.lastSyncAt != null || catalogMeta.lastCheckedAt != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  children: [
-                    const Icon(Icons.schedule, size: 16, color: Colors.grey),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        _buildSyncLine(catalogMeta),
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(color: Colors.grey[600]),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: _isRefreshing
-                          ? null
-                          : () => currencyNotifier.refreshCatalog(),
-                      child: const Text('刷新目录'),
-                    )
-                  ],
-                ),
-              ),
+              );
+            }),
             // Update status
             if (_isRefreshing) const LinearProgressIndicator(),
 
@@ -220,7 +183,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
 
             // From currency
             DropdownButtonFormField<String>(
-              initialValue: _fromCurrency,
+              value: _fromCurrency,
               decoration: const InputDecoration(
                 labelText: '从',
                 border: OutlineInputBorder(),
@@ -278,7 +241,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
 
             // To currency
             DropdownButtonFormField<String>(
-              initialValue: _toCurrency,
+              value: _toCurrency,
               decoration: const InputDecoration(
                 labelText: '到',
                 border: OutlineInputBorder(),

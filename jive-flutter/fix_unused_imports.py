@@ -1,105 +1,56 @@
 #!/usr/bin/env python3
 import os
 import re
-import sys
-import argparse
 import subprocess
 
-"""
-Remove unused imports based on Flutter analyzer output.
+def fix_unused_imports():
+    """Remove unused imports based on flutter analyze output"""
+    # Get unused imports from flutter analyze
+    result = subprocess.run(['flutter', 'analyze'], capture_output=True, text=True, cwd='.')
+    output = result.stderr
 
-Usage:
-  python3 fix_unused_imports.py [--from-file local-artifacts/flutter-analyze.txt] [--dry-run]
-  python3 fix_unused_imports.py            # runs `flutter analyze` and parses stdout
-"""
+    unused_imports = []
+    for line in output.split('\n'):
+        if 'unused_import' in line:
+            # Parse the line to extract file and import
+            match = re.search(r"Unused import: '([^']+)' • ([^:]+):(\d+):(\d+)", line)
+            if match:
+                import_name = match.group(1)
+                file_path = match.group(2)
+                line_num = int(match.group(3))
+                unused_imports.append((file_path, import_name, line_num))
 
-UNUSED_IMPORT_PATTERNS = [
-    # Format: lib/file.dart:10:1 • Unused import: 'package:foo/bar.dart' • unused_import
-    re.compile(r"^(?P<file>[^:]+):(?P<line>\d+):(?P<col>\d+)\s+•\s+Unused import: '(?P<import>[^']+)'\s+•\s+unused_import\b"),
-    # Format: Unused import: 'package:foo/bar.dart' • lib/file.dart:10:1 • unused_import
-    re.compile(r"^Unused import: '(?P<import>[^']+)'\s+•\s+(?P<file>[^:]+):(?P<line>\d+):(?P<col>\d+)\s+•\s+unused_import\b"),
-    # Format: warning • Unused import: 'package:foo/bar.dart' • lib/file.dart:10:1 • unused_import
-    re.compile(r"^warning\s+•\s+Unused import: '(?P<import>[^']+)'\s+•\s+(?P<file>[^:]+):(?P<line>\d+):(?P<col>\d+)\s+•\s+unused_import\b"),
-]
+    fixed_count = 0
+    for file_path, import_name, line_num in unused_imports:
+        if os.path.exists(file_path):
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    lines = f.readlines()
 
+                # Find and remove the import line
+                for i, line in enumerate(lines):
+                    # Check if this line contains the import
+                    if f"import '{import_name}'" in line or f'import "{import_name}"' in line:
+                        # Remove the line
+                        lines.pop(i)
 
-def parse_analyzer_output(text: str):
-    results = []  # list of tuples (file, import)
-    for raw in text.splitlines():
-        if 'unused_import' not in raw and 'Unused import:' not in raw:
-            continue
-        for pat in UNUSED_IMPORT_PATTERNS:
-            m = pat.search(raw)
-            if m:
-                file_path = m.group('file').strip()
-                imp = m.group('import').strip()
-                results.append((file_path, imp))
-                break
-    return results
+                        # Write back the file
+                        with open(file_path, 'w', encoding='utf-8') as f:
+                            f.writelines(lines)
 
+                        print(f"Removed unused import '{import_name}' from {file_path}")
+                        fixed_count += 1
+                        break
 
-def remove_import_line(file_path: str, import_name: str, dry_run: bool = False) -> bool:
-    if not os.path.exists(file_path):
-        return False
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            lines = f.readlines()
-        changed = False
-        new_lines = []
-        for line in lines:
-            if line.strip().startswith('import '):
-                # match single or double quote
-                if (f"import '{import_name}'" in line) or (f'import "{import_name}"' in line):
-                    changed = True
-                    continue  # skip this line
-            new_lines.append(line)
-        if changed and not dry_run:
-            with open(file_path, 'w', encoding='utf-8') as f:
-                f.writelines(new_lines)
-        return changed
-    except Exception as e:
-        print(f"Error fixing {file_path}: {e}")
-        return False
+            except Exception as e:
+                print(f"Error fixing {file_path}: {e}")
 
+    return fixed_count
 
-def run():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--from-file', help='Parse analyzer output from a file instead of running flutter analyze')
-    parser.add_argument('--dry-run', action='store_true')
-    args = parser.parse_args()
-
-    if args.from_file and os.path.exists(args.from_file):
-        with open(args.from_file, 'r', encoding='utf-8') as f:
-            output = f.read()
-    else:
-        # Fallback: run flutter analyze and capture stdout
-        try:
-            proc = subprocess.run(['flutter', 'analyze'], cwd='.', text=True, capture_output=True, check=False)
-            output = proc.stdout or ''
-        except Exception as e:
-            print(f"Failed to run flutter analyze: {e}")
-            return 1
-
-    findings = parse_analyzer_output(output)
-    if not findings:
-        print('No unused imports found in analyzer output.')
-        return 0
-
-    # de-duplicate by (file, import)
-    seen = set()
-    fixed = 0
-    for file_path, imp in findings:
-        key = (file_path, imp)
-        if key in seen:
-            continue
-        seen.add(key)
-        if remove_import_line(file_path, imp, dry_run=args.dry_run):
-            print(f"Removed unused import '{imp}' from {file_path}")
-            fixed += 1
-
-    print(f"Fixed {fixed} unused imports")
-    return 0
-
+def main():
+    print("Fixing unused imports...")
+    fixed_count = fix_unused_imports()
+    print(f"Fixed {fixed_count} unused imports")
 
 if __name__ == '__main__':
-    sys.exit(run())
+    main()

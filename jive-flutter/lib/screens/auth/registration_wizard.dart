@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:jive_money/services/auth_service.dart';
-import 'package:jive_money/services/api_service.dart';
+import '../../services/auth_service.dart';
+import '../../services/api_service.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jive_money/providers/currency_provider.dart';
-import 'package:jive_money/core/storage/token_storage.dart';
+import '../../providers/currency_provider.dart';
+import '../../core/storage/token_storage.dart';
 
 class RegistrationWizard extends ConsumerStatefulWidget {
   const RegistrationWizard({super.key});
@@ -516,8 +519,8 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                       _agreeToTerms = value ?? false;
                     });
                   },
-                  fillColor: WidgetStateProperty.resolveWith((states) {
-                    if (states.contains(WidgetState.selected)) {
+                  fillColor: MaterialStateProperty.resolveWith((states) {
+                    if (states.contains(MaterialState.selected)) {
                       return Colors.blue;
                     }
                     return Colors.grey[700];
@@ -711,7 +714,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${_getCurrencySymbol(_selectedCurrency)}2,325.25',
+                    _getCurrencySymbol(_selectedCurrency) + '2,325.25',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 32,
@@ -759,7 +762,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
 
             // Country Selection
             DropdownButtonFormField<String>(
-              initialValue: _selectedCountry,
+              value: _selectedCountry,
               decoration: InputDecoration(
                 labelText: '国家/地区',
                 labelStyle: TextStyle(color: Colors.grey[400]),
@@ -790,7 +793,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
 
             // Currency Selection
             DropdownButtonFormField<String>(
-              initialValue: _selectedCurrency,
+              value: _selectedCurrency,
               decoration: InputDecoration(
                 labelText: '货币',
                 labelStyle: TextStyle(color: Colors.grey[400]),
@@ -819,7 +822,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
 
             // Language Selection
             DropdownButtonFormField<String>(
-              initialValue: _selectedLanguage,
+              value: _selectedLanguage,
               decoration: InputDecoration(
                 labelText: '语言',
                 labelStyle: TextStyle(color: Colors.grey[400]),
@@ -848,7 +851,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
 
             // Timezone Selection
             DropdownButtonFormField<String>(
-              initialValue: _selectedTimezone,
+              value: _selectedTimezone,
               decoration: InputDecoration(
                 labelText: '时区',
                 labelStyle: TextStyle(color: Colors.grey[400]),
@@ -878,7 +881,7 @@ class _RegistrationWizardState extends ConsumerState<RegistrationWizard> {
 
             // Date Format Selection
             DropdownButtonFormField<String>(
-              initialValue: _selectedDateFormat,
+              value: _selectedDateFormat,
               decoration: InputDecoration(
                 labelText: '日期格式',
                 labelStyle: TextStyle(color: Colors.grey[400]),

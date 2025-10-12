@@ -1,5 +1,4 @@
 /// 应用常量定义
-library;
 import 'package:flutter/material.dart';
 
 class AppConstants {
@@ -152,8 +151,8 @@ class AppConstants {
   static const double chartDefaultHeight = 300.0;
   static const double chartDefaultWidth = double.infinity;
 
-  // 导出配置（恢复 CSV 导出）
-  static const List<String> supportedExportFormats = ['csv', 'xlsx', 'pdf', 'json'];
+  // 导出配置
+  static const List<String> supportedExportFormats = ['csv', 'xlsx', 'pdf'];
   static const String defaultExportFormat = 'csv';
 
   // 分类图标

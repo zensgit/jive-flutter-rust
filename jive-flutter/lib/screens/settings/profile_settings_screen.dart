@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:jive_money/services/api_service.dart';
-import 'package:jive_money/services/auth_service.dart';
+import '../../services/api_service.dart';
+import '../../services/auth_service.dart';
 
 class ProfileSettingsScreen extends StatefulWidget {
   const ProfileSettingsScreen({super.key});
@@ -455,9 +456,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           'avatar_type': 'emoji',
           'avatar_data': _selectedSystemAvatar!['icon'],
           'avatar_color':
-              '#${(_selectedSystemAvatar!['color'] as Color).toARGB32().toRadixString(16).padLeft(8, '0')}',
+              '#${(_selectedSystemAvatar!['color'] as Color).value.toRadixString(16).padLeft(8, '0')}',
           'avatar_background':
-              '#${(_selectedSystemAvatar!['background'] as Color).toARGB32().toRadixString(16).padLeft(8, '0')}',
+              '#${(_selectedSystemAvatar!['background'] as Color).value.toRadixString(16).padLeft(8, '0')}',
         });
       }
 
@@ -570,8 +571,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         ],
       ),
     );
-
-    if (!mounted) return;
 
     if (finalConfirmed != true) return;
 
@@ -890,7 +889,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
                   // Country
                   DropdownButtonFormField<String>(
-                    initialValue: _selectedCountry,
+                    value: _selectedCountry,
                     decoration: const InputDecoration(
                       labelText: '国家/地区',
                       border: OutlineInputBorder(),
@@ -908,7 +907,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
                   // Language
                   DropdownButtonFormField<String>(
-                    initialValue: _selectedLanguage,
+                    value: _selectedLanguage,
                     decoration: const InputDecoration(
                       labelText: '语言',
                       border: OutlineInputBorder(),
@@ -925,7 +924,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
                   // Timezone
                   DropdownButtonFormField<String>(
-                    initialValue: _selectedTimezone,
+                    value: _selectedTimezone,
                     decoration: const InputDecoration(
                       labelText: '时区',
                       border: OutlineInputBorder(),
@@ -942,7 +941,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
                   // Date Format
                   DropdownButtonFormField<String>(
-                    initialValue: _selectedDateFormat,
+                    value: _selectedDateFormat,
                     decoration: const InputDecoration(
                       labelText: '日期格式',
                       border: OutlineInputBorder(),
