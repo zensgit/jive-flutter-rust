@@ -10,7 +10,6 @@ pub mod category_template;
 pub mod user;
 pub mod family;
 pub mod base;
-pub mod travel;
 
 pub use account::*;
 pub use transaction::*;
@@ -20,4 +19,3 @@ pub use category_template::*;
 pub use user::*;
 pub use family::*;
 pub use base::*;
-pub use travel::*;

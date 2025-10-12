@@ -1,6 +1,6 @@
 // 预算进度组件
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
 
 class BudgetProgress extends StatelessWidget {
   final String category;
@@ -42,7 +42,7 @@ class BudgetProgress extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: Border.all(
-            color: theme.colorScheme.outline.withOpacity(0.2),
+            color: theme.colorScheme.outline.withValues(alpha: 0.2),
           ),
           borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         ),
@@ -57,7 +57,7 @@ class BudgetProgress extends StatelessWidget {
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: (color ?? progressColor).withOpacity(0.1),
+                      color: (color ?? progressColor).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -81,9 +81,9 @@ class BudgetProgress extends StatelessWidget {
                       if (showAmount) ...[
                         const SizedBox(height: 2),
                         Text(
-                          '${ref.read(currencyProvider.notifier).formatCurrency(spent, ref.read(baseCurrencyProvider).code)} / ${ref.read(currencyProvider.notifier).formatCurrency(budgeted, ref.read(baseCurrencyProvider).code)}',
+                          '¥${spent.toStringAsFixed(2)} / ¥${budgeted.toStringAsFixed(2)}',
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(0.6),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                         ),
                       ],
@@ -108,7 +108,7 @@ class BudgetProgress extends StatelessWidget {
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: isOverBudget
                             ? AppConstants.errorColor
-                            : theme.colorScheme.onSurface.withOpacity(0.6),
+                            : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                   ],
@@ -124,7 +124,7 @@ class BudgetProgress extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: progress.clamp(0.0, 1.0),
                 minHeight: 8,
-                backgroundColor: progressColor.withOpacity(0.1),
+                backgroundColor: progressColor.withValues(alpha: 0.1),
                 valueColor: AlwaysStoppedAnimation<Color>(progressColor),
               ),
             ),
@@ -135,13 +135,13 @@ class BudgetProgress extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppConstants.errorColor.withOpacity(0.1),
+                  color: AppConstants.errorColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.warning,
                       size: 14,
                       color: AppConstants.errorColor,
@@ -224,13 +224,13 @@ class CompactBudgetProgress extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: progress.clamp(0.0, 1.0),
                     minHeight: 6,
-                    backgroundColor: progressColor.withOpacity(0.1),
+                    backgroundColor: progressColor.withValues(alpha: 0.1),
                     valueColor: AlwaysStoppedAnimation<Color>(progressColor),
                   ),
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 45,
               child: Text(
                 '${percentage.toStringAsFixed(0)}%',
@@ -316,13 +316,13 @@ class BudgetProgressList extends StatelessWidget {
           Icon(
             Icons.pie_chart_outline,
             size: 48,
-            color: theme.colorScheme.onSurface.withOpacity(0.3),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 8),
           Text(
             '暂无预算',
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
         ],

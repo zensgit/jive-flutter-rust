@@ -1,8 +1,7 @@
 // 账户状态管理
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/api/account_service.dart';
-import '../services/sync/sync_service.dart';
-import '../models/account.dart';
+import 'package:jive_money/services/api/account_service.dart';
+import 'package:jive_money/models/account.dart';
 
 /// 账户状态
 class AccountState {
@@ -56,9 +55,8 @@ class AccountState {
 /// 账户Provider
 class AccountNotifier extends StateNotifier<AccountState> {
   final AccountService _accountService;
-  final SyncService _syncService;
 
-  AccountNotifier(this._accountService, this._syncService)
+  AccountNotifier(this._accountService)
       : super(const AccountState()) {
     loadAccounts();
   }
@@ -248,8 +246,7 @@ final accountServiceProvider = Provider<AccountService>((ref) {
 final accountProvider =
     StateNotifierProvider<AccountNotifier, AccountState>((ref) {
   final accountService = ref.watch(accountServiceProvider);
-  final syncService = SyncService.instance;
-  return AccountNotifier(accountService, syncService);
+  return AccountNotifier(accountService);
 });
 
 /// 便捷访问

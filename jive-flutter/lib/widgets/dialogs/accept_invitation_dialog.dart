@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/invitation.dart';
-import '../../models/family.dart' as family_model;
-import '../../models/user.dart';
-import '../../services/invitation_service.dart';
-import '../../providers/family_provider.dart';
-import '../../providers/auth_provider.dart';
-import '../../utils/snackbar_utils.dart';
+import 'package:jive_money/models/invitation.dart';
+import 'package:jive_money/models/family.dart' as family_model;
+import 'package:jive_money/models/user.dart';
+import 'package:jive_money/services/invitation_service.dart';
+import 'package:jive_money/providers/family_provider.dart';
+import 'package:jive_money/providers/auth_provider.dart';
+import 'package:jive_money/utils/snackbar_utils.dart';
 
 /// 接受邀请对话框
 class AcceptInvitationDialog extends ConsumerStatefulWidget {
@@ -56,7 +56,8 @@ class _AcceptInvitationDialogState
 
       if (success && mounted) {
         // 刷新家庭列表
-        await ref.read(familyProvider.notifier).loadUserFamilies();
+        await ref.read(familyControllerProvider.notifier).loadUserFamilies();
+        if (!context.mounted) return;
 
         // 显示成功消息
         SnackbarUtils.showSuccess(
@@ -101,7 +102,7 @@ class _AcceptInvitationDialogState
             // 家庭信息卡片
             Card(
               elevation: 0,
-              color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -138,9 +139,8 @@ class _AcceptInvitationDialogState
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              if (family.description?.isNotEmpty ?? false)
-                                Text(
-                                  family.description!,
+                              Text(
+                                '智能记账，理财无忧',
                                   style: theme.textTheme.bodySmall,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -158,19 +158,19 @@ class _AcceptInvitationDialogState
                         _buildStatItem(
                           context,
                           Icons.people_outline,
-                          '${family.memberCount}',
+                          '1',
                           '成员',
                         ),
                         _buildStatItem(
                           context,
-                          Icons.folder_outline,
-                          '${family.categoryCount ?? 0}',
+                          Icons.folder_outlined,
+                          '0',
                           '分类',
                         ),
                         _buildStatItem(
                           context,
                           Icons.receipt_long_outlined,
-                          '${family.transactionCount ?? 0}',
+                          '0',
                           '交易',
                         ),
                       ],
@@ -187,7 +187,7 @@ class _AcceptInvitationDialogState
               context,
               Icons.person_outline,
               '邀请人',
-              inviter.displayName ?? inviter.email,
+              inviter.displayName,
             ),
 
             _buildInfoRow(
@@ -210,10 +210,10 @@ class _AcceptInvitationDialogState
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer.withOpacity(0.2),
+                  color: theme.colorScheme.primaryContainer.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: theme.colorScheme.primary.withOpacity(0.3),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Column(
@@ -259,7 +259,7 @@ class _AcceptInvitationDialogState
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.warningContainer.withOpacity(0.3),
+                  color: Colors.amber.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -283,11 +283,11 @@ class _AcceptInvitationDialogState
 
               // 备注输入
               TextField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: '备注（可选）',
                   hintText: '添加一条消息给邀请人',
-                  border: const OutlineInputBorder(),
-                  prefixIcon: const Icon(Icons.message_outlined),
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.message_outlined),
                 ),
                 maxLines: 2,
                 onChanged: (value) {

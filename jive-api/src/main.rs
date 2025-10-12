@@ -17,24 +17,19 @@ use std::sync::Arc;
 use tokio::net::TcpListener;
 use tower::ServiceBuilder;
 use tower_http::{
-    services::ServeDir,
     trace::TraceLayer,
 };
-use jive_money_api::middleware::rate_limit::{RateLimiter, login_rate_limit};
-use jive_money_api::middleware::metrics_guard::{metrics_guard, MetricsGuardState, Cidr};
-use tracing::{error, info, warn};
+use tracing::{info, warn, error};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use redis::aio::ConnectionManager;
 use redis::Client as RedisClient;
 
 // 使用库中的模块
 use jive_money_api::{handlers, services, ws};
-mod metrics;
 
 // 导入处理器
 use handlers::template_handler::*;
 use handlers::accounts::*;
-use handlers::banks;
 use handlers::transactions::*;
 use handlers::payees::*;
 use handlers::rules::*;
@@ -44,8 +39,7 @@ use handlers::currency_handler;
 use handlers::currency_handler_enhanced;
 use handlers::tag_handler;
 use handlers::category_handler;
-use handlers::travel;
-use handlers::ledgers::{list_ledgers, create_ledger, get_current_ledger, get_ledger,
+use handlers::ledgers::{list_ledgers, create_ledger, get_current_ledger, get_ledger, 
                          update_ledger, delete_ledger, get_ledger_statistics, get_ledger_members};
 use handlers::family_handler::{list_families, create_family, get_family, update_family, delete_family, join_family, leave_family, request_verification_code, get_family_statistics, get_family_actions, get_role_descriptions, transfer_ownership};
 use handlers::member_handler::{get_family_members, add_member, remove_member, update_member_role, update_member_permissions};
@@ -213,27 +207,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         pool: pool.clone(),
         ws_manager: Some(ws_manager.clone()),
         redis: redis_manager,
-        metrics: jive_money_api::AppMetrics::new(),
     };
-
-    // Rate limiter (login) configuration
-    let (rl_max, rl_window) = std::env::var("AUTH_RATE_LIMIT")
-        .ok()
-        .and_then(|v| {
-            let parts: Vec<&str> = v.split('/').collect();
-            if parts.len()==2 { Some((parts[0].parse().ok()?, parts[1].parse().ok()?)) } else { None }
-        })
-        .unwrap_or((30u32, 60u64));
-    let rate_limiter = RateLimiter::new(rl_max, rl_window);
-    let metrics_guard_state = {
-        let enabled = std::env::var("ALLOW_PUBLIC_METRICS").map(|v| v=="0").unwrap_or(false);
-        let allow_list = std::env::var("METRICS_ALLOW_CIDRS").unwrap_or("127.0.0.1/32".to_string());
-        let deny_list = std::env::var("METRICS_DENY_CIDRS").unwrap_or_default();
-        let allow = allow_list.split(',').filter_map(|c| Cidr::parse(c.trim())).collect();
-        let deny = deny_list.split(',').filter_map(|c| Cidr::parse(c.trim())).collect();
-        MetricsGuardState { allow, deny, enabled }
-    };
-
+    
     // 启动定时任务（汇率更新等）
     info!("🕒 Starting scheduled tasks...");
     let pool_arc = Arc::new(pool.clone());
@@ -271,11 +246,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/accounts/:id", put(update_account))
         .route("/api/v1/accounts/:id", delete(delete_account))
         .route("/api/v1/accounts/statistics", get(get_account_statistics))
-
-        // 银行管理 API
-        .route("/api/v1/banks", get(banks::list_banks))
-        .route("/api/v1/banks/version", get(banks::get_banks_version))
-
+        
         // 交易管理 API
         .route("/api/v1/transactions", get(list_transactions))
         .route("/api/v1/transactions", post(create_transaction))
@@ -286,27 +257,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/transactions/:id", delete(delete_transaction))
         .route("/api/v1/transactions/bulk", post(bulk_transaction_operations))
         .route("/api/v1/transactions/statistics", get(get_transaction_statistics))
-
-        // 旅行模式 API
-        .route("/api/v1/travel/events", get(travel::list_travel_events))
-        .route("/api/v1/travel/events", post(travel::create_travel_event))
-        .route("/api/v1/travel/events/active", get(travel::get_active_travel))
-        .route("/api/v1/travel/events/:id", get(travel::get_travel_event))
-        .route("/api/v1/travel/events/:id", put(travel::update_travel_event))
-        .route("/api/v1/travel/events/:id/activate", post(travel::activate_travel))
-        .route("/api/v1/travel/events/:id/complete", post(travel::complete_travel))
-        .route("/api/v1/travel/events/:id/cancel", post(travel::cancel_travel))
-        .route("/api/v1/travel/events/:id/transactions", post(travel::attach_transactions))
-        .route("/api/v1/travel/events/:travel_id/transactions/:transaction_id", delete(travel::detach_transaction))
-        .route("/api/v1/travel/events/:id/budgets", get(travel::get_travel_budgets))
-        .route("/api/v1/travel/events/:id/budgets", post(travel::upsert_travel_budget))
-        .route("/api/v1/travel/events/:id/statistics", get(travel::get_travel_statistics))
-
-        // Metrics endpoint
-        .route("/metrics", get(metrics::metrics_handler).route_layer(
-            axum::middleware::from_fn_with_state(metrics_guard_state.clone(), metrics_guard)
-        ))
-
+        
         // 收款人管理 API
         .route("/api/v1/payees", get(list_payees))
         .route("/api/v1/payees", post(create_payee))
@@ -316,7 +267,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/payees/suggestions", get(get_payee_suggestions))
         .route("/api/v1/payees/statistics", get(get_payee_statistics))
         .route("/api/v1/payees/merge", post(merge_payees))
-
+        
         // 规则引擎 API
         .route("/api/v1/rules", get(list_rules))
         .route("/api/v1/rules", post(create_rule))
@@ -326,13 +277,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/rules/execute", post(execute_rules))
         
         // 认证 API
-        .route(
-            "/api/v1/auth/register",
-            post(auth_handlers::register_with_family),
-        )
-        .route("/api/v1/auth/login", post(auth_handlers::login).route_layer(
-            axum::middleware::from_fn_with_state((rate_limiter.clone(), app_state.clone()), login_rate_limit)
-        ))
+        .route("/api/v1/auth/register", post(auth_handlers::register_with_family))
+        .route("/api/v1/auth/login", post(auth_handlers::login))
         .route("/api/v1/auth/refresh", post(auth_handlers::refresh_token))
         .route("/api/v1/auth/user", get(auth_handlers::get_current_user))
         .route("/api/v1/auth/profile", get(auth_handlers::get_current_user))  // Alias for Flutter app
@@ -426,8 +372,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/categories/import", post(category_handler::batch_import_templates))
 
         // 静态文件
-        .route("/static/icons/*path", get(serve_icon))
-        .nest_service("/static/bank_icons", ServeDir::new("static/bank_icons"));
+        .route("/static/icons/*path", get(serve_icon));
 
     // 可选 Demo 占位符接口（按特性开关）
     #[cfg(feature = "demo_endpoints")]
@@ -527,42 +472,16 @@ async fn health_check(State(state): State<AppState>) -> Json<serde_json::Value> 
      .unwrap_or(0);
 
     let manual_expired = sqlx::query(
-        r#"SELECT COUNT(*) AS c FROM exchange_rates
+        r#"SELECT COUNT(*) AS c FROM exchange_rates 
            WHERE is_manual = true AND manual_rate_expiry IS NOT NULL AND manual_rate_expiry <= NOW()"#
     ).fetch_one(&state.pool).await.ok()
      .and_then(|row| row.try_get::<i64, _>("c").ok())
      .unwrap_or(0);
 
-    // Hash distribution
-    let (b2a, b2b, b2y, a2id) = sqlx::query(
-        "SELECT \
-            COUNT(*) FILTER (WHERE password_hash LIKE '$2a$%') AS b2a,\
-            COUNT(*) FILTER (WHERE password_hash LIKE '$2b$%') AS b2b,\
-            COUNT(*) FILTER (WHERE password_hash LIKE '$2y$%') AS b2y,\
-            COUNT(*) FILTER (WHERE password_hash LIKE '$argon2id$%') AS a2id \
-         FROM users"
-    ).fetch_one(&state.pool).await
-     .ok()
-     .and_then(|row| {
-         Some((
-             row.try_get::<i64, _>("b2a").unwrap_or(0),
-             row.try_get::<i64, _>("b2b").unwrap_or(0),
-             row.try_get::<i64, _>("b2y").unwrap_or(0),
-             row.try_get::<i64, _>("a2id").unwrap_or(0),
-         ))
-     })
-     .unwrap_or((0, 0, 0, 0));
-
     Json(json!({
         "status": "healthy",
         "service": "jive-money-api",
         "mode": mode.trim(),
-        "build": {
-            "commit": option_env!("GIT_COMMIT").unwrap_or("unknown"),
-            "time": option_env!("BUILD_TIME").unwrap_or("unknown"),
-            "rustc": option_env!("RUSTC_VERSION").unwrap_or("unknown"),
-            "version": env!("CARGO_PKG_VERSION")
-        },
         "features": {
             "websocket": true,
             "database": true,
@@ -576,25 +495,6 @@ async fn health_check(State(state): State<AppState>) -> Json<serde_json::Value> 
                 "todays_rows": todays_rows,
                 "manual_overrides_active": manual_active,
                 "manual_overrides_expired": manual_expired
-            },
-            "hash_distribution": {
-                "bcrypt": {"2a": b2a, "2b": b2b, "2y": b2y},
-                "argon2id": a2id
-            },
-            "rehash": {
-                "enabled": std::env::var("REHASH_ON_LOGIN").map(|v| !matches!(v.as_str(), "0" | "false" | "FALSE")).unwrap_or(true),
-                "count": state.metrics.get_rehash_count(),
-                "fail_count": state.metrics.get_rehash_fail()
-            },
-            "auth_login": {
-                "fail": state.metrics.get_login_fail(),
-                "inactive": state.metrics.get_login_inactive()
-            },
-            "export": {
-                "requests_stream": state.metrics.get_export_counts().0,
-                "requests_buffered": state.metrics.get_export_counts().1,
-                "rows_stream": state.metrics.get_export_counts().2,
-                "rows_buffered": state.metrics.get_export_counts().3
             }
         },
         "timestamp": chrono::Utc::now().to_rfc3339()

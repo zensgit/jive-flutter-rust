@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/tag.dart';
-import '../providers/tag_provider.dart';
+import 'package:jive_money/models/tag.dart';
+import 'package:jive_money/providers/tag_provider.dart';
 
 class TagCreateDialog extends ConsumerStatefulWidget {
   final String? initialGroupId;
@@ -26,6 +26,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
   String? _selectedGroupName;
   bool _isLoading = false;
   bool _showGroupSuggestions = false;
+  String? _errorMessage;
 
   final List<String> _availableColors = [
     '#e99537',
@@ -135,12 +136,19 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                 // 标签名称
                 TextField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: '标签名称',
                     hintText: '请输入标签名称',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    errorText: _errorMessage,
+                    errorStyle: const TextStyle(
+                      color: Colors.red,
+                      fontSize: 12,
+                    ),
                   ),
-                  onChanged: (_) => setState(() {}),
+                  onChanged: (_) => setState(() {
+                    _errorMessage = null; // 清除错误信息
+                  }),
                 ),
                 const SizedBox(height: 16),
 
@@ -178,7 +186,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                 const Text('选择图标 (可选)',
                     style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
-                Container(
+                SizedBox(
                   height: 80,
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -225,7 +233,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                               child: Icon(entry.value, color: Colors.grey[700]),
                             ),
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                   ),
@@ -250,12 +258,12 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                     decoration: BoxDecoration(
                       color: Color(int.parse((_selectedColor ?? '#6471eb')
                               .replaceFirst('#', '0xff')))
-                          .withOpacity(0.15),
+                          .withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: Color(int.parse((_selectedColor ?? '#6471eb')
                                 .replaceFirst('#', '0xff')))
-                            .withOpacity(0.3),
+                            .withValues(alpha: 0.3),
                       ),
                     ),
                     child: Row(
@@ -405,7 +413,7 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
               border: Border.all(color: Colors.grey[300]!),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -414,82 +422,85 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // 现有分组列表
-                if (filteredGroups.isNotEmpty)
-                  ...filteredGroups.take(5).map((group) {
-                    return ListTile(
-                      dense: true,
-                      leading: CircleAvatar(
-                        radius: 12,
-                        backgroundColor: Color(int.parse(
-                                (group.color ?? '#6471eb')
-                                    .replaceFirst('#', '0xff')))
-                            .withOpacity(0.2),
-                        child: Icon(
-                          _getGroupIcon(group.icon),
-                          size: 16,
-                          color: Color(int.parse((group.color ?? '#6471eb')
-                              .replaceFirst('#', '0xff'))),
+                // 显示分组列表
+                if (_groupController.text.trim().isEmpty)
+                  // 输入框为空时显示所有分组
+                  ...tagGroups.isNotEmpty
+                      ? [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              '选择现有分组:',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          ...tagGroups.map((group) {
+                            return ListTile(
+                              dense: true,
+                              leading: CircleAvatar(
+                                radius: 12,
+                                backgroundColor: Color(int.parse(
+                                        (group.color ?? '#6471eb')
+                                            .replaceFirst('#', '0xff')))
+                                    .withValues(alpha: 0.2),
+                                child: Icon(
+                                  _getGroupIcon(group.icon),
+                                  size: 16,
+                                  color: Color(int.parse((group.color ?? '#6471eb')
+                                      .replaceFirst('#', '0xff'))),
+                                ),
+                              ),
+                              title: Text(
+                                group.name,
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                              subtitle: Text(
+                                '${_getGroupTagCount(group.id!)} 个标签',
+                                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                              ),
+                              onTap: () {
+                                _selectGroup(group);
+                              },
+                            );
+                          }),
+                        ]
+                      : []
+                else
+                  // 输入框有内容时显示过滤后的分组
+                  if (filteredGroups.isNotEmpty)
+                    ...filteredGroups.take(5).map((group) {
+                      return ListTile(
+                        dense: true,
+                        leading: CircleAvatar(
+                          radius: 12,
+                          backgroundColor: Color(int.parse(
+                                  (group.color ?? '#6471eb')
+                                      .replaceFirst('#', '0xff')))
+                              .withValues(alpha: 0.2),
+                          child: Icon(
+                            _getGroupIcon(group.icon),
+                            size: 16,
+                            color: Color(int.parse((group.color ?? '#6471eb')
+                                .replaceFirst('#', '0xff'))),
+                          ),
                         ),
-                      ),
-                      title: Text(
-                        group.name,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      subtitle: Text(
-                        '${_getGroupTagCount(group.id!)} 个标签',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                      ),
-                      onTap: () {
-                        _selectGroup(group);
-                      },
-                    );
-                  }),
-
-                // 如果输入框为空，显示所有分组
-                if (_groupController.text.trim().isEmpty &&
-                    tagGroups.isNotEmpty) ...[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      '选择现有分组:',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  ...tagGroups.map((group) {
-                    return ListTile(
-                      dense: true,
-                      leading: CircleAvatar(
-                        radius: 12,
-                        backgroundColor: Color(int.parse(
-                                (group.color ?? '#6471eb')
-                                    .replaceFirst('#', '0xff')))
-                            .withOpacity(0.2),
-                        child: Icon(
-                          _getGroupIcon(group.icon),
-                          size: 16,
-                          color: Color(int.parse((group.color ?? '#6471eb')
-                              .replaceFirst('#', '0xff'))),
+                        title: Text(
+                          group.name,
+                          style: const TextStyle(fontSize: 14),
                         ),
-                      ),
-                      title: Text(
-                        group.name,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      subtitle: Text(
-                        '${_getGroupTagCount(group.id!)} 个标签',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                      ),
-                      onTap: () {
-                        _selectGroup(group);
-                      },
-                    );
-                  }),
-                ],
+                        subtitle: Text(
+                          '${_getGroupTagCount(group.id!)} 个标签',
+                          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                        ),
+                        onTap: () {
+                          _selectGroup(group);
+                        },
+                      );
+                    }),
 
                 // 创建新分组选项
                 if (_canCreateNewGroup())
@@ -577,6 +588,31 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
     final groupName = _groupController.text.trim();
     if (groupName.isEmpty) return;
 
+    // 检查是否已存在同名分组
+    final tagGroups = ref.read(tagGroupsProvider);
+    final nameExists = tagGroups.any((group) =>
+        group.name.toLowerCase().trim() == groupName.toLowerCase().trim());
+
+    if (nameExists) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('⚠️ 分组"$groupName"已存在！请使用其他名称'),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 3),
+            action: SnackBarAction(
+              label: '知道了',
+              textColor: Colors.white,
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              },
+            ),
+          ),
+        );
+      }
+      return;
+    }
+
     try {
       final groupNotifier = ref.read(tagGroupsProvider.notifier);
       final newGroup = TagGroup(
@@ -615,17 +651,17 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
 
     // 空白标签过滤
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请输入标签名称')),
-      );
+      setState(() {
+        _errorMessage = '请输入标签名称';
+      });
       return;
     }
 
     // 过滤纯空白字符的标签
     if (name.replaceAll(RegExp(r'\s+'), '').isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('标签名称不能为空白字符')),
-      );
+      setState(() {
+        _errorMessage = '标签名称不能为空白字符';
+      });
       return;
     }
 
@@ -653,24 +689,17 @@ class _TagCreateDialogState extends ConsumerState<TagCreateDialog> {
                   final group = groups.firstWhere(
                     (g) => g.id == existingTag!.groupId,
                   );
-                  return group.name;
+                  return '分组"${group.name}"';
                 } catch (e) {
                   return '未知分组';
                 }
               })()
-            : '无分组';
+            : '未分组';
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('标签名称"$name"已存在于分组"$groupInfo"中'),
-            action: SnackBarAction(
-              label: '查看',
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ),
-        );
+        setState(() {
+          _isLoading = false;
+          _errorMessage = '标签"$name"已存在于$groupInfo中';
+        });
         return;
       }
 

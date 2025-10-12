@@ -208,14 +208,6 @@ impl Default for CsvExportConfig {
     }
 }
 
-impl CsvExportConfig {
-    // Allow external crates (API) to toggle header inclusion without exposing fields.
-    pub fn with_include_header(mut self, include_header: bool) -> Self {
-        self.include_header = include_header;
-        self
-    }
-}
-
 /// 轻量导出行（供服务端快速复用，不依赖内部数据收集）
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SimpleTransactionExport {

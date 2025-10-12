@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import '../../models/ledger.dart';
-import '../../models/family.dart' as family_model;
-import '../../providers/ledger_provider.dart';
-import '../../providers/family_provider.dart';
-import '../../services/api/ledger_service.dart';
-import '../../services/api/family_service.dart';
-import '../../widgets/dialogs/delete_family_dialog.dart';
-import 'family_members_screen.dart';
-import '../invitations/invitation_management_screen.dart';
-import '../../widgets/sheets/generate_invite_code_sheet.dart';
+import 'package:jive_money/models/ledger.dart';
+import 'package:jive_money/models/family.dart' as family_model;
+import 'package:jive_money/providers/ledger_provider.dart';
+import 'package:jive_money/services/api/family_service.dart';
+import 'package:jive_money/widgets/dialogs/delete_family_dialog.dart';
+import 'package:jive_money/screens/family/family_members_screen.dart';
+import 'package:jive_money/screens/invitations/invitation_management_screen.dart';
+import 'package:jive_money/widgets/sheets/generate_invite_code_sheet.dart';
+import 'package:jive_money/providers/auth_provider.dart' show currentUserProvider;
 
 /// 家庭设置页面
 class FamilySettingsScreen extends ConsumerStatefulWidget {
@@ -106,8 +105,8 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    theme.primaryColor.withOpacity(0.1),
-                    theme.primaryColor.withOpacity(0.05),
+                    theme.primaryColor.withValues(alpha: 0.1),
+                    theme.primaryColor.withValues(alpha: 0.05),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -120,7 +119,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                     children: [
                       CircleAvatar(
                         radius: 50,
-                        backgroundColor: theme.primaryColor.withOpacity(0.2),
+                        backgroundColor: theme.primaryColor.withValues(alpha: 0.2),
                         backgroundImage: _avatarImage != null
                             ? FileImage(_avatarImage!)
                             : null,
@@ -199,7 +198,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: DropdownButtonFormField<LedgerType>(
-                    value: _selectedType,
+                    initialValue: _selectedType,
                     decoration: InputDecoration(
                       labelText: '类型',
                       prefixIcon: Icon(_getTypeIcon(_selectedType)),
@@ -608,7 +607,7 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
       createdAt: widget.ledger.createdAt ?? DateTime.now(),
       updatedAt: widget.ledger.updatedAt ?? DateTime.now(),
       settings: {
-        'currency': widget.ledger.currency ?? 'CNY',
+        'currency': widget.ledger.currency,
         'locale': 'zh_CN',
         'timezone': 'Asia/Shanghai',
         'start_of_week': 1,
@@ -635,7 +634,9 @@ class _FamilySettingsScreenState extends ConsumerState<FamilySettingsScreen> {
       ),
     );
 
-    if (result == true && mounted) {
+    if (!mounted) return;
+
+    if (result == true) {
       // Family已删除，对话框会处理导航
     }
   }
@@ -671,10 +672,4 @@ class InviteMemberDialog extends StatelessWidget {
   }
 }
 
-// 临时的 currentUserProvider
-final currentUserProvider = Provider<User?>((ref) => null);
-
-class User {
-  final String id;
-  const User({required this.id});
-}
+// 移除临时的 currentUserProvider 和 User，使用全局定义。

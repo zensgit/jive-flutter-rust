@@ -6,7 +6,7 @@ class StringUtils {
     if (trimmed.isEmpty) return fallback;
     // Use substring for first character; avoid external deps
     // Ensure we have at least one character before using substring
-    return trimmed.length > 0
+    return trimmed.isNotEmpty
         ? trimmed.substring(0, 1).toUpperCase()
         : fallback;
   }

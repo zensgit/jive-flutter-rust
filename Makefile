@@ -73,8 +73,13 @@ build-flutter:
 test: test-rust test-flutter
 
 test-rust:
+<<<<<<< HEAD
 	@echo "运行 Rust API 测试 (SQLX_OFFLINE=true)..."
 	@cd jive-api && SQLX_OFFLINE=true cargo test --tests
+=======
+	@echo "运行 Rust 测试..."
+	@cd jive-core && cargo test --no-default-features --features server
+>>>>>>> develop
 
 test-flutter:
 	@echo "运行 Flutter 测试..."
@@ -152,6 +157,7 @@ api-sqlx-prepare-local:
 	@cd jive-api && cargo install sqlx-cli --no-default-features --features postgres || true
 	@cd jive-api && SQLX_OFFLINE=false cargo sqlx prepare
 
+<<<<<<< HEAD
 # Prepare SQLx metadata for jive-core (server,db)
 sqlx-prepare-core:
 	@echo "准备 jive-core SQLx 元数据 (features=server,db)..."
@@ -163,6 +169,12 @@ sqlx-prepare-core:
 		SQLX_OFFLINE=false cargo sqlx prepare -- --features "server,db"
 	@echo "✅ 已生成 jive-core/.sqlx 元数据"
 
+=======
+# Enable local git hooks once per clone
+hooks:
+	@git config core.hooksPath .githooks
+	@echo "✅ Git hooks enabled (pre-commit runs make api-lint)"
+>>>>>>> develop
 
 # 启动完整版 API（宽松 CORS 开发模式，支持自定义端口 API_PORT）
 api-dev:

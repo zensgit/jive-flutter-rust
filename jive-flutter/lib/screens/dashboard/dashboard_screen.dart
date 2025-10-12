@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:jive_money/core/router/app_router.dart';
 import 'package:jive_money/ui/components/dashboard/quick_actions.dart';
 import 'package:jive_money/ui/components/dashboard/account_overview.dart';
 import 'package:jive_money/ui/components/dashboard/recent_transactions.dart';
@@ -36,12 +34,6 @@ class DashboardScreen extends ConsumerWidget {
           ],
         ),
         actions: [
-          // 资产入口（C）
-          IconButton(
-            tooltip: '资产',
-            icon: const Icon(Icons.pie_chart_outline),
-            onPressed: () => context.go(AppRoutes.userAssets),
-          ),
           // 使用新的家庭切换器组件
           const Padding(
             padding: EdgeInsets.only(right: 8),
@@ -86,10 +78,7 @@ class DashboardScreen extends ConsumerWidget {
             RecentTransactions(
               transactions: recentTransactions,
               onViewAll: () {
-                context.go(AppRoutes.transactions);
-              },
-              onFilter: () {
-                context.go(AppRoutes.transactions);
+                // 导航到交易页面
               },
             ),
             const SizedBox(height: 24),

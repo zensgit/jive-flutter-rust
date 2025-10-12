@@ -26,7 +26,7 @@ class LoadingIndicator extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
+            const SizedBox(
               width: size,
               height: size,
               child: CircularProgressIndicator(
@@ -115,7 +115,7 @@ class LoadingButton extends StatelessWidget {
       onPressed: isLoading ? null : onPressed,
       style: style,
       child: isLoading
-          ? SizedBox(
+          ? const SizedBox(
               width: loadingSize,
               height: loadingSize,
               child: CircularProgressIndicator(

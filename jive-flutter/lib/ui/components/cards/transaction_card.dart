@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../providers/currency_provider.dart';
-import '../../../core/constants/app_constants.dart';
-import '../../../models/transaction.dart';
+import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/models/transaction.dart';
 
 class TransactionCard extends ConsumerWidget {
   // 支持Transaction对象的构造方法
@@ -84,8 +84,9 @@ class TransactionCard extends ConsumerWidget {
     final cardAmount = transaction?.amount ?? amount ?? 0.0;
     final cardDate = transaction?.date ?? date ?? DateTime.now();
     final cardCategory = transaction?.category ?? category ?? '';
-    final cardIsIncome =
-        transaction?.type == TransactionType.income ?? (isIncome ?? false);
+    final cardIsIncome = transaction != null
+        ? transaction!.type == TransactionType.income
+        : (isIncome ?? false);
     final cardPayee = transaction?.payee ?? payee;
     final cardTags = transaction?.tags ?? tags;
 
@@ -98,7 +99,7 @@ class TransactionCard extends ConsumerWidget {
     return Card(
       margin: cardMargin,
       elevation: cardElevation,
-      shadowColor: theme.shadowColor.withOpacity(0.1),
+      shadowColor: theme.shadowColor.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
       ),
@@ -135,7 +136,7 @@ class TransactionCard extends ConsumerWidget {
                         Text(
                           DateFormat('MM/dd HH:mm').format(cardDate),
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(0.6),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                         ),
                       ],
@@ -156,7 +157,7 @@ class TransactionCard extends ConsumerWidget {
                             color: (transaction?.type.color ??
                                     categoryColor ??
                                     theme.primaryColor)
-                                .withOpacity(0.1),
+                                .withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -176,7 +177,7 @@ class TransactionCard extends ConsumerWidget {
                             '• $cardPayee',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color:
-                                  theme.colorScheme.onSurface.withOpacity(0.6),
+                                  theme.colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -192,7 +193,7 @@ class TransactionCard extends ConsumerWidget {
                       Text(
                         cardDescription,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withOpacity(0.7),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -213,7 +214,7 @@ class TransactionCard extends ConsumerWidget {
                             ),
                             decoration: BoxDecoration(
                               color:
-                                  theme.colorScheme.secondary.withOpacity(0.1),
+                                  theme.colorScheme.secondary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -254,7 +255,7 @@ class TransactionCard extends ConsumerWidget {
                         vertical: 1,
                       ),
                       decoration: BoxDecoration(
-                        color: theme.primaryColor.withOpacity(0.1),
+                        color: theme.primaryColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -285,7 +286,7 @@ class TransactionCard extends ConsumerWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: iconColor.withOpacity(0.1),
+        color: iconColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Icon(

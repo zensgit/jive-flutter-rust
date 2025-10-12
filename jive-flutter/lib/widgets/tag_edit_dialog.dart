@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/tag.dart';
-import '../providers/tag_provider.dart';
+import 'package:jive_money/models/tag.dart';
+import 'package:jive_money/providers/tag_provider.dart';
 
 class TagEditDialog extends ConsumerStatefulWidget {
   final Tag tag;
@@ -26,6 +26,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
   String? _selectedGroupName;
   bool _isLoading = false;
   bool _showGroupSuggestions = false;
+  String? _errorMessage;
 
   final List<String> _availableColors = [
     '#e99537',
@@ -134,12 +135,19 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                 // 标签名称
                 TextField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: '标签名称',
                     hintText: '请输入标签名称',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    errorText: _errorMessage,
+                    errorStyle: const TextStyle(
+                      color: Colors.red,
+                      fontSize: 12,
+                    ),
                   ),
-                  onChanged: (_) => setState(() {}),
+                  onChanged: (_) => setState(() {
+                    _errorMessage = null;
+                  }),
                 ),
                 const SizedBox(height: 16),
 
@@ -177,7 +185,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                 const Text('选择图标 (可选)',
                     style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
-                Container(
+                SizedBox(
                   height: 80,
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -224,7 +232,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                               child: Icon(entry.value, color: Colors.grey[700]),
                             ),
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                   ),
@@ -249,12 +257,12 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                     decoration: BoxDecoration(
                       color: Color(int.parse((_selectedColor ?? '#6471eb')
                               .replaceFirst('#', '0xff')))
-                          .withOpacity(0.15),
+                          .withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: Color(int.parse((_selectedColor ?? '#6471eb')
                                 .replaceFirst('#', '0xff')))
-                            .withOpacity(0.3),
+                            .withValues(alpha: 0.3),
                       ),
                     ),
                     child: Row(
@@ -393,7 +401,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
               border: Border.all(color: Colors.grey[300]!),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -408,7 +416,7 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
                     radius: 12,
                     backgroundColor: Color(int.parse((group.color ?? '#6471eb')
                             .replaceFirst('#', '0xff')))
-                        .withOpacity(0.2),
+                        .withValues(alpha: 0.2),
                     child: Icon(
                       _getGroupIcon(group.icon),
                       size: 16,
@@ -468,16 +476,16 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
     final name = _nameController.text.trim();
 
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请输入标签名称')),
-      );
+      setState(() {
+        _errorMessage = '请输入标签名称';
+      });
       return;
     }
 
     if (name.replaceAll(RegExp(r'\s+'), '').isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('标签名称不能为空白字符')),
-      );
+      setState(() {
+        _errorMessage = '标签名称不能为空白字符';
+      });
       return;
     }
 
@@ -509,29 +517,42 @@ class _TagEditDialogState extends ConsumerState<TagEditDialog> {
               })()
             : '无分组';
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('标签名称"$name"已存在于分组"$groupInfo"中'),
-          ),
-        );
+        setState(() {
+          _isLoading = false;
+          _errorMessage = '标签"$name"已存在于$groupInfo中';
+        });
         return;
       }
 
       // 如果输入了新分组名称但不是现有分组，先创建分组
       if (_groupController.text.trim().isNotEmpty && _selectedGroupId == null) {
         final groupName = _groupController.text.trim();
-        final groupNotifier = ref.read(tagGroupsProvider.notifier);
-        final newGroup = TagGroup(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          name: groupName,
-          color: _availableColors[
-              DateTime.now().millisecondsSinceEpoch % _availableColors.length],
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        );
 
-        await groupNotifier.addTagGroup(newGroup);
-        _selectedGroupId = newGroup.id;
+        // 检查分组名称是否已存在
+        final groups = ref.read(tagGroupsProvider);
+        final groupExists = groups.any((group) =>
+            group.name.toLowerCase().trim() == groupName.toLowerCase().trim());
+
+        if (!groupExists) {
+          final groupNotifier = ref.read(tagGroupsProvider.notifier);
+          final newGroup = TagGroup(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            name: groupName,
+            color: _availableColors[
+                DateTime.now().millisecondsSinceEpoch % _availableColors.length],
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          );
+
+          await groupNotifier.addTagGroup(newGroup);
+          _selectedGroupId = newGroup.id;
+        } else {
+          // 如果分组已存在，查找并使用现有分组
+          final existingGroup = groups.firstWhere(
+            (group) => group.name.toLowerCase().trim() == groupName.toLowerCase().trim(),
+          );
+          _selectedGroupId = existingGroup.id;
+        }
       }
 
       final updatedTag = widget.tag.copyWith(

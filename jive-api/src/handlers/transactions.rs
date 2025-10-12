@@ -8,17 +8,15 @@ use axum::{
 };
 use axum::body::Body;
 use bytes::Bytes;
-use chrono::{DateTime, NaiveDate, Utc};
-use futures_util::{stream, StreamExt};
-use rust_decimal::prelude::ToPrimitive;
-use rust_decimal::Decimal;
-use serde::{Deserialize, Serialize};
-#[cfg(feature = "export_stream")]
-use sqlx::Execute;
-use sqlx::{Executor, PgPool, QueryBuilder, Row};
+use futures_util::{StreamExt, stream};
 use std::convert::Infallible;
 use std::pin::Pin;
+use serde::{Deserialize, Serialize};
+use sqlx::{PgPool, Row, QueryBuilder, Executor};
 use uuid::Uuid;
+use rust_decimal::Decimal;
+use rust_decimal::prelude::ToPrimitive;
+use chrono::{DateTime, Utc, NaiveDate};
 
 use crate::{auth::Claims, error::{ApiError, ApiResult}};
 use base64::Engine; // enable .encode on base64::engine
@@ -69,8 +67,6 @@ pub struct ExportTransactionsRequest {
     pub category_id: Option<Uuid>,
     pub start_date: Option<NaiveDate>,
     pub end_date: Option<NaiveDate>,
-    // Whether to include header row in CSV output (default: true)
-    pub include_header: Option<bool>,
 }
 
 /// 导出交易（返回 data:URL 形式的下载链接，避免服务器存储文件）
@@ -205,7 +201,6 @@ pub async fn export_transactions(
     // 生成 CSV（core_export 启用时委托核心导出；否则使用本地安全 CSV 生成）
     #[cfg(feature = "core_export")]
     let (bytes, count_for_audit) = {
-        let include_header = req.include_header.unwrap_or(true);
         let mapped: Vec<SimpleTransactionExport> = rows
             .into_iter()
             .map(|row| {
@@ -235,9 +230,8 @@ pub async fn export_transactions(
             })
             .collect();
         let core = CoreExportService {};
-        let cfg = CsvExportConfig::default().with_include_header(include_header);
         let out = core
-            .generate_csv_simple(&mapped, Some(&cfg))
+            .generate_csv_simple(&mapped, Some(&CsvExportConfig::default()))
             .map_err(|_e| ApiError::InternalServerError)?;
         let mapped_len = mapped.len();
         (out, mapped_len)
@@ -245,7 +239,7 @@ pub async fn export_transactions(
 
     #[cfg(not(feature = "core_export"))]
     let (bytes, count_for_audit) = {
-        let cfg = CsvExportConfig { include_header: req.include_header.unwrap_or(true), ..CsvExportConfig::default() };
+        let cfg = CsvExportConfig::default();
         let mut out = String::new();
         if cfg.include_header {
             out.push_str(&format!(
@@ -281,8 +275,7 @@ pub async fn export_transactions(
             out.push('\n');
         }
         let line_count = out.lines().count();
-        let data_rows = if cfg.include_header { line_count.saturating_sub(1) } else { line_count };
-        (out.into_bytes(), data_rows)
+        (out.into_bytes(), line_count.saturating_sub(1))
     };
     let encoded = base64::engine::general_purpose::STANDARD.encode(&bytes);
     let url = format!("data:text/csv;charset=utf-8;base64,{}", encoded);
@@ -373,108 +366,12 @@ pub async fn export_transactions_csv_stream(
     if let Some(end_date) = q.end_date { query.push(" AND t.transaction_date <= "); query.push_bind(end_date); }
     query.push(" ORDER BY t.transaction_date DESC, t.id DESC");
 
-    // When export_stream feature enabled, stream rows instead of buffering entire CSV
-    #[cfg(feature = "export_stream")]
-    {
-        use futures::StreamExt;
-        use tokio::sync::mpsc;
-        use tokio_stream::wrappers::ReceiverStream;
-        let include_header = q.include_header.unwrap_or(true);
-        let (tx, rx) = mpsc::channel::<Result<bytes::Bytes, ApiError>>(8);
-        // Build the query and extract the SQL string as owned
-        let built_query = query.build();
-        let sql = built_query.sql().to_owned();
-        let pool_clone = pool.clone();
-        tokio::spawn(async move {
-            // Execute the raw SQL query using sqlx::raw_sql
-            let mut stream = sqlx::raw_sql(&sql).fetch(&pool_clone);
-            // Header
-            if include_header {
-                if tx
-                    .send(Ok(bytes::Bytes::from_static(
-                        b"Date,Description,Amount,Category,Account,Payee,Type\n",
-                    )))
-                    .await
-                    .is_err()
-                {
-                    return;
-                }
-            }
-            while let Some(item) = stream.next().await {
-                match item {
-                    Ok(row) => {
-                        use sqlx::Row;
-                        let date: NaiveDate = row.get("transaction_date");
-                        let desc: String =
-                            row.try_get::<String, _>("description").unwrap_or_default();
-                        let amount: Decimal = row.get("amount");
-                        let category: Option<String> = row
-                            .try_get::<String, _>("category_name")
-                            .ok()
-                            .filter(|s| !s.is_empty());
-                        let account_id: Uuid = row.get("account_id");
-                        let payee: Option<String> = row
-                            .try_get::<String, _>("payee_name")
-                            .ok()
-                            .filter(|s| !s.is_empty());
-                        let ttype: String = row.get("transaction_type");
-                        let line = format!(
-                            "{},{},{},{},{},{},{}\n",
-                            date,
-                            csv_escape_cell(desc, ','),
-                            amount,
-                            csv_escape_cell(category.clone().unwrap_or_default(), ','),
-                            account_id,
-                            csv_escape_cell(payee.clone().unwrap_or_default(), ','),
-                            csv_escape_cell(ttype, ',')
-                        );
-                        if tx.send(Ok(bytes::Bytes::from(line))).await.is_err() {
-                            return;
-                        }
-                    }
-                    Err(e) => {
-                        let _ = tx.send(Err(ApiError::DatabaseError(e.to_string()))).await;
-                        return;
-                    }
-                }
-            }
-        });
-        let byte_stream = ReceiverStream::new(rx).map(|r| match r {
-            Ok(b) => Ok::<_, ApiError>(b),
-            Err(e) => Err(e),
-        });
-        let body = Body::from_stream(byte_stream.map(|res| {
-            res.map_err(|_| std::io::Error::new(std::io::ErrorKind::Other, "stream error"))
-        }));
-        // Build headers & return early (skip buffered path below)
-        let mut headers_map = header::HeaderMap::new();
-        headers_map.insert(
-            header::CONTENT_TYPE,
-            "text/csv; charset=utf-8".parse().unwrap(),
-        );
-        let filename = format!(
-            "transactions_export_{}.csv",
-            Utc::now().format("%Y%m%d%H%M%S")
-        );
-        headers_map.insert(
-            header::CONTENT_DISPOSITION,
-            format!("attachment; filename=\"{}\"", filename)
-                .parse()
-                .unwrap(),
-        );
-        return Ok((headers_map, body));
-    }
-
-    // Execute fully and build CSV body when streaming disabled
-    let rows_all = query
-        .build()
-        .fetch_all(&pool)
-        .await
+    // Execute fully and build CSV body (simple, reliable)
+    let rows_all = query.build().fetch_all(&pool).await
         .map_err(|e| ApiError::DatabaseError(format!("查询交易失败: {}", e)))?;
     // Build response body bytes depending on feature flag
     #[cfg(feature = "core_export")]
     let body_bytes: Vec<u8> = {
-        let include_header = q.include_header.unwrap_or(true);
         let mapped: Vec<SimpleTransactionExport> = rows_all
             .into_iter()
             .map(|row| {
@@ -504,15 +401,14 @@ pub async fn export_transactions_csv_stream(
             })
             .collect();
         let core = CoreExportService {};
-        let cfg = CsvExportConfig::default().with_include_header(include_header);
         core
-            .generate_csv_simple(&mapped, Some(&cfg))
+            .generate_csv_simple(&mapped, Some(&CsvExportConfig::default()))
             .map_err(|_e| ApiError::InternalServerError)?
     };
 
     #[cfg(not(feature = "core_export"))]
     let body_bytes: Vec<u8> = {
-        let cfg = CsvExportConfig { include_header: q.include_header.unwrap_or(true), ..CsvExportConfig::default() };
+        let cfg = CsvExportConfig::default();
         let mut out = String::new();
         if cfg.include_header {
             out.push_str(&format!(

@@ -19,7 +19,7 @@ class DeepLinkService {
   Future<void> initialize() async {
     // 处理应用启动时的链接
     try {
-      final String? initialLink = await uni_links.getInitialLink();
+      final initialLink = await uni_links.getInitialLink();
       if (initialLink != null) {
         _handleDeepLink(initialLink);
       }
@@ -29,17 +29,14 @@ class DeepLinkService {
 
     // 监听应用运行时的链接
     _linkSubscription = uni_links.linkStream.listen((link) {
-      final v = link ?? '';
-      if (v.isEmpty) return;
-      _handleDeepLink(v);
+      _handleDeepLink(link);
     }, onError: (err) {
       debugPrint('Link stream error: $err');
     });
   }
 
   /// 处理深链接
-  void _handleDeepLink(String? link) {
-    if (link == null || link.isEmpty) return;
+  void _handleDeepLink(String link) {
     final uri = Uri.parse(link);
     final data = _parseDeepLink(uri);
 

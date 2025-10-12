@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/router/app_router.dart';
-import '../../providers/transaction_provider.dart';
-import '../../ui/components/transactions/transaction_list_item.dart';
-import '../../models/transaction.dart';
+import 'package:jive_money/core/router/app_router.dart';
+import 'package:jive_money/providers/transaction_provider.dart';
+import 'package:jive_money/ui/components/transactions/transaction_list_item.dart';
+import 'package:jive_money/models/transaction.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
   const TransactionsScreen({super.key});
@@ -248,6 +248,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                   firstDate: DateTime(2020),
                   lastDate: DateTime.now(),
                 );
+                if (!context.mounted) return;
                 if (range != null) {
                   setState(() {
                     _dateRange = range;
@@ -333,7 +334,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.1),
+                    color: Colors.red.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(Icons.remove, color: Colors.red),
@@ -349,7 +350,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
+                    color: Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(Icons.add, color: Colors.green),
@@ -365,7 +366,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.1),
+                    color: Colors.blue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(Icons.swap_horiz, color: Colors.blue),

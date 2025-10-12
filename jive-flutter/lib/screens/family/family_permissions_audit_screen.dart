@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../utils/string_utils.dart';
+import 'package:jive_money/utils/string_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
-import '../../models/family.dart' as family_model;
-import '../../services/api/family_service.dart';
-import '../../widgets/loading_overlay.dart';
+import 'package:jive_money/services/api/family_service.dart';
+import 'package:jive_money/widgets/loading_overlay.dart';
 
 /// 权限审计界面
 class FamilyPermissionsAuditScreen extends ConsumerStatefulWidget {
@@ -13,10 +12,10 @@ class FamilyPermissionsAuditScreen extends ConsumerStatefulWidget {
   final String familyName;
 
   const FamilyPermissionsAuditScreen({
-    Key? key,
+    super.key,
     required this.familyId,
     required this.familyName,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<FamilyPermissionsAuditScreen> createState() =>
@@ -207,7 +206,7 @@ class _FamilyPermissionsAuditScreenState
       margin: const EdgeInsets.only(bottom: 12),
       child: ExpansionTile(
         leading: CircleAvatar(
-          backgroundColor: _getEventColor(log.eventType).withOpacity(0.2),
+          backgroundColor: _getEventColor(log.eventType).withValues(alpha: 0.2),
           child: Icon(
             _getEventIcon(log.eventType),
             color: _getEventColor(log.eventType),
@@ -319,7 +318,7 @@ class _FamilyPermissionsAuditScreenState
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  SizedBox(
+                  const SizedBox(
                     height: 300,
                     child: _buildUsageFrequencyChart(),
                   ),
@@ -360,7 +359,7 @@ class _FamilyPermissionsAuditScreenState
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  SizedBox(
+                  const SizedBox(
                     height: 200,
                     child: _buildUsageTrendChart(),
                   ),
@@ -383,7 +382,7 @@ class _FamilyPermissionsAuditScreenState
             Icon(
               Icons.check_circle,
               size: 64,
-              color: Colors.green.withOpacity(0.5),
+              color: Colors.green.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             const Text(
@@ -419,7 +418,7 @@ class _FamilyPermissionsAuditScreenState
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: severityColor.withOpacity(0.2),
+          backgroundColor: severityColor.withValues(alpha: 0.2),
           child: Icon(
             _getSeverityIcon(anomaly.severity),
             color: severityColor,
@@ -501,13 +500,13 @@ class _FamilyPermissionsAuditScreenState
                   Stack(
                     alignment: Alignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 150,
                         height: 150,
                         child: CircularProgressIndicator(
                           value: report.score / 100,
                           strokeWidth: 12,
-                          backgroundColor: theme.colorScheme.surfaceVariant,
+                          backgroundColor: theme.colorScheme.surfaceContainerHighest,
                           valueColor: AlwaysStoppedAnimation<Color>(
                             _getScoreColor(report.score),
                           ),
@@ -713,7 +712,7 @@ class _FamilyPermissionsAuditScreenState
             dotData: const FlDotData(show: true),
             belowBarData: BarAreaData(
               show: true,
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
             ),
           ),
         ],
@@ -748,8 +747,8 @@ class _FamilyPermissionsAuditScreenState
             style: const TextStyle(fontSize: 10),
           ),
           backgroundColor: user.$3
-              ? Colors.green.withOpacity(0.2)
-              : Colors.orange.withOpacity(0.2),
+              ? Colors.green.withValues(alpha: 0.2)
+              : Colors.orange.withValues(alpha: 0.2),
           padding: EdgeInsets.zero,
           visualDensity: VisualDensity.compact,
         ),
@@ -813,11 +812,11 @@ class _FamilyPermissionsAuditScreenState
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        const SizedBox(
           width: 80,
           child: Text(
             '$label：',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
           ),
         ),
         Expanded(
@@ -1004,8 +1003,6 @@ class _FamilyPermissionsAuditScreenState
         return Colors.yellow;
       case Severity.low:
         return Colors.blue;
-      default:
-        return Colors.grey;
     }
   }
 
@@ -1020,8 +1017,6 @@ class _FamilyPermissionsAuditScreenState
         return Icons.info;
       case Severity.low:
         return Icons.info_outline;
-      default:
-        return Icons.help_outline;
     }
   }
 

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../utils/string_utils.dart';
+import 'package:jive_money/utils/string_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/invitation.dart';
-import '../../models/family.dart';
-import '../../services/api/family_service.dart';
-import '../../providers/family_provider.dart' as family_provider;
+import 'package:jive_money/models/invitation.dart';
+import 'package:jive_money/models/family.dart';
+import 'package:jive_money/services/api/family_service.dart';
+import 'package:jive_money/providers/family_provider.dart' as family_provider;
 
 /// 待处理邀请页面
 class PendingInvitationsScreen extends ConsumerStatefulWidget {
-  const PendingInvitationsScreen({Key? key}) : super(key: key);
+  const PendingInvitationsScreen({super.key});
 
   @override
   ConsumerState<PendingInvitationsScreen> createState() =>
@@ -93,7 +93,7 @@ class _PendingInvitationsScreenState
       // await _familyService.acceptInvitation(invitation.invitation.id);
 
       // 刷新Family列表
-      await ref.refresh(family_provider.userFamiliesProvider);
+      ref.refresh(family_provider.userFamiliesProvider);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -390,7 +390,7 @@ class _PendingInvitationsScreenState
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: _getRoleColor(invitation.invitation.role)
-                      .withOpacity(0.1),
+                      .withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
@@ -477,7 +477,7 @@ class _PendingInvitationsScreenState
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

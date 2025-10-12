@@ -485,7 +485,7 @@ class EmailNotificationService extends ChangeNotifier {
   /// 发送单个邮件
   Future<void> _sendEmail(EmailMessage email) async {
     final message = Message()
-      ..from = const _Address('noreply@jivemoney.com', 'Jive Money')
+      ..from = const Address('noreply@jivemoney.com', 'Jive Money')
       ..recipients.add(email.to)
       ..subject = email.subject
       ..html = email.html;
@@ -682,14 +682,6 @@ class CategoryUsage {
   final double amount;
 
   CategoryUsage({required this.name, required this.amount});
-}
-
-
-/// Stub Address class compatible with `const Address(email, name)` usage
-class Address {
-  final String email;
-  final String? name;
-  const Address(this.email, [this.name]);
 }
 
 /// Stub implementation for Message class
