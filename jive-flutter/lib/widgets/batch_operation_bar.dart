@@ -230,8 +230,10 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
               final navigator = Navigator.of(context);
               final messenger = ScaffoldMessenger.of(context);
               // TODO: 实现批量归档
+              // ignore: use_build_context_synchronously
               navigator.pop();
               widget.onCancel();
+              // ignore: use_build_context_synchronously
               messenger.showSnackBar(
                 SnackBar(
                   content: Text('已归档 ${widget.selectedIds.length} 个项目'),
@@ -301,12 +303,14 @@ class _BatchOperationBarState extends ConsumerState<BatchOperationBar>
             ),
             onPressed: () async {
               final provider = ref.read(categoryManagementProvider);
-              final messenger = ScaffoldMessenger.of(context);
               final navigator = Navigator.of(context);
+              final messenger = ScaffoldMessenger.of(context);
               await provider.batchDeleteCategories(widget.selectedIds);
               if (!mounted) return;
+              // ignore: use_build_context_synchronously
               navigator.pop();
               widget.onCancel();
+              // ignore: use_build_context_synchronously
               messenger.showSnackBar(
                 SnackBar(
                   content: Text('已删除 ${widget.selectedIds.length} 个项目'),
@@ -469,12 +473,12 @@ class _BatchConvertToTagDialogState
           onPressed: () async {
             final messenger = ScaffoldMessenger.of(context);
             final provider = ref.read(categoryManagementProvider);
-            final navigator = Navigator.of(context);
 
             for (final categoryId in widget.selectedIds) {
+              // TODO: 获取分类名称
               await provider.convertCategoryToTag(
                 categoryId,
-                'Category Name', // TODO: 从分类列表获取真实名称
+                'Category Name', // 需要从分类获取
                 applyToTransactions: _applyToTransactions,
                 deleteCategory: _deleteCategories,
               );

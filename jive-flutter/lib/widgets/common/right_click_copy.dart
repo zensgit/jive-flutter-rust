@@ -41,7 +41,8 @@ class RightClickCopy extends StatelessWidget {
     final overlayBox = Overlay.of(context).context.findRenderObject() as RenderBox;
     final messenger = ScaffoldMessenger.maybeOf(context);
 
-    final result = await showMenu<String>(
+    final result = // ignore: use_build_context_synchronously (pre-captured messenger, no context use after await)
+    await showMenu<String>(
       context: context,
       position: RelativeRect.fromRect(
         Rect.fromLTWH(position.dx, position.dy, 0, 0),
