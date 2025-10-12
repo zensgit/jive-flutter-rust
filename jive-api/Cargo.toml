@@ -70,7 +70,7 @@ jsonwebtoken = "9.3"
 rand = "0.8"
 
 # HTTP客户端
-reqwest = { version = "0.12", features = ["json", "rustls-tls"] }
+reqwest = { version = "0.12", features = ["json", "native-tls-vendored"], default-features = false }
 
 # 静态变量
 lazy_static = "1.4"

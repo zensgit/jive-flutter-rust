@@ -28,42 +28,77 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
   // Network avatar URLs - 可从网络加载的头像
   final List<Map<String, dynamic>> _networkAvatars = [
-    {
-      'url': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
-      'name': 'Felix'
-    },
-    {
-      'url': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka',
-      'name': 'Aneka'
-    },
-    {
-      'url': 'https://api.dicebear.com/7.x/bottts/svg?seed=Robot1',
-      'name': 'Robot 1'
-    },
-    {
-      'url': 'https://api.dicebear.com/7.x/bottts/svg?seed=Robot2',
-      'name': 'Robot 2'
-    },
-    {
-      'url': 'https://api.dicebear.com/7.x/micah/svg?seed=Person1',
-      'name': 'Person 1'
-    },
-    {
-      'url': 'https://api.dicebear.com/7.x/micah/svg?seed=Person2',
-      'name': 'Person 2'
-    },
+    // DiceBear v7 API - Avataaars 风格 (卡通人物)
+    {'url': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix', 'name': 'Felix'},
+    {'url': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka', 'name': 'Aneka'},
+    {'url': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah', 'name': 'Sarah'},
+    {'url': 'https://api.dicebear.com/7.x/avataaars/svg?seed=John', 'name': 'John'},
+    {'url': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma', 'name': 'Emma'},
+    {'url': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver', 'name': 'Oliver'},
+    {'url': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia', 'name': 'Sophia'},
+    {'url': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Liam', 'name': 'Liam'},
+
+    // DiceBear v7 - Bottts 风格 (机器人)
+    {'url': 'https://api.dicebear.com/7.x/bottts/svg?seed=Bot1', 'name': 'Bot 1'},
+    {'url': 'https://api.dicebear.com/7.x/bottts/svg?seed=Bot2', 'name': 'Bot 2'},
+    {'url': 'https://api.dicebear.com/7.x/bottts/svg?seed=Bot3', 'name': 'Bot 3'},
+    {'url': 'https://api.dicebear.com/7.x/bottts/svg?seed=Bot4', 'name': 'Bot 4'},
+    {'url': 'https://api.dicebear.com/7.x/bottts/svg?seed=Bot5', 'name': 'Bot 5'},
+
+    // DiceBear v7 - Micah 风格 (抽象人物)
+    {'url': 'https://api.dicebear.com/7.x/micah/svg?seed=Person1', 'name': 'Person 1'},
+    {'url': 'https://api.dicebear.com/7.x/micah/svg?seed=Person2', 'name': 'Person 2'},
+    {'url': 'https://api.dicebear.com/7.x/micah/svg?seed=Person3', 'name': 'Person 3'},
+    {'url': 'https://api.dicebear.com/7.x/micah/svg?seed=Person4', 'name': 'Person 4'},
+
+    // DiceBear v7 - Adventurer 风格 (冒险者)
+    {'url': 'https://api.dicebear.com/7.x/adventurer/svg?seed=Alex', 'name': 'Alex'},
+    {'url': 'https://api.dicebear.com/7.x/adventurer/svg?seed=Sam', 'name': 'Sam'},
+    {'url': 'https://api.dicebear.com/7.x/adventurer/svg?seed=Jordan', 'name': 'Jordan'},
+    {'url': 'https://api.dicebear.com/7.x/adventurer/svg?seed=Taylor', 'name': 'Taylor'},
+    {'url': 'https://api.dicebear.com/7.x/adventurer/svg?seed=Casey', 'name': 'Casey'},
+
+    // DiceBear v7 - Lorelei 风格 (现代人物)
+    {'url': 'https://api.dicebear.com/7.x/lorelei/svg?seed=Luna', 'name': 'Luna'},
+    {'url': 'https://api.dicebear.com/7.x/lorelei/svg?seed=Nova', 'name': 'Nova'},
+    {'url': 'https://api.dicebear.com/7.x/lorelei/svg?seed=Zara', 'name': 'Zara'},
+    {'url': 'https://api.dicebear.com/7.x/lorelei/svg?seed=Maya', 'name': 'Maya'},
+
+    // DiceBear v7 - Personas 风格 (简约人物)
+    {'url': 'https://api.dicebear.com/7.x/personas/svg?seed=User1', 'name': 'Persona 1'},
+    {'url': 'https://api.dicebear.com/7.x/personas/svg?seed=User2', 'name': 'Persona 2'},
+    {'url': 'https://api.dicebear.com/7.x/personas/svg?seed=User3', 'name': 'Persona 3'},
+    {'url': 'https://api.dicebear.com/7.x/personas/svg?seed=User4', 'name': 'Persona 4'},
+
+    // DiceBear v7 - Pixel Art 风格 (像素风)
+    {'url': 'https://api.dicebear.com/7.x/pixel-art/svg?seed=Pixel1', 'name': 'Pixel 1'},
+    {'url': 'https://api.dicebear.com/7.x/pixel-art/svg?seed=Pixel2', 'name': 'Pixel 2'},
+    {'url': 'https://api.dicebear.com/7.x/pixel-art/svg?seed=Pixel3', 'name': 'Pixel 3'},
+    {'url': 'https://api.dicebear.com/7.x/pixel-art/svg?seed=Pixel4', 'name': 'Pixel 4'},
+
+    // DiceBear v7 - Fun Emoji 风格 (趣味表情)
+    {'url': 'https://api.dicebear.com/7.x/fun-emoji/svg?seed=Happy', 'name': 'Happy'},
+    {'url': 'https://api.dicebear.com/7.x/fun-emoji/svg?seed=Cool', 'name': 'Cool'},
+    {'url': 'https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile', 'name': 'Smile'},
+    {'url': 'https://api.dicebear.com/7.x/fun-emoji/svg?seed=Wink', 'name': 'Wink'},
+
+    // DiceBear v7 - Big Smile 风格 (大笑脸)
+    {'url': 'https://api.dicebear.com/7.x/big-smile/svg?seed=Joy1', 'name': 'Joy 1'},
+    {'url': 'https://api.dicebear.com/7.x/big-smile/svg?seed=Joy2', 'name': 'Joy 2'},
+    {'url': 'https://api.dicebear.com/7.x/big-smile/svg?seed=Joy3', 'name': 'Joy 3'},
+
+    // DiceBear v7 - Identicon 风格 (几何图案)
+    {'url': 'https://api.dicebear.com/7.x/identicon/svg?seed=ID1', 'name': 'Geo 1'},
+    {'url': 'https://api.dicebear.com/7.x/identicon/svg?seed=ID2', 'name': 'Geo 2'},
+    {'url': 'https://api.dicebear.com/7.x/identicon/svg?seed=ID3', 'name': 'Geo 3'},
+
+    // RoboHash - 机器人和动物
     {'url': 'https://robohash.org/user1?set=set1', 'name': 'Robo 1'},
     {'url': 'https://robohash.org/user2?set=set2', 'name': 'Robo 2'},
     {'url': 'https://robohash.org/user3?set=set3', 'name': 'Robo 3'},
-    {'url': 'https://robohash.org/user4?set=set4', 'name': 'Cat'},
-    {
-      'url': 'https://avatars.dicebear.com/api/adventurer/user1.svg',
-      'name': 'Adventurer 1'
-    },
-    {
-      'url': 'https://avatars.dicebear.com/api/adventurer/user2.svg',
-      'name': 'Adventurer 2'
-    },
+    {'url': 'https://robohash.org/cat1?set=set4', 'name': 'Cat 1'},
+    {'url': 'https://robohash.org/cat2?set=set4', 'name': 'Cat 2'},
+    {'url': 'https://robohash.org/monster1?set=set2', 'name': 'Monster'},
   ];
 
   // System avatars - 扩展到24个选项
@@ -194,6 +229,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   // Controllers
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _nameFocusNode = FocusNode();
+  final _emailFocusNode = FocusNode();
+  final _verificationCodeFocusNode = FocusNode();
 
   // Preferences
   String _selectedCountry = 'CN';
@@ -216,6 +254,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _verificationCodeController.dispose();
+    _nameFocusNode.dispose();
+    _emailFocusNode.dispose();
+    _verificationCodeFocusNode.dispose();
     super.dispose();
   }
 
@@ -401,11 +442,44 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                                 ),
                               ),
                               child: CircleAvatar(
-                                backgroundImage: NetworkImage(avatar['url']),
                                 backgroundColor: Colors.grey.shade200,
-                                child: avatar['url'].contains('error')
-                                    ? const Icon(Icons.broken_image)
-                                    : null,
+                                child: ClipOval(
+                                  child: Image.network(
+                                    avatar['url'],
+                                    fit: BoxFit.cover,
+                                    width: 60,
+                                    height: 60,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        width: 60,
+                                        height: 60,
+                                        color: Colors.grey.shade300,
+                                        child: const Icon(
+                                          Icons.broken_image,
+                                          color: Colors.grey,
+                                          size: 30,
+                                        ),
+                                      );
+                                    },
+                                    loadingBuilder: (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return Container(
+                                        width: 60,
+                                        height: 60,
+                                        color: Colors.grey.shade200,
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                            value: loadingProgress.expectedTotalBytes != null
+                                                ? loadingProgress.cumulativeBytesLoaded /
+                                                    loadingProgress.expectedTotalBytes!
+                                                : null,
+                                            strokeWidth: 2,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
                               ),
                             ),
                           );
@@ -781,6 +855,15 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       fontSize: 12,
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '网络头像由 DiceBear 和 RoboHash 提供 · 查看"关于"了解许可',
+                    style: TextStyle(
+                      color: Colors.grey[500],
+                      fontSize: 11,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -801,24 +884,94 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  TextField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: '用户名',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person),
-                    ),
+                  // 用户名输入框 - 使用 EditableText 避免 NaN 错误
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('用户名', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                      const SizedBox(height: 8),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          return GestureDetector(
+                            onTap: () => _nameFocusNode.requestFocus(),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey.shade400),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.person, color: Colors.grey),
+                                  const SizedBox(width: 12),
+                                  SizedBox(
+                                    width: constraints.maxWidth - 80,
+                                    child: EditableText(
+                                      controller: _nameController,
+                                      focusNode: _nameFocusNode,
+                                      style: const TextStyle(fontSize: 16, color: Colors.black),
+                                      cursorColor: Colors.blue,
+                                      backgroundCursorColor: Colors.grey,
+                                      autocorrect: false,
+                                      enableSuggestions: false,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
-                  TextField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: '邮箱',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.email),
-                      helperText: '修改邮箱可能需要重新验证',
-                    ),
+                  // 邮箱输入框 - 使用 EditableText 避免 NaN 错误
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('邮箱', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                      const SizedBox(height: 8),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          return GestureDetector(
+                            onTap: () => _emailFocusNode.requestFocus(),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey.shade400),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.email, color: Colors.grey),
+                                  const SizedBox(width: 12),
+                                  SizedBox(
+                                    width: constraints.maxWidth - 80,
+                                    child: EditableText(
+                                      controller: _emailController,
+                                      focusNode: _emailFocusNode,
+                                      style: const TextStyle(fontSize: 16, color: Colors.black),
+                                      cursorColor: Colors.blue,
+                                      backgroundCursorColor: Colors.grey,
+                                      keyboardType: TextInputType.emailAddress,
+                                      autocorrect: false,
+                                      enableSuggestions: false,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8, left: 12),
+                        child: Text(
+                          '修改邮箱可能需要重新验证',
+                          style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -1039,18 +1192,44 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                           const SizedBox(height: 16),
                           Row(
                             children: [
+                              // 验证码输入框 - 使用 EditableText 避免 NaN 错误
                               Expanded(
-                                child: TextField(
-                                  controller: _verificationCodeController,
-                                  decoration: const InputDecoration(
-                                    labelText: '验证码（4位）',
-                                    border: OutlineInputBorder(),
-                                    counterText: '',
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  maxLength: 4,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('验证码（4位）', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                                    const SizedBox(height: 8),
+                                    LayoutBuilder(
+                                      builder: (context, constraints) {
+                                        return GestureDetector(
+                                          onTap: () => _verificationCodeFocusNode.requestFocus(),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(color: Colors.grey.shade400),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: SizedBox(
+                                              width: constraints.maxWidth - 24,
+                                              child: EditableText(
+                                                controller: _verificationCodeController,
+                                                focusNode: _verificationCodeFocusNode,
+                                                style: const TextStyle(fontSize: 16, color: Colors.black),
+                                                cursorColor: Colors.blue,
+                                                backgroundCursorColor: Colors.grey,
+                                                keyboardType: TextInputType.number,
+                                                inputFormatters: [
+                                                  FilteringTextInputFormatter.digitsOnly,
+                                                  LengthLimitingTextInputFormatter(4), // 限制最大长度为4
+                                                ],
+                                                autocorrect: false,
+                                                enableSuggestions: false,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
                                   ],
                                 ),
                               ),

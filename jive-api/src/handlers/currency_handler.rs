@@ -7,28 +7,29 @@ use axum::body::Body;
 use chrono::NaiveDate;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
-use sqlx::PgPool;
-// use uuid::Uuid; // 未使用
 use std::collections::HashMap;
 
 use crate::auth::Claims;
 use crate::error::{ApiError, ApiResult};
+use crate::models::GlobalMarketStats;
 use crate::services::{CurrencyService, ExchangeRate, FamilyCurrencySettings};
 use crate::services::currency_service::{UpdateCurrencySettingsRequest, AddExchangeRateRequest, CurrencyPreference};
 use crate::services::currency_service::{ClearManualRateRequest, ClearManualRatesBatchRequest};
+use crate::services::exchange_rate_api::EXCHANGE_RATE_SERVICE;
 use super::family_handler::ApiResponse;
+use crate::AppState; // Redis-enabled handlers
 
 /// 获取所有支持的货币
 pub async fn get_supported_currencies(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     headers: HeaderMap,
 ) -> ApiResult<Response> {
-    let service = CurrencyService::new(pool.clone());
+    let service = CurrencyService::new_with_redis(app_state.pool.clone(), app_state.redis.clone());
     // Compute a simple ETag based on latest currencies updated_at max
     let etag_row = sqlx::query!(
         r#"SELECT to_char(MAX(updated_at), 'YYYYMMDDHH24MISS') AS max_ts FROM currencies WHERE is_active = true"#
     )
-    .fetch_one(&pool)
+    .fetch_one(&app_state.pool)
     .await
     .map_err(|_| ApiError::InternalServerError)?;
 
@@ -61,11 +62,11 @@ pub async fn get_supported_currencies(
 
 /// 获取用户的货币偏好
 pub async fn get_user_currency_preferences(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     claims: Claims,
 ) -> ApiResult<Json<ApiResponse<Vec<CurrencyPreference>>>> {
     let user_id = claims.user_id()?;
-    let service = CurrencyService::new(pool);
+    let service = CurrencyService::new_with_redis(app_state.pool, app_state.redis);
     
     let preferences = service.get_user_currency_preferences(user_id).await
         .map_err(|_e| ApiError::InternalServerError)?;
@@ -81,12 +82,12 @@ pub struct SetCurrencyPreferencesRequest {
 
 /// 设置用户的货币偏好
 pub async fn set_user_currency_preferences(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     claims: Claims,
     Json(req): Json<SetCurrencyPreferencesRequest>,
 ) -> ApiResult<Json<ApiResponse<()>>> {
     let user_id = claims.user_id()?;
-    let service = CurrencyService::new(pool);
+    let service = CurrencyService::new_with_redis(app_state.pool, app_state.redis);
     
     service.set_user_currency_preferences(user_id, req.currencies, req.primary_currency)
         .await
@@ -97,13 +98,13 @@ pub async fn set_user_currency_preferences(
 
 /// 获取家庭的货币设置
 pub async fn get_family_currency_settings(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     claims: Claims,
 ) -> ApiResult<Json<ApiResponse<FamilyCurrencySettings>>> {
     let family_id = claims.family_id
         .ok_or_else(|| ApiError::BadRequest("No family selected".to_string()))?;
-    
-    let service = CurrencyService::new(pool);
+
+    let service = CurrencyService::new_with_redis(app_state.pool, app_state.redis);
     let settings = service.get_family_currency_settings(family_id).await
         .map_err(|_e| ApiError::InternalServerError)?;
     
@@ -112,14 +113,14 @@ pub async fn get_family_currency_settings(
 
 /// 更新家庭的货币设置
 pub async fn update_family_currency_settings(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     claims: Claims,
     Json(req): Json<UpdateCurrencySettingsRequest>,
 ) -> ApiResult<Json<ApiResponse<FamilyCurrencySettings>>> {
     let family_id = claims.family_id
         .ok_or_else(|| ApiError::BadRequest("No family selected".to_string()))?;
-    
-    let service = CurrencyService::new(pool);
+
+    let service = CurrencyService::new_with_redis(app_state.pool, app_state.redis);
     let settings = service.update_family_currency_settings(family_id, req).await
         .map_err(|_e| ApiError::InternalServerError)?;
     
@@ -135,10 +136,10 @@ pub struct GetExchangeRateQuery {
 
 /// 获取汇率
 pub async fn get_exchange_rate(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     Query(query): Query<GetExchangeRateQuery>,
 ) -> ApiResult<Json<ApiResponse<ExchangeRateResponse>>> {
-    let service = CurrencyService::new(pool);
+    let service = CurrencyService::new_with_redis(app_state.pool, app_state.redis);
     let rate = service.get_exchange_rate(&query.from, &query.to, query.date).await
         .map_err(|_e| ApiError::NotFound("Exchange rate not found".to_string()))?;
     
@@ -167,10 +168,10 @@ pub struct GetBatchExchangeRatesRequest {
 
 /// 批量获取汇率
 pub async fn get_batch_exchange_rates(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     Json(req): Json<GetBatchExchangeRatesRequest>,
 ) -> ApiResult<Json<ApiResponse<HashMap<String, Decimal>>>> {
-    let service = CurrencyService::new(pool);
+    let service = CurrencyService::new_with_redis(app_state.pool, app_state.redis);
     let rates = service.get_exchange_rates(&req.base_currency, req.target_currencies, req.date)
         .await
         .map_err(|_e| ApiError::InternalServerError)?;
@@ -180,11 +181,11 @@ pub async fn get_batch_exchange_rates(
 
 /// 添加或更新汇率
 pub async fn add_exchange_rate(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     _claims: Claims, // 需要管理员权限
     Json(req): Json<AddExchangeRateRequest>,
 ) -> ApiResult<Json<ApiResponse<ExchangeRate>>> {
-    let service = CurrencyService::new(pool);
+    let service = CurrencyService::new_with_redis(app_state.pool, app_state.redis);
     let rate = service.add_exchange_rate(req).await
         .map_err(|_e| ApiError::InternalServerError)?;
     
@@ -193,11 +194,11 @@ pub async fn add_exchange_rate(
 
 /// 清除当日手动汇率（回退到自动来源）
 pub async fn clear_manual_exchange_rate(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     _claims: Claims, // 需要管理员/有权限
     Json(req): Json<ClearManualRateRequest>,
 ) -> ApiResult<Json<ApiResponse<serde_json::Value>>> {
-    let service = CurrencyService::new(pool);
+    let service = CurrencyService::new_with_redis(app_state.pool, app_state.redis);
     service
         .clear_manual_rate(&req.from_currency, &req.to_currency)
         .await
@@ -209,11 +210,11 @@ pub async fn clear_manual_exchange_rate(
 
 /// 批量清除手动汇率（按条件）
 pub async fn clear_manual_exchange_rates_batch(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     _claims: Claims,
     Json(req): Json<ClearManualRatesBatchRequest>,
 ) -> ApiResult<Json<ApiResponse<serde_json::Value>>> {
-    let service = CurrencyService::new(pool);
+    let service = CurrencyService::new_with_redis(app_state.pool, app_state.redis);
     let affected = service.clear_manual_rates_batch(req).await
         .map_err(|_e| ApiError::InternalServerError)?;
     Ok(Json(ApiResponse::success(serde_json::json!({
@@ -241,10 +242,10 @@ pub struct ConvertAmountResponse {
 
 /// 货币转换
 pub async fn convert_amount(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     Json(req): Json<ConvertAmountRequest>,
 ) -> ApiResult<Json<ApiResponse<ConvertAmountResponse>>> {
-    let service = CurrencyService::new(pool.clone());
+    let service = CurrencyService::new_with_redis(app_state.pool.clone(), app_state.redis.clone());
     
     // 获取汇率
     let rate = service.get_exchange_rate(&req.from_currency, &req.to_currency, req.date)
@@ -289,10 +290,10 @@ pub struct GetExchangeRateHistoryQuery {
 
 /// 获取汇率历史
 pub async fn get_exchange_rate_history(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     Query(query): Query<GetExchangeRateHistoryQuery>,
 ) -> ApiResult<Json<ApiResponse<Vec<ExchangeRate>>>> {
-    let service = CurrencyService::new(pool);
+    let service = CurrencyService::new_with_redis(app_state.pool, app_state.redis);
     let days = query.days.unwrap_or(30);
     
     let history = service.get_exchange_rate_history(&query.from, &query.to, days)
@@ -304,7 +305,7 @@ pub async fn get_exchange_rate_history(
 
 /// 获取常用汇率对
 pub async fn get_popular_exchange_pairs(
-    State(_pool): State<PgPool>,
+    State(_app_state): State<AppState>,
 ) -> ApiResult<Json<ApiResponse<Vec<ExchangePair>>>> {
     // 定义常用的汇率对
     let pairs = vec![
@@ -352,18 +353,35 @@ pub struct ExchangePair {
 
 /// 刷新汇率（从外部API获取）
 pub async fn refresh_exchange_rates(
-    State(pool): State<PgPool>,
+    State(app_state): State<AppState>,
     _claims: Claims, // 需要管理员权限
 ) -> ApiResult<Json<ApiResponse<()>>> {
-    let service = CurrencyService::new(pool);
-    
+    let service = CurrencyService::new_with_redis(app_state.pool, app_state.redis);
+
     // 为主要货币刷新汇率
     let base_currencies = vec!["CNY", "USD", "EUR"];
-    
+
     for base in base_currencies {
         service.fetch_latest_rates(base).await
             .map_err(|_e| ApiError::InternalServerError)?;
     }
-    
+
     Ok(Json(ApiResponse::success(())))
+}
+
+/// 获取全球加密货币市场统计数据
+pub async fn get_global_market_stats(
+    State(_app_state): State<AppState>,
+) -> ApiResult<Json<ApiResponse<GlobalMarketStats>>> {
+    // 从全局服务实例获取市场统计数据
+    let mut service = EXCHANGE_RATE_SERVICE.lock().await;
+
+    let stats = service.fetch_global_market_stats()
+        .await
+        .map_err(|e| {
+            tracing::warn!("Failed to fetch global market stats: {:?}", e);
+            ApiError::InternalServerError
+        })?;
+
+    Ok(Json(ApiResponse::success(stats)))
 }

@@ -208,6 +208,14 @@ impl Default for CsvExportConfig {
     }
 }
 
+impl CsvExportConfig {
+    // Convenience builder to toggle header output from callers (e.g., API layer)
+    pub fn with_include_header(mut self, include: bool) -> Self {
+        self.include_header = include;
+        self
+    }
+}
+
 /// 轻量导出行（供服务端快速复用，不依赖内部数据收集）
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SimpleTransactionExport {

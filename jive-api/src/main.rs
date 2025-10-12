@@ -339,6 +339,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/v1/currencies/history", get(currency_handler::get_exchange_rate_history))
         .route("/api/v1/currencies/popular-pairs", get(currency_handler::get_popular_exchange_pairs))
         .route("/api/v1/currencies/refresh", post(currency_handler::refresh_exchange_rates))
+        .route("/api/v1/currencies/global-market-stats", get(currency_handler::get_global_market_stats))
         .route("/api/v1/family/currency-settings", get(currency_handler::get_family_currency_settings))
         .route("/api/v1/family/currency-settings", put(currency_handler::update_family_currency_settings))
         

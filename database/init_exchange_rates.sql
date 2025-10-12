@@ -69,7 +69,7 @@ ON CONFLICT (code) DO UPDATE SET
 
 -- 插入默认汇率（以USD为基准的近似值）
 -- 这些是初始值，会被实时API数据更新
-INSERT INTO exchange_rates (base_currency, target_currency, rate, source, is_manual, last_updated)
+INSERT INTO exchange_rates (from_currency, to_currency, rate, source, is_manual, updated_at)
 VALUES
     -- USD到其他货币
     ('USD', 'EUR', 0.85, 'initial', false, CURRENT_TIMESTAMP),
@@ -103,10 +103,10 @@ VALUES
     ('EUR', 'JPY', 176.5, 'initial', false, CURRENT_TIMESTAMP),
     ('EUR', 'GBP', 0.86, 'initial', false, CURRENT_TIMESTAMP),
     ('EUR', 'CHF', 1.04, 'initial', false, CURRENT_TIMESTAMP)
-ON CONFLICT (base_currency, target_currency, date) DO UPDATE SET
+ON CONFLICT (from_currency, to_currency, date) DO UPDATE SET
     rate = EXCLUDED.rate,
     source = EXCLUDED.source,
-    last_updated = CURRENT_TIMESTAMP;
+    updated_at = CURRENT_TIMESTAMP;
 
 -- 插入初始加密货币价格（USD）
 INSERT INTO crypto_prices (crypto_code, base_currency, price, source, last_updated)

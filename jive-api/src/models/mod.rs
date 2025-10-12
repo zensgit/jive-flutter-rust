@@ -4,6 +4,7 @@ pub mod account;
 pub mod audit;
 pub mod bank;
 pub mod family;
+pub mod global_market;
 pub mod invitation;
 pub mod membership;
 pub mod permission;
@@ -17,6 +18,8 @@ pub use account::{AccountMainType, AccountSubType};
 pub use audit::{AuditAction, AuditLog, AuditLogFilter, CreateAuditLogRequest};
 #[allow(unused_imports)]
 pub use family::{CreateFamilyRequest, Family, FamilySettings, UpdateFamilyRequest};
+#[allow(unused_imports)]
+pub use global_market::{GlobalMarketStats, CoinGeckoGlobalResponse, CoinGeckoGlobalData};
 #[allow(unused_imports)]
 pub use invitation::{
     AcceptInvitationRequest, CreateInvitationRequest, Invitation, InvitationResponse,

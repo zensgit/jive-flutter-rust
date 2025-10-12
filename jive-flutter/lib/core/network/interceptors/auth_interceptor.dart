@@ -15,9 +15,16 @@ class AuthInterceptor extends Interceptor {
     // 从存储中获取令牌
     final token = await TokenStorage.getAccessToken();
 
+    // 调试日志：追踪令牌获取
+    print('🔐 AuthInterceptor.onRequest - Path: ${options.path}');
+    print('🔐 AuthInterceptor.onRequest - Token from storage: ${token != null ? "${token.substring(0, 20)}..." : "NULL"}');
+
     if (token != null && token.isNotEmpty) {
       // 添加认证头
       options.headers['Authorization'] = 'Bearer $token';
+      print('🔐 AuthInterceptor.onRequest - Authorization header added');
+    } else {
+      print('⚠️ AuthInterceptor.onRequest - NO TOKEN AVAILABLE, request will fail if auth required');
     }
 
     // 添加其他必要的头部

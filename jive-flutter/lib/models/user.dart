@@ -110,8 +110,8 @@ class User {
     if (avatar != null && avatar!.isNotEmpty) {
       return avatar!;
     }
-    // 返回默认头像（可以使用Gravatar或其他服务）
-    return 'https://ui-avatars.com/api/?name=$displayName&background=6366f1&color=fff';
+    // 使用 DiceBear initials 风格生成默认头像（基于用户名）
+    return 'https://api.dicebear.com/7.x/initials/svg?seed=$displayName&backgroundColor=6366f1';
   }
 
   /// 是否是高级用户
