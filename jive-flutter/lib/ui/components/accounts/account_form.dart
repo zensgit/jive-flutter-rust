@@ -5,6 +5,8 @@ import 'package:jive_money/core/constants/app_constants.dart';
 import 'package:jive_money/ui/components/buttons/primary_button.dart';
 import 'package:jive_money/ui/components/buttons/secondary_button.dart';
 import 'package:jive_money/ui/components/accounts/account_list.dart';
+import 'package:jive_money/ui/components/banks/bank_selector.dart';
+import 'package:jive_money/models/bank.dart';
 
 class AccountForm extends StatefulWidget {
   final AccountFormData? initialData;
@@ -30,11 +32,11 @@ class _AccountFormState extends State<AccountForm> {
   late final TextEditingController _balanceController;
   late final TextEditingController _descriptionController;
   late final TextEditingController _accountNumberController;
-  late final TextEditingController _bankNameController;
 
   late AccountType _type;
   late AccountSubType _subType;
   late String _currency;
+  Bank? _selectedBank;
   Color _color = AppConstants.primaryColor;
   IconData _icon = Icons.account_balance_wallet;
   bool _isActive = true;
@@ -54,7 +56,6 @@ class _AccountFormState extends State<AccountForm> {
         TextEditingController(text: initial?.description ?? '');
     _accountNumberController =
         TextEditingController(text: initial?.accountNumber ?? '');
-    _bankNameController = TextEditingController(text: initial?.bankName ?? '');
 
     _type = initial?.type ?? AccountType.asset;
     _subType = initial?.subType ?? AccountSubType.cash;
@@ -71,7 +72,6 @@ class _AccountFormState extends State<AccountForm> {
     _balanceController.dispose();
     _descriptionController.dispose();
     _accountNumberController.dispose();
-    _bankNameController.dispose();
     super.dispose();
   }
 
@@ -106,8 +106,8 @@ class _AccountFormState extends State<AccountForm> {
 
             const SizedBox(height: 16),
 
-            // 银行名称（信用卡和银行账户）
-            if (_shouldShowBankFields()) _buildBankNameField(theme),
+            // 银行选择器（信用卡和银行账户）
+            if (_shouldShowBankFields()) _buildBankSelector(),
 
             if (_shouldShowBankFields()) const SizedBox(height: 16),
 
@@ -336,16 +336,15 @@ class _AccountFormState extends State<AccountForm> {
     );
   }
 
-  Widget _buildBankNameField(ThemeData theme) {
-    return TextFormField(
-      controller: _bankNameController,
-      decoration: InputDecoration(
-        labelText: '银行/机构名称',
-        hintText: '例如：中国工商银行',
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-        ),
-      ),
+  Widget _buildBankSelector() {
+    return BankSelector(
+      selectedBank: _selectedBank,
+      onBankSelected: (bank) {
+        setState(() {
+          _selectedBank = bank;
+        });
+      },
+      isCryptoMode: false,
     );
   }
 
@@ -690,8 +689,8 @@ class _AccountFormState extends State<AccountForm> {
         accountNumber: _accountNumberController.text.isEmpty
             ? null
             : _accountNumberController.text,
-        bankName:
-            _bankNameController.text.isEmpty ? null : _bankNameController.text,
+        bankName: _selectedBank?.displayName,
+        bankId: _selectedBank?.id,
         isActive: _isActive,
         includeInTotal: _includeInTotal,
       ));
@@ -711,6 +710,7 @@ class AccountFormData {
   final String? description;
   final String? accountNumber;
   final String? bankName;
+  final String? bankId;
   final bool isActive;
   final bool includeInTotal;
 
@@ -725,6 +725,7 @@ class AccountFormData {
     this.description,
     this.accountNumber,
     this.bankName,
+    this.bankId,
     required this.isActive,
     required this.includeInTotal,
   });

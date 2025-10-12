@@ -48,6 +48,9 @@ bytes = "1"
 
 # WebSocket支持
 tokio-tungstenite = "0.24"
+
+# 拼音转换
+pinyin = "0.10"
 futures = "0.3"
 futures-util = "0.3"
 
