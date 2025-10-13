@@ -70,6 +70,46 @@ class TransactionController extends StateNotifier<TransactionState> {
     loadTransactions();
   }
 
+  /// 设置分组方式并持久化
+  Future<void> setGrouping(TransactionGrouping grouping) async {
+    // 更新状态
+    state = state.copyWith(grouping: grouping);
+
+    // 持久化到 SharedPreferences
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final value = switch (grouping) {
+        TransactionGrouping.date => 'date',
+        TransactionGrouping.category => 'category',
+        TransactionGrouping.account => 'account',
+      };
+      await prefs.setString('tx_grouping', value);
+    } catch (_) {
+      // 忽略持久化异常以避免影响 UI 流程
+    }
+  }
+
+  /// 切换某个分组的折叠状态并持久化
+  Future<void> toggleGroupCollapse(String key) async {
+    final next = Set<String>.from(state.groupCollapse);
+    if (next.contains(key)) {
+      next.remove(key);
+    } else {
+      next.add(key);
+    }
+
+    // 更新状态
+    state = state.copyWith(groupCollapse: next);
+
+    // 持久化到 SharedPreferences
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList('tx_group_collapse', next.toList());
+    } catch (_) {
+      // 忽略持久化异常
+    }
+  }
+
   /// 加载交易列表
   Future<void> loadTransactions() async {
     state = state.copyWith(isLoading: true, error: null);

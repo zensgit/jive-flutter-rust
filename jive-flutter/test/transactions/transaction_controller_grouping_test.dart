@@ -12,7 +12,7 @@ class _DummyTransactionService extends TransactionService {}
 
 /// Test controller that skips network loading on init.
 class _TestTransactionController extends TransactionController {
-  _TestTransactionController(Ref ref) : super(ref, _DummyTransactionService());
+  _TestTransactionController(Ref ref) : super(_DummyTransactionService());
 
   @override
   Future<void> loadTransactions() async {

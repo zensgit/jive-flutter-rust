@@ -692,6 +692,7 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     // Background refresh to fetch automatic rates (non-blocking)
     // This will load the automatic rates from API and update UI when ready
     _loadExchangeRates().then((_) {
+      if (_disposed) return;
       debugPrint('[CurrencyProvider] Background rate refresh completed, automatic rates should be displayed now');
     });
   }
@@ -738,6 +739,7 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     // Background refresh to fetch automatic rate (non-blocking, optional)
     // This will load the automatic rate from API and update UI when ready
     _loadExchangeRates().then((_) {
+      if (_disposed) return;
       debugPrint('[CurrencyProvider] Background rate refresh completed, automatic rate should be displayed now');
     });
   }
@@ -790,6 +792,7 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     // Background refresh other rates (non-blocking, optional)
     // This ensures manual rate persists even after background refresh completes
     _loadExchangeRates().then((_) {
+      if (_disposed) return;
       debugPrint('[CurrencyProvider] Background rate refresh completed, manual rates re-overlaid');
     });
   }
@@ -895,6 +898,17 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   Future<void> refreshExchangeRates() async {
     assert(_initialized || _suppressAutoInit,
         'CurrencyNotifier used before initialize(); call initialize() first or disable auto-init in tests.');
+    // If a background update is in-flight, wait for it to finish,
+    // then trigger a fresh update to ensure an explicit refresh always
+    // results in a new fetch (helps determinism in tests as well).
+    final pending = _pendingRateUpdate;
+    if (pending != null) {
+      try {
+        await pending;
+      } catch (_) {
+        // ignore and proceed to trigger a new update
+      }
+    }
     await _loadExchangeRates();
   }
 
@@ -966,8 +980,10 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       state = state.copyWith(selectedCurrencies: updated);
       await _savePreferences();
       _schedulePreferencePush();
-      // Immediately fetch rates for the newly added currency
-      await _loadExchangeRates();
+      // Immediately fetch rates for the newly added currency (skip auto in tests)
+      if (!_suppressAutoInit) {
+        await _loadExchangeRates();
+      }
     }
   }
 
@@ -983,8 +999,10 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       state = state.copyWith(selectedCurrencies: updated);
       await _savePreferences();
       _schedulePreferencePush();
-      // Refresh rates after removal to keep targets in sync
-      await _loadExchangeRates();
+      // Refresh rates after removal to keep targets in sync (skip auto in tests)
+      if (!_suppressAutoInit) {
+        await _loadExchangeRates();
+      }
     }
   }
 
@@ -1062,8 +1080,10 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     await _savePreferences();
     _schedulePreferencePush();
 
-    // Then reload exchange rates with new base currency
-    await _loadExchangeRates();
+    // Then reload exchange rates with new base currency (skip auto in tests)
+    if (!_suppressAutoInit) {
+      await _loadExchangeRates();
+    }
   }
 
   /// Push user currency preferences to server (best-effort)
