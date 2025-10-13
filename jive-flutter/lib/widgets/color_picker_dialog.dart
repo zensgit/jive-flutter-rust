@@ -72,7 +72,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
               ),
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // 十六进制输入
             TextField(
@@ -80,7 +80,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
               decoration: InputDecoration(
                 labelText: '十六进制颜色值',
                 hintText: 'FFFFFF',
-                border: const OutlineInputBorder(),
+                border: OutlineInputBorder(),
                 prefixText: '#',
               ),
               maxLength: 6,
@@ -91,22 +91,22 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
               onChanged: _onHexChanged,
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // RGB滑块
             _buildRGBSliders(),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // 预设颜色
-            const Text(
+            Text(
               '预设颜色',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             _buildPresetColors(),
           ],
         ),
@@ -191,7 +191,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
             ),
           ),
           const SizedBox(width: 8),
-          SizedBox(
+          const SizedBox(
             width: 32,
             child: Text(
               value.toInt().toString(),

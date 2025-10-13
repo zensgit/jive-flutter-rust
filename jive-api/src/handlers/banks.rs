@@ -22,7 +22,7 @@ pub async fn list_banks(
 ) -> ApiResult<Json<Vec<Bank>>> {
     let mut query = QueryBuilder::new(
         "SELECT id, code, name, name_cn, name_en, icon_filename, is_crypto
-         FROM banks WHERE is_active = true"
+         FROM banks WHERE is_active = true",
     );
 
     if let Some(search) = params.search {

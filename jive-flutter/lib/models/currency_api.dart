@@ -8,6 +8,9 @@ class ExchangeRate {
   final String source;
   final DateTime effectiveDate;
   final DateTime createdAt;
+  final double? change24h; // 24小时变化百分比
+  final double? change7d;  // 7天变化百分比
+  final double? change30d; // 30天变化百分比
 
   ExchangeRate({
     required this.id,
@@ -17,6 +20,9 @@ class ExchangeRate {
     required this.source,
     required this.effectiveDate,
     required this.createdAt,
+    this.change24h,
+    this.change7d,
+    this.change30d,
   });
 
   factory ExchangeRate.fromJson(Map<String, dynamic> json) {
@@ -30,6 +36,21 @@ class ExchangeRate {
       source: json['source'],
       effectiveDate: DateTime.parse(json['effective_date']),
       createdAt: DateTime.parse(json['created_at']),
+      change24h: json['change_24h'] != null
+          ? (json['change_24h'] is String
+              ? double.tryParse(json['change_24h'])
+              : (json['change_24h'] as num?)?.toDouble())
+          : null,
+      change7d: json['change_7d'] != null
+          ? (json['change_7d'] is String
+              ? double.tryParse(json['change_7d'])
+              : (json['change_7d'] as num?)?.toDouble())
+          : null,
+      change30d: json['change_30d'] != null
+          ? (json['change_30d'] is String
+              ? double.tryParse(json['change_30d'])
+              : (json['change_30d'] as num?)?.toDouble())
+          : null,
     );
   }
 }
@@ -198,25 +219,37 @@ class UpdateCurrencySettingsRequest {
 class ApiCurrency {
   final String code;
   final String name;
+  final String? nameZh; // 中文名称（可能为 null）
   final String symbol;
   final int decimalPlaces;
   final bool isActive;
+  final bool isCrypto; // 🔥 CRITICAL: Must parse is_crypto from API!
+  final String? flag; // 国旗 emoji（法定货币）
+  final String? icon; // 图标 emoji（加密货币）
 
   ApiCurrency({
     required this.code,
     required this.name,
+    this.nameZh,
     required this.symbol,
     required this.decimalPlaces,
     required this.isActive,
+    required this.isCrypto,
+    this.flag,
+    this.icon,
   });
 
   factory ApiCurrency.fromJson(Map<String, dynamic> json) {
     return ApiCurrency(
       code: json['code'],
       name: json['name'],
+      nameZh: json['name_zh'], // 从 API 解析中文名
       symbol: json['symbol'],
       decimalPlaces: json['decimal_places'] ?? 2,
       isActive: json['is_active'] ?? true,
+      isCrypto: json['is_crypto'] ?? false, // 🔥 Parse is_crypto from API JSON
+      flag: json['flag'], // 从 API 解析国旗
+      icon: json['icon'], // 从 API 解析图标
     );
   }
 
@@ -224,9 +257,13 @@ class ApiCurrency {
     return {
       'code': code,
       'name': name,
+      'name_zh': nameZh,
       'symbol': symbol,
       'decimal_places': decimalPlaces,
       'is_active': isActive,
+      'is_crypto': isCrypto,
+      'flag': flag,
+      'icon': icon,
     };
   }
 }

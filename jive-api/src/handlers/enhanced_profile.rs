@@ -112,18 +112,17 @@ pub async fn register_with_preferences(
     sqlx::query(
         r#"
         INSERT INTO users (
-            id, email, name, full_name, password_hash, 
+            id, email, full_name, password_hash, 
             country, preferred_currency, preferred_language, 
             preferred_timezone, preferred_date_format,
             avatar_url, avatar_style, avatar_color, avatar_background,
             created_at, updated_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
         "#,
     )
     .bind(user_id)
     .bind(&req.email)
-    .bind(&req.name)
     .bind(&req.name)
     .bind(&password_hash)
     .bind(&req.country)
@@ -147,7 +146,6 @@ pub async fn register_with_preferences(
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
     // Create family with user's preferences
-    tracing::info!(target: "enhanced_register", user_id = %user_id, name = %req.name, "Creating family via FamilyService (owner_id)");
     let family_service = FamilyService::new(pool.clone());
     let family_request = CreateFamilyRequest {
         name: Some(format!("{}的家庭", req.name)),
@@ -156,16 +154,12 @@ pub async fn register_with_preferences(
         locale: Some(req.language.clone()),
     };
 
-    let family = match family_service.create_family(user_id, family_request).await {
-        Ok(f) => f,
-        Err(e) => {
-            tracing::error!(target: "enhanced_register", error=?e, user_id=%user_id, "create_family failed");
-            return Err(ApiError::InternalServerError);
-        }
-    };
+    let family = family_service
+        .create_family(user_id, family_request)
+        .await
+        .map_err(|_e| ApiError::InternalServerError)?;
 
     // Update user's current family
-    tracing::info!(target: "enhanced_register", user_id = %user_id, family_id = %family.id, "Binding current_family_id after enhanced register");
     sqlx::query("UPDATE users SET current_family_id = $1 WHERE id = $2")
         .bind(family.id)
         .bind(user_id)

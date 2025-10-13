@@ -1,0 +1,28 @@
+error[unexpected-value]: expected '["all", "workspace", "transitive", "none"]'
+   ┌─ /home/runner/work/jive-flutter-rust/jive-flutter-rust/deny.toml:28:17
+   │
+28 │ unmaintained = "warn"
+   │                 ━━━━ unexpected value
+
+error[custom]: unknown term
+   ┌─ /home/runner/work/jive-flutter-rust/jive-flutter-rust/deny.toml:79:19
+   │
+79 │ allow = ["ring", "webpki"]
+   │                   ━━━━━━
+
+error[wanted]: 
+    ┌─ /home/runner/work/jive-flutter-rust/jive-flutter-rust/deny.toml:133:1
+    │  
+133 │ ╭ [[sources.allow-org]]
+134 │ │ github = ["jive-org"]  # Replace with actual GitHub organization
+135 │ │ gitlab = ["jive-gitlab"]  # Replace with actual GitLab organization if used
+    │ ╰────────────────────────┘ expected a table
+
+error[wanted]: 
+   ┌─ /home/runner/work/jive-flutter-rust/jive-flutter-rust/deny.toml:10:1
+   │  
+10 │ ╭ [targets]
+11 │ │ # The field that will be checked, this value must be one of
+   │ ╰┘ expected an array
+
+2025-10-08 09:36:18 [ERROR] failed to deserialize config from '/home/runner/work/jive-flutter-rust/jive-flutter-rust/deny.toml'

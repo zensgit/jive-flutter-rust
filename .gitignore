@@ -59,7 +59,6 @@ Cargo.lock
 # 日志文件
 *.log
 logs/
-/.pids/
 *.pid
 *.seed
 *.pid.lock
@@ -74,17 +73,6 @@ dist/
 tmp/
 temp/
 out/
-
-# CI/分析临时输出目录
-jive-api/api-clippy-output/
-jive-api/cargo-deny-output/
-jive-api/export-indexes-report/
-jive-api/flutter-analyze-output/
-jive-api/flutter-manual-overrides-widget/
-jive-api/rust-test-results/
-jive-api/rustfmt-output/
-jive-api/schema-report/
-jive-api/test-report/
 
 # Node.js (如果使用)
 node_modules/
@@ -101,6 +89,3 @@ __pycache__/
 env/
 venv/
 .venv
-# Environment files
-.env.development
-.env.local

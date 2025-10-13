@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:jive_money/core/constants/app_constants.dart';
 import 'package:jive_money/ui/components/cards/account_card.dart';
 import 'package:jive_money/ui/components/loading/loading_widget.dart';
-import 'package:jive_money/models/account.dart' as model;
+import 'package:jive_money/models/account.dart';
 
 // 类型别名以兼容现有代码
-typedef AccountData = model.Account;
+typedef AccountData = Account;
 
 class AccountList extends StatelessWidget {
   final List<AccountData> accounts;
@@ -138,7 +138,7 @@ class AccountList extends StatelessWidget {
 
                   // 该类型的账户
                   ...typeAccounts.map(
-                    (account) => AccountCard.fromAccount(
+                    (account) => AccountCard(
                       account: account,
                       onTap: () => onAccountTap?.call(account),
                       onLongPress: () => onAccountLongPress?.call(account),
@@ -304,15 +304,6 @@ class AccountList extends StatelessWidget {
         .fold(0.0, (sum, account) => sum + account.balance);
   }
 
-  AccountType _toUiType(model.AccountType type) {
-    switch (type) {
-      case model.AccountType.asset:
-        return AccountType.asset;
-      case model.AccountType.liability:
-        return AccountType.liability;
-    }
-  }
-
   IconData _getTypeIcon(AccountType type) {
     switch (type) {
       case AccountType.asset:
@@ -346,6 +337,21 @@ class AccountList extends StatelessWidget {
     final sign = amount >= 0 ? '' : '-';
     return '$sign${amount.abs().toStringAsFixed(2)}';
   }
+
+  /// Convert Account model type to UI AccountType enum
+  AccountType _toUiAccountType(dynamic modelType) {
+    // Handle string or enum type from Account model
+    if (modelType == 'asset' || modelType.toString().contains('asset')) {
+      return AccountType.asset;
+    } else {
+      return AccountType.liability;
+    }
+  }
+
+  /// Check if Account model type matches UI AccountType
+  bool _matchesLocalType(AccountType uiType, dynamic modelType) {
+    return _toUiAccountType(modelType) == uiType;
+  }
 }
 
 /// 账户类型枚举
@@ -369,26 +375,6 @@ enum AccountSubType {
   loan, // 贷款
   mortgage, // 房贷
 }
-
-
-  // Model<->UI AccountType adapter
-  // Map model.AccountType (checking/savings/creditCard/loan/...) to local grouping (asset/liability)
-  AccountType _toUiAccountType(model.AccountType t) {
-    switch (t) {
-      case model.AccountType.creditCard:
-      case model.AccountType.loan:
-        return AccountType.liability;
-      default:
-        return AccountType.asset;
-    }
-  }
-
-  bool _matchesLocalType(AccountType localType, model.AccountType modelType) {
-    final isLiability = modelType == model.AccountType.creditCard || modelType == model.AccountType.loan;
-    if (localType == AccountType.liability) return isLiability;
-    return !isLiability;
-  }
-
 
 /// 账户分组列表
 class GroupedAccountList extends StatelessWidget {
@@ -454,6 +440,8 @@ class GroupedAccountList extends StatelessWidget {
                 (account) => AccountCard.fromAccount(
                   account: account,
                   onTap: () => onAccountTap?.call(account),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 ),
               )
               .toList(),

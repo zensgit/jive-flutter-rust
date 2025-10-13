@@ -3,7 +3,7 @@ class ApiConfig {
   // API基础配置
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://localhost:18012', // 开发环境默认值 - Docker映射端口
+    defaultValue: 'http://localhost:8012', // 开发环境默认值 - 本地API端口
   );
 
   static const String apiVersion = 'v1';
@@ -14,7 +14,8 @@ class ApiConfig {
 
   // 超时配置
   static const Duration connectTimeout = Duration(seconds: 30);
-  static const Duration receiveTimeout = Duration(seconds: 30);
+  // ⚡ v3.2: Increased from 30s to 180s for slow exchange rate API calls
+  static const Duration receiveTimeout = Duration(seconds: 180);
   static const Duration sendTimeout = Duration(seconds: 30);
 
   // 请求头配置
@@ -111,7 +112,7 @@ class ApiEnvironmentConfig {
 
   static const development = ApiEnvironmentConfig(
     environment: ApiEnvironment.development,
-    baseUrl: 'http://localhost:18012',
+    baseUrl: 'http://localhost:8012',
     enableLogging: true,
     enableCaching: false,
   );

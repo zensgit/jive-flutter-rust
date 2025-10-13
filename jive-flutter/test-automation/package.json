@@ -1,0 +1,16 @@
+{
+  "name": "jive-flutter-playwright-tests",
+  "version": "1.0.0",
+  "description": "Playwright tests for Jive Flutter app",
+  "main": "test_settings_page.js",
+  "scripts": {
+    "test": "node test_settings_page.js",
+    "install-browsers": "npx playwright install chromium"
+  },
+  "keywords": ["playwright", "testing", "flutter"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.40.0"
+  }
+}

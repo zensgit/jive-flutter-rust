@@ -10,9 +10,11 @@ use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use sqlx::{PgPool, QueryBuilder, Row};
+use std::str::FromStr;
 use uuid::Uuid;
 
 use crate::error::{ApiError, ApiResult};
+use crate::models::{AccountMainType, AccountSubType};
 
 /// 账户查询参数
 #[derive(Debug, Deserialize)]
@@ -30,7 +32,10 @@ pub struct CreateAccountRequest {
     pub ledger_id: Uuid,
     pub bank_id: Option<Uuid>,
     pub name: String,
-    pub account_type: String,
+    pub account_main_type: String,
+    pub account_sub_type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_type: Option<String>,
     pub account_number: Option<String>,
     pub institution_name: Option<String>,
     pub currency: Option<String>,
@@ -218,18 +223,29 @@ pub async fn create_account(
     State(pool): State<PgPool>,
     Json(req): Json<CreateAccountRequest>,
 ) -> ApiResult<Json<AccountResponse>> {
+    let main_type =
+        AccountMainType::from_str(&req.account_main_type).map_err(ApiError::BadRequest)?;
+    let sub_type = AccountSubType::from_str(&req.account_sub_type).map_err(ApiError::BadRequest)?;
+
+    sub_type
+        .validate_with_main_type(main_type)
+        .map_err(ApiError::BadRequest)?;
+
     let id = Uuid::new_v4();
     let currency = req.currency.unwrap_or_else(|| "CNY".to_string());
     let initial_balance = req.initial_balance.unwrap_or(Decimal::ZERO);
+    let legacy_type = req
+        .account_type
+        .unwrap_or_else(|| req.account_sub_type.clone());
 
     let account = sqlx::query!(
         r#"
         INSERT INTO accounts (
-            id, ledger_id, bank_id, name, account_type, account_number,
-            institution_name, currency, current_balance, status,
+            id, ledger_id, bank_id, name, account_type, account_main_type, account_sub_type,
+            account_number, institution_name, currency, current_balance, status,
             is_manual, color, notes, created_at, updated_at
         ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8, $9, 'active', true, $10, $11, NOW(), NOW()
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'active', true, $12, $13, NOW(), NOW()
         )
         RETURNING id, ledger_id, bank_id, name, account_type, account_number, institution_name,
                   currency, current_balance, available_balance, credit_limit, status,
@@ -239,7 +255,9 @@ pub async fn create_account(
         req.ledger_id,
         req.bank_id,
         req.name,
-        req.account_type,
+        legacy_type,
+        main_type.to_string(),
+        sub_type.to_string(),
         req.account_number,
         req.institution_name,
         currency,

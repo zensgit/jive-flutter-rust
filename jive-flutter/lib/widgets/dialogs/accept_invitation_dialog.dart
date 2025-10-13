@@ -60,11 +60,14 @@ class _AcceptInvitationDialogState
         if (!mounted) return;
 
         // 显示成功消息
+        // ignore: use_build_context_synchronously
         messenger.hideCurrentSnackBar();
         messenger.showSnackBar(
           SnackBar(content: Text('已成功加入 ${family.name}')),
         );
+
         // 关闭对话框
+        // ignore: use_build_context_synchronously
         navigator.pop(true);
 
         // 触发回调
@@ -73,6 +76,7 @@ class _AcceptInvitationDialogState
     } catch (e) {
       if (mounted) {
         final messengerErr = ScaffoldMessenger.of(context);
+        // ignore: use_build_context_synchronously
         messengerErr.showSnackBar(
           SnackBar(
             content: Text('接受邀请失败: ${e.toString()}'),
@@ -92,6 +96,7 @@ class _AcceptInvitationDialogState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return AlertDialog(
       title: Text(_showConfirmation ? '确认加入' : '邀请详情'),
       content: SingleChildScrollView(

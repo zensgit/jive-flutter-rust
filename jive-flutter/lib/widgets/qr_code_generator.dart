@@ -512,3 +512,9 @@ class _InfoRow extends StatelessWidget {
   }
 }
 
+
+// Stub implementation for XFile
+class _StubXFile {
+  final String path;
+  _StubXFile(this.path);
+}

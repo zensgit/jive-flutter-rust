@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:jive_money/models/exchange_rate.dart';
 import 'package:jive_money/utils/constants.dart';
@@ -38,6 +37,35 @@ class CryptoPriceService {
     'ALGO': 'algorand',
     'ATOM': 'cosmos',
     'FTM': 'fantom',
+    // Extended crypto mappings (added 2025-10-10)
+    '1INCH': '1inch',
+    'AAVE': 'aave',
+    'AGIX': 'singularitynet',
+    'PEPE': 'pepe',
+    'MKR': 'maker',
+    'COMP': 'compound-governance-token',
+    'CRV': 'curve-dao-token',
+    'SUSHI': 'sushi',
+    'YFI': 'yearn-finance',
+    'SNX': 'synthetix-network-token',
+    'GRT': 'the-graph',
+    'ENJ': 'enjincoin',
+    'MANA': 'decentraland',
+    'SAND': 'the-sandbox',
+    'AXS': 'axie-infinity',
+    'GALA': 'gala',
+    'CHZ': 'chiliz',
+    'FIL': 'filecoin',
+    'ICP': 'internet-computer',
+    'APE': 'apecoin',
+    'LRC': 'loopring',
+    'IMX': 'immutable-x',
+    'NEAR': 'near',
+    'FLR': 'flare-networks',
+    'HBAR': 'hedera-hashgraph',
+    'VET': 'vechain',
+    'QNT': 'quant-network',
+    'ETC': 'ethereum-classic',
   };
 
   // Currency code to CoinCap ID mapping

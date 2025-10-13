@@ -1,45 +1,45 @@
 //! Export service - 数据导出服务
-//! 
+//!
 //! 基于 Maybe 的导出功能转换而来，支持多种导出格式和灵活的数据选择
 
-use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
-use chrono::{DateTime, Utc, NaiveDate};
+use chrono::{DateTime, NaiveDate, Utc};
 use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use uuid::Uuid;
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
+use super::{PaginationParams, ServiceContext, ServiceResponse};
+use crate::domain::{Account, Category, Ledger, Transaction};
 use crate::error::{JiveError, Result};
-use crate::domain::{Account, Transaction, Category, Ledger};
-use super::{ServiceContext, ServiceResponse, PaginationParams};
 
 /// 导出格式
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum ExportFormat {
-    CSV,            // CSV 格式
-    Excel,          // Excel 格式
-    JSON,           // JSON 格式
-    XML,            // XML 格式
-    PDF,            // PDF 格式
-    QIF,            // Quicken Interchange Format
-    OFX,            // Open Financial Exchange
-    Markdown,       // Markdown 格式
-    HTML,           // HTML 格式
+    CSV,      // CSV 格式
+    Excel,    // Excel 格式
+    JSON,     // JSON 格式
+    XML,      // XML 格式
+    PDF,      // PDF 格式
+    QIF,      // Quicken Interchange Format
+    OFX,      // Open Financial Exchange
+    Markdown, // Markdown 格式
+    HTML,     // HTML 格式
 }
 
 /// 导出范围
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum ExportScope {
-    All,            // 所有数据
-    Ledger,         // 特定账本
-    Account,        // 特定账户
-    Category,       // 特定分类
-    DateRange,      // 日期范围
-    Custom,         // 自定义
+    All,       // 所有数据
+    Ledger,    // 特定账本
+    Account,   // 特定账户
+    Category,  // 特定分类
+    DateRange, // 日期范围
+    Custom,    // 自定义
 }
 
 /// 导出选项
@@ -109,12 +109,12 @@ pub struct ExportTask {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum ExportStatus {
-    Pending,        // 待处理
-    Processing,     // 处理中
-    Generating,     // 生成中
-    Completed,      // 完成
-    Failed,         // 失败
-    Cancelled,      // 取消
+    Pending,    // 待处理
+    Processing, // 处理中
+    Generating, // 生成中
+    Completed,  // 完成
+    Failed,     // 失败
+    Cancelled,  // 取消
 }
 
 /// 导出模板
@@ -205,6 +205,14 @@ impl Default for CsvExportConfig {
             thousands_separator: ",".to_string(),
             encoding: "UTF-8".to_string(),
         }
+    }
+}
+
+impl CsvExportConfig {
+    // Convenience builder to toggle header output from callers (e.g., API layer)
+    pub fn with_include_header(mut self, include: bool) -> Self {
+        self.include_header = include;
+        self
     }
 }
 
@@ -337,19 +345,30 @@ impl ExportService {
         if cfg.include_header {
             out.push_str(&format!(
                 "Date{}Description{}Amount{}Category{}Account{}Payee{}Type\n",
-                cfg.delimiter, cfg.delimiter, cfg.delimiter, cfg.delimiter, cfg.delimiter, cfg.delimiter
+                cfg.delimiter,
+                cfg.delimiter,
+                cfg.delimiter,
+                cfg.delimiter,
+                cfg.delimiter,
+                cfg.delimiter
             ));
         }
         for r in rows {
             let amount_str = r.amount.to_string().replace('.', &cfg.decimal_separator);
             out.push_str(&format!(
                 "{}{}{}{}{}{}{}{}{}{}{}{}{}\n",
-                r.date.format(&cfg.date_format), cfg.delimiter,
-                escape_csv_field(&sanitize_csv_cell(&r.description), cfg.delimiter), cfg.delimiter,
-                amount_str, cfg.delimiter,
-                escape_csv_field(r.category.as_deref().unwrap_or(""), cfg.delimiter), cfg.delimiter,
-                escape_csv_field(&r.account, cfg.delimiter), cfg.delimiter,
-                escape_csv_field(r.payee.as_deref().unwrap_or(""), cfg.delimiter), cfg.delimiter,
+                r.date.format(&cfg.date_format),
+                cfg.delimiter,
+                escape_csv_field(&sanitize_csv_cell(&r.description), cfg.delimiter),
+                cfg.delimiter,
+                amount_str,
+                cfg.delimiter,
+                escape_csv_field(r.category.as_deref().unwrap_or(""), cfg.delimiter),
+                cfg.delimiter,
+                escape_csv_field(&r.account, cfg.delimiter),
+                cfg.delimiter,
+                escape_csv_field(r.payee.as_deref().unwrap_or(""), cfg.delimiter),
+                cfg.delimiter,
                 escape_csv_field(&r.transaction_type, cfg.delimiter),
             ));
         }
@@ -557,19 +576,21 @@ impl ExportService {
         context: ServiceContext,
     ) -> Result<ExportResult> {
         // 获取任务
-        let mut task = self._get_export_status(task_id.clone(), context.clone()).await?;
-        
+        let mut task = self
+            ._get_export_status(task_id.clone(), context.clone())
+            .await?;
+
         // 更新状态为处理中
         task.status = ExportStatus::Processing;
-        
+
         // 收集数据
         let export_data = self.collect_export_data(&task.options, &context).await?;
-        
+
         // 计算总项数
-        task.total_items = export_data.transactions.len() as u32 
-            + export_data.accounts.len() as u32 
+        task.total_items = export_data.transactions.len() as u32
+            + export_data.accounts.len() as u32
             + export_data.categories.len() as u32;
-        
+
         // 根据格式导出
         let file_data = match task.options.format {
             ExportFormat::CSV => self.generate_csv(&export_data, &task.options)?,
@@ -581,17 +602,18 @@ impl ExportService {
                 });
             }
         };
-        
+
         // 保存文件
-        let file_name = format!("export_{}_{}.{}", 
-            context.user_id, 
+        let file_name = format!(
+            "export_{}_{}.{}",
+            context.user_id,
             Utc::now().timestamp(),
             self.get_file_extension(&task.options.format)
         );
-        
+
         // 在实际实现中，这里会保存文件到存储服务
         let download_url = format!("/downloads/{}", file_name);
-        
+
         // 更新任务状态
         task.status = ExportStatus::Completed;
         task.exported_items = task.total_items;
@@ -600,7 +622,7 @@ impl ExportService {
         task.download_url = Some(download_url.clone());
         task.completed_at = Some(Utc::now());
         task.progress = 100;
-        
+
         // 创建导出结果
         let metadata = ExportMetadata {
             version: "1.0.0".to_string(),
@@ -614,7 +636,7 @@ impl ExportService {
             tag_count: export_data.tags.len() as u32,
             date_range: None,
         };
-        
+
         Ok(ExportResult {
             task_id: task.id,
             status: task.status,
@@ -657,11 +679,7 @@ impl ExportService {
     }
 
     /// 取消导出的内部实现
-    async fn _cancel_export(
-        &self,
-        _task_id: String,
-        _context: ServiceContext,
-    ) -> Result<bool> {
+    async fn _cancel_export(&self, _task_id: String, _context: ServiceContext) -> Result<bool> {
         // 在实际实现中，取消正在进行的导出任务
         Ok(true)
     }
@@ -673,26 +691,26 @@ impl ExportService {
         context: ServiceContext,
     ) -> Result<Vec<ExportTask>> {
         // 在实际实现中，从数据库获取导出历史
-        let history = vec![
-            ExportTask {
-                id: Uuid::new_v4().to_string(),
-                user_id: context.user_id.clone(),
-                name: "Year 2024 Export".to_string(),
-                description: Some("Complete export for year 2024".to_string()),
-                options: ExportOptions::default(),
-                status: ExportStatus::Completed,
-                progress: 100,
-                total_items: 5000,
-                exported_items: 5000,
-                file_size: 2048000,
-                // 统一改为 JSON 示例文件名
-                file_path: Some("export_2024_full.json".to_string()),
-                download_url: Some("/downloads/export_2024_full.json".to_string()),
-                error_message: None,
-                started_at: Utc::now() - chrono::Duration::days(1),
-                completed_at: Some(Utc::now() - chrono::Duration::days(1) + chrono::Duration::minutes(10)),
-            },
-        ];
+        let history = vec![ExportTask {
+            id: Uuid::new_v4().to_string(),
+            user_id: context.user_id.clone(),
+            name: "Year 2024 Export".to_string(),
+            description: Some("Complete export for year 2024".to_string()),
+            options: ExportOptions::default(),
+            status: ExportStatus::Completed,
+            progress: 100,
+            total_items: 5000,
+            exported_items: 5000,
+            file_size: 2048000,
+            // 统一改为 JSON 示例文件名
+            file_path: Some("export_2024_full.json".to_string()),
+            download_url: Some("/downloads/export_2024_full.json".to_string()),
+            error_message: None,
+            started_at: Utc::now() - chrono::Duration::days(1),
+            completed_at: Some(
+                Utc::now() - chrono::Duration::days(1) + chrono::Duration::minutes(10),
+            ),
+        }];
 
         Ok(history.into_iter().take(limit as usize).collect())
     }
@@ -722,10 +740,7 @@ impl ExportService {
     }
 
     /// 获取导出模板的内部实现
-    async fn _get_export_templates(
-        &self,
-        _context: ServiceContext,
-    ) -> Result<Vec<ExportTemplate>> {
+    async fn _get_export_templates(&self, _context: ServiceContext) -> Result<Vec<ExportTemplate>> {
         // 在实际实现中，从数据库获取模板
         Ok(Vec::new())
     }
@@ -759,10 +774,11 @@ impl ExportService {
         context: ServiceContext,
     ) -> Result<String> {
         let export_data = self.collect_export_data(&options, &context).await?;
-        let json = serde_json::to_string_pretty(&export_data)
-            .map_err(|e| JiveError::SerializationError {
+        let json = serde_json::to_string_pretty(&export_data).map_err(|e| {
+            JiveError::SerializationError {
                 message: e.to_string(),
-            })?;
+            }
+        })?;
         Ok(json)
     }
 
@@ -840,10 +856,10 @@ impl ExportService {
     /// 生成 CSV 数据
     fn generate_csv(&self, data: &ExportData, _options: &ExportOptions) -> Result<Vec<u8>> {
         let mut csv = String::new();
-        
+
         // 添加标题行
         csv.push_str("Date,Description,Amount,Category,Account\n");
-        
+
         // 添加交易数据
         for transaction in &data.transactions {
             csv.push_str(&format!(
@@ -855,14 +871,18 @@ impl ExportService {
                 transaction.account_id
             ));
         }
-        
+
         Ok(csv.into_bytes())
     }
 
     /// 生成带配置的 CSV 数据
-    fn generate_csv_with_config(&self, data: &ExportData, config: &CsvExportConfig) -> Result<Vec<u8>> {
+    fn generate_csv_with_config(
+        &self,
+        data: &ExportData,
+        config: &CsvExportConfig,
+    ) -> Result<Vec<u8>> {
         let mut csv = String::new();
-        
+
         // 添加标题行
         if config.include_header {
             csv.push_str(&format!(
@@ -870,12 +890,14 @@ impl ExportService {
                 config.delimiter, config.delimiter, config.delimiter, config.delimiter
             ));
         }
-        
+
         // 添加交易数据
         for transaction in &data.transactions {
-            let amount_str = transaction.amount.to_string()
+            let amount_str = transaction
+                .amount
+                .to_string()
                 .replace('.', &config.decimal_separator);
-            
+
             csv.push_str(&format!(
                 "{}{}{}{}{}{}{}{}{}\n",
                 transaction.date.format(&config.date_format),
@@ -889,16 +911,15 @@ impl ExportService {
                 transaction.account_id
             ));
         }
-        
+
         Ok(csv.into_bytes())
     }
 
     /// 生成 JSON 数据
     fn generate_json(&self, data: &ExportData) -> Result<Vec<u8>> {
-        let json = serde_json::to_vec_pretty(data)
-            .map_err(|e| JiveError::SerializationError {
-                message: e.to_string(),
-            })?;
+        let json = serde_json::to_vec_pretty(data).map_err(|e| JiveError::SerializationError {
+            message: e.to_string(),
+        })?;
         Ok(json)
     }
 
@@ -960,11 +981,9 @@ mod tests {
         let context = ServiceContext::new("user-123".to_string());
         let options = ExportOptions::default();
 
-        let result = service._create_export_task(
-            "Test Export".to_string(),
-            options,
-            context
-        ).await;
+        let result = service
+            ._create_export_task("Test Export".to_string(), options, context)
+            .await;
 
         assert!(result.is_ok());
         let task = result.unwrap();

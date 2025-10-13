@@ -16,9 +16,11 @@ use jive_money_api::{
 
 /// 创建测试数据库连接池
 pub async fn create_test_pool() -> PgPool {
+    // Prefer explicit TEST_DATABASE_URL, then fallback to DATABASE_URL (CI), then a sane default
     let database_url = std::env::var("TEST_DATABASE_URL")
-        .unwrap_or_else(|_| "postgresql://postgres:postgres@localhost:5433/jive_test".to_string());
-    
+        .or_else(|_| std::env::var("DATABASE_URL"))
+        .unwrap_or_else(|_| "postgresql://postgres:postgres@localhost:5432/jive_money_test".to_string());
+
     PgPool::connect(&database_url)
         .await
         .expect("Failed to connect to test database")

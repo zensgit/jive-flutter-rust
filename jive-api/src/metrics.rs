@@ -73,6 +73,8 @@ pub async fn metrics_handler(
     let (req_stream, req_buffered, rows_stream, rows_buffered) = state.metrics.get_export_counts();
     let login_fail = state.metrics.get_login_fail();
     let login_inactive = state.metrics.get_login_inactive();
+    let pw_change = state.metrics.get_password_change();
+    let pw_change_rehash = state.metrics.get_password_change_rehash();
     let login_rate_limited = state.metrics.get_login_rate_limited();
     // Histogram exports: convert ns sum back to seconds for Prometheus _sum
     let buf_sum_sec = state.metrics.export_dur_buf_sum_ns.load(std::sync::atomic::Ordering::Relaxed) as f64 / 1e9;
@@ -133,6 +135,14 @@ pub async fn metrics_handler(
     buf.push_str("# HELP auth_login_rate_limited_total Login attempts blocked by rate limiter.\n");
     buf.push_str("# TYPE auth_login_rate_limited_total counter\n");
     buf.push_str(&format!("auth_login_rate_limited_total {}\n", login_rate_limited));
+
+    // Password change counters
+    buf.push_str("# HELP auth_password_change_total Successful password changes.\n");
+    buf.push_str("# TYPE auth_password_change_total counter\n");
+    buf.push_str(&format!("auth_password_change_total {}\n", pw_change));
+    buf.push_str("# HELP auth_password_change_rehash_total Password change events where legacy bcrypt was upgraded to Argon2id.\n");
+    buf.push_str("# TYPE auth_password_change_rehash_total counter\n");
+    buf.push_str(&format!("auth_password_change_rehash_total {}\n", pw_change_rehash));
 
     // Export buffered duration histogram
     buf.push_str("# HELP export_duration_buffered_seconds Export (buffered) duration histogram.\n");

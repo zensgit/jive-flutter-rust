@@ -1,15 +1,13 @@
 //! Transaction domain model
 
-use chrono::{DateTime, Utc, NaiveDate};
-use rust_decimal::Decimal;
-use serde::{Serialize, Deserialize};
-use uuid::Uuid;
+use chrono::{DateTime, Datelike, NaiveDate, Utc};
+use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
+use super::{Entity, SoftDeletable, TransactionStatus, TransactionType};
 use crate::error::{JiveError, Result};
-use super::{Entity, SoftDeletable, TransactionType, TransactionStatus};
 
 /// 交易实体
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -61,11 +59,11 @@ impl Transaction {
     ) -> Result<Transaction> {
         let parsed_date = NaiveDate::parse_from_str(&date, "%Y-%m-%d")
             .map_err(|_| JiveError::InvalidDate { date })?;
-        
+
         // 验证金额
         crate::utils::Validator::validate_transaction_amount(&amount)?;
         crate::error::validate_currency(&currency)?;
-        
+
         // 验证名称
         if name.trim().is_empty() {
             return Err(JiveError::ValidationError {
@@ -295,7 +293,7 @@ impl Transaction {
                 message: "Tag cannot be empty".to_string(),
             });
         }
-        
+
         if !self.tags.contains(&cleaned_tag) {
             self.tags.push(cleaned_tag);
             self.updated_at = Utc::now();
@@ -355,11 +353,16 @@ impl Transaction {
     }
 
     #[wasm_bindgen]
-    pub fn set_multi_currency(&mut self, original_amount: String, original_currency: String, exchange_rate: String) -> Result<()> {
+    pub fn set_multi_currency(
+        &mut self,
+        original_amount: String,
+        original_currency: String,
+        exchange_rate: String,
+    ) -> Result<()> {
         crate::error::validate_currency(&original_currency)?;
         crate::utils::Validator::validate_transaction_amount(&original_amount)?;
         crate::utils::Validator::validate_transaction_amount(&exchange_rate)?;
-        
+
         self.original_amount = Some(original_amount);
         self.original_currency = Some(original_currency);
         self.exchange_rate = Some(exchange_rate);
@@ -467,17 +470,119 @@ impl Transaction {
     pub fn search_keywords(&self) -> Vec<String> {
         let mut keywords = Vec::new();
         keywords.push(self.name.to_lowercase());
-        
+
         if let Some(desc) = &self.description {
             keywords.push(desc.to_lowercase());
         }
-        
+
         if let Some(notes) = &self.notes {
             keywords.push(notes.to_lowercase());
         }
-        
+
         keywords.extend(self.tags.iter().map(|tag| tag.to_lowercase()));
         keywords
+    }
+
+    /// 业务方法 - 非WASM环境
+    #[cfg(not(feature = "wasm"))]
+    pub fn add_tag(&mut self, tag: String) -> Result<()> {
+        let cleaned_tag = crate::utils::StringUtils::clean_text(&tag);
+        if cleaned_tag.is_empty() {
+            return Err(JiveError::ValidationError {
+                message: "Tag cannot be empty".to_string(),
+            });
+        }
+
+        if !self.tags.contains(&cleaned_tag) {
+            self.tags.push(cleaned_tag);
+            self.updated_at = Utc::now();
+        }
+        Ok(())
+    }
+
+    #[cfg(not(feature = "wasm"))]
+    pub fn remove_tag(&mut self, tag: String) {
+        if let Some(pos) = self.tags.iter().position(|t| t == &tag) {
+            self.tags.remove(pos);
+            self.updated_at = Utc::now();
+        }
+    }
+
+    #[cfg(not(feature = "wasm"))]
+    pub fn has_tag(&self, tag: String) -> bool {
+        self.tags.contains(&tag)
+    }
+
+    #[cfg(not(feature = "wasm"))]
+    pub fn is_income(&self) -> bool {
+        matches!(self.transaction_type, TransactionType::Income)
+    }
+
+    #[cfg(not(feature = "wasm"))]
+    pub fn is_expense(&self) -> bool {
+        matches!(self.transaction_type, TransactionType::Expense)
+    }
+
+    #[cfg(not(feature = "wasm"))]
+    pub fn is_transfer(&self) -> bool {
+        matches!(self.transaction_type, TransactionType::Transfer)
+    }
+
+    #[cfg(not(feature = "wasm"))]
+    pub fn is_pending(&self) -> bool {
+        matches!(self.status, TransactionStatus::Pending)
+    }
+
+    #[cfg(not(feature = "wasm"))]
+    pub fn is_completed(&self) -> bool {
+        matches!(self.status, TransactionStatus::Completed)
+    }
+
+    #[cfg(not(feature = "wasm"))]
+    pub fn set_multi_currency(
+        &mut self,
+        original_amount: String,
+        original_currency: String,
+        exchange_rate: String,
+    ) -> Result<()> {
+        crate::error::validate_currency(&original_currency)?;
+        crate::utils::Validator::validate_transaction_amount(&original_amount)?;
+        crate::utils::Validator::validate_transaction_amount(&exchange_rate)?;
+
+        self.original_amount = Some(original_amount);
+        self.original_currency = Some(original_currency);
+        self.exchange_rate = Some(exchange_rate);
+        self.updated_at = Utc::now();
+        Ok(())
+    }
+
+    #[cfg(not(feature = "wasm"))]
+    pub fn clear_multi_currency(&mut self) {
+        self.original_amount = None;
+        self.original_currency = None;
+        self.exchange_rate = None;
+        self.updated_at = Utc::now();
+    }
+
+    #[cfg(not(feature = "wasm"))]
+    pub fn is_multi_currency(&self) -> bool {
+        self.original_currency.is_some()
+    }
+
+    #[cfg(not(feature = "wasm"))]
+    pub fn signed_amount(&self) -> String {
+        use rust_decimal::Decimal;
+        let amount = self.amount.parse::<Decimal>().unwrap_or_default();
+        match self.transaction_type {
+            TransactionType::Income => amount.to_string(),
+            TransactionType::Expense => (-amount).to_string(),
+            TransactionType::Transfer => amount.to_string(),
+        }
+    }
+
+    #[cfg(not(feature = "wasm"))]
+    pub fn month_key(&self) -> String {
+        format!("{}-{:02}", self.date.year(), self.date.month())
     }
 }
 
@@ -498,10 +603,18 @@ impl Entity for Transaction {
 }
 
 impl SoftDeletable for Transaction {
-    fn is_deleted(&self) -> bool { self.deleted_at.is_some() }
-    fn deleted_at(&self) -> Option<DateTime<Utc>> { self.deleted_at }
-    fn soft_delete(&mut self) { self.deleted_at = Some(Utc::now()); }
-    fn restore(&mut self) { self.deleted_at = None; }
+    fn is_deleted(&self) -> bool {
+        self.deleted_at.is_some()
+    }
+    fn deleted_at(&self) -> Option<DateTime<Utc>> {
+        self.deleted_at
+    }
+    fn soft_delete(&mut self) {
+        self.deleted_at = Some(Utc::now());
+    }
+    fn restore(&mut self) {
+        self.deleted_at = None;
+    }
 }
 
 /// 交易构建器
@@ -649,9 +762,11 @@ impl TransactionBuilder {
             message: "Date is required".to_string(),
         })?;
 
-        let transaction_type = self.transaction_type.ok_or_else(|| JiveError::ValidationError {
-            message: "Transaction type is required".to_string(),
-        })?;
+        let transaction_type = self
+            .transaction_type
+            .ok_or_else(|| JiveError::ValidationError {
+                message: "Transaction type is required".to_string(),
+            })?;
 
         // 验证输入
         crate::utils::Validator::validate_transaction_amount(&amount)?;
@@ -702,38 +817,40 @@ mod tests {
 
     #[test]
     fn test_transaction_creation() {
-        let transaction = Transaction::new(
-            "account-123".to_string(),
-            "ledger-456".to_string(),
-            "Test Transaction".to_string(),
-            "100.50".to_string(),
-            "USD".to_string(),
-            "2023-12-25".to_string(),
-            TransactionType::Expense,
-        ).unwrap();
+        let transaction = Transaction::builder()
+            .account_id("account-123".to_string())
+            .ledger_id("ledger-456".to_string())
+            .name("Test Transaction".to_string())
+            .amount("100.50".to_string())
+            .currency("USD".to_string())
+            .date(NaiveDate::from_ymd_opt(2023, 12, 25).unwrap())
+            .transaction_type(TransactionType::Expense)
+            .build()
+            .unwrap();
 
-        assert_eq!(transaction.name(), "Test Transaction");
-        assert_eq!(transaction.amount(), "100.50");
-        assert_eq!(transaction.currency(), "USD");
+        assert_eq!(transaction.name, "Test Transaction");
+        assert_eq!(transaction.amount, "100.50");
+        assert_eq!(transaction.currency, "USD");
         assert!(transaction.is_expense());
         assert!(transaction.is_completed());
     }
 
     #[test]
     fn test_transaction_tags() {
-        let mut transaction = Transaction::new(
-            "account-123".to_string(),
-            "ledger-456".to_string(),
-            "Test Transaction".to_string(),
-            "100.50".to_string(),
-            "USD".to_string(),
-            "2023-12-25".to_string(),
-            TransactionType::Expense,
-        ).unwrap();
+        let mut transaction = Transaction::builder()
+            .account_id("account-123".to_string())
+            .ledger_id("ledger-456".to_string())
+            .name("Test Transaction".to_string())
+            .amount("100.50".to_string())
+            .currency("USD".to_string())
+            .date(NaiveDate::from_ymd_opt(2023, 12, 25).unwrap())
+            .transaction_type(TransactionType::Expense)
+            .build()
+            .unwrap();
 
         transaction.add_tag("food".to_string()).unwrap();
         transaction.add_tag("restaurant".to_string()).unwrap();
-        
+
         assert!(transaction.has_tag("food".to_string()));
         assert!(transaction.has_tag("restaurant".to_string()));
         assert!(!transaction.has_tag("travel".to_string()));
@@ -758,57 +875,58 @@ mod tests {
             .build()
             .unwrap();
 
-        assert_eq!(transaction.name(), "Salary");
-        assert_eq!(transaction.amount(), "5000.00");
+        assert_eq!(transaction.name, "Salary");
+        assert_eq!(transaction.amount, "5000.00");
         assert!(transaction.is_income());
-        assert_eq!(transaction.tags().len(), 2);
+        assert_eq!(transaction.tags.len(), 2);
     }
 
     #[test]
     fn test_multi_currency() {
-        let mut transaction = Transaction::new(
-            "account-123".to_string(),
-            "ledger-456".to_string(),
-            "Hotel Booking".to_string(),
-            "720.00".to_string(),
-            "CNY".to_string(),
-            "2023-12-25".to_string(),
-            TransactionType::Expense,
-        ).unwrap();
+        let mut transaction = Transaction::builder()
+            .account_id("account-123".to_string())
+            .ledger_id("ledger-456".to_string())
+            .name("Hotel Booking".to_string())
+            .amount("720.00".to_string())
+            .currency("CNY".to_string())
+            .date(NaiveDate::from_ymd_opt(2023, 12, 25).unwrap())
+            .transaction_type(TransactionType::Expense)
+            .build()
+            .unwrap();
 
-        transaction.set_multi_currency(
-            "100.00".to_string(),
-            "USD".to_string(),
-            "7.20".to_string(),
-        ).unwrap();
+        transaction
+            .set_multi_currency("100.00".to_string(), "USD".to_string(), "7.20".to_string())
+            .unwrap();
 
         assert!(transaction.is_multi_currency());
-        
+
         transaction.clear_multi_currency();
         assert!(!transaction.is_multi_currency());
     }
 
     #[test]
     fn test_signed_amount() {
-        let income = Transaction::new(
-            "account-123".to_string(),
-            "ledger-456".to_string(),
-            "Income".to_string(),
-            "1000.00".to_string(),
-            "USD".to_string(),
-            "2023-12-25".to_string(),
-            TransactionType::Income,
-        ).unwrap();
+        let income = Transaction::builder()
+            .account_id("account-123".to_string())
+            .ledger_id("ledger-456".to_string())
+            .name("Income".to_string())
+            .amount("1000.00".to_string())
+            .currency("USD".to_string())
+            .date(NaiveDate::from_ymd_opt(2023, 12, 25).unwrap())
+            .transaction_type(TransactionType::Income)
+            .build()
+            .unwrap();
 
-        let expense = Transaction::new(
-            "account-123".to_string(),
-            "ledger-456".to_string(),
-            "Expense".to_string(),
-            "500.00".to_string(),
-            "USD".to_string(),
-            "2023-12-25".to_string(),
-            TransactionType::Expense,
-        ).unwrap();
+        let expense = Transaction::builder()
+            .account_id("account-123".to_string())
+            .ledger_id("ledger-456".to_string())
+            .name("Expense".to_string())
+            .amount("500.00".to_string())
+            .currency("USD".to_string())
+            .date(NaiveDate::from_ymd_opt(2023, 12, 25).unwrap())
+            .transaction_type(TransactionType::Expense)
+            .build()
+            .unwrap();
 
         assert_eq!(income.signed_amount(), "1000.00");
         assert_eq!(expense.signed_amount(), "-500.00");
@@ -816,15 +934,16 @@ mod tests {
 
     #[test]
     fn test_date_helpers() {
-        let transaction = Transaction::new(
-            "account-123".to_string(),
-            "ledger-456".to_string(),
-            "Test".to_string(),
-            "100.00".to_string(),
-            "USD".to_string(),
-            "2023-12-25".to_string(),
-            TransactionType::Expense,
-        ).unwrap();
+        let transaction = Transaction::builder()
+            .account_id("account-123".to_string())
+            .ledger_id("ledger-456".to_string())
+            .name("Test".to_string())
+            .amount("100.00".to_string())
+            .currency("USD".to_string())
+            .date(NaiveDate::from_ymd_opt(2023, 12, 25).unwrap())
+            .transaction_type(TransactionType::Expense)
+            .build()
+            .unwrap();
 
         assert_eq!(transaction.month_key(), "2023-12");
     }

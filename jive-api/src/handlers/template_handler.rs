@@ -2,14 +2,14 @@
 //! 提供分类模板的CRUD操作和网络同步功能
 
 use axum::{
-    extract::{Query, State, Path},
+    extract::{Path, Query, State},
     http::StatusCode,
     response::Json,
 };
 use serde::{Deserialize, Serialize};
 use sqlx::{PgPool, Row};
-use uuid::Uuid;
 use std::collections::HashMap;
+use uuid::Uuid;
 
 /// 模板查询参数
 #[derive(Debug, Deserialize)]
@@ -122,16 +122,16 @@ pub async fn get_templates(
         Some("zh") => "COALESCE(name_zh, name)",
         _ => "name",
     };
-    
+
     let base_select = format!(
         "SELECT id, {} as name, name_en, name_zh, description, classification, color, icon, \
          category_group, is_featured, is_active, global_usage_count, tags, version, \
          created_at, updated_at FROM system_category_templates WHERE is_active = true",
         name_field
     );
-    
+
     let mut query = sqlx::QueryBuilder::new(base_select.clone());
-    
+
     // 添加过滤条件
     if let Some(classification) = &params.r#type {
         if classification != "all" {
@@ -139,17 +139,17 @@ pub async fn get_templates(
             query.push_bind(classification);
         }
     }
-    
+
     if let Some(group) = &params.group {
         query.push(" AND category_group = ");
         query.push_bind(group);
     }
-    
+
     if let Some(featured) = params.featured {
         query.push(" AND is_featured = ");
         query.push_bind(featured);
     }
-    
+
     // 增量同步支持
     if let Some(since) = &params.since {
         query.push(" AND updated_at > ");
@@ -184,7 +184,9 @@ pub async fn get_templates(
         .fetch_one(&pool)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    let max_updated: chrono::DateTime<chrono::Utc> = stats_row.try_get("max_updated").unwrap_or(chrono::DateTime::<chrono::Utc>::from_timestamp(0, 0).unwrap());
+    let max_updated: chrono::DateTime<chrono::Utc> = stats_row
+        .try_get("max_updated")
+        .unwrap_or(chrono::DateTime::<chrono::Utc>::from_timestamp(0, 0).unwrap());
     let total_count: i64 = stats_row.try_get("total").unwrap_or(0);
 
     // Compute a simple ETag and return 304 if matches
@@ -201,7 +203,11 @@ pub async fn get_templates(
     let offset = (page - 1) * per_page;
 
     query.push(" ORDER BY is_featured DESC, global_usage_count DESC, name");
-    query.push(" LIMIT ").push_bind(per_page).push(" OFFSET ").push_bind(offset);
+    query
+        .push(" LIMIT ")
+        .push_bind(per_page)
+        .push(" OFFSET ")
+        .push_bind(offset);
 
     let templates = query
         .build_query_as::<SystemTemplate>()
@@ -218,14 +224,12 @@ pub async fn get_templates(
         last_updated: max_updated.to_rfc3339(),
         total: total_count,
     };
-    
+
     Ok(Json(response))
 }
 
 /// 获取图标列表
-pub async fn get_icons(
-    State(_pool): State<PgPool>,
-) -> Json<IconResponse> {
+pub async fn get_icons(State(_pool): State<PgPool>) -> Json<IconResponse> {
     // 模拟图标映射
     let mut icons = HashMap::new();
     icons.insert("💰".to_string(), "salary.png".to_string());
@@ -236,7 +240,7 @@ pub async fn get_icons(
     icons.insert("🎬".to_string(), "entertainment.png".to_string());
     icons.insert("💳".to_string(), "finance.png".to_string());
     icons.insert("💼".to_string(), "business.png".to_string());
-    
+
     Json(IconResponse {
         icons,
         cdn_base: "http://127.0.0.1:8080/static/icons".to_string(),
@@ -249,8 +253,10 @@ pub async fn get_template_updates(
     Query(params): Query<TemplateQuery>,
     State(pool): State<PgPool>,
 ) -> Result<Json<UpdateResponse>, StatusCode> {
-    let since = params.since.unwrap_or_else(|| "1970-01-01T00:00:00Z".to_string());
-    
+    let since = params
+        .since
+        .unwrap_or_else(|| "1970-01-01T00:00:00Z".to_string());
+
     let templates = sqlx::query_as::<_, SystemTemplate>(
         r#"
         SELECT id, name, name_en, name_zh, description, classification, 
@@ -269,7 +275,7 @@ pub async fn get_template_updates(
         eprintln!("Database query error: {:?}", e);
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
-    
+
     let updates: Vec<TemplateUpdate> = templates
         .into_iter()
         .map(|template| TemplateUpdate {
@@ -279,7 +285,7 @@ pub async fn get_template_updates(
             template: Some(template),
         })
         .collect();
-    
+
     Ok(Json(UpdateResponse {
         updates,
         has_more: false,
@@ -292,7 +298,7 @@ pub async fn create_template(
     Json(req): Json<CreateTemplateRequest>,
 ) -> Result<Json<SystemTemplate>, StatusCode> {
     let id = Uuid::new_v4();
-    
+
     let template = sqlx::query_as::<_, SystemTemplate>(
         r#"
         INSERT INTO system_category_templates 
@@ -321,7 +327,7 @@ pub async fn create_template(
         eprintln!("Create template error: {:?}", e);
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
-    
+
     Ok(Json(template))
 }
 
@@ -332,91 +338,90 @@ pub async fn update_template(
     Json(req): Json<UpdateTemplateRequest>,
 ) -> Result<Json<SystemTemplate>, StatusCode> {
     // 构建动态更新查询
-    let mut query = sqlx::QueryBuilder::new("UPDATE system_category_templates SET updated_at = CURRENT_TIMESTAMP");
+    let mut query = sqlx::QueryBuilder::new(
+        "UPDATE system_category_templates SET updated_at = CURRENT_TIMESTAMP",
+    );
     let mut has_updates = false;
-    
+
     if let Some(name) = &req.name {
         query.push(", name = ");
         query.push_bind(name);
         has_updates = true;
     }
-    
+
     if let Some(name_en) = &req.name_en {
         query.push(", name_en = ");
         query.push_bind(name_en);
         has_updates = true;
     }
-    
+
     if let Some(name_zh) = &req.name_zh {
         query.push(", name_zh = ");
         query.push_bind(name_zh);
         has_updates = true;
     }
-    
+
     if let Some(description) = &req.description {
         query.push(", description = ");
         query.push_bind(description);
         has_updates = true;
     }
-    
+
     if let Some(classification) = &req.classification {
         query.push(", classification = ");
         query.push_bind(classification);
         has_updates = true;
     }
-    
+
     if let Some(color) = &req.color {
         query.push(", color = ");
         query.push_bind(color);
         has_updates = true;
     }
-    
+
     if let Some(icon) = &req.icon {
         query.push(", icon = ");
         query.push_bind(icon);
         has_updates = true;
     }
-    
+
     if let Some(category_group) = &req.category_group {
         query.push(", category_group = ");
         query.push_bind(category_group);
         has_updates = true;
     }
-    
+
     if let Some(is_featured) = req.is_featured {
         query.push(", is_featured = ");
         query.push_bind(is_featured);
         has_updates = true;
     }
-    
+
     if let Some(is_active) = req.is_active {
         query.push(", is_active = ");
         query.push_bind(is_active);
         has_updates = true;
     }
-    
+
     if let Some(tags) = &req.tags {
         query.push(", tags = ");
         query.push_bind(&tags[..]);
         has_updates = true;
     }
-    
+
     if !has_updates {
         return Err(StatusCode::BAD_REQUEST);
     }
-    
+
     query.push(" WHERE id = ");
     query.push_bind(template_id);
-    
+
     // 执行更新
-    query.build()
-        .execute(&pool)
-        .await
-        .map_err(|e| {
-            eprintln!("Update template error: {:?}", e);
-            StatusCode::INTERNAL_SERVER_ERROR
-        })?;
-    
+    query.build().execute(&pool).await.map_err(|e| {
+        eprintln!("Update template error: {:?}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+
     // 返回更新后的模板
     let template = sqlx::query_as::<_, SystemTemplate>(
         r#"
@@ -431,7 +436,7 @@ pub async fn update_template(
     .fetch_one(&pool)
     .await
     .map_err(|_| StatusCode::NOT_FOUND)?;
-    
+
     Ok(Json(template))
 }
 
@@ -450,7 +455,7 @@ pub async fn delete_template(
         eprintln!("Delete template error: {:?}", e);
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
-    
+
     if result.rows_affected() == 0 {
         Err(StatusCode::NOT_FOUND)
     } else {
@@ -473,6 +478,6 @@ pub async fn submit_usage(
             .await;
         }
     }
-    
+
     StatusCode::OK
 }

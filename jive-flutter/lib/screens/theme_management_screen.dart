@@ -396,7 +396,6 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
   }
 
   void _handleMenuAction(String action) async {
-    final messenger = ScaffoldMessenger.of(context);
     switch (action) {
       case 'import_clipboard':
         await _importFromClipboard();
@@ -457,7 +456,6 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
   }
 
   Future<void> _createNewTheme() async {
-    final messenger = ScaffoldMessenger.of(context);
     final result = await Navigator.of(context).push<models.CustomThemeData>(
       MaterialPageRoute(
         builder: (context) => const CustomThemeEditor(),
@@ -476,7 +474,6 @@ class _ThemeManagementScreenState extends State<ThemeManagementScreen>
   }
 
   Future<void> _editTheme(models.CustomThemeData theme) async {
-    final messenger = ScaffoldMessenger.of(context);
     final result = await Navigator.of(context).push<models.CustomThemeData>(
       MaterialPageRoute(
         builder: (context) => CustomThemeEditor(theme: theme),

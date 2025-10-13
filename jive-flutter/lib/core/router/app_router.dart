@@ -11,7 +11,6 @@ import 'package:jive_money/screens/home/home_screen.dart';
 import 'package:jive_money/screens/dashboard/dashboard_screen.dart';
 import 'package:jive_money/screens/transactions/transactions_screen.dart';
 import 'package:jive_money/screens/accounts/accounts_screen.dart';
-import 'package:jive_money/screens/accounts/user_assets_screen.dart';
 import 'package:jive_money/screens/budgets/budgets_screen.dart';
 import 'package:jive_money/screens/settings/settings_screen.dart';
 import 'package:jive_money/screens/settings/theme_settings_screen.dart';
@@ -26,12 +25,9 @@ import 'package:jive_money/screens/family/family_members_screen.dart';
 import 'package:jive_money/screens/family/family_settings_screen.dart';
 import 'package:jive_money/screens/family/family_dashboard_screen.dart';
 import 'package:jive_money/providers/ledger_provider.dart';
-import 'package:jive_money/screens/travel/travel_list_screen.dart';
-// Travel provider imports removed - handled in individual screens
 
 /// 路由路径常量
 class AppRoutes {
-  static const userAssets = '/accounts/assets';
   static const splash = '/';
   static const login = '/login';
   static const register = '/register';
@@ -46,9 +42,6 @@ class AppRoutes {
   static const budgets = '/budgets';
   static const budgetDetail = '/budgets/:id';
   static const budgetAdd = '/budgets/add';
-  static const travel = '/travel';
-  static const travelDetail = '/travel/:id';
-  static const travelAdd = '/travel/add';
   static const settings = '/settings';
   static const profile = '/settings/profile';
   static const security = '/settings/security';
@@ -160,10 +153,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const AccountsScreen(),
             routes: [
               GoRoute(
-                path: 'assets',
-                builder: (context, state) => const UserAssetsScreen(),
-              ),
-              GoRoute(
                 path: 'add',
                 builder: (context, state) => const AccountAddScreen(),
               ),
@@ -191,29 +180,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) {
                   final id = state.pathParameters['id']!;
                   return BudgetDetailScreen(budgetId: id);
-                },
-              ),
-            ],
-          ),
-
-          // 旅行模式
-          GoRoute(
-            path: AppRoutes.travel,
-            builder: (context, state) => const TravelListScreen(),
-            routes: [
-              GoRoute(
-                path: 'add',
-                builder: (context, state) => const Scaffold(
-                  body: Center(child: Text('添加旅行')),
-                ),
-              ),
-              GoRoute(
-                path: ':id',
-                builder: (context, state) {
-                  final id = state.pathParameters['id']!;
-                  return Scaffold(
-                    body: Center(child: Text('旅行详情: $id')),
-                  );
                 },
               ),
             ],
@@ -449,6 +415,3 @@ class PreferencesScreen extends StatelessWidget {
     return const Scaffold(body: Center(child: Text('偏好设置')));
   }
 }
-
-// TravelProvider is now handled by travelServiceProvider in travel_provider.dart
-// Old provider removed to avoid conflicts

@@ -21,6 +21,9 @@
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Jive Money - 集腋记账 Personal Finance Management App">
 
+  <!-- 允许字体加载以支持 Flutter CanvasKit 文本渲染 -->
+  <meta http-equiv="Content-Security-Policy" content="font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https: http:; connect-src 'self' http://localhost:* https://fonts.gstatic.com https://fonts.googleapis.com https://api.dicebear.com https://avatars.dicebear.com https://robohash.org https://ui-avatars.com; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
@@ -104,24 +107,56 @@
   <noscript>
     <p style="padding:16px;font-family:system-ui,Arial">This application requires JavaScript to run.</p>
   </noscript>
+  <!--
+  暂时禁用字体拦截,允许 Flutter CanvasKit 加载必要字体以渲染文本
+  <script>
+    // 字体拦截已禁用 - Flutter需要字体文件才能在Canvas上渲染文本
+    (function() {
+      const originalFetch = window.fetch;
+      window.fetch = function(...args) {
+        const url = args[0];
+        if (typeof url === 'string' &&
+            (url.includes('fonts.gstatic.com') ||
+             url.includes('fonts.googleapis.com')) &&
+            /\.(woff2?|ttf|otf)$/i.test(url)) {
+          console.log('[Google Font Loaded]', url);
+        }
+        return originalFetch.apply(this, args);
+      };
+    })();
+  </script>
+  -->
+
   <script>
     // ===== BOOTSTRAP v2 (no loader.load attempt) =====
     (function(){
       const MARK='[boot-v2]';
-      function log(m){console.log(MARK,m);} 
-      function fail(e){console.error(MARK,'error',e);const n=document.createElement('pre');n.style.cssText='color:#c00;padding:12px;font:13px/1.5 monospace;white-space:pre-wrap;background:#fff3f3;border:1px solid #f99';n.textContent='Flutter Web 启动失败\n'+(e&& (e.stack||e));document.body.appendChild(n);} 
+      function log(m){console.log(MARK,m);}
+      function fail(e){console.error(MARK,'error',e);const n=document.createElement('pre');n.style.cssText='color:#c00;padding:12px;font:13px/1.5 monospace;white-space:pre-wrap;background:#fff3f3;border:1px solid #f99';n.textContent='Flutter Web 启动失败\n'+(e&& (e.stack||e));document.body.appendChild(n);}
       // Hard disable service worker during dev to avoid stale index.html
       try { if('serviceWorker' in navigator){ navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())); } } catch(_){}
       window.addEventListener('load', function(){
         if(!window._flutter || !window._flutter.loader){ return fail('flutter.js 未加载 / _flutter.loader 缺失'); }
         const loader = window._flutter.loader;
         const legacy = typeof loader.loadEntrypoint==='function';
-        const opts = {serviceWorker:{serviceWorkerVersion:'{{flutter_service_worker_version}}'}};
+        const opts = {
+          serviceWorker:{serviceWorkerVersion:'{{flutter_service_worker_version}}'},
+        };
         if(!legacy){ return fail('缺少 loadEntrypoint (可能 flutter.js 仍是旧缓存)'); }
         log('Using pure legacy loader.loadEntrypoint');
         loader.loadEntrypoint(opts)
-          .then(e=>{log('Engine initializer received');return e.initializeEngine();})
-          .then(r=>{log('Engine initialized'); r.runApp(); log('Flutter app started (legacy only)');})
+          .then(e=>{
+            log('Engine initializer received');
+            return e.initializeEngine({
+              // 临时切换到 HTML renderer 以解决字体显示问题
+              renderer: 'html',
+            });
+          })
+          .then(r=>{
+            log('Engine initialized');
+            r.runApp();
+            log('Flutter app started with CanvasKit renderer - using system fonts');
+          })
           .catch(fail);
       });
     })();

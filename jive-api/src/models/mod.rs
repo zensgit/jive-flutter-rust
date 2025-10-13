@@ -1,9 +1,10 @@
 #![allow(dead_code)]
 
-// pub mod account; // Temporarily commented - file not in this branch yet
+pub mod account;
 pub mod audit;
 pub mod bank;
 pub mod family;
+pub mod global_market;
 pub mod invitation;
 pub mod membership;
 pub mod permission;
@@ -12,18 +13,20 @@ pub mod transaction;
 // #[allow(unused_imports)]
 // pub use account::{AccountMainType, AccountSubType}; // Commented with module
 #[allow(unused_imports)]
+pub use account::{AccountMainType, AccountSubType};
+#[allow(unused_imports)]
 pub use audit::{AuditAction, AuditLog, AuditLogFilter, CreateAuditLogRequest};
 #[allow(unused_imports)]
 pub use family::{CreateFamilyRequest, Family, FamilySettings, UpdateFamilyRequest};
+#[allow(unused_imports)]
+pub use global_market::{CoinGeckoGlobalData, CoinGeckoGlobalResponse, GlobalMarketStats};
 #[allow(unused_imports)]
 pub use invitation::{
     AcceptInvitationRequest, CreateInvitationRequest, Invitation, InvitationResponse,
     InvitationStatus,
 };
 #[allow(unused_imports)]
-pub use membership::{
-    CreateMemberRequest, FamilyMember, MemberWithUserInfo, UpdateMemberRequest,
-};
+pub use membership::{CreateMemberRequest, FamilyMember, MemberWithUserInfo, UpdateMemberRequest};
 #[allow(unused_imports)]
 pub use permission::{MemberRole, Permission};
 

@@ -65,9 +65,9 @@ class _FamilyPermissionsAuditScreenState
           startDate: _startDate,
           endDate: _endDate,
         ),
-        _familyService.getPermissionUsageStats(familyId: widget.familyId),
-        _familyService.detectPermissionAnomalies(familyId: widget.familyId),
-        _familyService.generateComplianceReport(familyId: widget.familyId),
+        _familyService.getPermissionUsageStats(widget.familyId),
+        _familyService.detectPermissionAnomalies(widget.familyId),
+        _familyService.generateComplianceReport(widget.familyId),
       ]);
 
       setState(() {
@@ -318,7 +318,7 @@ class _FamilyPermissionsAuditScreenState
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  SizedBox(
+                  const SizedBox(
                     height: 300,
                     child: _buildUsageFrequencyChart(),
                   ),
@@ -359,7 +359,7 @@ class _FamilyPermissionsAuditScreenState
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  SizedBox(
+                  const SizedBox(
                     height: 200,
                     child: _buildUsageTrendChart(),
                   ),
@@ -500,7 +500,7 @@ class _FamilyPermissionsAuditScreenState
                   Stack(
                     alignment: Alignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 150,
                         height: 150,
                         child: CircularProgressIndicator(
@@ -812,7 +812,7 @@ class _FamilyPermissionsAuditScreenState
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        const SizedBox(
           width: 80,
           child: Text(
             '$label：',

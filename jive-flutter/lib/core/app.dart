@@ -117,16 +117,16 @@ class _JiveAppState extends ConsumerState<JiveApp> {
                       : VisualDensity.adaptivePlatformDensity,
                   cardTheme: Theme.of(context).cardTheme.copyWith(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(radius)),
+                          borderRadius: BorderRadius.circular(radius),
                         ),
                       ),
                   inputDecorationTheme:
                       Theme.of(context).inputDecorationTheme.copyWith(
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(radius)),
+                              borderRadius: BorderRadius.circular(radius),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(radius)),
+                              borderRadius: BorderRadius.circular(radius),
                               borderSide: BorderSide(
                                   color: Theme.of(context).colorScheme.primary),
                             ),

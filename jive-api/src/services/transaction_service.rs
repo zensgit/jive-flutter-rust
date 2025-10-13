@@ -2,8 +2,8 @@ use crate::error::{ApiError, ApiResult};
 use crate::models::transaction::{Transaction, TransactionCreate, TransactionType};
 use chrono::{DateTime, Utc};
 use sqlx::PgPool;
-use uuid::Uuid;
 use std::collections::HashMap;
+use uuid::Uuid;
 
 pub struct TransactionService {
     pool: PgPool,
@@ -16,22 +16,24 @@ impl TransactionService {
 
     /// 创建交易并更新账户余额
     pub async fn create_transaction(&self, data: TransactionCreate) -> ApiResult<Transaction> {
-        let mut tx = self.pool.begin().await
+        let mut tx = self
+            .pool
+            .begin()
+            .await
             .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         // 生成交易ID
         let transaction_id = Uuid::new_v4();
         // 克隆一份数据快照，避免后续字段 move 影响对 &data 的借用
         let data_snapshot = data.clone();
-        
+
         // 获取账户当前余额
-        let current_balance: Option<(f64,)> = sqlx::query_as(
-            "SELECT current_balance FROM accounts WHERE id = $1 FOR UPDATE"
-        )
-        .bind(data.account_id)
-        .fetch_optional(&mut *tx)
-        .await
-        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+        let current_balance: Option<(f64,)> =
+            sqlx::query_as("SELECT current_balance FROM accounts WHERE id = $1 FOR UPDATE")
+                .bind(data.account_id)
+                .fetch_optional(&mut *tx)
+                .await
+                .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         let current_balance = current_balance
             .ok_or_else(|| ApiError::NotFound("Account not found".to_string()))?
@@ -55,7 +57,7 @@ impl TransactionService {
                 $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW()
             )
             RETURNING *
-            "#
+            "#,
         )
         .bind(transaction_id)
         .bind(data.ledger_id)
@@ -73,21 +75,19 @@ impl TransactionService {
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         // 更新账户余额
-        sqlx::query(
-            "UPDATE accounts SET current_balance = $1, updated_at = NOW() WHERE id = $2"
-        )
-        .bind(new_balance)
-        .bind(data.account_id)
-        .execute(&mut *tx)
-        .await
-        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+        sqlx::query("UPDATE accounts SET current_balance = $1, updated_at = NOW() WHERE id = $2")
+            .bind(new_balance)
+            .bind(data.account_id)
+            .execute(&mut *tx)
+            .await
+            .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         // 记录账户余额历史
         sqlx::query(
             r#"
             INSERT INTO account_balances (id, account_id, balance, balance_date, created_at)
             VALUES ($1, $2, $3, $4, NOW())
-            "#
+            "#,
         )
         .bind(Uuid::new_v4())
         .bind(data.account_id)
@@ -100,12 +100,19 @@ impl TransactionService {
         // 如果是转账，创建对应的转入交易
         if data.transaction_type == TransactionType::Transfer {
             if let Some(target_account_id) = data.target_account_id {
-                self.create_transfer_target(&mut tx, &transaction_id, &data_snapshot, target_account_id).await?;
+                self.create_transfer_target(
+                    &mut tx,
+                    &transaction_id,
+                    &data_snapshot,
+                    target_account_id,
+                )
+                .await?;
             }
         }
 
         // 提交事务
-        tx.commit().await
+        tx.commit()
+            .await
             .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         Ok(transaction)
@@ -120,13 +127,12 @@ impl TransactionService {
         target_account_id: Uuid,
     ) -> ApiResult<()> {
         // 获取目标账户余额
-        let target_balance: Option<(f64,)> = sqlx::query_as(
-            "SELECT current_balance FROM accounts WHERE id = $1 FOR UPDATE"
-        )
-        .bind(target_account_id)
-        .fetch_optional(&mut **tx)
-        .await
-        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+        let target_balance: Option<(f64,)> =
+            sqlx::query_as("SELECT current_balance FROM accounts WHERE id = $1 FOR UPDATE")
+                .bind(target_account_id)
+                .fetch_optional(&mut **tx)
+                .await
+                .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         let target_balance = target_balance
             .ok_or_else(|| ApiError::NotFound("Target account not found".to_string()))?
@@ -144,14 +150,17 @@ impl TransactionService {
             ) VALUES (
                 $1, $2, $3, $4, $5, 'income', '转账收入', '内部转账', $6, $7, $8, NOW(), NOW()
             )
-            "#
+            "#,
         )
         .bind(Uuid::new_v4())
         .bind(data.ledger_id)
         .bind(target_account_id)
         .bind(data.transaction_date)
         .bind(data.amount)
-        .bind(format!("从账户转入: {}", data.notes.as_deref().unwrap_or("")))
+        .bind(format!(
+            "从账户转入: {}",
+            data.notes.as_deref().unwrap_or("")
+        ))
         .bind(data.status.clone())
         .bind(source_transaction_id)
         .execute(&mut **tx)
@@ -159,21 +168,25 @@ impl TransactionService {
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         // 更新目标账户余额
-        sqlx::query(
-            "UPDATE accounts SET current_balance = $1, updated_at = NOW() WHERE id = $2"
-        )
-        .bind(new_target_balance)
-        .bind(target_account_id)
-        .execute(&mut **tx)
-        .await
-        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+        sqlx::query("UPDATE accounts SET current_balance = $1, updated_at = NOW() WHERE id = $2")
+            .bind(new_target_balance)
+            .bind(target_account_id)
+            .execute(&mut **tx)
+            .await
+            .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         Ok(())
     }
 
     /// 批量导入交易
-    pub async fn bulk_import(&self, transactions: Vec<TransactionCreate>) -> ApiResult<Vec<Transaction>> {
-        let mut tx = self.pool.begin().await
+    pub async fn bulk_import(
+        &self,
+        transactions: Vec<TransactionCreate>,
+    ) -> ApiResult<Vec<Transaction>> {
+        let mut tx = self
+            .pool
+            .begin()
+            .await
             .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         let mut created_transactions = Vec::new();
@@ -181,14 +194,15 @@ impl TransactionService {
 
         // 预加载所有相关账户的余额
         for trans in &transactions {
-            if let std::collections::hash_map::Entry::Vacant(e) = account_balances.entry(trans.account_id) {
-                let balance: Option<(f64,)> = sqlx::query_as(
-                    "SELECT current_balance FROM accounts WHERE id = $1"
-                )
-                .bind(trans.account_id)
-                .fetch_optional(&mut *tx)
-                .await
-                .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+            if let std::collections::hash_map::Entry::Vacant(e) =
+                account_balances.entry(trans.account_id)
+            {
+                let balance: Option<(f64,)> =
+                    sqlx::query_as("SELECT current_balance FROM accounts WHERE id = $1")
+                        .bind(trans.account_id)
+                        .fetch_optional(&mut *tx)
+                        .await
+                        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
                 if let Some(balance) = balance {
                     e.insert(balance.0);
@@ -202,7 +216,8 @@ impl TransactionService {
 
         // 处理每笔交易
         for trans_data in sorted_transactions {
-            let account_balance = account_balances.get_mut(&trans_data.account_id)
+            let account_balance = account_balances
+                .get_mut(&trans_data.account_id)
                 .ok_or_else(|| ApiError::NotFound("Account not found".to_string()))?;
 
             // 更新账户余额
@@ -223,7 +238,7 @@ impl TransactionService {
                     $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW()
                 )
                 RETURNING *
-                "#
+                "#,
             )
             .bind(Uuid::new_v4())
             .bind(trans_data.ledger_id)
@@ -246,7 +261,7 @@ impl TransactionService {
         // 批量更新账户余额
         for (account_id, new_balance) in account_balances {
             sqlx::query(
-                "UPDATE accounts SET current_balance = $1, updated_at = NOW() WHERE id = $2"
+                "UPDATE accounts SET current_balance = $1, updated_at = NOW() WHERE id = $2",
             )
             .bind(new_balance)
             .bind(account_id)
@@ -255,7 +270,8 @@ impl TransactionService {
             .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
         }
 
-        tx.commit().await
+        tx.commit()
+            .await
             .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         Ok(created_transactions)
@@ -264,16 +280,15 @@ impl TransactionService {
     /// 智能分类交易
     pub async fn auto_categorize(&self, transaction_id: Uuid) -> ApiResult<Option<Uuid>> {
         // 获取交易信息
-        let transaction: Option<(String, Option<String>, f64)> = sqlx::query_as(
-            "SELECT payee, notes, amount FROM transactions WHERE id = $1"
-        )
-        .bind(transaction_id)
-        .fetch_optional(&self.pool)
-        .await
-        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+        let transaction: Option<(String, Option<String>, f64)> =
+            sqlx::query_as("SELECT payee, notes, amount FROM transactions WHERE id = $1")
+                .bind(transaction_id)
+                .fetch_optional(&self.pool)
+                .await
+                .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
-        let (payee, notes, amount) = transaction
-            .ok_or_else(|| ApiError::NotFound("Transaction not found".to_string()))?;
+        let (payee, notes, amount) =
+            transaction.ok_or_else(|| ApiError::NotFound("Transaction not found".to_string()))?;
 
         // 查找匹配的规则
         let rule: Option<(Uuid, Uuid)> = sqlx::query_as(
@@ -289,7 +304,7 @@ impl TransactionService {
             )
             ORDER BY priority DESC
             LIMIT 1
-            "#
+            "#,
         )
         .bind(payee)
         .bind(notes.unwrap_or_else(String::new))
@@ -301,7 +316,7 @@ impl TransactionService {
         if let Some((rule_id, category_id)) = rule {
             // 更新交易分类
             sqlx::query(
-                "UPDATE transactions SET category_id = $1, updated_at = NOW() WHERE id = $2"
+                "UPDATE transactions SET category_id = $1, updated_at = NOW() WHERE id = $2",
             )
             .bind(category_id)
             .bind(transaction_id)
@@ -314,7 +329,7 @@ impl TransactionService {
                 r#"
                 INSERT INTO rule_matches (id, rule_id, transaction_id, matched_at)
                 VALUES ($1, $2, $3, NOW())
-                "#
+                "#,
             )
             .bind(Uuid::new_v4())
             .bind(rule_id)

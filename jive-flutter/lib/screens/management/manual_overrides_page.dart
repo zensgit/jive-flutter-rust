@@ -74,6 +74,27 @@ class _ManualOverridesPageState extends ConsumerState<ManualOverridesPage> {
     }
   }
 
+  Future<void> _clearActive() async {
+    try {
+      // ✅ FIX: Use provider's clearManualRates() to clear both local Hive cache and server data
+      // This ensures the manual rates are completely removed from memory and storage
+      await ref.read(currencyProvider.notifier).clearManualRates();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('已重置为自动获取，正在刷新汇率...'), backgroundColor: Colors.green),
+      );
+
+      // Reload the manual overrides list (should be empty now)
+      await _load();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('重置失败: $e'), backgroundColor: Colors.red),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final base = ref.watch(baseCurrencyProvider).code;
@@ -136,9 +157,32 @@ class _ManualOverridesPageState extends ConsumerState<ManualOverridesPage> {
                 ),
                 const SizedBox(width: 8),
                 TextButton.icon(
-                  onPressed: _loading ? null : () => _clear(),
-                  icon: const Icon(Icons.clear_all, size: 16),
-                  label: const Text('清除全部'),
+                  onPressed: _loading
+                      ? null
+                      : () async {
+                          final confirmed = await showDialog<bool>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('重置为自动获取'),
+                              content: const Text('确定要将所有未过期的手动汇率重置为自动获取吗？\n\n这将清除所有未过期的手动设置，系统将使用自动获取的汇率。'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, false),
+                                  child: const Text('取消'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: const Text('确定', style: TextStyle(color: Colors.red)),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (confirmed == true) {
+                            await _clearActive();
+                          }
+                        },
+                  icon: const Icon(Icons.autorenew, size: 16),
+                  label: const Text('重置为自动'),
                 ),
               ],
             ),
@@ -158,14 +202,29 @@ class _ManualOverridesPageState extends ConsumerState<ManualOverridesPage> {
                           final rate = m['rate']?.toString() ?? '-';
                           final expiryRaw = m['manual_rate_expiry']?.toString();
                           final updated = m['updated_at']?.toString();
-                          // 近48小时到期高亮
+
+                          // 格式化有效期时间
+                          String? expiryFormatted;
                           bool nearlyExpired = false;
                           if (expiryRaw != null && expiryRaw.isNotEmpty) {
                             final dt = DateTime.tryParse(expiryRaw);
                             if (dt != null) {
+                              final local = dt.toLocal();
+                              expiryFormatted = '${local.year}-${local.month.toString().padLeft(2, '0')}-${local.day.toString().padLeft(2, '0')} ${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
                               nearlyExpired = dt.isBefore(DateTime.now().add(const Duration(hours: 48))) && dt.isAfter(DateTime.now());
                             }
                           }
+
+                          // 格式化更新时间
+                          String? updatedFormatted;
+                          if (updated != null && updated.isNotEmpty) {
+                            final dt = DateTime.tryParse(updated);
+                            if (dt != null) {
+                              final local = dt.toLocal();
+                              updatedFormatted = '${local.year}-${local.month.toString().padLeft(2, '0')}-${local.day.toString().padLeft(2, '0')} ${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
+                            }
+                          }
+
                           if (_onlySoonExpiring && !nearlyExpired) {
                             return const SizedBox.shrink();
                           }
@@ -176,8 +235,8 @@ class _ManualOverridesPageState extends ConsumerState<ManualOverridesPage> {
                               style: TextStyle(color: nearlyExpired ? Colors.orange[800] : null),
                             ),
                             subtitle: Text([
-                              if (expiryRaw != null) '有效至: $expiryRaw${nearlyExpired ? '（即将到期）' : ''}',
-                              if (updated != null) '更新: $updated',
+                              if (expiryFormatted != null) '有效至: $expiryFormatted${nearlyExpired ? ' （即将到期）' : ''}',
+                              if (updatedFormatted != null) '更新: $updatedFormatted',
                             ].join('  ·  ')),
                             trailing: IconButton(
                               tooltip: '清除此覆盖',

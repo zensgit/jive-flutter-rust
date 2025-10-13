@@ -5,6 +5,7 @@ import 'package:jive_money/core/network/api_readiness.dart';
 import 'package:jive_money/core/storage/token_storage.dart';
 import 'package:jive_money/models/currency.dart';
 import 'package:jive_money/models/currency_api.dart';
+import 'package:jive_money/models/global_market_stats.dart';
 import 'package:jive_money/utils/constants.dart';
 
 class CurrencyService {
@@ -40,11 +41,20 @@ class CurrencyService {
           return Currency(
             code: apiCurrency.code,
             name: apiCurrency.name,
-            nameZh: _getChineseName(apiCurrency.code),
+            // 🔥 优先使用 API 的中文名，如果为空则使用英文名作为后备
+            nameZh: apiCurrency.nameZh?.isNotEmpty == true
+                ? apiCurrency.nameZh!
+                : apiCurrency.name,
             symbol: apiCurrency.symbol,
             decimalPlaces: apiCurrency.decimalPlaces,
             isEnabled: apiCurrency.isActive,
-            flag: _getFlag(apiCurrency.code),
+            isCrypto: apiCurrency.isCrypto,
+            // 🔥 优先使用 API 提供的 flag，如果为空则自动生成（法定货币）
+            flag: apiCurrency.flag?.isNotEmpty == true
+                ? apiCurrency.flag
+                : _generateFlagEmoji(apiCurrency.code),
+            // 🔥 优先使用 API 提供的 icon（加密货币）
+            icon: apiCurrency.icon,
           );
         }).toList();
         final newEtag = resp.headers['etag']?.first;
@@ -327,32 +337,65 @@ class CurrencyService {
     }
   }
 
-  // Helper methods
-
-  String _getChineseName(String code) {
-    final currency =
-        CurrencyDefaults.getAllCurrencies().firstWhere((c) => c.code == code,
-            orElse: () => Currency(
-                  code: code,
-                  name: code,
-                  nameZh: code,
-                  symbol: '',
-                  decimalPlaces: 2,
-                ));
-    return currency.nameZh;
+  /// Get global cryptocurrency market statistics
+  Future<GlobalMarketStats?> getGlobalMarketStats() async {
+    try {
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      final resp = await dio.get('/currencies/global-market-stats');
+      if (resp.statusCode == 200) {
+        final data = resp.data;
+        final statsData = data['data'] ?? data;
+        return GlobalMarketStats.fromJson(statsData);
+      } else {
+        throw Exception('Failed to get global market stats: ${resp.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('Error getting global market stats: $e');
+      return null;
+    }
   }
 
-  String? _getFlag(String code) {
-    final currency =
-        CurrencyDefaults.getAllCurrencies().firstWhere((c) => c.code == code,
-            orElse: () => Currency(
-                  code: code,
-                  name: code,
-                  nameZh: code,
-                  symbol: '',
-                  decimalPlaces: 2,
-                ));
-    return currency.flag;
+  // Helper methods
+
+  /// 自动生成国旗 emoji（基于货币代码的国家部分）
+  /// 例如: USD → 🇺🇸, EUR → 🇪🇺, CNY → 🇨🇳
+  String? _generateFlagEmoji(String currencyCode) {
+    if (currencyCode.length < 2) return null;
+
+    // 特殊货币代码映射（没有直接对应国家代码的）
+    const specialCurrencies = {
+      'EUR': '🇪🇺', // 欧元 → 欧盟旗
+      'XAF': '🏛️', // 中非法郎 → 中央银行符号
+      'XOF': '🏛️', // 西非法郎
+      'XPF': '🇫🇷', // 太平洋法郎 → 法国
+      'XCD': '🏝️', // 东加勒比元 → 岛屿
+    };
+
+    if (specialCurrencies.containsKey(currencyCode)) {
+      return specialCurrencies[currencyCode];
+    }
+
+    // 大多数货币代码的前两位是 ISO 3166-1 alpha-2 国家代码
+    // 将国家代码转换为国旗 emoji
+    final countryCode = currencyCode.substring(0, 2).toUpperCase();
+
+    // 国旗 emoji 由两个区域指示符号组成
+    // A-Z (0x41-0x5A) 映射到 🇦-🇿 (0x1F1E6-0x1F1FF)
+    final firstChar = countryCode.codeUnitAt(0);
+    final secondChar = countryCode.codeUnitAt(1);
+
+    if (firstChar < 0x41 || firstChar > 0x5A || secondChar < 0x41 || secondChar > 0x5A) {
+      return null; // 非有效国家代码
+    }
+
+    final regionalIndicatorOffset = 0x1F1E6 - 0x41;
+    final flag = String.fromCharCodes([
+      firstChar + regionalIndicatorOffset,
+      secondChar + regionalIndicatorOffset,
+    ]);
+
+    return flag;
   }
 
   double _getApproximateRate(String from, String to) {

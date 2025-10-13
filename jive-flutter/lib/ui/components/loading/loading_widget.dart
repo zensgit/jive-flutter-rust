@@ -117,6 +117,7 @@ class CardLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
 
     return Card(
       margin: margin ?? const EdgeInsets.all(8),
