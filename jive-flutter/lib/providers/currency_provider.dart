@@ -182,6 +182,7 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
         debugPrint('[CurrencyProvider] Loaded cached rates with manual overlay, UI can display immediately');
         // Refresh from API in background (non-blocking)
         _loadExchangeRates().then((_) {
+          if (_disposed) return;
           debugPrint('[CurrencyProvider] Background rate refresh completed');
         });
       } finally {

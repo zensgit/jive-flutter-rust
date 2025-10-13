@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:jive_money/models/exchange_rate.dart';
 import 'package:jive_money/utils/constants.dart';

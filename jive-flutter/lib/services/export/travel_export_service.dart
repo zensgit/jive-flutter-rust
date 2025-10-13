@@ -552,12 +552,16 @@ class TravelExportService {
     switch (status) {
       case TravelEventStatus.upcoming:
         return '即将开始';
+      case TravelEventStatus.active:
+        return '进行中';
       case TravelEventStatus.ongoing:
         return '进行中';
       case TravelEventStatus.completed:
         return '已完成';
       case TravelEventStatus.cancelled:
         return '已取消';
+      default:
+        return '未知';
     }
   }
 
