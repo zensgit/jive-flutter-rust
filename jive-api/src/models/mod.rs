@@ -19,16 +19,14 @@ pub use audit::{AuditAction, AuditLog, AuditLogFilter, CreateAuditLogRequest};
 #[allow(unused_imports)]
 pub use family::{CreateFamilyRequest, Family, FamilySettings, UpdateFamilyRequest};
 #[allow(unused_imports)]
-pub use global_market::{GlobalMarketStats, CoinGeckoGlobalResponse, CoinGeckoGlobalData};
+pub use global_market::{CoinGeckoGlobalData, CoinGeckoGlobalResponse, GlobalMarketStats};
 #[allow(unused_imports)]
 pub use invitation::{
     AcceptInvitationRequest, CreateInvitationRequest, Invitation, InvitationResponse,
     InvitationStatus,
 };
 #[allow(unused_imports)]
-pub use membership::{
-    CreateMemberRequest, FamilyMember, MemberWithUserInfo, UpdateMemberRequest,
-};
+pub use membership::{CreateMemberRequest, FamilyMember, MemberWithUserInfo, UpdateMemberRequest};
 #[allow(unused_imports)]
 pub use permission::{MemberRole, Permission};
 

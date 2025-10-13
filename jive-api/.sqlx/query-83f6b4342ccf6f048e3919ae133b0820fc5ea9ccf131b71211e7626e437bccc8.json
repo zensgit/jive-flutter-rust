@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT rate\n        FROM exchange_rates\n        WHERE from_currency = $1 AND to_currency = $2\n        AND created_at > NOW() - INTERVAL '5 minutes'\n        ORDER BY created_at DESC\n        LIMIT 1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "rate",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "83f6b4342ccf6f048e3919ae133b0820fc5ea9ccf131b71211e7626e437bccc8"
+}

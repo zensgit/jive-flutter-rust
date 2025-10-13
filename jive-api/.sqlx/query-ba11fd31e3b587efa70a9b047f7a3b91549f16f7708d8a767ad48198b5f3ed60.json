@@ -1,0 +1,24 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT rate\n            FROM exchange_rates\n            WHERE from_currency = $1 \n            AND to_currency = $2\n            AND effective_date <= $3\n            ORDER BY effective_date DESC\n            LIMIT 1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "rate",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Date"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "ba11fd31e3b587efa70a9b047f7a3b91549f16f7708d8a767ad48198b5f3ed60"
+}

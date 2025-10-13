@@ -374,10 +374,7 @@ mod tests {
 
     #[test]
     fn test_sub_type_main_type_mapping() {
-        assert_eq!(
-            AccountSubType::Cash.get_main_type(),
-            AccountMainType::Asset
-        );
+        assert_eq!(AccountSubType::Cash.get_main_type(), AccountMainType::Asset);
         assert_eq!(
             AccountSubType::CreditCard.get_main_type(),
             AccountMainType::Liability

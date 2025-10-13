@@ -2,17 +2,17 @@
 // Based on Maybe's database structure
 
 #[cfg(feature = "db")]
-pub mod family;
-#[cfg(feature = "db")]
-pub mod user;
-#[cfg(feature = "db")]
 pub mod account;
-#[cfg(feature = "db")]
-pub mod transaction;
-pub mod budget;
 pub mod balance;
+pub mod budget;
+#[cfg(feature = "db")]
+pub mod family;
 pub mod import;
 pub mod rule;
+#[cfg(feature = "db")]
+pub mod transaction;
+#[cfg(feature = "db")]
+pub mod user;
 
 use chrono::{DateTime, NaiveDate, Utc};
 use rust_decimal::Decimal;
@@ -23,7 +23,7 @@ use uuid::Uuid;
 // Common trait for all entities
 pub trait Entity {
     type Id;
-    
+
     fn id(&self) -> Self::Id;
     fn created_at(&self) -> DateTime<Utc>;
     fn updated_at(&self) -> DateTime<Utc>;
@@ -32,7 +32,7 @@ pub trait Entity {
 // For polymorphic associations (Rails delegated_type pattern)
 pub trait Accountable: Send + Sync {
     const TYPE_NAME: &'static str;
-    
+
     async fn save(&self, tx: &mut sqlx::PgConnection) -> Result<Uuid, sqlx::Error>;
     async fn load(id: Uuid, conn: &sqlx::PgPool) -> Result<Self, sqlx::Error>
     where
@@ -42,7 +42,7 @@ pub trait Accountable: Send + Sync {
 // For transaction entries (Rails single table inheritance pattern)
 pub trait Entryable: Send + Sync {
     const TYPE_NAME: &'static str;
-    
+
     fn to_entry(&self) -> Entry;
     fn from_entry(entry: Entry) -> Result<Self, String>
     where
@@ -144,18 +144,19 @@ impl DateRange {
     pub fn new(start: NaiveDate, end: NaiveDate) -> Self {
         Self { start, end }
     }
-    
+
     pub fn current_month() -> Self {
         let now = chrono::Local::now().naive_local().date();
         let start = NaiveDate::from_ymd_opt(now.year(), now.month(), 1).unwrap();
         let end = if now.month() == 12 {
             NaiveDate::from_ymd_opt(now.year() + 1, 1, 1).unwrap() - chrono::Duration::days(1)
         } else {
-            NaiveDate::from_ymd_opt(now.year(), now.month() + 1, 1).unwrap() - chrono::Duration::days(1)
+            NaiveDate::from_ymd_opt(now.year(), now.month() + 1, 1).unwrap()
+                - chrono::Duration::days(1)
         };
         Self { start, end }
     }
-    
+
     pub fn current_year() -> Self {
         let now = chrono::Local::now().naive_local().date();
         let start = NaiveDate::from_ymd_opt(now.year(), 1, 1).unwrap();

@@ -9,8 +9,8 @@ use uuid::Uuid;
 
 use super::{PaginatedResult, PaginationParams, ServiceContext, ServiceResponse};
 use crate::domain::{
-    AttachTransactionsInput, CreateTravelEventInput, TravelBudget, TravelEvent,
-    TravelStatistics, TravelStatus, UpdateTravelEventInput, UpsertTravelBudgetInput,
+    AttachTransactionsInput, CreateTravelEventInput, TravelBudget, TravelEvent, TravelStatistics,
+    TravelStatus, UpdateTravelEventInput, UpsertTravelBudgetInput,
 };
 use crate::error::{JiveError, Result};
 
@@ -37,7 +37,7 @@ impl TravelService {
         // Check if family already has an active travel
         let active_count: i64 = sqlx::query_scalar(
             "SELECT COUNT(*) FROM travel_events
-             WHERE family_id = $1 AND status = 'active'"
+             WHERE family_id = $1 AND status = 'active'",
         )
         .bind(self.context.family_id)
         .fetch_one(&self.pool)
@@ -45,7 +45,7 @@ impl TravelService {
 
         if active_count > 0 {
             return Err(JiveError::ValidationError(
-                "Family already has an active travel event".to_string()
+                "Family already has an active travel event".to_string(),
             ));
         }
 
@@ -58,7 +58,7 @@ impl TravelService {
                 total_budget, budget_currency_id, home_currency_id,
                 settings, created_by
             ) VALUES ($1, $2, 'planning', $3, $4, $5, $6, $7, $8, $9)
-            RETURNING *"
+            RETURNING *",
         )
         .bind(self.context.family_id)
         .bind(&input.trip_name)
@@ -119,7 +119,7 @@ impl TravelService {
                 settings = $7,
                 updated_at = NOW()
             WHERE id = $1
-            RETURNING *"
+            RETURNING *",
         )
         .bind(id)
         .bind(&event.trip_name)
@@ -142,7 +142,7 @@ impl TravelService {
     pub async fn get_travel_event(&self, id: Uuid) -> Result<ServiceResponse<TravelEvent>> {
         let event = sqlx::query_as::<_, TravelEvent>(
             "SELECT * FROM travel_events
-             WHERE id = $1 AND family_id = $2"
+             WHERE id = $1 AND family_id = $2",
         )
         .bind(id)
         .bind(self.context.family_id)
@@ -163,12 +163,9 @@ impl TravelService {
         status: Option<String>,
         pagination: PaginationParams,
     ) -> Result<ServiceResponse<PaginatedResult<TravelEvent>>> {
-        let mut query = String::from(
-            "SELECT * FROM travel_events WHERE family_id = $1"
-        );
-        let mut count_query = String::from(
-            "SELECT COUNT(*) FROM travel_events WHERE family_id = $1"
-        );
+        let mut query = String::from("SELECT * FROM travel_events WHERE family_id = $1");
+        let mut count_query =
+            String::from("SELECT COUNT(*) FROM travel_events WHERE family_id = $1");
 
         if let Some(status) = &status {
             query.push_str(" AND status = $2");
@@ -176,7 +173,11 @@ impl TravelService {
         }
 
         query.push_str(" ORDER BY created_at DESC");
-        query.push_str(&format!(" LIMIT {} OFFSET {}", pagination.page_size, pagination.offset()));
+        query.push_str(&format!(
+            " LIMIT {} OFFSET {}",
+            pagination.page_size,
+            pagination.offset()
+        ));
 
         // Get total count
         let total = if let Some(status) = &status {
@@ -225,7 +226,7 @@ impl TravelService {
             "SELECT * FROM travel_events
              WHERE family_id = $1 AND status = 'active'
              ORDER BY created_at DESC
-             LIMIT 1"
+             LIMIT 1",
         )
         .bind(self.context.family_id)
         .fetch_optional(&self.pool)
@@ -244,7 +245,7 @@ impl TravelService {
         let event = self.get_travel_event(id).await?.data;
         if !event.can_activate() {
             return Err(JiveError::ValidationError(
-                "Travel event cannot be activated from current status".to_string()
+                "Travel event cannot be activated from current status".to_string(),
             ));
         }
 
@@ -252,7 +253,7 @@ impl TravelService {
         sqlx::query(
             "UPDATE travel_events
              SET status = 'completed', updated_at = NOW()
-             WHERE family_id = $1 AND status = 'active' AND id != $2"
+             WHERE family_id = $1 AND status = 'active' AND id != $2",
         )
         .bind(self.context.family_id)
         .bind(id)
@@ -264,7 +265,7 @@ impl TravelService {
             "UPDATE travel_events
              SET status = 'active', updated_at = NOW()
              WHERE id = $1
-             RETURNING *"
+             RETURNING *",
         )
         .bind(id)
         .fetch_one(&self.pool)
@@ -285,7 +286,7 @@ impl TravelService {
         let event = self.get_travel_event(id).await?.data;
         if !event.can_complete() {
             return Err(JiveError::ValidationError(
-                "Travel event cannot be completed from current status".to_string()
+                "Travel event cannot be completed from current status".to_string(),
             ));
         }
 
@@ -293,7 +294,7 @@ impl TravelService {
             "UPDATE travel_events
              SET status = 'completed', updated_at = NOW()
              WHERE id = $1
-             RETURNING *"
+             RETURNING *",
         )
         .bind(id)
         .fetch_one(&self.pool)
@@ -312,7 +313,7 @@ impl TravelService {
             "UPDATE travel_events
              SET status = 'cancelled', updated_at = NOW()
              WHERE id = $1 AND family_id = $2
-             RETURNING *"
+             RETURNING *",
         )
         .bind(id)
         .bind(self.context.family_id)
@@ -344,9 +345,7 @@ impl TravelService {
         // Or find transactions by filter
         else if let Some(filter) = input.filter {
             // Build query based on filter
-            let mut query = String::from(
-                "SELECT id FROM transactions WHERE family_id = $1"
-            );
+            let mut query = String::from("SELECT id FROM transactions WHERE family_id = $1");
 
             if let Some(start_date) = filter.start_date {
                 query.push_str(&format!(" AND date >= '{}'", start_date));
@@ -371,7 +370,7 @@ impl TravelService {
             let result = sqlx::query(
                 "INSERT INTO travel_transactions (travel_event_id, transaction_id, attached_by)
                  VALUES ($1, $2, $3)
-                 ON CONFLICT (travel_event_id, transaction_id) DO NOTHING"
+                 ON CONFLICT (travel_event_id, transaction_id) DO NOTHING",
             )
             .bind(travel_id)
             .bind(transaction_id)
@@ -403,7 +402,7 @@ impl TravelService {
     ) -> Result<ServiceResponse<()>> {
         sqlx::query(
             "DELETE FROM travel_transactions
-             WHERE travel_event_id = $1 AND transaction_id = $2"
+             WHERE travel_event_id = $1 AND transaction_id = $2",
         )
         .bind(travel_id)
         .bind(transaction_id)
@@ -446,13 +445,17 @@ impl TravelService {
                 budget_currency_id = EXCLUDED.budget_currency_id,
                 alert_threshold = EXCLUDED.alert_threshold,
                 updated_at = NOW()
-            RETURNING *"
+            RETURNING *",
         )
         .bind(travel_id)
         .bind(input.category_id)
         .bind(input.budget_amount)
         .bind(input.budget_currency_id)
-        .bind(input.alert_threshold.unwrap_or(rust_decimal::Decimal::new(8, 1))) // 0.8
+        .bind(
+            input
+                .alert_threshold
+                .unwrap_or(rust_decimal::Decimal::new(8, 1)),
+        ) // 0.8
         .fetch_one(&self.pool)
         .await?;
 
@@ -471,7 +474,7 @@ impl TravelService {
         let budgets = sqlx::query_as::<_, TravelBudget>(
             "SELECT * FROM travel_budgets
              WHERE travel_event_id = $1
-             ORDER BY category_id"
+             ORDER BY category_id",
         )
         .bind(travel_id)
         .fetch_all(&self.pool)
@@ -517,22 +520,26 @@ impl TravelService {
         .await?;
 
         let total = event.total_spent;
-        let categories = category_spending.into_iter().map(|row| {
-            let amount = rust_decimal::Decimal::from_i64_retain(row.amount.unwrap_or(0)).unwrap_or_default();
-            let percentage = if total.is_zero() {
-                rust_decimal::Decimal::ZERO
-            } else {
-                (amount / total) * rust_decimal::Decimal::from(100)
-            };
+        let categories = category_spending
+            .into_iter()
+            .map(|row| {
+                let amount = rust_decimal::Decimal::from_i64_retain(row.amount.unwrap_or(0))
+                    .unwrap_or_default();
+                let percentage = if total.is_zero() {
+                    rust_decimal::Decimal::ZERO
+                } else {
+                    (amount / total) * rust_decimal::Decimal::from(100)
+                };
 
-            crate::domain::CategorySpending {
-                category_id: row.category_id,
-                category_name: row.category_name,
-                amount,
-                percentage,
-                transaction_count: row.transaction_count.unwrap_or(0) as i32,
-            }
-        }).collect();
+                crate::domain::CategorySpending {
+                    category_id: row.category_id,
+                    category_name: row.category_name,
+                    amount,
+                    percentage,
+                    transaction_count: row.transaction_count.unwrap_or(0) as i32,
+                }
+            })
+            .collect();
 
         let daily_average = if event.duration_days() > 0 {
             event.total_spent / rust_decimal::Decimal::from(event.duration_days())
@@ -577,7 +584,7 @@ impl TravelService {
                 sqlx::query(
                     "UPDATE travel_budgets
                      SET alert_sent = true, alert_sent_at = NOW()
-                     WHERE id = $1"
+                     WHERE id = $1",
                 )
                 .bind(budget.id)
                 .execute(&self.pool)

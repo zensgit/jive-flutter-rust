@@ -6,13 +6,16 @@ use axum::{
     http::StatusCode,
     response::Json,
 };
-use serde::{Deserialize, Serialize};
-use sqlx::{PgPool, FromRow};
-use uuid::Uuid;
-use rust_decimal::Decimal;
 use chrono::{DateTime, NaiveDate, Utc};
+use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
+use sqlx::{FromRow, PgPool};
+use uuid::Uuid;
 
-use crate::{auth::Claims, error::{ApiError, ApiResult}};
+use crate::{
+    auth::Claims,
+    error::{ApiError, ApiResult},
+};
 
 /// 旅行设置
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -188,7 +191,7 @@ pub async fn create_travel_event(
     // 检查是否已有活跃的旅行
     let active_count: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM travel_events
-         WHERE family_id = $1 AND status = 'active'"
+         WHERE family_id = $1 AND status = 'active'",
     )
     .bind(claims.family_id)
     .fetch_one(&pool)
@@ -196,7 +199,7 @@ pub async fn create_travel_event(
 
     if active_count > 0 {
         return Err(ApiError::BadRequest(
-            "Family already has an active travel event".to_string()
+            "Family already has an active travel event".to_string(),
         ));
     }
 
@@ -212,7 +215,7 @@ pub async fn create_travel_event(
             total_budget, budget_currency_code, home_currency_code,
             settings, created_by
         ) VALUES ($1, $2, 'planning', $3, $4, $5, $6, $7, $8, $9)
-        RETURNING *"
+        RETURNING *",
     )
     .bind(claims.family_id)
     .bind(&input.trip_name)
@@ -239,7 +242,7 @@ pub async fn update_travel_event(
     // 获取现有事件
     let mut event = sqlx::query_as::<_, TravelEvent>(
         "SELECT * FROM travel_events
-         WHERE id = $1 AND family_id = $2"
+         WHERE id = $1 AND family_id = $2",
     )
     .bind(id)
     .bind(claims.family_id)
@@ -264,8 +267,8 @@ pub async fn update_travel_event(
         event.budget_currency_code = Some(budget_currency_code);
     }
     if let Some(settings) = input.settings {
-        event.settings = serde_json::to_value(&settings)
-            .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+        event.settings =
+            serde_json::to_value(&settings).map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     }
 
     // 更新数据库
@@ -279,7 +282,7 @@ pub async fn update_travel_event(
             settings = $7,
             updated_at = NOW()
         WHERE id = $1
-        RETURNING *"
+        RETURNING *",
     )
     .bind(id)
     .bind(&event.trip_name)
@@ -302,7 +305,7 @@ pub async fn get_travel_event(
 ) -> ApiResult<Json<TravelEvent>> {
     let event = sqlx::query_as::<_, TravelEvent>(
         "SELECT * FROM travel_events
-         WHERE id = $1 AND family_id = $2"
+         WHERE id = $1 AND family_id = $2",
     )
     .bind(id)
     .bind(claims.family_id)
@@ -319,9 +322,7 @@ pub async fn list_travel_events(
     claims: Claims,
     Query(query): Query<ListTravelEventsQuery>,
 ) -> ApiResult<Json<Vec<TravelEvent>>> {
-    let mut sql = String::from(
-        "SELECT * FROM travel_events WHERE family_id = $1"
-    );
+    let mut sql = String::from("SELECT * FROM travel_events WHERE family_id = $1");
 
     if let Some(_status) = &query.status {
         sql.push_str(" AND status = $2");
@@ -358,7 +359,7 @@ pub async fn get_active_travel(
         "SELECT * FROM travel_events
          WHERE family_id = $1 AND status = 'active'
          ORDER BY created_at DESC
-         LIMIT 1"
+         LIMIT 1",
     )
     .bind(claims.family_id)
     .fetch_optional(&pool)
@@ -376,7 +377,7 @@ pub async fn activate_travel(
     // 检查事件状态
     let event: TravelEvent = sqlx::query_as(
         "SELECT * FROM travel_events
-         WHERE id = $1 AND family_id = $2"
+         WHERE id = $1 AND family_id = $2",
     )
     .bind(id)
     .bind(claims.family_id)
@@ -386,7 +387,7 @@ pub async fn activate_travel(
 
     if event.status != "planning" {
         return Err(ApiError::BadRequest(
-            "Travel event cannot be activated from current status".to_string()
+            "Travel event cannot be activated from current status".to_string(),
         ));
     }
 
@@ -394,7 +395,7 @@ pub async fn activate_travel(
     sqlx::query(
         "UPDATE travel_events
          SET status = 'completed', updated_at = NOW()
-         WHERE family_id = $1 AND status = 'active' AND id != $2"
+         WHERE family_id = $1 AND status = 'active' AND id != $2",
     )
     .bind(claims.family_id)
     .bind(id)
@@ -406,7 +407,7 @@ pub async fn activate_travel(
         "UPDATE travel_events
          SET status = 'active', updated_at = NOW()
          WHERE id = $1
-         RETURNING *"
+         RETURNING *",
     )
     .bind(id)
     .fetch_one(&pool)
@@ -423,7 +424,7 @@ pub async fn complete_travel(
 ) -> ApiResult<Json<TravelEvent>> {
     let event: TravelEvent = sqlx::query_as(
         "SELECT * FROM travel_events
-         WHERE id = $1 AND family_id = $2"
+         WHERE id = $1 AND family_id = $2",
     )
     .bind(id)
     .bind(claims.family_id)
@@ -433,7 +434,7 @@ pub async fn complete_travel(
 
     if event.status != "active" {
         return Err(ApiError::BadRequest(
-            "Travel event cannot be completed from current status".to_string()
+            "Travel event cannot be completed from current status".to_string(),
         ));
     }
 
@@ -441,7 +442,7 @@ pub async fn complete_travel(
         "UPDATE travel_events
          SET status = 'completed', updated_at = NOW()
          WHERE id = $1
-         RETURNING *"
+         RETURNING *",
     )
     .bind(id)
     .fetch_one(&pool)
@@ -460,7 +461,7 @@ pub async fn cancel_travel(
         "UPDATE travel_events
          SET status = 'cancelled', updated_at = NOW()
          WHERE id = $1 AND family_id = $2
-         RETURNING *"
+         RETURNING *",
     )
     .bind(id)
     .bind(claims.family_id)
@@ -478,14 +479,13 @@ pub async fn attach_transactions(
     Json(input): Json<AttachTransactionsInput>,
 ) -> ApiResult<Json<serde_json::Value>> {
     // 验证旅行存在
-    let _: (Uuid,) = sqlx::query_as(
-        "SELECT id FROM travel_events WHERE id = $1 AND family_id = $2"
-    )
-    .bind(travel_id)
-    .bind(claims.family_id)
-    .fetch_optional(&pool)
-    .await?
-    .ok_or_else(|| ApiError::NotFound("Travel event not found".to_string()))?;
+    let _: (Uuid,) =
+        sqlx::query_as("SELECT id FROM travel_events WHERE id = $1 AND family_id = $2")
+            .bind(travel_id)
+            .bind(claims.family_id)
+            .fetch_optional(&pool)
+            .await?
+            .ok_or_else(|| ApiError::NotFound("Travel event not found".to_string()))?;
 
     let user_id = claims.user_id()?;
     let mut transaction_ids = Vec::new();
@@ -496,9 +496,7 @@ pub async fn attach_transactions(
     }
     // 或根据过滤器查找交易
     else if let Some(filter) = input.filter {
-        let mut query = String::from(
-            "SELECT id FROM transactions WHERE family_id = $1"
-        );
+        let mut query = String::from("SELECT id FROM transactions WHERE family_id = $1");
 
         if let Some(start_date) = filter.start_date {
             query.push_str(&format!(" AND date >= '{}'", start_date));
@@ -523,7 +521,7 @@ pub async fn attach_transactions(
         let result = sqlx::query(
             "INSERT INTO travel_transactions (travel_event_id, transaction_id, attached_by)
              VALUES ($1, $2, $3)
-             ON CONFLICT (travel_event_id, transaction_id) DO NOTHING"
+             ON CONFLICT (travel_event_id, transaction_id) DO NOTHING",
         )
         .bind(travel_id)
         .bind(transaction_id)
@@ -554,7 +552,7 @@ pub async fn detach_transaction(
 ) -> ApiResult<StatusCode> {
     sqlx::query(
         "DELETE FROM travel_transactions
-         WHERE travel_event_id = $1 AND transaction_id = $2"
+         WHERE travel_event_id = $1 AND transaction_id = $2",
     )
     .bind(travel_id)
     .bind(transaction_id)
@@ -583,14 +581,13 @@ pub async fn upsert_travel_budget(
     }
 
     // 验证旅行存在
-    let _: (Uuid,) = sqlx::query_as(
-        "SELECT id FROM travel_events WHERE id = $1 AND family_id = $2"
-    )
-    .bind(travel_id)
-    .bind(claims.family_id)
-    .fetch_optional(&pool)
-    .await?
-    .ok_or_else(|| ApiError::NotFound("Travel event not found".to_string()))?;
+    let _: (Uuid,) =
+        sqlx::query_as("SELECT id FROM travel_events WHERE id = $1 AND family_id = $2")
+            .bind(travel_id)
+            .bind(claims.family_id)
+            .fetch_optional(&pool)
+            .await?
+            .ok_or_else(|| ApiError::NotFound("Travel event not found".to_string()))?;
 
     let budget = sqlx::query_as::<_, TravelBudget>(
         "INSERT INTO travel_budgets (
@@ -603,7 +600,7 @@ pub async fn upsert_travel_budget(
             budget_currency_code = EXCLUDED.budget_currency_code,
             alert_threshold = EXCLUDED.alert_threshold,
             updated_at = NOW()
-        RETURNING *"
+        RETURNING *",
     )
     .bind(travel_id)
     .bind(input.category_id)
@@ -626,7 +623,7 @@ pub async fn get_travel_budgets(
         "SELECT tb.* FROM travel_budgets tb
          JOIN travel_events te ON tb.travel_event_id = te.id
          WHERE tb.travel_event_id = $1 AND te.family_id = $2
-         ORDER BY tb.category_id"
+         ORDER BY tb.category_id",
     )
     .bind(travel_id)
     .bind(claims.family_id)
@@ -644,7 +641,7 @@ pub async fn get_travel_statistics(
 ) -> ApiResult<Json<TravelStatistics>> {
     let event: TravelEvent = sqlx::query_as(
         "SELECT * FROM travel_events
-         WHERE id = $1 AND family_id = $2"
+         WHERE id = $1 AND family_id = $2",
     )
     .bind(travel_id)
     .bind(claims.family_id)
@@ -680,7 +677,7 @@ pub async fn get_travel_statistics(
         GROUP BY c.id, c.name
         HAVING COUNT(t.id) > 0
         ORDER BY amount DESC
-        "#
+        "#,
     )
     .bind(travel_id)
     .bind(claims.family_id)
@@ -688,22 +685,25 @@ pub async fn get_travel_statistics(
     .await?;
 
     let total = event.total_spent;
-    let categories: Vec<CategorySpending> = category_spending.into_iter().map(|row| {
-        let amount = row.amount;
-        let percentage = if total.is_zero() {
-            Decimal::ZERO
-        } else {
-            (amount / total) * Decimal::from(100)
-        };
+    let categories: Vec<CategorySpending> = category_spending
+        .into_iter()
+        .map(|row| {
+            let amount = row.amount;
+            let percentage = if total.is_zero() {
+                Decimal::ZERO
+            } else {
+                (amount / total) * Decimal::from(100)
+            };
 
-        CategorySpending {
-            category_id: row.category_id,
-            category_name: row.category_name,
-            amount,
-            percentage,
-            transaction_count: row.transaction_count as i32,
-        }
-    }).collect();
+            CategorySpending {
+                category_id: row.category_id,
+                category_name: row.category_name,
+                amount,
+                percentage,
+                transaction_count: row.transaction_count as i32,
+            }
+        })
+        .collect();
 
     // 计算日均花费
     let duration_days = (event.end_date - event.start_date).num_days() + 1;

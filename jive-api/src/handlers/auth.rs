@@ -17,6 +17,7 @@ use super::family_handler::{ApiError as FamilyApiError, ApiResponse};
 use crate::auth::{Claims, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse};
 use crate::error::{ApiError, ApiResult};
 use crate::services::AuthService;
+use crate::{AppMetrics, AppState}; // for metrics
 
 /// 用户模型
 #[derive(Debug, Serialize, Deserialize)]
@@ -248,7 +249,9 @@ pub async fn login(
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     }
     .ok_or_else(|| {
-        if cfg!(debug_assertions) { println!("DEBUG[login]: user not found for input={}", &login_input); }
+        if cfg!(debug_assertions) {
+            println!("DEBUG[login]: user not found for input={}", &login_input);
+        }
         state.metrics.increment_login_fail();
         ApiError::Unauthorized
     })?;
@@ -279,7 +282,9 @@ pub async fn login(
 
     // 检查用户状态
     if !user.is_active {
-        if cfg!(debug_assertions) { println!("DEBUG[login]: user inactive: {}", user.email); }
+        if cfg!(debug_assertions) {
+            println!("DEBUG[login]: user inactive: {}", user.email);
+        }
         state.metrics.increment_login_inactive();
         return Err(ApiError::Forbidden);
     }
@@ -306,7 +311,12 @@ pub async fn login(
         .unwrap_or(true);
 
     if hash.starts_with("$argon2") {
-        let parsed_hash = PasswordHash::new(hash).map_err(|e| { #[cfg(debug_assertions)] println!("DEBUG[login]: failed to parse Argon2 hash: {:?}", e); state.metrics.increment_login_fail(); ApiError::InternalServerError })?;
+        let parsed_hash = PasswordHash::new(hash).map_err(|e| {
+            #[cfg(debug_assertions)]
+            println!("DEBUG[login]: failed to parse Argon2 hash: {:?}", e);
+            state.metrics.increment_login_fail();
+            ApiError::InternalServerError
+        })?;
         let argon2 = Argon2::default();
         argon2
             .verify_password(req.password.as_bytes(), &parsed_hash)
@@ -314,7 +324,10 @@ pub async fn login(
     } else if hash.starts_with("$2") {
         // bcrypt format ($2a$, $2b$, $2y$)
         let ok = bcrypt::verify(&req.password, hash).unwrap_or(false);
-        if !ok { state.metrics.increment_login_fail(); return Err(ApiError::Unauthorized); }
+        if !ok {
+            state.metrics.increment_login_fail();
+            return Err(ApiError::Unauthorized);
+        }
 
         if enable_rehash {
             // Password rehash: transparently upgrade bcrypt to Argon2id on successful login
@@ -341,14 +354,29 @@ pub async fn login(
                         state.metrics.increment_rehash();
                     }
                 }
-                Err(e) => { tracing::warn!(user_id=%user.id, error=?e, "failed to generate Argon2id hash"); state.metrics.increment_rehash_fail(); state.metrics.inc_rehash_fail_hash(); }
+                Err(e) => {
+                    tracing::warn!(user_id=%user.id, error=?e, "failed to generate Argon2id hash");
+                    state.metrics.increment_rehash_fail();
+                    state.metrics.inc_rehash_fail_hash();
+                }
             }
         }
     } else {
         // Unknown format: try Argon2 parse as best-effort, otherwise unauthorized
         match PasswordHash::new(hash) {
-            Ok(parsed) => { let argon2 = Argon2::default(); argon2.verify_password(req.password.as_bytes(), &parsed).map_err(|_| { state.metrics.increment_login_fail(); ApiError::Unauthorized })?; }
-            Err(_) => { state.metrics.increment_login_fail(); return Err(ApiError::Unauthorized); }
+            Ok(parsed) => {
+                let argon2 = Argon2::default();
+                argon2
+                    .verify_password(req.password.as_bytes(), &parsed)
+                    .map_err(|_| {
+                        state.metrics.increment_login_fail();
+                        ApiError::Unauthorized
+                    })?;
+            }
+            Err(_) => {
+                state.metrics.increment_login_fail();
+                return Err(ApiError::Unauthorized);
+            }
         }
     }
 
@@ -508,6 +536,7 @@ pub async fn update_user(
 pub async fn change_password(
     claims: Claims,
     State(pool): State<PgPool>,
+    State(metrics): State<AppMetrics>,
     Json(req): Json<ChangePasswordRequest>,
 ) -> ApiResult<StatusCode> {
     let user_id = claims.user_id()?;
@@ -524,16 +553,41 @@ pub async fn change_password(
         .try_get("password_hash")
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
-    // 验证旧密码
-    let parsed_hash =
-        PasswordHash::new(&current_hash).map_err(|_| ApiError::InternalServerError)?;
+    // 验证旧密码 - 支持 Argon2 和 bcrypt 格式
+    let hash = current_hash.as_str();
+    let password_verified = if hash.starts_with("$argon2") {
+        // Argon2 format (preferred)
+        match PasswordHash::new(hash) {
+            Ok(parsed_hash) => {
+                let argon2 = Argon2::default();
+                argon2
+                    .verify_password(req.old_password.as_bytes(), &parsed_hash)
+                    .is_ok()
+            }
+            Err(_) => false,
+        }
+    } else if hash.starts_with("$2") {
+        // bcrypt format (legacy)
+        bcrypt::verify(&req.old_password, hash).unwrap_or(false)
+    } else {
+        // Unknown format: try Argon2 as best-effort
+        match PasswordHash::new(hash) {
+            Ok(parsed) => {
+                let argon2 = Argon2::default();
+                argon2
+                    .verify_password(req.old_password.as_bytes(), &parsed)
+                    .is_ok()
+            }
+            Err(_) => false,
+        }
+    };
 
+    if !password_verified {
+        return Err(ApiError::Unauthorized);
+    }
+
+    // 生成新密码哈希 (始终使用 Argon2id)
     let argon2 = Argon2::default();
-    argon2
-        .verify_password(req.old_password.as_bytes(), &parsed_hash)
-        .map_err(|_| ApiError::Unauthorized)?;
-
-    // 生成新密码哈希
     let salt = SaltString::generate(&mut OsRng);
     let new_hash = argon2
         .hash_password(req.new_password.as_bytes(), &salt)
@@ -547,6 +601,12 @@ pub async fn change_password(
         .execute(&pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    // 指标：累计密码修改次数，并在旧哈希为 bcrypt 时累计 rehash 次数
+    metrics.inc_password_change();
+    if hash.starts_with("$2") {
+        metrics.inc_password_change_rehash();
+    }
 
     Ok(StatusCode::OK)
 }

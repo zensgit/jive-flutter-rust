@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use pinyin::{Pinyin, ToPinyin};
+use pinyin::ToPinyin;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use std::env;
@@ -27,8 +27,8 @@ struct BankJson {
 }
 
 fn extract_code_from_url(url: &str) -> String {
-    url.split('/')
-        .last()
+    url.rsplit('/')
+        .next()
         .unwrap_or("unknown")
         .trim_end_matches(".png")
         .to_string()
@@ -36,20 +36,14 @@ fn extract_code_from_url(url: &str) -> String {
 
 fn to_pinyin_full(text: &str) -> String {
     text.chars()
-        .filter_map(|c| {
-            c.to_pinyin()
-                .map(|p| p.plain().to_lowercase())
-        })
+        .filter_map(|c| c.to_pinyin().map(|p| p.plain().to_lowercase()))
         .collect::<Vec<String>>()
         .join("")
 }
 
 fn to_pinyin_abbr(text: &str) -> String {
     text.chars()
-        .filter_map(|c| {
-            c.to_pinyin()
-                .and_then(|p| p.plain().chars().next())
-        })
+        .filter_map(|c| c.to_pinyin().and_then(|p| p.plain().chars().next()))
         .collect::<String>()
         .to_lowercase()
 }
@@ -59,24 +53,24 @@ async fn main() -> Result<()> {
     dotenv::dotenv().ok();
     tracing_subscriber::fmt::init();
 
-    let database_url = env::var("DATABASE_URL")
-        .context("DATABASE_URL must be set")?;
+    let database_url = env::var("DATABASE_URL").context("DATABASE_URL must be set")?;
 
     let json_path = env::var("BANKS_JSON_PATH")
         .unwrap_or_else(|_| "/Users/huazhou/Library/CloudStorage/SynologyDrive-mac/github/resources/banks_complete.json".to_string());
 
     println!("📖 Reading bank data from: {}", json_path);
-    let content = fs::read_to_string(&json_path)
-        .context("Failed to read banks JSON file")?;
+    let content = fs::read_to_string(&json_path).context("Failed to read banks JSON file")?;
 
     println!("🔍 Parsing JSON data...");
-    let data: BankData = serde_json::from_str(&content)
-        .context("Failed to parse banks JSON")?;
+    let data: BankData = serde_json::from_str(&content).context("Failed to parse banks JSON")?;
 
     println!("📊 Statistics:");
     println!("  Total records: {}", data.extraction_info.total_records);
     println!("  Regular banks: {}", data.extraction_info.regular_banks);
-    println!("  Cryptocurrencies: {}", data.extraction_info.cryptocurrencies);
+    println!(
+        "  Cryptocurrencies: {}",
+        data.extraction_info.cryptocurrencies
+    );
 
     println!("\n🔌 Connecting to database...");
     let pool = PgPool::connect(&database_url)
@@ -94,11 +88,13 @@ async fn main() -> Result<()> {
         let name_cn = bank.name2.clone().or_else(|| Some(bank.name.clone()));
         let name_en = bank.name3.clone();
 
-        let name_cn_pinyin = name_cn.as_ref()
+        let name_cn_pinyin = name_cn
+            .as_ref()
             .map(|n| to_pinyin_full(n))
             .unwrap_or_default();
 
-        let name_cn_abbr = name_cn.as_ref()
+        let name_cn_abbr = name_cn
+            .as_ref()
             .map(|n| to_pinyin_abbr(n))
             .unwrap_or_default();
 

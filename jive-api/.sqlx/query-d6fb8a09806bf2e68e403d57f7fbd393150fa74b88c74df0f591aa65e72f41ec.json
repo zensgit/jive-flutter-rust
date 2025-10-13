@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n        SELECT\n            multi_currency_enabled,\n            crypto_enabled,\n            base_currency,\n            selected_currencies,\n            show_currency_code,\n            show_currency_symbol\n        FROM user_currency_settings\n        WHERE user_id = $1\n        ",
+  "query": "\n        SELECT \n            multi_currency_enabled,\n            crypto_enabled,\n            base_currency,\n            selected_currencies,\n            show_currency_code,\n            show_currency_symbol\n        FROM user_currency_settings\n        WHERE user_id = $1\n        ",
   "describe": {
     "columns": [
       {
@@ -48,5 +48,5 @@
       true
     ]
   },
-  "hash": "e0bc807fe4450cab0ca6a87c7f6225f03ee3ba6148030479fe45a7b6b7cc3c83"
+  "hash": "d6fb8a09806bf2e68e403d57f7fbd393150fa74b88c74df0f591aa65e72f41ec"
 }

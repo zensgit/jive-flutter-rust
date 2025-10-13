@@ -223,18 +223,20 @@ pub async fn create_account(
     State(pool): State<PgPool>,
     Json(req): Json<CreateAccountRequest>,
 ) -> ApiResult<Json<AccountResponse>> {
-    let main_type = AccountMainType::from_str(&req.account_main_type)
-        .map_err(ApiError::BadRequest)?;
-    let sub_type = AccountSubType::from_str(&req.account_sub_type)
-        .map_err(ApiError::BadRequest)?;
+    let main_type =
+        AccountMainType::from_str(&req.account_main_type).map_err(ApiError::BadRequest)?;
+    let sub_type = AccountSubType::from_str(&req.account_sub_type).map_err(ApiError::BadRequest)?;
 
-    sub_type.validate_with_main_type(main_type)
+    sub_type
+        .validate_with_main_type(main_type)
         .map_err(ApiError::BadRequest)?;
 
     let id = Uuid::new_v4();
     let currency = req.currency.unwrap_or_else(|| "CNY".to_string());
     let initial_balance = req.initial_balance.unwrap_or(Decimal::ZERO);
-    let legacy_type = req.account_type.unwrap_or_else(|| req.account_sub_type.clone());
+    let legacy_type = req
+        .account_type
+        .unwrap_or_else(|| req.account_sub_type.clone());
 
     let account = sqlx::query!(
         r#"

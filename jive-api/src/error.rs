@@ -1,6 +1,10 @@
 //! API错误处理模块
 
-use axum::{http::StatusCode, response::{IntoResponse, Response}, Json};
+use axum::{
+    http::StatusCode,
+    response::{IntoResponse, Response},
+    Json,
+};
 use serde::{Deserialize, Serialize};
 
 /// API错误类型
@@ -47,7 +51,11 @@ pub struct ApiErrorResponse {
 
 impl ApiErrorResponse {
     pub fn new(code: impl Into<String>, msg: impl Into<String>) -> Self {
-        Self { error_code: code.into(), message: msg.into(), retry_after: None }
+        Self {
+            error_code: code.into(),
+            message: msg.into(),
+            retry_after: None,
+        }
     }
     pub fn with_retry_after(mut self, sec: u64) -> Self {
         self.retry_after = Some(sec);
@@ -128,9 +136,7 @@ impl From<sqlx::Error> for ApiError {
     fn from(err: sqlx::Error) -> Self {
         match err {
             sqlx::Error::RowNotFound => ApiError::NotFound("Resource not found".to_string()),
-            sqlx::Error::Database(db_err) => {
-                ApiError::DatabaseError(db_err.message().to_string())
-            }
+            sqlx::Error::Database(db_err) => ApiError::DatabaseError(db_err.message().to_string()),
             _ => ApiError::DatabaseError(err.to_string()),
         }
     }

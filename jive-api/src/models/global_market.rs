@@ -59,19 +59,27 @@ impl From<CoinGeckoGlobalData> for GlobalMarketStats {
     fn from(data: CoinGeckoGlobalData) -> Self {
         use rust_decimal::prelude::FromPrimitive;
 
-        let total_market_cap_usd = data.total_market_cap.get("usd")
+        let total_market_cap_usd = data
+            .total_market_cap
+            .get("usd")
             .and_then(|v| Decimal::from_f64(*v))
             .unwrap_or(Decimal::ZERO);
 
-        let total_volume_24h_usd = data.total_volume.get("usd")
+        let total_volume_24h_usd = data
+            .total_volume
+            .get("usd")
             .and_then(|v| Decimal::from_f64(*v))
             .unwrap_or(Decimal::ZERO);
 
-        let btc_dominance_percentage = data.market_cap_percentage.get("btc")
+        let btc_dominance_percentage = data
+            .market_cap_percentage
+            .get("btc")
             .and_then(|v| Decimal::from_f64(*v))
             .unwrap_or(Decimal::ZERO);
 
-        let eth_dominance_percentage = data.market_cap_percentage.get("eth")
+        let eth_dominance_percentage = data
+            .market_cap_percentage
+            .get("eth")
             .and_then(|v| Decimal::from_f64(*v));
 
         Self {
