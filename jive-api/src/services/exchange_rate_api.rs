@@ -1124,8 +1124,11 @@ impl ExchangeRateApiService {
 
         match db_result {
             Ok(Some(record)) => {
-                // updated_at is NOT NULL DateTime<Utc> in schema
-                let age_hours = (Utc::now().signed_duration_since(record.updated_at)).num_hours();
+                // updated_at may be NULL in some rows; guard it
+                let age_hours = record
+                    .updated_at
+                    .map(|dt| (Utc::now().signed_duration_since(dt)).num_hours())
+                    .unwrap_or(0);
                 info!("✅ Step 1 SUCCESS: Found historical rate in database for {}->{}: rate={}, age={} hours ago",
                     crypto_code, fiat_currency, record.rate, age_hours);
                 return Ok(Some(record.rate));

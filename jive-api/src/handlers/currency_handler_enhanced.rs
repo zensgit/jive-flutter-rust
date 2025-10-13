@@ -653,10 +653,12 @@ pub async fn get_crypto_prices(
     for row in prices {
         let price = Decimal::ONE / row.price;
         crypto_prices.insert(row.crypto_code, price);
-        // created_at 为非空DateTime<Utc>
-        let created_naive = row.created_at.naive_utc();
-        if last_updated.map(|lu| created_naive > lu).unwrap_or(true) {
-            last_updated = Some(created_naive);
+        // created_at 可能为 NULL，防御性处理
+        if let Some(created_at) = row.created_at {
+            let created_naive = created_at.naive_utc();
+            if last_updated.map(|lu| created_naive > lu).unwrap_or(true) {
+                last_updated = Some(created_naive);
+            }
         }
     }
 

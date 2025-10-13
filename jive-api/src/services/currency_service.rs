@@ -205,7 +205,7 @@ impl CurrencyService {
 
             Ok(FamilyCurrencySettings {
                 family_id,
-                base_currency: settings.base_currency,
+                base_currency: settings.base_currency.unwrap_or_else(|| "CNY".to_string()),
                 allow_multi_currency: settings.allow_multi_currency.unwrap_or(false),
                 auto_convert: settings.auto_convert.unwrap_or(false),
                 supported_currencies: supported,
@@ -466,8 +466,8 @@ impl CurrencyService {
                 source: row.source.unwrap_or_else(|| "manual".to_string()),
                 // effective_date 为非空（schema 约束）；直接使用
                 effective_date: row.effective_date,
-                // created_at 为非空；直接使用
-                created_at: row.created_at,
+                // created_at 可能为 NULL；使用当前时间回填
+                created_at: row.created_at.unwrap_or_else(|| Utc::now()),
             })
             .collect())
     }
