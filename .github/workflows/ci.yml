@@ -18,6 +18,97 @@ env:
   RUST_VERSION: '1.89.0'
 
 jobs:
+  routing-smoke-tests:
+    name: Routing Smoke Tests (PR verify)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: ${{ env.RUST_VERSION }}
+        override: true
+    - name: Cache Rust dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          jive-api/target/
+        key: ${{ runner.os }}-cargo-routing-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-routing-
+    - name: Run routing smoke tests (no DB)
+      working-directory: jive-api
+      env:
+        SQLX_OFFLINE: 'true'
+      run: |
+        set +e
+        mkdir -p ../routing-tests
+        SUMMARY=../routing-tests/routing-tests-summary.txt
+        LOG1=../routing-tests/routing_methods_smoke_test.log
+        LOG2=../routing-tests/rest_resource_methods_test.log
+
+        echo "# Routing Smoke Tests" > "$SUMMARY"
+        echo "Date: $(date)" >> "$SUMMARY"
+        echo "" >> "$SUMMARY"
+
+        echo "## routing_methods_smoke_test" >> "$SUMMARY"
+        cargo test --test routing_methods_smoke_test -- --nocapture > "$LOG1" 2>&1
+        if [ $? -eq 0 ]; then
+          echo "- Result: PASS" >> "$SUMMARY"
+        else
+          echo "- Result: FAIL" >> "$SUMMARY"
+          echo "- Last 50 lines:" >> "$SUMMARY"
+          tail -50 "$LOG1" >> "$SUMMARY" || true
+        fi
+
+        echo "" >> "$SUMMARY"
+        echo "## rest_resource_methods_test" >> "$SUMMARY"
+        cargo test --test rest_resource_methods_test -- --nocapture > "$LOG2" 2>&1
+        if [ $? -eq 0 ]; then
+          echo "- Result: PASS" >> "$SUMMARY"
+        else
+          echo "- Result: FAIL" >> "$SUMMARY"
+          echo "- Last 50 lines:" >> "$SUMMARY"
+          tail -50 "$LOG2" >> "$SUMMARY" || true
+        fi
+
+    - name: Upload routing tests summary
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: routing-tests-summary
+        path: routing-tests
+
+    - name: Comment routing tests summary to PR
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = 'routing-tests/routing-tests-summary.txt';
+          let body = '## Routing Smoke Tests\n';
+          if (fs.existsSync(path)) {
+            body += '\n```\n' + fs.readFileSync(path, 'utf8') + '\n```\n';
+          } else {
+            body += '\n(summary file not found)\n';
+          }
+          const prNumber = context.payload.pull_request?.number;
+          if (prNumber) {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body,
+            });
+          }
   flutter-test:
     name: Flutter Tests
     runs-on: ubuntu-latest
@@ -184,6 +275,8 @@ jobs:
         cargo test --all-features -- --nocapture > ../rust-test-results.txt 2>&1 || true
         cargo test --all-features || true
 
+    # (routing smoke tests moved to dedicated job)
+
     - name: Check code (SQLx offline)
       working-directory: jive-api
       env:
@@ -334,6 +427,12 @@ jobs:
           echo '```' >> ci-summary.md
           tail -50 rust-test-results/rust-test-results.txt >> ci-summary.md
           echo '```' >> ci-summary.md
+        fi
+
+        if [ -f routing-tests-summary/routing-tests-summary.txt ]; then
+          echo "" >> ci-summary.md
+          echo "## Routing Smoke Tests" >> ci-summary.md
+          cat routing-tests-summary/routing-tests-summary.txt >> ci-summary.md
         fi
 
     - name: Upload summary
