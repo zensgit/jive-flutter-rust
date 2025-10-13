@@ -46,7 +46,6 @@ base64 = "0.22"
 # Make core optional; gate usage behind feature `core_export`
 jive-core = { path = "../jive-core", package = "jive-core", features = ["server", "db"], default-features = false, optional = true }
 bytes = "1"
-sha2 = "0.10"
 
 # WebSocket支持
 tokio-tungstenite = "0.24"
