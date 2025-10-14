@@ -433,8 +433,8 @@ pub async fn get_account_statistics(
         r#"
         SELECT 
             COUNT(*) as total_accounts,
-            SUM(CASE WHEN current_balance > 0 THEN current_balance ELSE 0 END) as total_assets,
-            SUM(CASE WHEN current_balance < 0 THEN ABS(current_balance) ELSE 0 END) as total_liabilities
+            SUM(CASE WHEN current_balance > 0 THEN current_balance ELSE 0 END)::numeric as total_assets,
+            SUM(CASE WHEN current_balance < 0 THEN ABS(current_balance) ELSE 0 END)::numeric as total_liabilities
         FROM accounts
         WHERE ledger_id = $1 AND deleted_at IS NULL
         "#,
@@ -450,7 +450,7 @@ pub async fn get_account_statistics(
         SELECT 
             account_type,
             COUNT(*) as count,
-            SUM(current_balance) as total_balance
+            SUM(current_balance)::numeric as total_balance
         FROM accounts
         WHERE ledger_id = $1 AND deleted_at IS NULL
         GROUP BY account_type

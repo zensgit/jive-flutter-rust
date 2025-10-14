@@ -7,19 +7,27 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
+// 应用层接口定义（Commands, Results, Service Traits）
+pub mod commands;
+pub mod results;
+pub mod services;
+
 // 导出所有应用服务
 pub mod account_service;
+#[cfg(feature = "app_experimental")]
 pub mod analytics_service;
 pub mod auth_service;
 pub mod auth_service_enhanced;
 pub mod budget_service;
 pub mod category_service;
 pub mod credit_card_service;
+#[cfg(feature = "app_experimental")]
 pub mod data_exchange_service;
 pub mod export_service;
 pub mod family_service;
 pub mod import_service;
 pub mod investment_service;
+#[cfg(feature = "app_experimental")]
 pub mod ledger_service;
 pub mod mfa_service;
 pub mod middleware;
@@ -44,6 +52,7 @@ pub use category_service::*;
 pub use export_service::*;
 pub use family_service::*;
 pub use import_service::*;
+#[cfg(feature = "app_experimental")]
 pub use ledger_service::*;
 pub use notification_service::*;
 pub use payee_service::*;
