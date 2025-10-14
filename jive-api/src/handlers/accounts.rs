@@ -182,44 +182,66 @@ pub async fn get_account(
     Path(id): Path<Uuid>,
     State(pool): State<PgPool>,
 ) -> ApiResult<Json<AccountResponse>> {
-    let account = sqlx::query!(
+    let row = sqlx::query(
         r#"
         SELECT id, ledger_id, bank_id, name, account_type, account_number, institution_name,
                currency,
-               current_balance::numeric as current_balance,
-               available_balance::numeric as available_balance,
-               credit_limit::numeric as credit_limit,
+               current_balance,
+               available_balance,
+               credit_limit,
                status,
                is_manual, color, notes, created_at, updated_at
         FROM accounts
         WHERE id = $1 AND deleted_at IS NULL
         "#,
-        id
     )
+    .bind(id)
     .fetch_optional(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     .ok_or(ApiError::NotFound("Account not found".to_string()))?;
 
     let response = AccountResponse {
-        id: account.id,
-        ledger_id: account.ledger_id,
-        bank_id: account.bank_id,
-        name: account.name,
-        account_type: account.account_type,
-        account_number: account.account_number,
-        institution_name: account.institution_name,
-        currency: account.currency.unwrap_or_else(|| "CNY".to_string()),
-        current_balance: account.current_balance.unwrap_or(Decimal::ZERO),
-        available_balance: account.available_balance,
-        credit_limit: account.credit_limit,
-        status: account.status.unwrap_or_else(|| "active".to_string()),
-        is_manual: account.is_manual.unwrap_or(true),
-        color: account.color,
-        icon: None,
-        notes: account.notes,
-        created_at: account.created_at.unwrap_or_else(chrono::Utc::now),
-        updated_at: account.updated_at.unwrap_or_else(chrono::Utc::now),
+        id: row.get("id"),
+        ledger_id: row.get("ledger_id"),
+        bank_id: row.get("bank_id"),
+        name: row.get("name"),
+        account_type: row.get("account_type"),
+        account_number: row.get("account_number"),
+        institution_name: row.get("institution_name"),
+        currency: row
+            .try_get::<Option<String>, _>("currency")
+            .unwrap_or(None)
+            .unwrap_or_else(|| "CNY".to_string()),
+        current_balance: row
+            .try_get::<Option<Decimal>, _>("current_balance")
+            .unwrap_or(None)
+            .unwrap_or(Decimal::ZERO),
+        available_balance: row
+            .try_get::<Option<Decimal>, _>("available_balance")
+            .unwrap_or(None),
+        credit_limit: row
+            .try_get::<Option<Decimal>, _>("credit_limit")
+            .unwrap_or(None),
+        status: row
+            .try_get::<Option<String>, _>("status")
+            .unwrap_or(None)
+            .unwrap_or_else(|| "active".to_string()),
+        is_manual: row
+            .try_get::<Option<bool>, _>("is_manual")
+            .unwrap_or(None)
+            .unwrap_or(true),
+        color: row.get("color"),
+        icon: row.get("icon"),
+        notes: row.get("notes"),
+        created_at: row
+            .try_get::<Option<DateTime<Utc>>, _>("created_at")
+            .unwrap_or(None)
+            .unwrap_or_else(chrono::Utc::now),
+        updated_at: row
+            .try_get::<Option<DateTime<Utc>>, _>("updated_at")
+            .unwrap_or(None)
+            .unwrap_or_else(chrono::Utc::now),
     };
 
     Ok(Json(response))
@@ -245,37 +267,33 @@ pub async fn create_account(
         .account_type
         .unwrap_or_else(|| req.account_sub_type.clone());
 
-    let account = sqlx::query!(
+    let row = sqlx::query(
         r#"
         INSERT INTO accounts (
             id, ledger_id, bank_id, name, account_type, account_main_type, account_sub_type,
             account_number, institution_name, currency, current_balance, status,
             is_manual, color, notes, created_at, updated_at
         ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11::numeric, 'active', true, $12, $13, NOW(), NOW()
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'active', true, $12, $13, NOW(), NOW()
         )
         RETURNING id, ledger_id, bank_id, name, account_type, account_number, institution_name,
-                  currency,
-                  current_balance::numeric as current_balance,
-                  available_balance::numeric as available_balance,
-                  credit_limit::numeric as credit_limit,
-                  status,
-                  is_manual, color, notes, created_at, updated_at
+                  currency, current_balance, available_balance, credit_limit,
+                  status, is_manual, color, notes, created_at, updated_at
         "#,
-        id,
-        req.ledger_id,
-        req.bank_id,
-        req.name,
-        legacy_type,
-        main_type.to_string(),
-        sub_type.to_string(),
-        req.account_number,
-        req.institution_name,
-        currency,
-        initial_balance,
-        req.color,
-        req.notes
     )
+    .bind(id)
+    .bind(req.ledger_id)
+    .bind(req.bank_id)
+    .bind(&req.name)
+    .bind(&legacy_type)
+    .bind(main_type.to_string())
+    .bind(sub_type.to_string())
+    .bind(&req.account_number)
+    .bind(&req.institution_name)
+    .bind(&currency)
+    .bind(initial_balance)
+    .bind(&req.color)
+    .bind(&req.notes)
     .fetch_one(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
@@ -289,6 +307,7 @@ pub async fn create_account(
             "#,
             Uuid::new_v4(),
             id,
+            // 存入余额历史表使用 DECIMAL/numeric 字段，保持高精度
             initial_balance
         )
         .execute(&pool)
@@ -296,25 +315,48 @@ pub async fn create_account(
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
     }
 
+    // 响应里保持 Decimal，一致向前端输出
     let response = AccountResponse {
-        id: account.id,
-        ledger_id: account.ledger_id,
-        bank_id: account.bank_id,
-        name: account.name,
-        account_type: account.account_type,
-        account_number: account.account_number,
-        institution_name: account.institution_name,
-        currency: account.currency.unwrap_or_else(|| "CNY".to_string()),
-        current_balance: account.current_balance.unwrap_or(Decimal::ZERO),
-        available_balance: account.available_balance,
-        credit_limit: account.credit_limit,
-        status: account.status.unwrap_or_else(|| "active".to_string()),
-        is_manual: account.is_manual.unwrap_or(true),
-        color: account.color,
-        icon: None,
-        notes: account.notes,
-        created_at: account.created_at.unwrap_or_else(chrono::Utc::now),
-        updated_at: account.updated_at.unwrap_or_else(chrono::Utc::now),
+        id: row.get("id"),
+        ledger_id: row.get("ledger_id"),
+        bank_id: row.get("bank_id"),
+        name: row.get("name"),
+        account_type: row.get("account_type"),
+        account_number: row.get("account_number"),
+        institution_name: row.get("institution_name"),
+        currency: row
+            .try_get::<Option<String>, _>("currency")
+            .unwrap_or(None)
+            .unwrap_or_else(|| "CNY".to_string()),
+        current_balance: row
+            .try_get::<Option<Decimal>, _>("current_balance")
+            .unwrap_or(None)
+            .unwrap_or(Decimal::ZERO),
+        available_balance: row
+            .try_get::<Option<Decimal>, _>("available_balance")
+            .unwrap_or(None),
+        credit_limit: row
+            .try_get::<Option<Decimal>, _>("credit_limit")
+            .unwrap_or(None),
+        status: row
+            .try_get::<Option<String>, _>("status")
+            .unwrap_or(None)
+            .unwrap_or_else(|| "active".to_string()),
+        is_manual: row
+            .try_get::<Option<bool>, _>("is_manual")
+            .unwrap_or(None)
+            .unwrap_or(true),
+        color: row.get("color"),
+        icon: row.get("icon"),
+        notes: row.get("notes"),
+        created_at: row
+            .try_get::<Option<DateTime<Utc>>, _>("created_at")
+            .unwrap_or(None)
+            .unwrap_or_else(chrono::Utc::now),
+        updated_at: row
+            .try_get::<Option<DateTime<Utc>>, _>("updated_at")
+            .unwrap_or(None)
+            .unwrap_or_else(chrono::Utc::now),
     };
 
     Ok(Json(response))
@@ -374,7 +416,9 @@ pub async fn update_account(
 
     query.push(" WHERE id = ");
     query.push_bind(id);
-    query.push(" RETURNING id, ledger_id, bank_id, name, account_type, account_number, institution_name, currency, current_balance, available_balance, credit_limit, status, is_manual, color, icon, notes, created_at, updated_at");
+    query.push(" RETURNING id, ledger_id, bank_id, name, account_type, account_number, institution_name, currency, ");
+    query.push(" current_balance::numeric as current_balance, available_balance::numeric as available_balance, credit_limit::numeric as credit_limit, ");
+    query.push(" status, is_manual, color, icon, notes, created_at, updated_at");
 
     let account = query
         .build()
