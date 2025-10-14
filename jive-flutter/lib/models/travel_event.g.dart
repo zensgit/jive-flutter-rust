@@ -15,7 +15,7 @@ _$TravelEventImpl _$$TravelEventImplFromJson(Map<String, dynamic> json) =>
       endDate: DateTime.parse(json['endDate'] as String),
       destination: json['destination'] as String?,
       currency: json['currency'] as String? ?? 'CNY',
-      budget: (json['budget'] as num?)?.toDouble(),
+      budget: (json['budget'] as num?)?.toDouble() ?? 0.0,
       totalSpent: (json['totalSpent'] as num?)?.toDouble() ?? 0.0,
       notes: json['notes'] as String?,
       location: json['location'] as String?,

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n        INSERT INTO accounts (\n            id, ledger_id, bank_id, name, account_type, account_main_type, account_sub_type,\n            account_number, institution_name, currency, current_balance, status,\n            is_manual, color, notes, created_at, updated_at\n        ) VALUES (\n            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'active', true, $12, $13, NOW(), NOW()\n        )\n        RETURNING id, ledger_id, bank_id, name, account_type, account_number, institution_name,\n                  currency, current_balance, available_balance, credit_limit, status,\n                  is_manual, color, notes, created_at, updated_at\n        ",
+  "query": "\n        SELECT id, ledger_id, bank_id, name, account_type, account_number, institution_name,\n               currency,\n               current_balance::numeric as current_balance,\n               available_balance::numeric as available_balance,\n               credit_limit::numeric as credit_limit,\n               status,\n               is_manual, color, notes, created_at, updated_at\n        FROM accounts\n        WHERE id = $1 AND deleted_at IS NULL\n        ",
   "describe": {
     "columns": [
       {
@@ -91,19 +91,7 @@
     ],
     "parameters": {
       "Left": [
-        "Uuid",
-        "Uuid",
-        "Uuid",
-        "Varchar",
-        "Varchar",
-        "Varchar",
-        "Varchar",
-        "Varchar",
-        "Varchar",
-        "Varchar",
-        "Numeric",
-        "Varchar",
-        "Text"
+        "Uuid"
       ]
     },
     "nullable": [
@@ -115,9 +103,9 @@
       true,
       true,
       true,
-      true,
-      true,
-      true,
+      null,
+      null,
+      null,
       true,
       true,
       true,
@@ -126,5 +114,5 @@
       true
     ]
   },
-  "hash": "1df6372781aa0f7fcfae6b7cca896068f7f868b2458014f186a7990b6543abf2"
+  "hash": "55d06f356978b20c3de14d2cdd717e364f68bee20f1b8949af098d2c15d254a4"
 }

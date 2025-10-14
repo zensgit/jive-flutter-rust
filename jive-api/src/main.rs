@@ -47,6 +47,7 @@ use handlers::member_handler::{
     add_member, get_family_members, remove_member, update_member_permissions, update_member_role,
 };
 use handlers::payees::*;
+use handlers::invitation_handler;
 #[cfg(feature = "demo_endpoints")]
 use handlers::placeholder::{activity_logs, advanced_settings, export_data, family_settings};
 use handlers::rules::*;
@@ -258,6 +259,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             get(get_account).put(update_account).delete(delete_account),
         )
         .route("/api/v1/accounts/statistics", get(get_account_statistics))
+        // 邀请管理 API（dev 模式可使用 mock context）
+        .route("/api/v1/invitations", post(invitation_handler::create_invitation))
+        .route(
+            "/api/v1/invitations/pending",
+            get(invitation_handler::get_pending_invitations),
+        )
+        .route(
+            "/api/v1/invitations/accept",
+            post(invitation_handler::accept_invitation),
+        )
+        .route(
+            "/api/v1/invitations/:invitation_id",
+            delete(invitation_handler::cancel_invitation),
+        )
         // 交易管理 API
         .route(
             "/api/v1/transactions",
@@ -551,6 +566,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let port = std::env::var("API_PORT").unwrap_or_else(|_| "8012".to_string());
     let addr: SocketAddr = format!("{}:{}", host, port).parse()?;
     let listener = TcpListener::bind(addr).await?;
+
+    // 运行模式与路由启用提示
+    let run_mode = match std::env::var("CORS_DEV").ok().as_deref() {
+        Some("1") => "dev (CORS relaxed; invitations allow mock context)",
+        _ => "safe (CORS whitelist)",
+    };
+    info!("🛠️ Mode: {}", run_mode);
+    info!("✅ Invitations routes enabled: /api/v1/invitations [POST], /api/v1/invitations/pending [GET], /api/v1/invitations/accept [POST], /api/v1/invitations/:invitation_id [DELETE]");
 
     info!("🌐 Server running at http://{}", addr);
     info!("🔌 WebSocket endpoint: ws://{}/ws?token=<jwt_token>", addr);

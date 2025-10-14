@@ -30,7 +30,7 @@ graph TB
     
     subgraph "辅助系统"
         F --> TAG[tags]
-        F --> FI[family_invitations]
+        F --> INV[invitations]
     end
 ```
 
@@ -113,26 +113,31 @@ graph TB
 
 ---
 
-#### 1.4 family_invitations - 邀请表
-管理Family成员邀请。
+#### 1.4 invitations - 邀请表
+管理 Family 成员邀请（与 API 迁移保持一致）。
 
 | 字段名 | 类型 | 约束 | 默认值 | 说明 |
 |--------|------|------|--------|------|
 | id | UUID | PK | gen_random_uuid() | 邀请唯一标识 |
 | family_id | UUID | FK(families), NOT NULL | - | Family ID |
-| invited_by | UUID | FK(users), NOT NULL | - | 邀请人ID |
-| invited_email | VARCHAR(255) | NOT NULL | - | 被邀请人邮箱 |
-| role | VARCHAR(20) | - | 'member' | 预设角色 |
-| token | VARCHAR(255) | UNIQUE, NOT NULL | - | 邀请令牌 |
-| expires_at | TIMESTAMPTZ | NOT NULL | - | 过期时间 |
+| inviter_id | UUID | FK(users), NOT NULL | - | 邀请人ID |
+| invitee_email | VARCHAR(255) | NOT NULL | - | 被邀请人邮箱 |
+| role | VARCHAR(20) | NOT NULL | 'member' | 预设角色(owner/admin/member/viewer) |
+| invite_code | VARCHAR(50) | UNIQUE | - | 短邀请码（可选） |
+| invite_token | UUID | UNIQUE | gen_random_uuid() | 邀请令牌（用于链接） |
+| expires_at | TIMESTAMPTZ | NOT NULL | - | 过期时间（默认 7 天） |
 | accepted_at | TIMESTAMPTZ | - | - | 接受时间 |
+| accepted_by | UUID | FK(users) | - | 接受者用户ID（注册/登录后） |
+| status | VARCHAR(20) | - | 'pending' | 状态(pending/accepted/expired/cancelled) |
 | created_at | TIMESTAMPTZ | - | CURRENT_TIMESTAMP | 创建时间 |
 
 **索引**：
 - PRIMARY KEY: `id`
-- UNIQUE: `token`
-- UNIQUE: `(family_id, invited_email)`
+- UNIQUE: `invite_code`
+- UNIQUE: `invite_token`
 - INDEX: `family_id`
+- INDEX: `status`
+- INDEX: `expires_at`
 
 ---
 

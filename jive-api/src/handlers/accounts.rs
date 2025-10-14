@@ -107,8 +107,11 @@ pub async fn list_accounts(
     // 构建查询
     let mut query = QueryBuilder::new(
         "SELECT id, ledger_id, bank_id, name, account_type, account_number, institution_name,
-         currency, current_balance, available_balance, credit_limit, status,
-         is_manual, color, icon, notes, created_at, updated_at
+         currency,
+         current_balance::numeric as current_balance,
+         available_balance::numeric as available_balance,
+         credit_limit::numeric as credit_limit,
+         status, is_manual, color, icon, notes, created_at, updated_at
          FROM accounts WHERE 1=1",
     );
 
@@ -182,7 +185,11 @@ pub async fn get_account(
     let account = sqlx::query!(
         r#"
         SELECT id, ledger_id, bank_id, name, account_type, account_number, institution_name,
-               currency, current_balance, available_balance, credit_limit, status,
+               currency,
+               current_balance::numeric as current_balance,
+               available_balance::numeric as available_balance,
+               credit_limit::numeric as credit_limit,
+               status,
                is_manual, color, notes, created_at, updated_at
         FROM accounts
         WHERE id = $1 AND deleted_at IS NULL
@@ -245,10 +252,14 @@ pub async fn create_account(
             account_number, institution_name, currency, current_balance, status,
             is_manual, color, notes, created_at, updated_at
         ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'active', true, $12, $13, NOW(), NOW()
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11::numeric, 'active', true, $12, $13, NOW(), NOW()
         )
         RETURNING id, ledger_id, bank_id, name, account_type, account_number, institution_name,
-                  currency, current_balance, available_balance, credit_limit, status,
+                  currency,
+                  current_balance::numeric as current_balance,
+                  available_balance::numeric as available_balance,
+                  credit_limit::numeric as credit_limit,
+                  status,
                   is_manual, color, notes, created_at, updated_at
         "#,
         id,

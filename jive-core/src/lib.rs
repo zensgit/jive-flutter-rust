@@ -15,6 +15,10 @@ pub mod application;
 #[cfg(all(feature = "server", feature = "db"))]
 pub mod infrastructure;
 
+// API 适配层 (仅在服务端启用)
+#[cfg(feature = "server")]
+pub mod api;
+
 #[cfg(feature = "wasm")]
 pub mod wasm;
 
