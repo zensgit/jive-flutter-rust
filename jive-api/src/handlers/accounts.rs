@@ -485,8 +485,8 @@ pub async fn get_account_statistics(
         .ledger_id
         .ok_or(ApiError::BadRequest("ledger_id is required".to_string()))?;
 
-    // 获取总体统计
-    let stats = sqlx::query!(
+    // 获取总体统计（使用动态查询以避免 SQLx 离线缓存耦合）
+    let stats_row = sqlx::query(
         r#"
         SELECT 
             COUNT(*) as total_accounts,
@@ -495,14 +495,14 @@ pub async fn get_account_statistics(
         FROM accounts
         WHERE ledger_id = $1 AND deleted_at IS NULL
         "#,
-        ledger_id
     )
+    .bind(ledger_id)
     .fetch_one(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
     // 按类型统计
-    let type_stats = sqlx::query!(
+    let type_rows = sqlx::query(
         r#"
         SELECT 
             account_type,
@@ -513,26 +513,41 @@ pub async fn get_account_statistics(
         GROUP BY account_type
         ORDER BY account_type
         "#,
-        ledger_id
     )
+    .bind(ledger_id)
     .fetch_all(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
-    let by_type: Vec<TypeStatistics> = type_stats
+    let by_type: Vec<TypeStatistics> = type_rows
         .into_iter()
         .map(|row| TypeStatistics {
-            account_type: row.account_type,
-            count: row.count.unwrap_or(0),
-            total_balance: row.total_balance.unwrap_or(Decimal::ZERO),
+            account_type: row.get::<String, _>("account_type"),
+            count: row
+                .try_get::<Option<i64>, _>("count")
+                .unwrap_or(None)
+                .unwrap_or(0),
+            total_balance: row
+                .try_get::<Option<Decimal>, _>("total_balance")
+                .unwrap_or(None)
+                .unwrap_or(Decimal::ZERO),
         })
         .collect();
 
-    let total_assets = stats.total_assets.unwrap_or(Decimal::ZERO);
-    let total_liabilities = stats.total_liabilities.unwrap_or(Decimal::ZERO);
+    let total_assets = stats_row
+        .try_get::<Option<Decimal>, _>("total_assets")
+        .unwrap_or(None)
+        .unwrap_or(Decimal::ZERO);
+    let total_liabilities = stats_row
+        .try_get::<Option<Decimal>, _>("total_liabilities")
+        .unwrap_or(None)
+        .unwrap_or(Decimal::ZERO);
 
     let response = AccountStatistics {
-        total_accounts: stats.total_accounts.unwrap_or(0),
+        total_accounts: stats_row
+            .try_get::<Option<i64>, _>("total_accounts")
+            .unwrap_or(None)
+            .unwrap_or(0),
         total_assets,
         total_liabilities,
         net_worth: total_assets - total_liabilities,

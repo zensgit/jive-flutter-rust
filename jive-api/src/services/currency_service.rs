@@ -187,27 +187,41 @@ impl CurrencyService {
         &self,
         family_id: Uuid,
     ) -> Result<FamilyCurrencySettings, ServiceError> {
-        // 获取基本设置
-        let settings = sqlx::query!(
+        // 获取基本设置（动态行，避免 SQLx 宏类型差异）
+        let settings_row = sqlx::query(
             r#"
             SELECT base_currency, allow_multi_currency, auto_convert
             FROM family_currency_settings
             WHERE family_id = $1
             "#,
-            family_id
         )
+        .bind(family_id)
         .fetch_optional(&self.pool)
         .await?;
 
-        if let Some(settings) = settings {
+        if let Some(row) = settings_row {
             // 获取支持的货币列表
             let supported = self.get_family_supported_currencies(family_id).await?;
 
+            use sqlx::Row;
+            let base_currency = row
+                .try_get::<Option<String>, _>("base_currency")
+                .unwrap_or(None)
+                .unwrap_or_else(|| "CNY".to_string());
+            let allow_multi_currency = row
+                .try_get::<Option<bool>, _>("allow_multi_currency")
+                .unwrap_or(None)
+                .unwrap_or(false);
+            let auto_convert = row
+                .try_get::<Option<bool>, _>("auto_convert")
+                .unwrap_or(None)
+                .unwrap_or(false);
+
             Ok(FamilyCurrencySettings {
                 family_id,
-                base_currency: settings.base_currency.unwrap_or_else(|| "CNY".to_string()),
-                allow_multi_currency: settings.allow_multi_currency.unwrap_or(false),
-                auto_convert: settings.auto_convert.unwrap_or(false),
+                base_currency,
+                allow_multi_currency,
+                auto_convert,
                 supported_currencies: supported,
             })
         } else {
@@ -467,7 +481,7 @@ impl CurrencyService {
                 // effective_date 为非空（schema 约束）；直接使用
                 effective_date: row.effective_date,
                 // created_at 可能为 NULL；使用当前时间回填
-                created_at: row.created_at.unwrap_or_else(Utc::now),
+                created_at: row.created_at.unwrap_or_else(chrono::Utc::now),
             })
             .collect())
     }
