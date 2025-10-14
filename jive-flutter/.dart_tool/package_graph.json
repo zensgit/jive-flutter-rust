@@ -28,7 +28,6 @@
         "logger",
         "mailer",
         "material_color_utilities",
-        "path",
         "path_provider",
         "provider",
         "qr_flutter",
@@ -364,11 +363,6 @@
       ]
     },
     {
-      "name": "path",
-      "version": "1.9.1",
-      "dependencies": []
-    },
-    {
       "name": "path_provider",
       "version": "2.1.5",
       "dependencies": [
@@ -567,6 +561,11 @@
         "sky_engine",
         "vector_math"
       ]
+    },
+    {
+      "name": "path",
+      "version": "1.9.1",
+      "dependencies": []
     },
     {
       "name": "meta",

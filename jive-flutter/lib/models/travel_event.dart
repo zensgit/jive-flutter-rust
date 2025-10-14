@@ -15,7 +15,7 @@ class TravelEvent with _$TravelEvent {
     // 扩展字段（测试覆盖）
     String? destination,
     @Default('CNY') String currency,
-    double? budget,
+    @Default(0.0) double budget,
     @Default(0.0) double totalSpent,
     String? notes,
     String? location,

@@ -134,14 +134,25 @@ optional = true
 version = "2.1"
 optional = true
 
+# Redis (可选，用于缓存和幂等性)
+[dependencies.redis]
+version = "0.23"
+features = ["tokio-comp", "connection-manager"]
+optional = true
+
 [features]
 default = []
 wasm = ["wasm-bindgen", "js-sys", "web-sys", "console_error_panic_hook", "wee_alloc"]
-server = ["tokio"]
+server = ["tokio", "sqlx"]
 db = ["sqlx", "reqwest", "tokio", "dep:csv", "dep:calamine", "dep:base32", "dep:hmac", "dep:sha1", "dep:qrcode", "dep:printpdf", "dep:image", "dep:rand", "dep:urlencoding"]
+redis = ["dep:redis", "tokio"]
 server-lite = []
 # Gate unfinished application/infra modules to keep builds green by default
 app_experimental = []
+# Newly gated modules (off by default for server,db)
+travel_mode = []
+perm_cache = []
+legacy_entities = []
 
 # WASM 优化配置
 [profile.release]

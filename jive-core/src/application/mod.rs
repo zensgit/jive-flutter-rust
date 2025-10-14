@@ -30,6 +30,7 @@ pub mod investment_service;
 #[cfg(feature = "app_experimental")]
 pub mod ledger_service;
 pub mod mfa_service;
+#[cfg(feature = "perm_cache")]
 pub mod middleware;
 pub mod multi_family_service;
 pub mod notification_service;
@@ -42,6 +43,7 @@ pub mod scheduled_transaction_service;
 pub mod sync_service;
 pub mod tag_service;
 pub mod transaction_service;
+#[cfg(feature = "travel_mode")]
 pub mod travel_service;
 pub mod user_service;
 
@@ -62,6 +64,7 @@ pub use scheduled_transaction_service::*;
 pub use sync_service::*;
 pub use tag_service::*;
 pub use transaction_service::*;
+#[cfg(feature = "travel_mode")]
 pub use travel_service::*;
 pub use user_service::*;
 

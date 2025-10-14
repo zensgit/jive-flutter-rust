@@ -1,0 +1,18 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO idempotency_records\n                (request_id, operation, result_payload, status_code, expires_at)\n            VALUES\n                ($1, $2, $3, $4, NOW() + INTERVAL '1 hour' * $5)\n            ON CONFLICT (request_id)\n            DO UPDATE SET\n                operation = EXCLUDED.operation,\n                result_payload = EXCLUDED.result_payload,\n                status_code = EXCLUDED.status_code,\n                expires_at = EXCLUDED.expires_at\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar",
+        "Text",
+        "Int4",
+        "Float8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "463784dc10fc4e5b7e8594b99019f47aa379645cef1702fcc12f119fdb4a52ea"
+}

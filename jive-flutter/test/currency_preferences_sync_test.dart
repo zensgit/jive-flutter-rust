@@ -121,6 +121,7 @@ void main() {
           StubExchangeRateService(),
           StubCryptoPriceService(),
           remote,
+          suppressAutoInit: true,
         );
       }))
     ]);
@@ -147,6 +148,7 @@ void main() {
           StubExchangeRateService(),
           StubCryptoPriceService(),
           remote,
+          suppressAutoInit: true,
         );
       }))
     ]);
@@ -184,6 +186,7 @@ void main() {
           StubExchangeRateService(),
           StubCryptoPriceService(),
           remote,
+          suppressAutoInit: true,
         );
       }))
     ]);

@@ -1,0 +1,202 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM transactions WHERE id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "ledger_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "transaction_type",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "amount",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 4,
+        "name": "currency",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "category_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 6,
+        "name": "account_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 7,
+        "name": "to_account_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 8,
+        "name": "transaction_date",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 9,
+        "name": "transaction_time",
+        "type_info": "Time"
+      },
+      {
+        "ordinal": 10,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "notes",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 12,
+        "name": "tags",
+        "type_info": "TextArray"
+      },
+      {
+        "ordinal": 13,
+        "name": "location",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 14,
+        "name": "merchant",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 15,
+        "name": "receipt_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 16,
+        "name": "is_recurring",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 17,
+        "name": "recurring_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 18,
+        "name": "status",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 19,
+        "name": "created_by",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 20,
+        "name": "updated_by",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 21,
+        "name": "deleted_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 22,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 23,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 24,
+        "name": "reference_number",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 25,
+        "name": "is_manual",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 26,
+        "name": "import_id",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 27,
+        "name": "payee_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 28,
+        "name": "recurring_rule",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 29,
+        "name": "category_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 30,
+        "name": "payee",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "123d9e6d5fcadaeea574ec13a03da5e0c5e17c3029720b722648209a91f8fb63"
+}
