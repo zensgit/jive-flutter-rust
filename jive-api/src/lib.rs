@@ -3,6 +3,9 @@
 pub mod auth;
 pub mod error;
 pub mod handlers;
+pub mod config;
+pub mod metrics;
+pub mod adapters;
 pub mod middleware;
 pub mod models;
 pub mod services;

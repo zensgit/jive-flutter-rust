@@ -4,6 +4,40 @@ use sqlx::PgPool;
 use std::sync::{Mutex, OnceLock};
 use std::time::{Instant, Duration};
 
+// Lightweight transaction metrics (core/legacy latency + shadow diff count)
+use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, Ordering};
+
+#[derive(Debug, Clone, Default)]
+pub struct TransactionMetrics {
+    pub core_latency_ns_sum: Arc<AtomicU64>,
+    pub core_latency_count: Arc<AtomicU64>,
+    pub legacy_latency_ns_sum: Arc<AtomicU64>,
+    pub legacy_latency_count: Arc<AtomicU64>,
+    pub shadow_diff_count: Arc<AtomicU64>,
+}
+
+impl TransactionMetrics {
+    pub fn record_operation(&self, source: &str, d: Duration) {
+        let ns = d.as_nanos() as u64;
+        match source {
+            "core" => {
+                self.core_latency_ns_sum.fetch_add(ns, Ordering::Relaxed);
+                self.core_latency_count.fetch_add(1, Ordering::Relaxed);
+            }
+            "legacy" => {
+                self.legacy_latency_ns_sum.fetch_add(ns, Ordering::Relaxed);
+                self.legacy_latency_count.fetch_add(1, Ordering::Relaxed);
+            }
+            _ => {}
+        }
+    }
+
+    pub fn record_shadow_diff(&self) {
+        self.shadow_diff_count.fetch_add(1, Ordering::Relaxed);
+    }
+}
+
 // Simple 30s cache to reduce DB load on high scrape frequencies.
 static METRICS_CACHE: OnceLock<Mutex<(Instant, String)>> = OnceLock::new();
 static START_TIME: OnceLock<Instant> = OnceLock::new();
