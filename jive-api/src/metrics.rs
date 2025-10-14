@@ -48,7 +48,7 @@ pub async fn metrics_handler(
 ) -> impl IntoResponse {
     // Optional access control
     if std::env::var("ALLOW_PUBLIC_METRICS").map(|v| v == "0").unwrap_or(false) {
-        if let Some(addr) = std::env::var("METRICS_ALLOW_LOCALONLY").ok() {
+        if let Ok(addr) = std::env::var("METRICS_ALLOW_LOCALONLY") {
             if addr == "1" {
                 // Only allow loopback; we rely on X-Forwarded-For not being spoofed internally (basic safeguard)
                 // In Axum we don't have the request here directly (simplified), extension to pass remote addr could be added.
