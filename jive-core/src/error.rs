@@ -83,6 +83,124 @@ pub enum JiveError {
 
     #[error("Unknown error: {message}")]
     Unknown { message: String },
+
+    #[error("Transaction split error: {message}")]
+    TransactionSplitError { message: String },
+
+    #[error("Concurrency error: {message}")]
+    ConcurrencyError { message: String },
+
+    #[error("Currency mismatch: expected {expected}, got {actual}")]
+    CurrencyMismatch { expected: String, actual: String },
+
+    #[error("Invalid precision for {currency}: {message}")]
+    InvalidPrecision { currency: String, message: String },
+
+    #[error("Division by zero")]
+    DivisionByZero,
+
+    #[error("Invariant violation: {message}")]
+    InvariantViolation { message: String },
+
+    #[error("Idempotency error: {message}")]
+    IdempotencyError { message: String },
+
+    #[error("Conflict: {message}")]
+    Conflict { message: String },
+}
+
+/// Specialized error type for transaction splitting operations
+#[derive(Error, Debug, Clone, Serialize, Deserialize)]
+pub enum TransactionSplitError {
+    #[error("Split total {requested} exceeds original amount {original} (excess: {excess})")]
+    ExceedsOriginal {
+        original: String,
+        requested: String,
+        excess: String,
+    },
+
+    #[error("Split amount {amount} must be positive (split index: {split_index})")]
+    InvalidAmount {
+        amount: String,
+        split_index: usize,
+    },
+
+    #[error("Transaction {id} has already been split")]
+    AlreadySplit {
+        id: String,
+        existing_splits: Vec<String>,
+    },
+
+    #[error("Transaction {id} not found or deleted")]
+    TransactionNotFound {
+        id: String,
+    },
+
+    #[error("Insufficient splits: minimum 2 required, got {count}")]
+    InsufficientSplits {
+        count: usize,
+    },
+
+    #[error("Database lock timeout - concurrent modification detected for transaction {transaction_id}")]
+    ConcurrencyConflict {
+        transaction_id: String,
+        retry_after_ms: u64,
+    },
+
+    #[error("Database error: {message}")]
+    DatabaseError {
+        message: String,
+    },
+}
+
+impl From<TransactionSplitError> for JiveError {
+    fn from(err: TransactionSplitError) -> Self {
+        match err {
+            TransactionSplitError::ExceedsOriginal { .. } |
+            TransactionSplitError::InvalidAmount { .. } |
+            TransactionSplitError::InsufficientSplits { .. } => {
+                JiveError::TransactionSplitError {
+                    message: err.to_string(),
+                }
+            }
+            TransactionSplitError::ConcurrencyConflict { .. } => {
+                JiveError::ConcurrencyError {
+                    message: err.to_string(),
+                }
+            }
+            TransactionSplitError::TransactionNotFound { id } => {
+                JiveError::TransactionNotFound { id }
+            }
+            TransactionSplitError::AlreadySplit { .. } => {
+                JiveError::TransactionSplitError {
+                    message: err.to_string(),
+                }
+            }
+            TransactionSplitError::DatabaseError { message } => {
+                JiveError::DatabaseError { message }
+            }
+        }
+    }
+}
+
+#[cfg(feature = "db")]
+impl From<sqlx::Error> for TransactionSplitError {
+    fn from(err: sqlx::Error) -> Self {
+        // Check for lock timeout errors
+        if let sqlx::Error::Database(ref db_err) = err {
+            let msg = db_err.message();
+            if msg.contains("lock") || msg.contains("timeout") || msg.contains("deadlock") {
+                return TransactionSplitError::ConcurrencyConflict {
+                    transaction_id: "unknown".to_string(),
+                    retry_after_ms: 100,
+                };
+            }
+        }
+
+        TransactionSplitError::DatabaseError {
+            message: err.to_string(),
+        }
+    }
 }
 
 #[cfg(feature = "wasm")]
@@ -119,6 +237,14 @@ impl JiveError {
             JiveError::PermissionDenied { .. } => "PermissionDenied".to_string(),
             JiveError::RateLimitExceeded { .. } => "RateLimitExceeded".to_string(),
             JiveError::Unknown { .. } => "Unknown".to_string(),
+            JiveError::TransactionSplitError { .. } => "TransactionSplitError".to_string(),
+            JiveError::ConcurrencyError { .. } => "ConcurrencyError".to_string(),
+            JiveError::CurrencyMismatch { .. } => "CurrencyMismatch".to_string(),
+            JiveError::InvalidPrecision { .. } => "InvalidPrecision".to_string(),
+            JiveError::DivisionByZero => "DivisionByZero".to_string(),
+            JiveError::InvariantViolation { .. } => "InvariantViolation".to_string(),
+            JiveError::IdempotencyError { .. } => "IdempotencyError".to_string(),
+            JiveError::Conflict { .. } => "Conflict".to_string(),
         }
     }
 
@@ -149,6 +275,27 @@ impl From<chrono::ParseError> for JiveError {
     fn from(err: chrono::ParseError) -> Self {
         JiveError::InvalidDate {
             date: err.to_string(),
+        }
+    }
+}
+
+// Money error conversions
+impl From<crate::domain::value_objects::money::MoneyError> for JiveError {
+    fn from(err: crate::domain::value_objects::money::MoneyError) -> Self {
+        use crate::domain::value_objects::money::MoneyError;
+
+        match err {
+            MoneyError::CurrencyMismatch { expected, actual } => JiveError::CurrencyMismatch {
+                expected: expected.to_string(),
+                actual: actual.to_string(),
+            },
+            MoneyError::InvalidPrecision { currency, .. } => JiveError::InvalidPrecision {
+                currency: currency.to_string(),
+                message: err.to_string(),
+            },
+            MoneyError::DivisionByZero => JiveError::DivisionByZero,
+            MoneyError::UnsupportedCurrency(currency) => JiveError::InvalidCurrency { currency },
+            MoneyError::InvalidFormat(msg) => JiveError::InvalidAmount { amount: msg },
         }
     }
 }

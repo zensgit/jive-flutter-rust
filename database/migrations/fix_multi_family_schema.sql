@@ -1,5 +1,5 @@
--- =====================================================
--- Jive Multi-Family 架构修复脚本
+-- NOTE: 当前实现以 jive-api/migrations 下的 `invitations`/`family_audit_logs` 为准；
+-- 本脚本包含历史命名（如 `family_invitations`）仅用于修复/回溯场景。
 -- 版本: 1.0.0
 -- 日期: 2025-09-06
 -- 描述: 修复数据库以完全支持多Family架构

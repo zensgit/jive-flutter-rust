@@ -1,5 +1,7 @@
 # Jive 角色权限系统设计规范 (RBAC)
 
+> 注记：当前实现以 jive-api/migrations 中的 `invitations` 表为准；本文可能包含历史命名（如 `family_invitations`）用于设计背景说明。
+
 ## 📋 目录
 1. [系统概述](#系统概述)
 2. [设计理念](#设计理念)

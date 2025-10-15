@@ -491,6 +491,61 @@ class SettingsScreen extends ConsumerWidget {
         const Divider(),
         const SizedBox(height: 8),
         const Text(
+          '开发者文档',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        ),
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('查看安全总览: docs/TRANSACTION_SECURITY_OVERVIEW.md')),
+            );
+          },
+          child: const Text(
+            '• 安全总览 (Security Overview)\n  docs/TRANSACTION_SECURITY_OVERVIEW.md',
+            style: TextStyle(fontSize: 12, color: Colors.blue),
+          ),
+        ),
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('查看安全修复报告: TRANSACTION_SECURITY_FIX_REPORT.md')),
+            );
+          },
+          child: const Text(
+            '• 安全修复报告 (Security Fix Report)\n  TRANSACTION_SECURITY_FIX_REPORT.md',
+            style: TextStyle(fontSize: 12, color: Colors.blue),
+          ),
+        ),
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('查看完整修复报告: TRANSACTION_SYSTEM_COMPLETE_FIX_REPORT.md')),
+            );
+          },
+          child: const Text(
+            '• 完整修复报告 (Complete Fix Report)\n  TRANSACTION_SYSTEM_COMPLETE_FIX_REPORT.md',
+            style: TextStyle(fontSize: 12, color: Colors.blue),
+          ),
+        ),
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('查看变更记录: CHANGELOG.md')),
+            );
+          },
+          child: const Text(
+            '• 变更记录 (Changelog)\n  CHANGELOG.md',
+            style: TextStyle(fontSize: 12, color: Colors.blue),
+          ),
+        ),
+        const SizedBox(height: 16),
+        const Divider(),
+        const SizedBox(height: 8),
+        const Text(
           '第三方服务',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
         ),

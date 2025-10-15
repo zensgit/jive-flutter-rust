@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use crate::domain::{
     Family, FamilyMembership, FamilyRole, FamilyInvitation,
-    Permission, InvitationStatus, FamilyAuditLog, FamilySettings
+    Permission, InvitationStatus, FamilyAuditLog, FamilySettings, AuditAction
 };
 use crate::error::{JiveError, Result};
 
@@ -74,11 +74,76 @@ impl PgFamilyRepository {
     /// 将角色字符串转换为枚举
     fn string_to_role(s: &str) -> Result<FamilyRole> {
         match s {
-            "Owner" => Ok(FamilyRole::Owner),
-            "Admin" => Ok(FamilyRole::Admin),
-            "Member" => Ok(FamilyRole::Member),
-            "Viewer" => Ok(FamilyRole::Viewer),
+            // TitleCase（旧存储）
+            "Owner" | "owner" => Ok(FamilyRole::Owner),
+            "Admin" | "admin" => Ok(FamilyRole::Admin),
+            "Member" | "member" => Ok(FamilyRole::Member),
+            "Viewer" | "viewer" => Ok(FamilyRole::Viewer),
             _ => Err(JiveError::InvalidData(format!("Unknown role: {}", s))),
+        }
+    }
+
+    /// 角色写入数据库使用小写
+    fn role_to_db(role: &FamilyRole) -> &'static str {
+        match role {
+            FamilyRole::Owner => "owner",
+            FamilyRole::Admin => "admin",
+            FamilyRole::Member => "member",
+            FamilyRole::Viewer => "viewer",
+        }
+    }
+
+    /// 邀请状态从数据库字符串到枚举
+    fn invitation_status_from_db(s: &str) -> Result<InvitationStatus> {
+        match s {
+            "pending" | "Pending" => Ok(InvitationStatus::Pending),
+            "accepted" | "Accepted" => Ok(InvitationStatus::Accepted),
+            "expired" | "Expired" => Ok(InvitationStatus::Expired),
+            // DB 使用 cancelled，领域模型为 Declined
+            "cancelled" | "Cancelled" | "declined" | "Declined" => Ok(InvitationStatus::Declined),
+            _ => Err(JiveError::InvalidData(format!("Unknown invitation status: {}", s))),
+        }
+    }
+
+    /// 邀请状态写入数据库使用小写字符串
+    fn invitation_status_to_db(status: &InvitationStatus) -> &'static str {
+        match status {
+            InvitationStatus::Pending => "pending",
+            InvitationStatus::Accepted => "accepted",
+            InvitationStatus::Declined => "cancelled",
+            InvitationStatus::Expired => "expired",
+        }
+    }
+
+    /// 审计动作从字符串到枚举（与 Debug 名称保持一致）
+    fn string_to_audit_action(s: &str) -> Result<AuditAction> {
+        match s {
+            // 成员管理
+            "MemberInvited" => Ok(AuditAction::MemberInvited),
+            "MemberJoined" => Ok(AuditAction::MemberJoined),
+            "MemberRemoved" => Ok(AuditAction::MemberRemoved),
+            "MemberRoleChanged" => Ok(AuditAction::MemberRoleChanged),
+            // 数据操作
+            "DataCreated" => Ok(AuditAction::DataCreated),
+            "DataUpdated" => Ok(AuditAction::DataUpdated),
+            "DataDeleted" => Ok(AuditAction::DataDeleted),
+            "DataImported" => Ok(AuditAction::DataImported),
+            "DataExported" => Ok(AuditAction::DataExported),
+            // 设置变更
+            "SettingsUpdated" => Ok(AuditAction::SettingsUpdated),
+            "PermissionsChanged" => Ok(AuditAction::PermissionsChanged),
+            // 安全事件
+            "LoginAttempt" => Ok(AuditAction::LoginAttempt),
+            "LoginSuccess" => Ok(AuditAction::LoginSuccess),
+            "LoginFailed" => Ok(AuditAction::LoginFailed),
+            "PasswordChanged" => Ok(AuditAction::PasswordChanged),
+            "MfaEnabled" => Ok(AuditAction::MfaEnabled),
+            "MfaDisabled" => Ok(AuditAction::MfaDisabled),
+            // 集成
+            "IntegrationConnected" => Ok(AuditAction::IntegrationConnected),
+            "IntegrationDisconnected" => Ok(AuditAction::IntegrationDisconnected),
+            "IntegrationSynced" => Ok(AuditAction::IntegrationSynced),
+            _ => Err(JiveError::InvalidData(format!("Unknown audit action: {}", s))),
         }
     }
 }
@@ -263,7 +328,7 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(&membership.id)
         .bind(&membership.family_id)
         .bind(&membership.user_id)
-        .bind(format!("{:?}", membership.role))
+        .bind(Self::role_to_db(&membership.role))
         .bind(&permissions_strings)
         .bind(&membership.joined_at)
         .bind(&membership.invited_by)
@@ -352,7 +417,7 @@ impl FamilyRepository for PgFamilyRepository {
         )
         .bind(&membership.id)
         .bind(&membership.is_active)
-        .bind(format!("{:?}", membership.role))
+        .bind(Self::role_to_db(&membership.role))
         .bind(&permissions_strings)
         .bind(&membership.last_accessed_at)
         .fetch_optional(&self.pool)
@@ -421,30 +486,30 @@ impl FamilyRepository for PgFamilyRepository {
     }
 
     async fn create_invitation(&self, invitation: &FamilyInvitation) -> Result<FamilyInvitation> {
-        let custom_perms = invitation.custom_permissions.as_ref()
-            .map(|p| Self::permissions_to_strings(p));
-        
-        let row = sqlx::query(
+        // 对齐 jive-api/migrations/007_enhance_family_system.sql 的 invitations 表
+        // 将无连字符 token 解析为 UUID 存入 invite_token
+        let token_uuid = Uuid::parse_str(&invitation.token)
+            .map_err(|e| JiveError::InvalidData(format!("Invalid invitation token: {}", e)))?;
+
+        sqlx::query(
             r#"
-            INSERT INTO family_invitations (
+            INSERT INTO invitations (
                 id, family_id, inviter_id, invitee_email, role,
-                custom_permissions, token, status, expires_at, created_at
+                invite_token, status, expires_at, created_at
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-            RETURNING *
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
             "#
         )
         .bind(&invitation.id)
         .bind(&invitation.family_id)
         .bind(&invitation.inviter_id)
         .bind(&invitation.invitee_email)
-        .bind(format!("{:?}", invitation.role))
-        .bind(&custom_perms)
-        .bind(&invitation.token)
-        .bind(format!("{:?}", invitation.status))
+        .bind(Self::role_to_db(&invitation.role))
+        .bind(&token_uuid)
+        .bind(Self::invitation_status_to_db(&invitation.status))
         .bind(&invitation.expires_at)
         .bind(&invitation.created_at)
-        .fetch_one(&self.pool)
+        .execute(&self.pool)
         .await
         .map_err(|e| JiveError::DatabaseError(e.to_string()))?;
 
@@ -454,7 +519,7 @@ impl FamilyRepository for PgFamilyRepository {
     async fn get_invitation(&self, invitation_id: &str) -> Result<FamilyInvitation> {
         let row = sqlx::query(
             r#"
-            SELECT * FROM family_invitations
+            SELECT * FROM invitations
             WHERE id = $1
             "#
         )
@@ -464,15 +529,31 @@ impl FamilyRepository for PgFamilyRepository {
         .map_err(|e| JiveError::DatabaseError(e.to_string()))?
         .ok_or_else(|| JiveError::NotFound(format!("Invitation {} not found", invitation_id)))?;
 
-        // TODO: 从 row 构建 FamilyInvitation
-        Err(JiveError::NotImplemented("get_invitation".into()))
+        let role_str: String = row.get("role");
+        let status_str: String = row.get("status");
+        let token_uuid: Uuid = row.get("invite_token");
+        let token_clean = token_uuid.to_string().replace('-', "");
+
+        Ok(FamilyInvitation {
+            id: row.get("id"),
+            family_id: row.get("family_id"),
+            inviter_id: row.get("inviter_id"),
+            invitee_email: row.get("invitee_email"),
+            role: Self::string_to_role(&role_str)?,
+            custom_permissions: None,
+            token: token_clean,
+            status: Self::invitation_status_from_db(&status_str)?,
+            expires_at: row.get("expires_at"),
+            created_at: row.get("created_at"),
+            accepted_at: row.get("accepted_at"),
+        })
     }
 
     async fn get_invitation_by_token(&self, token: &str) -> Result<FamilyInvitation> {
         let row = sqlx::query(
             r#"
-            SELECT * FROM family_invitations
-            WHERE token = $1
+            SELECT * FROM invitations
+            WHERE invite_token = $1
             "#
         )
         .bind(token)
@@ -481,26 +562,40 @@ impl FamilyRepository for PgFamilyRepository {
         .map_err(|e| JiveError::DatabaseError(e.to_string()))?
         .ok_or_else(|| JiveError::NotFound(format!("Invitation with token {} not found", token)))?;
 
-        // TODO: 从 row 构建 FamilyInvitation
-        Err(JiveError::NotImplemented("get_invitation_by_token".into()))
+        let role_str: String = row.get("role");
+        let status_str: String = row.get("status");
+        let token_uuid: Uuid = row.get("invite_token");
+        let token_clean = token_uuid.to_string().replace('-', "");
+
+        Ok(FamilyInvitation {
+            id: row.get("id"),
+            family_id: row.get("family_id"),
+            inviter_id: row.get("inviter_id"),
+            invitee_email: row.get("invitee_email"),
+            role: Self::string_to_role(&role_str)?,
+            custom_permissions: None,
+            token: token_clean,
+            status: Self::invitation_status_from_db(&status_str)?,
+            expires_at: row.get("expires_at"),
+            created_at: row.get("created_at"),
+            accepted_at: row.get("accepted_at"),
+        })
     }
 
     async fn update_invitation(&self, invitation: &FamilyInvitation) -> Result<FamilyInvitation> {
-        let row = sqlx::query(
+        sqlx::query(
             r#"
-            UPDATE family_invitations
+            UPDATE invitations
             SET status = $2, accepted_at = $3
             WHERE id = $1
-            RETURNING *
             "#
         )
         .bind(&invitation.id)
-        .bind(format!("{:?}", invitation.status))
+        .bind(Self::invitation_status_to_db(&invitation.status))
         .bind(&invitation.accepted_at)
-        .fetch_optional(&self.pool)
+        .execute(&self.pool)
         .await
-        .map_err(|e| JiveError::DatabaseError(e.to_string()))?
-        .ok_or_else(|| JiveError::NotFound(format!("Invitation {} not found", invitation.id)))?;
+        .map_err(|e| JiveError::DatabaseError(e.to_string()))?;
 
         Ok(invitation.clone())
     }
@@ -508,9 +603,9 @@ impl FamilyRepository for PgFamilyRepository {
     async fn list_pending_invitations(&self, family_id: &str) -> Result<Vec<FamilyInvitation>> {
         let rows = sqlx::query(
             r#"
-            SELECT * FROM family_invitations
-            WHERE family_id = $1 AND status = 'Pending'
-            AND expires_at > $2
+            SELECT * FROM invitations
+            WHERE family_id = $1 AND status = 'pending'
+              AND expires_at > $2
             ORDER BY created_at DESC
             "#
         )
@@ -520,18 +615,40 @@ impl FamilyRepository for PgFamilyRepository {
         .await
         .map_err(|e| JiveError::DatabaseError(e.to_string()))?;
 
-        // TODO: 从 rows 构建 Vec<FamilyInvitation>
-        Ok(vec![])
+        let invitations = rows
+            .into_iter()
+            .map(|row| {
+                let role_str: String = row.get("role");
+                let status_str: String = row.get("status");
+                let token_uuid: Uuid = row.get("invite_token");
+                let token_clean = token_uuid.to_string().replace('-', "");
+                Ok(FamilyInvitation {
+                    id: row.get("id"),
+                    family_id: row.get("family_id"),
+                    inviter_id: row.get("inviter_id"),
+                    invitee_email: row.get("invitee_email"),
+                    role: Self::string_to_role(&role_str)?,
+                    custom_permissions: None,
+                    token: token_clean,
+                    status: Self::invitation_status_from_db(&status_str)?,
+                    expires_at: row.get("expires_at"),
+                    created_at: row.get("created_at"),
+                    accepted_at: row.get("accepted_at"),
+                })
+            })
+            .collect::<Result<Vec<_>>>()?;
+
+        Ok(invitations)
     }
 
     async fn create_audit_log(&self, log: &FamilyAuditLog) -> Result<()> {
         sqlx::query(
             r#"
             INSERT INTO family_audit_logs (
-                id, family_id, user_id, action, resource_type,
-                resource_id, changes, ip_address, user_agent, created_at
+                id, family_id, user_id, action, entity_type,
+                entity_id, old_values, new_values, ip_address, user_agent, created_at
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
             "#
         )
         .bind(&log.id)
@@ -540,7 +657,8 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(format!("{:?}", log.action))
         .bind(&log.resource_type)
         .bind(&log.resource_id)
-        .bind(&log.changes)
+        .bind(&serde_json::Value::Null) // old_values 暂时置空
+        .bind(&log.changes) // new_values 对应 domain 的 changes
         .bind(&log.ip_address)
         .bind(&log.user_agent)
         .bind(&log.created_at)
@@ -554,7 +672,10 @@ impl FamilyRepository for PgFamilyRepository {
     async fn list_audit_logs(&self, family_id: &str, limit: i32) -> Result<Vec<FamilyAuditLog>> {
         let rows = sqlx::query(
             r#"
-            SELECT * FROM family_audit_logs
+            SELECT 
+                id, family_id, user_id, action,
+                entity_type, entity_id, new_values, ip_address, user_agent, created_at
+            FROM family_audit_logs
             WHERE family_id = $1
             ORDER BY created_at DESC
             LIMIT $2
@@ -566,8 +687,26 @@ impl FamilyRepository for PgFamilyRepository {
         .await
         .map_err(|e| JiveError::DatabaseError(e.to_string()))?;
 
-        // TODO: 从 rows 构建 Vec<FamilyAuditLog>
-        Ok(vec![])
+        let logs = rows
+            .into_iter()
+            .map(|row| {
+                let action_str: String = row.get("action");
+                Ok(FamilyAuditLog {
+                    id: row.get("id"),
+                    family_id: row.get("family_id"),
+                    user_id: row.get("user_id"),
+                    action: Self::string_to_audit_action(&action_str)?,
+                    resource_type: row.get("entity_type"),
+                    resource_id: row.get("entity_id"),
+                    changes: row.get("new_values"),
+                    ip_address: row.get("ip_address"),
+                    user_agent: row.get("user_agent"),
+                    created_at: row.get("created_at"),
+                })
+            })
+            .collect::<Result<Vec<_>>>()?;
+
+        Ok(logs)
     }
 
     async fn is_member(&self, user_id: &str, family_id: &str) -> Result<bool> {
@@ -626,14 +765,27 @@ mod tests {
 
     #[test]
     fn test_role_conversion() {
-        assert_eq!(
-            PgFamilyRepository::string_to_role("Owner").unwrap(),
-            FamilyRole::Owner
-        );
-        assert_eq!(
-            PgFamilyRepository::string_to_role("Admin").unwrap(),
-            FamilyRole::Admin
-        );
+        assert_eq!(PgFamilyRepository::string_to_role("Owner").unwrap(), FamilyRole::Owner);
+        assert_eq!(PgFamilyRepository::string_to_role("owner").unwrap(), FamilyRole::Owner);
+        assert_eq!(PgFamilyRepository::string_to_role("Admin").unwrap(), FamilyRole::Admin);
+        assert_eq!(PgFamilyRepository::string_to_role("admin").unwrap(), FamilyRole::Admin);
+        assert_eq!(PgFamilyRepository::role_to_db(&FamilyRole::Owner), "owner");
+        assert_eq!(PgFamilyRepository::role_to_db(&FamilyRole::Viewer), "viewer");
         assert!(PgFamilyRepository::string_to_role("Invalid").is_err());
+    }
+
+    #[test]
+    fn test_invitation_status_mapping() {
+        assert!(matches!(PgFamilyRepository::invitation_status_from_db("pending").unwrap(), InvitationStatus::Pending));
+        assert!(matches!(PgFamilyRepository::invitation_status_from_db("accepted").unwrap(), InvitationStatus::Accepted));
+        assert!(matches!(PgFamilyRepository::invitation_status_from_db("expired").unwrap(), InvitationStatus::Expired));
+        assert!(matches!(PgFamilyRepository::invitation_status_from_db("cancelled").unwrap(), InvitationStatus::Declined));
+        assert_eq!(PgFamilyRepository::invitation_status_to_db(&InvitationStatus::Declined), "cancelled");
+    }
+
+    #[test]
+    fn test_audit_action_mapping() {
+        assert!(matches!(PgFamilyRepository::string_to_audit_action("MemberInvited").unwrap(), AuditAction::MemberInvited));
+        assert!(PgFamilyRepository::string_to_audit_action("Unknown").is_err());
     }
 }
