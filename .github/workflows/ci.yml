@@ -327,7 +327,7 @@ jobs:
     needs: [flutter-test, rust-test]
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
     - name: Download analyzer output
       uses: actions/download-artifact@v4
@@ -335,24 +335,25 @@ jobs:
         name: test-report
         path: .
 
-    - name: Upload analyzer output
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: flutter-analyze-output
-        path: flutter-analyze-output.txt
+      - name: Upload analyzer output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-analyze-output
+          path: flutter-analyze-output.txt
+          overwrite: true
 
     - name: Setup tools
       run: |
         sudo apt-get update
         sudo apt-get install -y jq
 
-    - name: Compare Flutter and Rust fields
-      run: |
-        echo "# Field Comparison Report" > field-compare-report.md
-        echo "## Flutter vs Rust Model Comparison" >> field-compare-report.md
-        echo "- Date: $(date)" >> field-compare-report.md
-        echo "" >> field-compare-report.md
+      - name: Compare Flutter and Rust fields
+        run: |
+          echo "# Field Comparison Report" > field-compare-report.md
+          echo "## Flutter vs Rust Model Comparison" >> field-compare-report.md
+          echo "- Date: $(date)" >> field-compare-report.md
+          echo "" >> field-compare-report.md
 
         echo "### Tag Model" >> field-compare-report.md
         echo "#### Flutter (lib/models/tag.dart)" >> field-compare-report.md
@@ -378,19 +379,26 @@ jobs:
           echo '```' >> field-compare-report.md
         fi
 
-        echo "#### Rust (src/models/currency.rs)" >> field-compare-report.md
-        if [ -f jive-api/src/models/currency.rs ]; then
-          echo '```rust' >> field-compare-report.md
-          grep -E "pub|String|f64|bool|DateTime" jive-api/src/models/currency.rs | head -20 >> field-compare-report.md 2>/dev/null || echo "File not found"
-          echo '```' >> field-compare-report.md
-        fi
+          echo "#### Rust (src/models/currency.rs)" >> field-compare-report.md
+          if [ -f jive-api/src/models/currency.rs ]; then
+            echo '```rust' >> field-compare-report.md
+            grep -E "pub|String|f64|bool|DateTime" jive-api/src/models/currency.rs | head -20 >> field-compare-report.md 2>/dev/null || echo "File not found"
+            echo '```' >> field-compare-report.md
+          fi
 
-    - name: Upload field comparison report
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: field-compare-report
-        path: field-compare-report.md
+          # Fallback: ensure report file exists with minimal content
+          if [ ! -s field-compare-report.md ]; then
+            echo "# Field Comparison Report" > field-compare-report.md
+            echo "(no differences detected or models not found)" >> field-compare-report.md
+          fi
+
+      - name: Upload field comparison report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: field-compare-report
+          path: field-compare-report.md
+          overwrite: true
 
   summary:
     name: CI Summary
