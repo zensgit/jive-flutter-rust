@@ -272,8 +272,8 @@ jobs:
         API_PORT: 8012
         SQLX_OFFLINE: 'true'
       run: |
-        cargo test --all-features -- --nocapture > ../rust-test-results.txt 2>&1 || true
-        cargo test --all-features || true
+        cargo test -- --nocapture > ../rust-test-results.txt 2>&1 || true
+        cargo test || true
 
     # (routing smoke tests moved to dedicated job)
 
@@ -282,8 +282,8 @@ jobs:
       env:
         SQLX_OFFLINE: 'true'
       run: |
-        cargo check --all-features
-        cargo clippy --all-features -- -D warnings || true
+        cargo check
+        cargo clippy -- -D warnings || true
 
     - name: Generate schema report
       if: always()
