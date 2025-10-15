@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use uuid::Uuid;
@@ -9,7 +10,7 @@ pub struct Transaction {
     pub ledger_id: Uuid,
     pub account_id: Uuid,
     pub transaction_date: DateTime<Utc>,
-    pub amount: f64,
+    pub amount: Decimal,
     pub transaction_type: TransactionType,
     pub category_id: Option<Uuid>,
     pub category_name: Option<String>,
@@ -45,7 +46,7 @@ pub struct TransactionCreate {
     pub ledger_id: Uuid,
     pub account_id: Uuid,
     pub transaction_date: DateTime<Utc>,
-    pub amount: f64,
+    pub amount: Decimal,
     pub transaction_type: TransactionType,
     pub category_id: Option<Uuid>,
     pub category_name: Option<String>,
@@ -58,7 +59,7 @@ pub struct TransactionCreate {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TransactionUpdate {
     pub transaction_date: Option<DateTime<Utc>>,
-    pub amount: Option<f64>,
+    pub amount: Option<Decimal>,
     pub transaction_type: Option<TransactionType>,
     pub category_id: Option<Uuid>,
     pub category_name: Option<String>,
