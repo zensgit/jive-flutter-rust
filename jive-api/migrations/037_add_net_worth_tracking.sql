@@ -3,6 +3,9 @@
 -- Author: Claude (inspired by Maybe Finance)
 -- Date: 2025-09-29
 
+-- Ensure required extensions are available for gen_random_uuid()
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- Account valuations table: Track account values over time
 CREATE TABLE IF NOT EXISTS valuations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -118,24 +121,45 @@ CREATE TABLE IF NOT EXISTS net_worth_goals (
 );
 
 -- Create indexes for better performance
-CREATE INDEX idx_valuations_account_id ON valuations(account_id);
-CREATE INDEX idx_valuations_date ON valuations(valuation_date);
-CREATE INDEX idx_balance_snapshots_family_id ON balance_snapshots(family_id);
-CREATE INDEX idx_balance_snapshots_date ON balance_snapshots(snapshot_date);
-CREATE INDEX idx_account_snapshots_balance_snapshot_id ON account_snapshots(balance_snapshot_id);
-CREATE INDEX idx_account_snapshots_account_id ON account_snapshots(account_id);
-CREATE INDEX idx_net_worth_goals_family_id ON net_worth_goals(family_id);
-CREATE INDEX idx_net_worth_goals_status ON net_worth_goals(status);
+CREATE INDEX IF NOT EXISTS idx_valuations_account_id ON valuations(account_id);
+CREATE INDEX IF NOT EXISTS idx_valuations_date ON valuations(valuation_date);
+CREATE INDEX IF NOT EXISTS idx_balance_snapshots_family_id ON balance_snapshots(family_id);
+CREATE INDEX IF NOT EXISTS idx_balance_snapshots_date ON balance_snapshots(snapshot_date);
+CREATE INDEX IF NOT EXISTS idx_account_snapshots_balance_snapshot_id ON account_snapshots(balance_snapshot_id);
+CREATE INDEX IF NOT EXISTS idx_account_snapshots_account_id ON account_snapshots(account_id);
+CREATE INDEX IF NOT EXISTS idx_net_worth_goals_family_id ON net_worth_goals(family_id);
+CREATE INDEX IF NOT EXISTS idx_net_worth_goals_status ON net_worth_goals(status);
 
 -- Apply updated_at triggers
-CREATE TRIGGER update_valuations_updated_at BEFORE UPDATE ON valuations
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger WHERE tgname = 'update_valuations_updated_at'
+  ) THEN
+    CREATE TRIGGER update_valuations_updated_at BEFORE UPDATE ON valuations
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END$$;
 
-CREATE TRIGGER update_balance_snapshots_updated_at BEFORE UPDATE ON balance_snapshots
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger WHERE tgname = 'update_balance_snapshots_updated_at'
+  ) THEN
+    CREATE TRIGGER update_balance_snapshots_updated_at BEFORE UPDATE ON balance_snapshots
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END$$;
 
-CREATE TRIGGER update_net_worth_goals_updated_at BEFORE UPDATE ON net_worth_goals
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger WHERE tgname = 'update_net_worth_goals_updated_at'
+  ) THEN
+    CREATE TRIGGER update_net_worth_goals_updated_at BEFORE UPDATE ON net_worth_goals
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END$$;
 
 -- Function to calculate and store daily balance snapshot
 CREATE OR REPLACE FUNCTION calculate_daily_balance_snapshot(p_family_id UUID, p_date DATE DEFAULT CURRENT_DATE)
