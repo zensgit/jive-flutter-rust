@@ -24,6 +24,8 @@ fn global_market_stats_decimal_serializes_as_string() {
     ] {
         assert!(val.get(key).and_then(|v| v.as_str()).is_some(), "{} should be string", key);
     }
+    // updated_at is numeric unix timestamp
+    assert!(val.get("updated_at").and_then(|v| v.as_i64()).is_some());
     assert!(val
         .get("eth_dominance_percentage")
         .and_then(|v| v.as_str())
