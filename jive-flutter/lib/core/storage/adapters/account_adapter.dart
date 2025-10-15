@@ -53,7 +53,7 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..writeByte(6)
       ..write(obj.description)
       ..writeByte(7)
-      ..write(obj.color?.toARGB32())
+      ..write(obj.color == null ? null : obj.color!.toARGB32())
       ..writeByte(8)
       ..write(obj.isDefault)
       ..writeByte(9)

@@ -6,49 +6,34 @@ part 'travel_event.g.dart';
 /// 旅行事件模型 - 基于maybe-main设计
 @freezed
 class TravelEvent with _$TravelEvent {
-  const TravelEvent._();
-
   const factory TravelEvent({
     String? id,
     required String name,
     String? description,
     required DateTime startDate,
     required DateTime endDate,
+    // 扩展字段（测试覆盖）
+    String? destination,
+    @Default('CNY') String currency,
+    double? budget,
+    @Default(0.0) double totalSpent,
+    String? notes,
     String? location,
-    String? destination,  // Added for compatibility
-    @Default('planning') String statusString,  // Renamed from status
     @Default(true) bool isActive,
     @Default(false) bool autoTag,
     @Default([]) List<String> travelCategoryIds,
     String? ledgerId,
     DateTime? createdAt,
     DateTime? updatedAt,
-    String? notes,  // Added for travel notes
 
     // 统计信息
     @Default(0) int transactionCount,
     double? totalAmount,
     String? travelTagId,
-
-    // 预算相关
-    double? totalBudget,
-    double? budget,  // Added for simpler API
-    String? budgetCurrencyCode,
-    @Default('CNY') String currency,  // Added with default
-    @Default(0) double totalSpent,
-    String? homeCurrencyCode,
-    double? budgetUsagePercent,
-
-    // Status enum support
-    TravelEventStatus? status,  // Added direct status enum
   }) = _TravelEvent;
 
   factory TravelEvent.fromJson(Map<String, dynamic> json) =>
       _$TravelEventFromJson(json);
-
-  // Computed properties
-  String get tripName => name; // alias for compatibility
-  int get durationDays => endDate.difference(startDate).inDays + 1;
 }
 
 /// 旅行事件模板
@@ -81,7 +66,8 @@ enum TravelTemplateType {
 /// 旅行事件状态
 enum TravelEventStatus {
   upcoming, // 即将开始
-  ongoing, // 进行中 (changed from active for UI compatibility)
+  active, // 进行中
+  ongoing, // 进行中（测试命名）
   completed, // 已完成
   cancelled, // 已取消
 }
@@ -193,20 +179,15 @@ class TravelEventTemplateLibrary {
 
 /// 旅行事件扩展方法
 extension TravelEventExtension on TravelEvent {
-  /// 获取旅行状态 (computed if not set)
-  TravelEventStatus get computedStatus {
-    // If status is explicitly set, return it
-    if (status != null) {
-      return status!;
-    }
-    // Otherwise compute based on dates
+  /// 获取旅行状态
+  TravelEventStatus get status {
     final now = DateTime.now();
     if (endDate.isBefore(now)) {
       return TravelEventStatus.completed;
     } else if (startDate.isAfter(now)) {
       return TravelEventStatus.upcoming;
     } else {
-      return TravelEventStatus.ongoing;
+      return TravelEventStatus.active;
     }
   }
 
@@ -225,75 +206,20 @@ extension TravelEventExtension on TravelEvent {
   String get travelTagName {
     return '旅行-$name';
   }
-}
 
-/// 创建旅行事件输入
-@freezed
-class CreateTravelEventInput with _$CreateTravelEventInput {
-  const factory CreateTravelEventInput({
-    required String name,
-    String? description,
-    required DateTime startDate,
-    required DateTime endDate,
-    String? location,
-    @Default(true) bool autoTag,
-    @Default([]) List<String> travelCategoryIds,
-  }) = _CreateTravelEventInput;
-
-  factory CreateTravelEventInput.fromJson(Map<String, dynamic> json) =>
-      _$CreateTravelEventInputFromJson(json);
-}
-
-/// 更新旅行事件输入
-@freezed
-class UpdateTravelEventInput with _$UpdateTravelEventInput {
-  const factory UpdateTravelEventInput({
-    String? name,
-    String? description,
-    DateTime? startDate,
-    DateTime? endDate,
-    String? location,
-    bool? autoTag,
-    List<String>? travelCategoryIds,
-  }) = _UpdateTravelEventInput;
-
-  factory UpdateTravelEventInput.fromJson(Map<String, dynamic> json) =>
-      _$UpdateTravelEventInputFromJson(json);
-}
-
-/// 旅行统计信息
-@freezed
-class TravelStatistics with _$TravelStatistics {
-  const factory TravelStatistics({
-    required double totalSpent,
-    required double totalBudget,
-    required double budgetUsage,
-    required Map<String, double> spentByCategory,
-    required Map<String, double> spentByDay,
-    required int transactionCount,
-    required double averagePerDay,
-  }) = _TravelStatistics;
-
-  factory TravelStatistics.fromJson(Map<String, dynamic> json) =>
-      _$TravelStatisticsFromJson(json);
-}
-
-/// 旅行分类预算
-@freezed
-class TravelBudget with _$TravelBudget {
-  const factory TravelBudget({
-    String? id,
-    required String travelEventId,
-    required String categoryId,
-    required String categoryName,
-    required double budgetAmount,
-    String? budgetCurrencyCode,
-    @Default(0.8) double alertThreshold,
-    @Default(0) double spentAmount,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) = _TravelBudget;
-
-  factory TravelBudget.fromJson(Map<String, dynamic> json) =>
-      _$TravelBudgetFromJson(json);
+  /// 兼容测试：computedStatus（active 映射为 ongoing）
+  TravelEventStatus get computedStatus {
+    switch (status) {
+      case TravelEventStatus.upcoming:
+        return TravelEventStatus.upcoming;
+      case TravelEventStatus.active:
+        return TravelEventStatus.ongoing;
+      case TravelEventStatus.ongoing:
+        return TravelEventStatus.ongoing;
+      case TravelEventStatus.completed:
+        return TravelEventStatus.completed;
+      case TravelEventStatus.cancelled:
+        return TravelEventStatus.cancelled;
+    }
+  }
 }

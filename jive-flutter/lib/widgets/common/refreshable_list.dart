@@ -115,7 +115,7 @@ class _RefreshableListState<T> extends State<RefreshableList<T>> {
         onRefresh: widget.onRefresh,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          child: SizedBox(
+          child: const SizedBox(
             height: MediaQuery.of(context).size.height - 200,
             child: widget.emptyWidget ?? EmptyStates.noData(),
           ),
@@ -227,7 +227,7 @@ class SimpleRefreshableList<T> extends StatelessWidget {
         onRefresh: onRefresh,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          child: SizedBox(
+          child: const SizedBox(
             height: MediaQuery.of(context).size.height - 200,
             child: emptyWidget ?? EmptyStates.noData(),
           ),

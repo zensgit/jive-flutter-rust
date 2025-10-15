@@ -11,14 +11,17 @@ use std::sync::Arc;
 use crate::application::ServiceContext;
 use crate::domain::{AuditAction, FamilyAuditLog, FamilyRole, Permission};
 use crate::error::{JiveError, Result};
+#[cfg(feature = "db")]
 use crate::infrastructure::repositories::FamilyRepository;
 
 /// 权限检查中间件
+#[cfg(feature = "db")]
 pub struct PermissionMiddleware<R: FamilyRepository> {
     repository: Arc<R>,
     cache: Option<PermissionCache>,
 }
 
+#[cfg(feature = "db")]
 impl<R: FamilyRepository> PermissionMiddleware<R> {
     pub fn new(repository: Arc<R>) -> Self {
         Self {

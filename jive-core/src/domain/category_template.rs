@@ -4,7 +4,6 @@
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
@@ -204,7 +203,7 @@ impl SystemCategoryTemplate {
 
     #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn classification(&self) -> AccountClassification {
-        self.classification.clone()
+        self.classification
     }
 
     #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
@@ -628,7 +627,7 @@ impl SystemCategoryTemplate {
                 t.name.to_lowercase().contains(&query_lower)
                     || t.name_en
                         .as_ref()
-                        .map_or(false, |n| n.to_lowercase().contains(&query_lower))
+                        .is_some_and(|n| n.to_lowercase().contains(&query_lower))
                     || t.tags
                         .iter()
                         .any(|tag| tag.to_lowercase().contains(&query_lower))
@@ -771,6 +770,12 @@ impl TemplateBuilder {
             tags: self.tags,
             ..template
         })
+    }
+}
+
+impl Default for TemplateBuilder {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

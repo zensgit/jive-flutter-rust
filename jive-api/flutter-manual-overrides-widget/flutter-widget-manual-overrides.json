@@ -1,0 +1,60 @@
+Resolving dependencies...
+Downloading packages...
+  _fe_analyzer_shared 67.0.0 (89.0.0 available)
+  analyzer 6.4.1 (8.2.0 available)
+  analyzer_plugin 0.11.3 (0.13.8 available)
+  build 2.4.1 (4.0.1 available)
+  build_config 1.1.2 (1.2.0 available)
+  build_resolvers 2.4.2 (3.0.4 available)
+  build_runner 2.4.13 (2.9.0 available)
+  build_runner_core 7.3.2 (9.3.2 available)
+  characters 1.4.0 (1.4.1 available)
+  custom_lint_core 0.6.3 (0.8.1 available)
+  dart_style 2.3.6 (3.1.2 available)
+  file_picker 8.3.7 (10.3.3 available)
+  fl_chart 0.66.2 (1.1.1 available)
+  flutter_launcher_icons 0.13.1 (0.14.4 available)
+  flutter_lints 3.0.2 (6.0.0 available)
+  flutter_riverpod 2.6.1 (3.0.2 available)
+  freezed 2.5.2 (3.2.3 available)
+  freezed_annotation 2.4.4 (3.1.0 available)
+  go_router 12.1.3 (16.2.4 available)
+  image_picker_android 0.8.13+2 (0.8.13+3 available)
+! intl 0.19.0 (overridden) (0.20.2 available)
+  json_serializable 6.8.0 (6.11.1 available)
+  lints 3.0.0 (6.0.0 available)
+  logger 2.6.1 (2.6.2 available)
+  material_color_utilities 0.11.1 (0.13.0 available)
+  meta 1.16.0 (1.17.0 available)
+  pool 1.5.1 (1.5.2 available)
+  protobuf 3.1.0 (5.0.0 available)
+  retrofit 4.7.2 (4.7.3 available)
+  retrofit_generator 8.2.1 (10.0.6 available)
+  riverpod 2.6.1 (3.0.2 available)
+  riverpod_analyzer_utils 0.5.1 (0.5.10 available)
+  riverpod_annotation 2.6.1 (3.0.2 available)
+  riverpod_generator 2.4.0 (3.0.2 available)
+  shared_preferences_android 2.4.12 (2.4.14 available)
+  shelf_web_socket 2.0.1 (3.0.0 available)
+  source_gen 1.5.0 (4.0.1 available)
+  source_helper 1.3.5 (1.3.8 available)
+  test_api 0.7.6 (0.7.7 available)
+  uni_links 0.5.1 (discontinued replaced by app_links)
+  very_good_analysis 5.1.0 (10.0.0 available)
+  watcher 1.1.3 (1.1.4 available)
+  win32 5.14.0 (5.15.0 available)
+Got dependencies!
+1 package is discontinued.
+42 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+{"protocolVersion":"0.1.1","runnerVersion":null,"pid":3265,"type":"start","time":0}
+{"suite":{"id":0,"platform":"vm","path":"/home/runner/work/jive-flutter-rust/jive-flutter-rust/jive-flutter/test/settings_manual_overrides_navigation_test.dart"},"type":"suite","time":0}
+{"test":{"id":1,"name":"loading /home/runner/work/jive-flutter-rust/jive-flutter-rust/jive-flutter/test/settings_manual_overrides_navigation_test.dart","suiteID":0,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":1}
+{"count":1,"time":6,"type":"allSuites"}
+
+[{"event":"test.startedProcess","params":{"vmServiceUri":null}}]
+{"testID":1,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":2887}
+{"group":{"id":2,"suiteID":0,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":1,"line":null,"column":null,"url":null},"type":"group","time":2889}
+{"test":{"id":3,"name":"Settings has manual overrides entry and navigates","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":41,"root_column":3,"root_url":"file:///home/runner/work/jive-flutter-rust/jive-flutter-rust/jive-flutter/test/settings_manual_overrides_navigation_test.dart"},"type":"testStart","time":2890}
+{"testID":3,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":3875}
+{"success":true,"type":"done","time":3913}

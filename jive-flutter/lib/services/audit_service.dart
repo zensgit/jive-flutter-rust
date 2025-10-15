@@ -28,25 +28,18 @@ class AuditService {
     return Future.value(const <AuditLog>[]);
   }
 
-  Future<AuditLogStatistics> getAuditStatistics({
+  Future<Map<String, dynamic>> getAuditStatistics({
     String? familyId,
     DateTime? startDate,
     DateTime? endDate,
   }) async {
     // Stub implementation
-    return Future.value(
-      AuditLogStatistics(
-        totalLogs: 0,
-        todayLogs: 0,
-        weekLogs: 0,
-        monthLogs: 0,
-        actionCounts: const {},
-        severityCounts: const {},
-        topUsers: const [],
-        recentAlerts: const [],
-        lastActivityAt: null,
-      ),
-    );
+    return Future.value({
+      'totalLogs': 0,
+      'byActionType': <String, int>{},
+      'bySeverity': <String, int>{},
+      'recentActivity': <AuditLog>[],
+    });
   }
 
   Future<Map<String, dynamic>> getActivityStatistics({

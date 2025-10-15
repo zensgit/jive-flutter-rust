@@ -215,6 +215,25 @@ class _CurrencyManagementPageV2State
   Future<double?> _promptManualRate(
       String toCurrency, String baseCurrency) async {
     final controller = TextEditingController();
+
+    // Get target currency info for precision
+    final currencies = ref.read(availableCurrenciesProvider);
+    final targetCurrency = currencies.firstWhere(
+      (c) => c.code == toCurrency,
+      orElse: () => currencies.first, // fallback
+    );
+    final int precision = targetCurrency.decimalPlaces;
+
+    // Build precision hint text
+    String precisionHint;
+    if (precision == 0) {
+      precisionHint = '（整数，如 123）';
+    } else if (precision == 3) {
+      precisionHint = '（${precision}位小数，如 1.234）';
+    } else {
+      precisionHint = '（${precision}位小数，如 ${(12.3456).toStringAsFixed(precision)}）';
+    }
+
     return showDialog<double>(
       context: context,
       builder: (context) => AlertDialog(
@@ -222,7 +241,11 @@ class _CurrencyManagementPageV2State
         content: TextField(
           controller: controller,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(hintText: '请输入汇率数值'),
+          decoration: InputDecoration(
+            hintText: '请输入汇率数值',
+            helperText: '${targetCurrency.symbol} $precisionHint\n数值将自动舍入到货币精度',
+            helperStyle: const TextStyle(fontSize: 12, color: Colors.blue),
+          ),
         ),
         actions: [
           TextButton(
@@ -230,7 +253,13 @@ class _CurrencyManagementPageV2State
           ElevatedButton(
             onPressed: () {
               final v = double.tryParse(controller.text.trim());
-              Navigator.pop(context, v);
+              if (v == null || v <= 0) {
+                Navigator.pop(context);
+                return;
+              }
+              // Round to currency precision
+              final roundedRate = double.parse(v.toStringAsFixed(precision));
+              Navigator.pop(context, roundedRate);
             },
             child: const Text('确定'),
           ),
@@ -556,19 +585,13 @@ class _CurrencyManagementPageV2State
                         child: Row(
                           children: [
                             // 国旗或符号
-                            Container(
+                            SizedBox(
                               width: 48,
                               height: 48,
-                              decoration: BoxDecoration(
-                                color: cs.surface,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: cs.tertiary),
-                              ),
                               child: Center(
                                 child: Text(
                                   baseCurrency.flag ?? baseCurrency.symbol,
-                                  style: TextStyle(
-                                      fontSize: 24, color: cs.onSurface),
+                                  style: const TextStyle(fontSize: 32),
                                 ),
                               ),
                             ),
@@ -807,6 +830,29 @@ class _CurrencyManagementPageV2State
                             );
                           },
                         ),
+                      // 手动汇率设置 - 永久入口
+                      ListTile(
+                        leading: Icon(Icons.edit_calendar, color: Colors.orange[700]),
+                        title: const Text('手动汇率设置'),
+                        subtitle: Text(
+                          '查看、管理和清除手动汇率覆盖',
+                          style: TextStyle(
+                              fontSize: 12, color: Colors.grey[600]),
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () async {
+                          if (!mounted) return;
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const ManualOverridesPage(),
+                            ),
+                          );
+                          // 返回时刷新汇率状态
+                          if (mounted) {
+                            setState(() {});
+                          }
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -936,7 +982,7 @@ class _CurrencyManagementPageV2State
                 );
               }),
 
-              // 5. 汇率管理（隐藏）
+              // 5. 汇率管理（隐藏 - 已有专门的手动汇率设置入口）
               if (false)
                 Container(
                   color: Colors.white,
@@ -1035,7 +1081,7 @@ class _CurrencyManagementPageV2State
     );
   }
 
-  // Rate + per-currency expiry prompt
+  // Rate + per-currency expiry prompt (with precision support)
   Future<_RateWithExpiry?> _promptManualRateWithExpiry(
     String toCurrency,
     String baseCurrency,
@@ -1043,6 +1089,25 @@ class _CurrencyManagementPageV2State
   ) async {
     final controller = TextEditingController();
     DateTime expiryUtc = defaultExpiryUtc;
+
+    // Get target currency info for precision
+    final currencies = ref.read(availableCurrenciesProvider);
+    final targetCurrency = currencies.firstWhere(
+      (c) => c.code == toCurrency,
+      orElse: () => currencies.first, // fallback
+    );
+    final int precision = targetCurrency.decimalPlaces;
+
+    // Build precision hint text
+    String precisionHint;
+    if (precision == 0) {
+      precisionHint = '（整数，如 123）';
+    } else if (precision == 3) {
+      precisionHint = '（${precision}位小数，如 1.234）';
+    } else {
+      precisionHint = '（${precision}位小数，如 ${(12.3456).toStringAsFixed(precision)}）';
+    }
+
     return showDialog<_RateWithExpiry>(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -1056,7 +1121,11 @@ class _CurrencyManagementPageV2State
                 controller: controller,
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(hintText: '请输入汇率数值'),
+                decoration: InputDecoration(
+                  hintText: '请输入汇率数值',
+                  helperText: '${targetCurrency.symbol} $precisionHint',
+                  helperStyle: const TextStyle(fontSize: 12, color: Colors.blue),
+                ),
               ),
               const SizedBox(height: 12),
               Row(
@@ -1080,7 +1149,7 @@ class _CurrencyManagementPageV2State
                       if (date != null) {
                         setState(() {
                           expiryUtc = DateTime.utc(
-                              date.year, date.month, date.day, 0, 0, 0);
+                            date.year, date.month, date.day, 0, 0, 0);
                         });
                       }
                     },
@@ -1090,7 +1159,7 @@ class _CurrencyManagementPageV2State
                 ],
               ),
               const SizedBox(height: 4),
-              const Text('提示：有效期内将优先使用手动汇率',
+              const Text('提示：有效期内将优先使用手动汇率，数值将自动舍入到货币精度',
                   style: TextStyle(fontSize: 11, color: Colors.grey)),
             ],
           ),
@@ -1105,7 +1174,9 @@ class _CurrencyManagementPageV2State
                   Navigator.pop(context);
                   return;
                 }
-                Navigator.pop(context, _RateWithExpiry(v, expiryUtc));
+                // Round to currency precision
+                final roundedRate = double.parse(v.toStringAsFixed(precision));
+                Navigator.pop(context, _RateWithExpiry(roundedRate, expiryUtc));
               },
               child: const Text('确定'),
             ),

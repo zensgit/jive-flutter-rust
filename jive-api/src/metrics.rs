@@ -4,6 +4,40 @@ use sqlx::PgPool;
 use std::sync::{Mutex, OnceLock};
 use std::time::{Instant, Duration};
 
+// Lightweight transaction metrics (core/legacy latency + shadow diff count)
+use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, Ordering};
+
+#[derive(Debug, Clone, Default)]
+pub struct TransactionMetrics {
+    pub core_latency_ns_sum: Arc<AtomicU64>,
+    pub core_latency_count: Arc<AtomicU64>,
+    pub legacy_latency_ns_sum: Arc<AtomicU64>,
+    pub legacy_latency_count: Arc<AtomicU64>,
+    pub shadow_diff_count: Arc<AtomicU64>,
+}
+
+impl TransactionMetrics {
+    pub fn record_operation(&self, source: &str, d: Duration) {
+        let ns = d.as_nanos() as u64;
+        match source {
+            "core" => {
+                self.core_latency_ns_sum.fetch_add(ns, Ordering::Relaxed);
+                self.core_latency_count.fetch_add(1, Ordering::Relaxed);
+            }
+            "legacy" => {
+                self.legacy_latency_ns_sum.fetch_add(ns, Ordering::Relaxed);
+                self.legacy_latency_count.fetch_add(1, Ordering::Relaxed);
+            }
+            _ => {}
+        }
+    }
+
+    pub fn record_shadow_diff(&self) {
+        self.shadow_diff_count.fetch_add(1, Ordering::Relaxed);
+    }
+}
+
 // Simple 30s cache to reduce DB load on high scrape frequencies.
 static METRICS_CACHE: OnceLock<Mutex<(Instant, String)>> = OnceLock::new();
 static START_TIME: OnceLock<Instant> = OnceLock::new();
@@ -14,7 +48,7 @@ pub async fn metrics_handler(
 ) -> impl IntoResponse {
     // Optional access control
     if std::env::var("ALLOW_PUBLIC_METRICS").map(|v| v == "0").unwrap_or(false) {
-        if let Some(addr) = std::env::var("METRICS_ALLOW_LOCALONLY").ok() {
+        if let Ok(addr) = std::env::var("METRICS_ALLOW_LOCALONLY") {
             if addr == "1" {
                 // Only allow loopback; we rely on X-Forwarded-For not being spoofed internally (basic safeguard)
                 // In Axum we don't have the request here directly (simplified), extension to pass remote addr could be added.
@@ -73,6 +107,8 @@ pub async fn metrics_handler(
     let (req_stream, req_buffered, rows_stream, rows_buffered) = state.metrics.get_export_counts();
     let login_fail = state.metrics.get_login_fail();
     let login_inactive = state.metrics.get_login_inactive();
+    let pw_change = state.metrics.get_password_change();
+    let pw_change_rehash = state.metrics.get_password_change_rehash();
     let login_rate_limited = state.metrics.get_login_rate_limited();
     // Histogram exports: convert ns sum back to seconds for Prometheus _sum
     let buf_sum_sec = state.metrics.export_dur_buf_sum_ns.load(std::sync::atomic::Ordering::Relaxed) as f64 / 1e9;
@@ -133,6 +169,14 @@ pub async fn metrics_handler(
     buf.push_str("# HELP auth_login_rate_limited_total Login attempts blocked by rate limiter.\n");
     buf.push_str("# TYPE auth_login_rate_limited_total counter\n");
     buf.push_str(&format!("auth_login_rate_limited_total {}\n", login_rate_limited));
+
+    // Password change counters
+    buf.push_str("# HELP auth_password_change_total Successful password changes.\n");
+    buf.push_str("# TYPE auth_password_change_total counter\n");
+    buf.push_str(&format!("auth_password_change_total {}\n", pw_change));
+    buf.push_str("# HELP auth_password_change_rehash_total Password change events where legacy bcrypt was upgraded to Argon2id.\n");
+    buf.push_str("# TYPE auth_password_change_rehash_total counter\n");
+    buf.push_str(&format!("auth_password_change_rehash_total {}\n", pw_change_rehash));
 
     // Export buffered duration histogram
     buf.push_str("# HELP export_duration_buffered_seconds Export (buffered) duration histogram.\n");

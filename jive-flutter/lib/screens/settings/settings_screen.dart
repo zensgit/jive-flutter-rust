@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jive_money/providers/auth_provider.dart';
 import 'package:jive_money/providers/ledger_provider.dart';
-import 'package:jive_money/providers/settings_provider.dart' hide currentUserProvider;
+import 'package:jive_money/providers/settings_provider.dart';
 import 'package:jive_money/providers/currency_provider.dart';
 import 'package:jive_money/widgets/dialogs/create_family_dialog.dart';
 
@@ -88,24 +88,10 @@ class SettingsScreen extends ConsumerWidget {
             children: [
               ListTile(
                 leading: const Icon(Icons.language),
-                title: const Text('打开多币种管理'),
-                subtitle: const Text('基础货币、多币种/加密开关、选择货币、手动/自动汇率'),
+                title: const Text('多币种管理'),
+                subtitle: const Text('基础货币、多币种/加密开关、选择货币、汇率管理'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () => context.go('/settings/currency'),
-              ),
-              ListTile(
-                leading: const Icon(Icons.currency_exchange),
-                title: const Text('币种管理（用户）'),
-                subtitle: const Text('查看全部法币/加密币，启用或设为基础'),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () => context.go('/settings/currency/user-browser'),
-              ),
-              ListTile(
-                leading: const Icon(Icons.rule),
-                title: const Text('手动覆盖清单'),
-                subtitle: const Text('查看/清理今日的手动汇率覆盖'),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () => context.go('/settings/currency/manual-overrides'),
               ),
             ],
           ),
@@ -497,10 +483,47 @@ class SettingsScreen extends ConsumerWidget {
       applicationName: 'Jive Money',
       applicationVersion: '1.0.0',
       applicationIcon: const Icon(Icons.account_balance_wallet, size: 64),
-      children: const [
-        Text('智能财务管理应用'),
-        SizedBox(height: 8),
-        Text('让财务管理变得简单高效'),
+      children: [
+        const Text('智能财务管理应用'),
+        const SizedBox(height: 8),
+        const Text('让财务管理变得简单高效'),
+        const SizedBox(height: 16),
+        const Divider(),
+        const SizedBox(height: 8),
+        const Text(
+          '第三方服务',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          '头像服务：',
+          style: TextStyle(fontWeight: FontWeight.w500),
+        ),
+        const SizedBox(height: 4),
+        InkWell(
+          onTap: () {
+            // 可选：打开链接
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('DiceBear: https://dicebear.com')),
+            );
+          },
+          child: const Text(
+            '• DiceBear - MIT License\n  https://dicebear.com',
+            style: TextStyle(fontSize: 12, color: Colors.blue),
+          ),
+        ),
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('RoboHash: https://robohash.org')),
+            );
+          },
+          child: const Text(
+            '• RoboHash - CC-BY License\n  https://robohash.org\n  由 Zikri Kader, Hrvoje Novakovic,\n  Julian Peter Arias, David Revoy 等创作',
+            style: TextStyle(fontSize: 12, color: Colors.blue),
+          ),
+        ),
       ],
     );
   }

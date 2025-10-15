@@ -147,7 +147,18 @@ class ImageUtils {
         return false;
       }
 
-      // Check for common image extensions// Allow URLs without extensions (many CDNs don't use them)
+      // Check for common image extensions
+      final path = uri.path.toLowerCase();
+      final imageExtensions = [
+        '.jpg',
+        '.jpeg',
+        '.png',
+        '.gif',
+        '.webp',
+        '.svg'
+      ];
+
+      // Allow URLs without extensions (many CDNs don't use them)
       // but validate the URL structure
       return uri.host.isNotEmpty;
     } catch (e) {

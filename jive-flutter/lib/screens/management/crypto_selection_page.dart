@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jive_money/models/currency.dart' as model;
+import 'package:jive_money/models/global_market_stats.dart';
 import 'package:jive_money/providers/currency_provider.dart';
+import 'package:jive_money/services/currency_service.dart';
 import 'package:jive_money/widgets/source_badge.dart';
 import 'package:jive_money/providers/settings_provider.dart';
 
@@ -23,6 +25,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
   final Map<String, DateTime> _manualExpiry = {};
   final Map<String, double> _localPriceOverrides = {};
   bool _compact = false;
+  GlobalMarketStats? _globalMarketStats;
 
   @override
   void initState() {
@@ -34,10 +37,11 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
         _compact = density == 'compact';
       });
     });
-    // 打开页面时自动获取加密货币价格
+    // 打开页面时自动获取加密货币价格和全球市场统计
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _fetchLatestPrices();
+      _fetchGlobalMarketStats();
     });
   }
 
@@ -73,6 +77,22 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
     }
   }
 
+  Future<void> _fetchGlobalMarketStats() async {
+    if (!mounted) return;
+    try {
+      final service = CurrencyService(null);
+      final stats = await service.getGlobalMarketStats();
+      if (mounted && stats != null) {
+        setState(() {
+          _globalMarketStats = stats;
+        });
+      }
+    } catch (e) {
+      // 静默失败，使用硬编码的后备值
+      debugPrint('Failed to fetch global market stats: $e');
+    }
+  }
+
   void _showSnackBar(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -84,26 +104,33 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
     );
   }
 
-  // 获取加密货币图标
-  Widget _getCryptoIcon(String code) {
-    // 这里可以根据不同的加密货币返回不同的图标
-    final Map<String, IconData> cryptoIcons = {
-      'BTC': Icons.currency_bitcoin,
-      'ETH': Icons.account_balance_wallet,
-      'USDT': Icons.attach_money,
-      'USDC': Icons.monetization_on,
-      'BNB': Icons.local_fire_department,
-      'XRP': Icons.water_drop,
-      'ADA': Icons.eco,
-      'SOL': Icons.wb_sunny,
-      'DOT': Icons.blur_circular,
-      'DOGE': Icons.pets,
-    };
+  // 获取加密货币图标（从服务器获取的 emoji）
+  Widget _getCryptoIcon(model.Currency crypto) {
+    // 🔥 优先使用服务器提供的 icon emoji
+    if (crypto.icon != null && crypto.icon!.isNotEmpty) {
+      return Text(
+        crypto.icon!,
+        style: const TextStyle(fontSize: 24),
+      );
+    }
 
+    // 🔥 后备：使用 symbol 或 code
+    if (crypto.symbol.length <= 3) {
+      return Text(
+        crypto.symbol,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: _getCryptoColor(crypto.code),
+        ),
+      );
+    }
+
+    // 最后的后备：使用通用加密货币图标
     return Icon(
-      cryptoIcons[code] ?? Icons.currency_bitcoin,
+      Icons.currency_bitcoin,
       size: 24,
-      color: _getCryptoColor(code),
+      color: _getCryptoColor(crypto.code),
     );
   }
 
@@ -120,18 +147,50 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
       'SOL': Colors.purple,
       'DOT': Colors.pink,
       'DOGE': Colors.brown,
+      // Extended crypto brand colors (added 2025-10-10)
+      '1INCH': const Color(0xFF1D4EA3),        // 1Inch 蓝色
+      'AAVE': const Color(0xFFB6509E),         // Aave 紫红色
+      'AGIX': const Color(0xFF4D4D4D),         // AGIX 深灰色
+      'ALGO': const Color(0xFF000000),         // Algorand 黑色
+      'PEPE': const Color(0xFF4CAF50),         // Pepe 绿色
+      'MKR': const Color(0xFF1AAB9B),          // Maker 青绿色
+      'COMP': const Color(0xFF00D395),         // Compound 绿色
+      'CRV': const Color(0xFF0052FF),          // Curve 蓝色
+      'SUSHI': const Color(0xFFFA52A0),        // Sushi 粉色
+      'YFI': const Color(0xFF006AE3),          // YFI 蓝色
+      'SNX': const Color(0xFF5FCDF9),          // Synthetix 浅蓝
+      'GRT': const Color(0xFF6F4CD2),          // Graph 紫色
+      'ENJ': const Color(0xFF7866D5),          // Enjin 紫色
+      'MANA': const Color(0xFFFF2D55),         // Decentraland 红色
+      'SAND': const Color(0xFF04BBFB),         // Sandbox 蓝色
+      'AXS': const Color(0xFF0055D5),          // Axie 蓝色
+      'GALA': const Color(0xFF000000),         // Gala 黑色
+      'CHZ': const Color(0xFFCD0124),          // Chiliz 红色
+      'FIL': const Color(0xFF0090FF),          // Filecoin 蓝色
+      'ICP': const Color(0xFF29ABE2),          // ICP 蓝色
+      'APE': const Color(0xFF0B57D0),          // ApeCoin 蓝色
+      'LRC': const Color(0xFF1C60FF),          // Loopring 蓝色
+      'IMX': const Color(0xFF0CAEFF),          // Immutable 蓝色
+      'NEAR': const Color(0xFF000000),         // NEAR 黑色
+      'FLR': const Color(0xFFE84142),          // Flare 红色
+      'HBAR': const Color(0xFF000000),         // Hedera 黑色
+      'VET': const Color(0xFF15BDFF),          // VeChain 蓝色
+      'QNT': const Color(0xFF000000),          // Quant 黑色
+      'ETC': const Color(0xFF328332),          // ETC 绿色
     };
 
     return cryptoColors[code] ?? Colors.grey;
   }
 
   List<model.Currency> _getFilteredCryptos() {
-    final allCurrencies = ref.watch(availableCurrenciesProvider);
+    // 🔥 FIX: 使用新的公共方法获取所有加密货币，不受 cryptoEnabled 限制
+    // "管理加密货币"页面应该始终显示所有加密货币供选择
+    final notifier = ref.watch(currencyProvider.notifier);
     final selectedCurrencies = ref.watch(selectedCurrenciesProvider);
 
-    // 过滤加密货币
-    List<model.Currency> cryptoCurrencies =
-        allCurrencies.where((c) => c.isCrypto).toList();
+    // 🔥 获取服务器提供的所有加密货币（包括未启用的）
+    // 使用新添加的 getAllCryptoCurrencies() 公共方法
+    List<model.Currency> cryptoCurrencies = notifier.getAllCryptoCurrencies();
 
     // 搜索过滤
     if (_searchQuery.isNotEmpty) {
@@ -175,6 +234,9 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
     final baseCurrency = ref.watch(baseCurrencyProvider);
     final price =
         _localPriceOverrides[crypto.code] ?? cryptoPrices[crypto.code] ?? 0.0;
+    // 获取汇率对象以访问历史变化数据
+    final rates = ref.watch(exchangeRateObjectsProvider);
+    final rateObj = rates[crypto.code];
 
     // 获取或创建价格输入控制器
     if (!_priceControllers.containsKey(crypto.code)) {
@@ -190,26 +252,11 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
       elevation: 1,
       color: isSelected ? cs.secondaryContainer : cs.surface,
       child: ExpansionTile(
-        leading: Container(
+        leading: SizedBox(
           width: _compact ? 40 : 48,
           height: _compact ? 40 : 48,
-          decoration: BoxDecoration(
-            color: _getCryptoColor(crypto.code).withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color:
-                  isSelected ? _getCryptoColor(crypto.code) : cs.outlineVariant,
-            ),
-          ),
           child: Center(
-            child: Icon(
-              Icons.currency_bitcoin,
-              // use onSurface in dark to avoid low contrast
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? cs.onSurface
-                  : _getCryptoColor(crypto.code),
-              size: _compact ? 20 : 22,
-            ),
+            child: _getCryptoIcon(crypto),
           ),
         ),
         title: Row(
@@ -220,14 +267,16 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                 children: [
                   Row(
                     children: [
+                      // 🔥 显示中文名作为主标题
                       Text(
-                        crypto.code,
+                        crypto.nameZh,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
                       SizedBox(width: _compact ? 6 : 8),
+                      // 🔥 显示代码作为badge
                       Container(
                         padding: EdgeInsets.symmetric(
                             horizontal: _compact ? 4 : 6, vertical: 2),
@@ -236,7 +285,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          crypto.symbol,
+                          crypto.code,
                           style: TextStyle(
                             fontSize: _compact ? 10 : 11,
                             color: _getCryptoColor(crypto.code),
@@ -246,8 +295,9 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                       ),
                     ],
                   ),
+                  // 🔥 显示符号和代码作为副标题
                   Text(
-                    crypto.nameZh,
+                    '${crypto.symbol} · ${crypto.code}',
                     style: TextStyle(
                         fontSize: _compact ? 12 : 13,
                         color: cs.onSurfaceVariant),
@@ -454,25 +504,41 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                         Text(
                           '手动价格有效期: ${_manualExpiry[crypto.code]!.toLocal().toString().split(" ").first} 00:00',
                           style:
-                              const TextStyle(fontSize: 12, color: Colors.grey),
+                              TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
                         ),
                       const SizedBox(height: 8),
-                      // 24小时变化（模拟数据）
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(6),
+                      // 24小时变化（实时数据）
+                      if (rateObj != null)
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: cs.surfaceContainerHighest.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildPriceChange(
+                                cs,
+                                '24h',
+                                rateObj.change24h,
+                                _compact,
+                              ),
+                              _buildPriceChange(
+                                cs,
+                                '7d',
+                                rateObj.change7d,
+                                _compact,
+                              ),
+                              _buildPriceChange(
+                                cs,
+                                '30d',
+                                rateObj.change30d,
+                                _compact,
+                              ),
+                            ],
+                          ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _buildPriceChange('24h', '+5.32%', Colors.green),
-                            _buildPriceChange('7d', '-2.18%', Colors.red),
-                            _buildPriceChange('30d', '+12.45%', Colors.green),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -482,21 +548,56 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
     );
   }
 
-  Widget _buildPriceChange(String period, String change, Color color) {
+  Widget _buildPriceChange(
+    ColorScheme cs,
+    String period,
+    double? changePercent,
+    bool compact,
+  ) {
+    // 如果没有数据，显示 --
+    if (changePercent == null) {
+      return Column(
+        children: [
+          Text(
+            period,
+            style: TextStyle(
+              fontSize: compact ? 10 : 11,
+              color: cs.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            '--',
+            style: TextStyle(
+              fontSize: compact ? 11 : 12,
+              color: cs.onSurfaceVariant,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      );
+    }
+
+    // 确定颜色：正数绿色，负数红色
+    final color = changePercent >= 0 ? Colors.green : Colors.red;
+    // 格式化百分比：带符号
+    final changeText =
+        '${changePercent >= 0 ? '+' : ''}${changePercent.toStringAsFixed(2)}%';
+
     return Column(
       children: [
         Text(
           period,
           style: TextStyle(
-            fontSize: 11,
-            color: Colors.grey[600],
+            fontSize: compact ? 10 : 11,
+            color: cs.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: 2),
         Text(
-          change,
+          changeText,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: compact ? 11 : 12,
             color: color,
             fontWeight: FontWeight.bold,
           ),
@@ -516,12 +617,14 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
             .isCrypto)
         .length;
 
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: cs.surface,
       appBar: AppBar(
         title: const Text('管理加密货币'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: theme.appBarTheme.backgroundColor,
+        foregroundColor: theme.appBarTheme.foregroundColor,
         elevation: 0.5,
         actions: [
           IconButton(
@@ -541,7 +644,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
         children: [
           // 搜索栏
           Container(
-            color: Colors.white,
+            color: cs.surface,
             padding: const EdgeInsets.all(16),
             child: TextField(
               controller: _searchController,
@@ -577,18 +680,18 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
 
           // 提示信息
           Container(
-            color: Colors.purple[50],
+            color: cs.tertiaryContainer.withValues(alpha: 0.5),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                Icon(Icons.info_outline, size: 14, color: Colors.purple[700]),
+                Icon(Icons.info_outline, size: 14, color: cs.tertiary),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     '勾选要使用的加密货币，展开可设置价格',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.purple[700],
+                      color: cs.onTertiaryContainer,
                     ),
                   ),
                 ),
@@ -596,16 +699,31 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
             ),
           ),
 
-          // 市场概览（可选）
+          // 市场概览（使用真实数据）
           Container(
-            color: Colors.white,
+            color: cs.surface,
             padding: const EdgeInsets.all(16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildMarketStat('总市值', '\$2.3T', Colors.blue),
-                _buildMarketStat('24h成交量', '\$98.5B', Colors.green),
-                _buildMarketStat('BTC占比', '48.2%', Colors.orange),
+                _buildMarketStat(
+                  cs,
+                  '总市值',
+                  _globalMarketStats?.formattedMarketCap ?? '\$2.3T',
+                  Colors.blue,
+                ),
+                _buildMarketStat(
+                  cs,
+                  '24h成交量',
+                  _globalMarketStats?.formatted24hVolume ?? '\$98.5B',
+                  Colors.green,
+                ),
+                _buildMarketStat(
+                  cs,
+                  'BTC占比',
+                  _globalMarketStats?.formattedBtcDominance ?? '48.2%',
+                  Colors.orange,
+                ),
               ],
             ),
           ),
@@ -623,7 +741,7 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
 
           // 底部统计
           Container(
-            color: Colors.white,
+            color: cs.surface,
             padding: const EdgeInsets.all(16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -636,8 +754,8 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  icon: const Icon(Icons.check),
-                  label: const Text('完成'),
+                  icon: const Icon(Icons.arrow_back),
+                  label: const Text('返回'),
                 ),
               ],
             ),
@@ -647,14 +765,14 @@ class _CryptoSelectionPageState extends ConsumerState<CryptoSelectionPage> {
     );
   }
 
-  Widget _buildMarketStat(String label, String value, Color color) {
+  Widget _buildMarketStat(ColorScheme cs, String label, String value, Color color) {
     return Column(
       children: [
         Text(
           label,
           style: TextStyle(
             fontSize: 11,
-            color: Colors.grey[600],
+            color: cs.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: 4),

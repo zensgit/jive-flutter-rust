@@ -1,0 +1,32 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT rate, updated_at\n            FROM exchange_rates\n            WHERE from_currency = $1\n            AND to_currency = $2\n            AND updated_at BETWEEN $3 AND $4\n            ORDER BY ABS(EXTRACT(EPOCH FROM (updated_at - $5)))\n            LIMIT 1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "rate",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 1,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Timestamptz",
+        "Timestamptz",
+        "Timestamptz"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "58b695f0150b71a738eb029c044762f511b83788937bff81674a9ccf5a5f1a51"
+}

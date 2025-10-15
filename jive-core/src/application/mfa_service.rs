@@ -99,7 +99,7 @@ impl MfaService {
     fn generate_totp(&self, secret: &str, time_counter: u64) -> Result<String> {
         // Base32 解码密钥
         let key = base32::decode(base32::Alphabet::RFC4648 { padding: false }, secret)
-            .ok_or_else(|| JiveError::InvalidData("Invalid base32 secret".into()))?;
+            .ok_or_else(|| JiveError::ValidationError { message: "Invalid base32 secret".into() })?;
 
         // 时间计数器转换为字节数组（大端序）
         let time_bytes = time_counter.to_be_bytes();
@@ -107,7 +107,7 @@ impl MfaService {
         // 使用 HMAC-SHA1 生成哈希
         type HmacSha1 = Hmac<Sha1>;
         let mut mac = HmacSha1::new_from_slice(&key)
-            .map_err(|_| JiveError::InvalidData("Invalid key length".into()))?;
+            .map_err(|_| JiveError::ValidationError { message: "Invalid key length".into() })?;
         mac.update(&time_bytes);
         let result = mac.finalize();
         let hash = result.into_bytes();
@@ -145,7 +145,7 @@ impl MfaService {
     /// 生成二维码 SVG
     fn generate_qr_code_svg(&self, data: &str) -> Result<String> {
         let code = QrCode::new(data)
-            .map_err(|e| JiveError::InvalidData(format!("Failed to generate QR code: {}", e)))?;
+            .map_err(|e| JiveError::ValidationError { message: format!("Failed to generate QR code: {}", e) })?;
 
         let image = code.render::<svg::Color>().min_dimensions(200, 200).build();
 

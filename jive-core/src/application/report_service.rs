@@ -385,6 +385,7 @@ pub struct ReportService {}
 #[cfg(feature = "wasm")]
 #[wasm_bindgen]
 impl ReportService {
+    pub fn new() -> Self { Self {} }
     #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
         Self {}

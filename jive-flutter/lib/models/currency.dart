@@ -7,7 +7,8 @@ class Currency {
   final int decimalPlaces; // Number of decimal places
   final bool isEnabled; // Whether currency is enabled
   final bool isCrypto; // Whether it's a cryptocurrency
-  final String? flag; // Emoji flag for display
+  final String? flag; // Emoji flag for display (fiat currencies)
+  final String? icon; // Emoji icon for display (crypto currencies)
   final double? exchangeRate; // Exchange rate to base currency
 
   const Currency({
@@ -19,6 +20,7 @@ class Currency {
     this.isEnabled = true,
     this.isCrypto = false,
     this.flag,
+    this.icon,
     this.exchangeRate,
   });
 
@@ -32,6 +34,7 @@ class Currency {
       isEnabled: json['is_enabled'] ?? true,
       isCrypto: json['is_crypto'] ?? false,
       flag: json['flag'] as String?,
+      icon: json['icon'] as String?,
       exchangeRate: json['exchange_rate']?.toDouble(),
     );
   }
@@ -45,6 +48,7 @@ class Currency {
         'is_enabled': isEnabled,
         'is_crypto': isCrypto,
         'flag': flag,
+        'icon': icon,
         'exchange_rate': exchangeRate,
       };
 
@@ -57,6 +61,7 @@ class Currency {
     bool? isEnabled,
     bool? isCrypto,
     String? flag,
+    String? icon,
     double? exchangeRate,
   }) {
     return Currency(
@@ -68,6 +73,7 @@ class Currency {
       isEnabled: isEnabled ?? this.isEnabled,
       isCrypto: isCrypto ?? this.isCrypto,
       flag: flag ?? this.flag,
+      icon: icon ?? this.icon,
       exchangeRate: exchangeRate ?? this.exchangeRate,
     );
   }

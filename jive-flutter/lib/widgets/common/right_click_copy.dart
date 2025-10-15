@@ -25,8 +25,11 @@ class RightClickCopy extends StatelessWidget {
     this.padding,
   });
 
-  Future<void> _copyWithMessenger(ScaffoldMessengerState? messenger) async {
+  void _copy(BuildContext context) async {
     await Clipboard.setData(ClipboardData(text: copyText));
+    if (!context.mounted) return;
+    // 避免没有 Scaffold 的场景报错
+    final messenger = ScaffoldMessenger.maybeOf(context);
     messenger?.hideCurrentSnackBar();
     messenger?.showSnackBar(
       SnackBar(
@@ -62,16 +65,25 @@ class RightClickCopy extends StatelessWidget {
         ),
       ],
     );
-
     if (result == 'copy') {
       await _copyWithMessenger(messenger);
     }
   }
 
+  Future<void> _copyWithMessenger(ScaffoldMessenger? messenger) async {
+    await Clipboard.setData(ClipboardData(text: copyText));
+    messenger?.hideCurrentSnackBar();
+    messenger?.showSnackBar(
+      SnackBar(
+        content: Text(successMessage),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final messenger = ScaffoldMessenger.maybeOf(context);
-
     Widget content = child;
 
     if (showIconOnHover) {
@@ -89,6 +101,7 @@ class RightClickCopy extends StatelessWidget {
       },
       onLongPress: () {
         // 移动端长按直接复制
+        final messenger = ScaffoldMessenger.maybeOf(context);
         _copyWithMessenger(messenger);
       },
       child: content,

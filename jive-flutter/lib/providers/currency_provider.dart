@@ -134,6 +134,8 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   static const String _kManualRatesKey = 'manual_rates';
   static const String _kManualRatesExpiryKey = 'manual_rates_expiry_utc';
   static const String _kManualRatesExpiryMapKey = 'manual_rates_expiry_map';
+  static const String _kCachedRatesKey = 'cached_exchange_rates';
+  static const String _kCachedRatesTimestampKey = 'cached_rates_timestamp';
 
   bool _initialized = false;
   final bool _suppressAutoInit;
@@ -171,7 +173,18 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
         _initializeCurrencyCache();
         await _loadSupportedCurrencies();
         _loadManualRates();
-        await _loadExchangeRates();
+        // ⚡ v3.1: Load cached rates immediately (synchronous, instant)
+        _loadCachedRates();
+        // ⚡ v3.1: Overlay manual rates on cached data immediately
+        _overlayManualRates();
+        // Trigger UI update with cached data immediately
+        state = state.copyWith();
+        debugPrint('[CurrencyProvider] Loaded cached rates with manual overlay, UI can display immediately');
+        // Refresh from API in background (non-blocking)
+        _loadExchangeRates().then((_) {
+          if (_disposed) return;
+          debugPrint('[CurrencyProvider] Background rate refresh completed');
+        });
       } finally {
         completer.complete();
       }
@@ -228,6 +241,13 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
           ..clear()
           ..addAll(saved
               .map((k, v) => MapEntry(k.toString(), (v as num).toDouble())));
+        // DEBUG: Log loaded manual rates
+        debugPrint('[CurrencyProvider] Loaded ${_manualRates.length} manual rates from Hive:');
+        _manualRates.forEach((code, rate) {
+          debugPrint('  $code = $rate');
+        });
+      } else {
+        debugPrint('[CurrencyProvider] No manual rates found in Hive');
       }
       // Load per-currency expiry map first (new schema)
       final expiryMap = _prefsBox.get(_kManualRatesExpiryMapKey);
@@ -237,6 +257,7 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
           final dt = v is String ? DateTime.tryParse(v) : null;
           if (dt != null) {
             _manualRatesExpiryByCurrency[k.toString()] = dt.toUtc();
+            debugPrint('[CurrencyProvider] Expiry for ${k.toString()}: $dt');
           }
         });
       }
@@ -247,10 +268,118 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       }
     } catch (e) {
       // Ignore corrupt data
+      debugPrint('[CurrencyProvider] Error loading manual rates: $e');
       _manualRates.clear();
       _manualRatesExpiryUtc = null;
       _manualRatesExpiryByCurrency.clear();
     }
+  }
+
+  /// Load cached exchange rates from Hive for instant display
+  /// ⚡ v3.2: Filter out manual rates (they are loaded separately from _kManualRatesKey)
+  void _loadCachedRates() {
+    try {
+      final cached = _prefsBox.get(_kCachedRatesKey);
+      final timestampStr = _prefsBox.get(_kCachedRatesTimestampKey);
+
+      debugPrint('[CurrencyProvider] 🔍 Loading cached rates...');
+      debugPrint('[CurrencyProvider] Cached data exists: ${cached != null}');
+      debugPrint('[CurrencyProvider] Timestamp exists: ${timestampStr != null}');
+
+      if (cached is Map && timestampStr is String) {
+        _lastRateUpdate = DateTime.tryParse(timestampStr);
+        debugPrint('[CurrencyProvider] Found ${cached.length} cached entries');
+
+        // Load cached rates into _exchangeRates
+        int loadedCount = 0;
+        int skippedManual = 0;
+        cached.forEach((key, value) {
+          if (value is Map) {
+            try {
+              final code = key.toString();
+              final rate = (value['rate'] as num?)?.toDouble() ?? 1.0;
+              final dateStr = value['date']?.toString();
+              final source = value['source']?.toString() ?? 'cached';
+
+              // ⚡ v3.2: Skip manual rates from cache (should not exist, but filter for safety)
+              if (source == 'manual') {
+                skippedManual++;
+                debugPrint('[CurrencyProvider]   ⏭️  Skipped manual rate in cache: $code (will load from _kManualRatesKey)');
+                return;
+              }
+
+              _exchangeRates[code] = ExchangeRate(
+                fromCurrency: value['from']?.toString() ?? state.baseCurrency,
+                toCurrency: code,
+                rate: rate,
+                date: dateStr != null ? (DateTime.tryParse(dateStr) ?? DateTime.now()) : DateTime.now(),
+                source: source,
+              );
+              loadedCount++;
+              debugPrint('[CurrencyProvider]   → Loaded $code: rate=$rate, source=$source');
+            } catch (e) {
+              debugPrint('[CurrencyProvider] ❌ Error parsing cached rate for $key: $e');
+            }
+          }
+        });
+
+        debugPrint('[CurrencyProvider] ⚡ Loaded $loadedCount cached rates from Hive (instant display)');
+        if (skippedManual > 0) {
+          debugPrint('[CurrencyProvider] ⚠️  Skipped $skippedManual manual rates in cache (data cleanup needed)');
+        }
+        debugPrint('[CurrencyProvider] _exchangeRates now has ${_exchangeRates.length} entries');
+        if (_lastRateUpdate != null) {
+          final age = DateTime.now().difference(_lastRateUpdate!);
+          debugPrint('[CurrencyProvider] Cache age: ${age.inMinutes} minutes');
+        }
+      } else {
+        debugPrint('[CurrencyProvider] ⚠️ No cached rates found in Hive (cached=${cached?.runtimeType}, timestamp=$timestampStr)');
+      }
+    } catch (e) {
+      debugPrint('[CurrencyProvider] ❌ Error loading cached rates: $e');
+      _exchangeRates.clear();
+    }
+  }
+
+  /// Overlay valid manual rates onto _exchangeRates so they take precedence until expiry
+  void _overlayManualRates() {
+    final nowUtc = DateTime.now().toUtc();
+    debugPrint('[CurrencyProvider] 🔄 Starting manual rate overlay...');
+    debugPrint('[CurrencyProvider] _manualRates.length = ${_manualRates.length}');
+    debugPrint('[CurrencyProvider] _exchangeRates.length (before overlay) = ${_exchangeRates.length}');
+
+    if (_manualRates.isNotEmpty) {
+      debugPrint('[CurrencyProvider] Overlaying ${_manualRates.length} manual rates...');
+      for (final entry in _manualRates.entries) {
+        final code = entry.key;
+        final value = entry.value;
+        final perExpiry = _manualRatesExpiryByCurrency[code];
+        final isValid = perExpiry != null
+            ? nowUtc.isBefore(perExpiry)
+            : (_manualRatesExpiryUtc != null &&
+                nowUtc.isBefore(_manualRatesExpiryUtc!));
+
+        debugPrint('[CurrencyProvider]   Checking $code: value=$value, perExpiry=$perExpiry, isValid=$isValid');
+
+        if (isValid) {
+          _exchangeRates[code] = ExchangeRate(
+            fromCurrency: state.baseCurrency,
+            toCurrency: code,
+            rate: value,
+            date: DateTime.now(),
+            source: 'manual',
+          );
+          debugPrint('[CurrencyProvider]   ✅ Overlaid manual rate: $code = $value (expiry: ${perExpiry?.toLocal()})');
+        } else {
+          debugPrint('[CurrencyProvider]   ❌ Skipped expired manual rate: $code = $value');
+        }
+      }
+    } else {
+      debugPrint('[CurrencyProvider] ⚠️ No manual rates to overlay');
+    }
+
+    debugPrint('[CurrencyProvider] _exchangeRates.length (after overlay) = ${_exchangeRates.length}');
+    debugPrint('[CurrencyProvider] Final _exchangeRates keys: ${_exchangeRates.keys.toList()}');
   }
 
   void _initializeCurrencyCache() {
@@ -281,14 +410,33 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       }
       if (res.items.isNotEmpty) {
         // Successful refresh (200)
+        // Trust the API's is_crypto classification directly
         _serverCurrencies = res.items.map((c) {
-          final isCrypto =
-              CurrencyDefaults.cryptoCurrencies.any((x) => x.code == c.code) ||
-                  c.isCrypto;
-          final updated = c.copyWith(isCrypto: isCrypto);
-          _currencyCache[updated.code] = updated;
-          return updated;
+          _currencyCache[c.code] = c;
+          return c;
         }).toList();
+
+        // DEBUG: Log first 20 currencies to verify isCrypto values
+        print('[CurrencyProvider] Loaded ${_serverCurrencies.length} currencies from API');
+        final fiatCount = _serverCurrencies.where((c) => !c.isCrypto).length;
+        final cryptoCount = _serverCurrencies.where((c) => c.isCrypto).length;
+        print('[CurrencyProvider] Fiat: $fiatCount, Crypto: $cryptoCount');
+        print('[CurrencyProvider] First 20 currencies:');
+        for (var i = 0; i < _serverCurrencies.length && i < 20; i++) {
+          final c = _serverCurrencies[i];
+          print('  ${c.code}: isCrypto=${c.isCrypto}');
+        }
+        // Check problem currencies specifically
+        final problemCodes = ['MKR', 'AAVE', 'COMP', '1INCH', 'ADA', 'AGIX', 'PEPE', 'SOL', 'MATIC', 'UNI'];
+        print('[CurrencyProvider] Problem currencies:');
+        for (final code in problemCodes) {
+          try {
+            final c = _serverCurrencies.firstWhere((x) => x.code == code);
+            print('  $code: isCrypto=${c.isCrypto}');
+          } catch (e) {
+            print('  $code: NOT FOUND in server currencies');
+          }
+        }
         _catalogEtag = res.etag ?? _catalogEtag;
         _catalogMeta = _catalogMeta.copyWith(
           lastSyncAt: now,
@@ -395,30 +543,12 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       } catch (_) {
         // ignore meta failures
       }
-      // Overlay valid manual rates so they take precedence until expiry
-      final nowUtc = DateTime.now().toUtc();
-      if (_manualRates.isNotEmpty) {
-        for (final entry in _manualRates.entries) {
-          final code = entry.key;
-          final value = entry.value;
-          final perExpiry = _manualRatesExpiryByCurrency[code];
-          final isValid = perExpiry != null
-              ? nowUtc.isBefore(perExpiry)
-              : (_manualRatesExpiryUtc != null &&
-                  nowUtc.isBefore(_manualRatesExpiryUtc!));
-          if (isValid) {
-            _exchangeRates[code] = ExchangeRate(
-              fromCurrency: state.baseCurrency,
-              toCurrency: code,
-              rate: value,
-              date: DateTime.now(),
-              source: 'manual',
-            );
-          }
-        }
-      }
+      // ⚡ v3.1: Overlay valid manual rates using shared method
+      _overlayManualRates();
       // Do not auto-fill missing with mock; let UI reflect missing to avoid confusion
       _lastRateUpdate = DateTime.now();
+      // Save rates to cache for instant display next time
+      await _saveCachedRates();
       state = state.copyWith(isFallback: _exchangeRateService.lastWasFallback);
       if (state.cryptoEnabled) {
         await _loadCryptoPrices();
@@ -432,6 +562,36 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       }
     } finally {
       _isLoadingRates = false;
+    }
+  }
+
+  /// Save current exchange rates to Hive cache for instant display on next load
+  /// ⚡ v3.2: Exclude manual rates from cache (they are stored separately)
+  Future<void> _saveCachedRates() async {
+    try {
+      final cacheData = <String, Map<String, dynamic>>{};
+
+      _exchangeRates.forEach((code, rate) {
+        // ⚡ v3.2: Skip manual rates - they are stored in _kManualRatesKey
+        if (rate.source == 'manual') {
+          debugPrint('[CurrencyProvider]   ⏭️  Skipping manual rate: $code (stored separately)');
+          return;
+        }
+
+        cacheData[code] = {
+          'from': rate.fromCurrency,
+          'rate': rate.rate,
+          'date': rate.date.toIso8601String(),
+          'source': rate.source,
+        };
+      });
+
+      await _prefsBox.put(_kCachedRatesKey, cacheData);
+      await _prefsBox.put(_kCachedRatesTimestampKey, DateTime.now().toIso8601String());
+
+      debugPrint('[CurrencyProvider] 💾 Saved ${cacheData.length} rates to cache (excluding manual rates)');
+    } catch (e) {
+      debugPrint('[CurrencyProvider] Error saving cached rates: $e');
     }
   }
 
@@ -496,6 +656,9 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
 
   /// Clear manual rates (revert to automatic)
   Future<void> clearManualRates() async {
+    // Store codes that had manual rates for immediate removal
+    final manualCodes = _manualRates.keys.toList();
+
     _manualRates.clear();
     _manualRatesExpiryUtc = null;
     _manualRatesExpiryByCurrency.clear();
@@ -503,6 +666,18 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     await _prefsBox.delete(_kManualRatesExpiryKey);
     await _prefsBox.delete(_kManualRatesExpiryMapKey);
     await _savePreferences();
+
+    // ✅ FIX: Immediately remove all manual rates from _exchangeRates so UI shows "loading" or cached auto rates
+    // This prevents stale manual rates from being displayed while waiting for API refresh
+    for (final code in manualCodes) {
+      _exchangeRates.remove(code);
+      debugPrint('[CurrencyProvider] ✅ Immediately removed manual rate from _exchangeRates[$code]');
+    }
+
+    // Trigger UI rebuild immediately so user sees the change instantly
+    state = state.copyWith();
+    debugPrint('[CurrencyProvider] ✅ UI state updated, ${manualCodes.length} manual rates removed, will fetch auto rates in background');
+
     // 同步清除服务端该基础货币下的所有手动汇率
     try {
       final dio = HttpClient.instance.dio;
@@ -513,7 +688,13 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     } catch (e) {
       debugPrint('Failed to batch clear manual rates on server: $e');
     }
-    await _loadExchangeRates();
+
+    // Background refresh to fetch automatic rates (non-blocking)
+    // This will load the automatic rates from API and update UI when ready
+    _loadExchangeRates().then((_) {
+      if (_disposed) return;
+      debugPrint('[CurrencyProvider] Background rate refresh completed, automatic rates should be displayed now');
+    });
   }
 
   /// Clear manual rate for a single currency (revert that currency to automatic)
@@ -533,6 +714,16 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       await _prefsBox.delete(_kManualRatesExpiryMapKey);
     }
     await _savePreferences();
+
+    // ✅ FIX v4.1: Immediately remove manual rate from _exchangeRates so UI shows "loading" or cached auto rate
+    // This prevents the stale manual rate from being displayed while waiting for API refresh
+    _exchangeRates.remove(toCurrencyCode);
+    debugPrint('[CurrencyProvider] ✅ Immediately removed manual rate from _exchangeRates[$toCurrencyCode]');
+
+    // Trigger UI rebuild immediately so user sees the change instantly
+    state = state.copyWith();
+    debugPrint('[CurrencyProvider] ✅ UI state updated, manual rate removed, will fetch auto rate in background');
+
     // Persist to backend: clear today's manual flag for this pair
     try {
       final dio = HttpClient.instance.dio;
@@ -544,7 +735,13 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     } catch (e) {
       debugPrint('Failed to clear manual rate on server: $e');
     }
-    await _loadExchangeRates();
+
+    // Background refresh to fetch automatic rate (non-blocking, optional)
+    // This will load the automatic rate from API and update UI when ready
+    _loadExchangeRates().then((_) {
+      if (_disposed) return;
+      debugPrint('[CurrencyProvider] Background rate refresh completed, automatic rate should be displayed now');
+    });
   }
 
   /// Upsert a single manual rate with per-currency expiry
@@ -559,7 +756,45 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
           .map((k, v) => MapEntry(k, v.toIso8601String())),
     );
     await _savePreferences();
-    await _loadExchangeRates();
+
+    // Persist to backend (best-effort, don't block on failure)
+    try {
+      final dio = HttpClient.instance.dio;
+      await ApiReadiness.ensureReady(dio);
+      await dio.post('/currencies/rates/add', data: {
+        'from_currency': state.baseCurrency,
+        'to_currency': toCurrencyCode,
+        'rate': rate,
+        'source': 'manual',
+        'manual_rate_expiry': expiryUtc.toIso8601String(),
+      });
+      debugPrint('✅ Manual rate saved to database: $toCurrencyCode = $rate, expiry: ${expiryUtc.toIso8601String()}');
+    } catch (e) {
+      debugPrint('❌ Failed to persist manual rate to server: $e');
+      // Don't rethrow - allow local save to succeed even if server sync fails
+    }
+
+    // ✅ FIX v4.0: Immediately update _exchangeRates and trigger UI update
+    // This ensures the manual rate is visible instantly without waiting for background refresh
+    _exchangeRates[toCurrencyCode] = ExchangeRate(
+      fromCurrency: state.baseCurrency,
+      toCurrency: toCurrencyCode,
+      rate: rate,
+      date: DateTime.now(),
+      source: 'manual',
+    );
+    debugPrint('[CurrencyProvider] ✅ Immediately updated _exchangeRates[$toCurrencyCode] = $rate (manual)');
+
+    // Trigger UI rebuild immediately so user sees the new manual rate
+    state = state.copyWith();
+    debugPrint('[CurrencyProvider] ✅ UI state updated, manual rate should be visible now');
+
+    // Background refresh other rates (non-blocking, optional)
+    // This ensures manual rate persists even after background refresh completes
+    _loadExchangeRates().then((_) {
+      if (_disposed) return;
+      debugPrint('[CurrencyProvider] Background rate refresh completed, manual rates re-overlaid');
+    });
   }
 
   /// Expose whether manual rates are active
@@ -597,9 +832,12 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       }
 
       // Only fetch prices for selected cryptos to avoid noise
+      // Use currency cache to check if it's crypto (respects API classification)
       final selectedCryptoCodes = state.selectedCurrencies
-          .where((code) =>
-              CurrencyDefaults.cryptoCurrencies.any((c) => c.code == code))
+          .where((code) {
+            final currency = _currencyCache[code];
+            return currency?.isCrypto ?? false;
+          })
           .toList();
 
       // Get crypto prices in base currency with timeout
@@ -644,6 +882,8 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
           );
         }
       }
+      // Save updated rates (including crypto) to cache
+      await _saveCachedRates();
     } catch (e) {
       // Fail silently, crypto prices are optional
       debugPrint('Error loading crypto prices from CoinGecko: $e');
@@ -658,6 +898,17 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
   Future<void> refreshExchangeRates() async {
     assert(_initialized || _suppressAutoInit,
         'CurrencyNotifier used before initialize(); call initialize() first or disable auto-init in tests.');
+    // If a background update is in-flight, wait for it to finish,
+    // then trigger a fresh update to ensure an explicit refresh always
+    // results in a new fetch (helps determinism in tests as well).
+    final pending = _pendingRateUpdate;
+    if (pending != null) {
+      try {
+        await pending;
+      } catch (_) {
+        // ignore and proceed to trigger a new update
+      }
+    }
     await _loadExchangeRates();
   }
 
@@ -699,6 +950,19 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     return currencies;
   }
 
+  /// Get all cryptocurrencies (for management page)
+  /// Returns all crypto currencies regardless of cryptoEnabled setting
+  /// This allows users to see and select from all available cryptocurrencies
+  List<Currency> getAllCryptoCurrencies() {
+    // Prefer server catalog
+    final serverCrypto = _serverCurrencies.where((c) => c.isCrypto).toList();
+    if (serverCrypto.isNotEmpty) {
+      return serverCrypto;
+    }
+    // Fallback to default list
+    return CurrencyDefaults.cryptoCurrencies;
+  }
+
   /// Get selected currencies
   List<Currency> getSelectedCurrencies() {
     return state.selectedCurrencies
@@ -716,8 +980,10 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       state = state.copyWith(selectedCurrencies: updated);
       await _savePreferences();
       _schedulePreferencePush();
-      // Immediately fetch rates for the newly added currency
-      await _loadExchangeRates();
+      // Immediately fetch rates for the newly added currency (skip auto in tests)
+      if (!_suppressAutoInit) {
+        await _loadExchangeRates();
+      }
     }
   }
 
@@ -733,8 +999,10 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       state = state.copyWith(selectedCurrencies: updated);
       await _savePreferences();
       _schedulePreferencePush();
-      // Refresh rates after removal to keep targets in sync
-      await _loadExchangeRates();
+      // Refresh rates after removal to keep targets in sync (skip auto in tests)
+      if (!_suppressAutoInit) {
+        await _loadExchangeRates();
+      }
     }
   }
 
@@ -812,8 +1080,10 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
     await _savePreferences();
     _schedulePreferencePush();
 
-    // Then reload exchange rates with new base currency
-    await _loadExchangeRates();
+    // Then reload exchange rates with new base currency (skip auto in tests)
+    if (!_suppressAutoInit) {
+      await _loadExchangeRates();
+    }
   }
 
   /// Push user currency preferences to server (best-effort)
@@ -932,11 +1202,11 @@ class CurrencyNotifier extends StateNotifier<CurrencyPreferences> {
       await refreshExchangeRates();
     }
 
-    // Check if either is crypto
-    final fromIsCrypto =
-        CurrencyDefaults.cryptoCurrencies.any((c) => c.code == from);
-    final toIsCrypto =
-        CurrencyDefaults.cryptoCurrencies.any((c) => c.code == to);
+    // Check if either is crypto using currency cache (respects API classification)
+    final fromCurrency = _currencyCache[from];
+    final toCurrency = _currencyCache[to];
+    final fromIsCrypto = fromCurrency?.isCrypto ?? false;
+    final toIsCrypto = toCurrency?.isCrypto ?? false;
 
     if (fromIsCrypto || toIsCrypto) {
       // Use crypto price service for crypto conversions
@@ -1137,8 +1407,9 @@ final cryptoPricesProvider = Provider<Map<String, double>>((ref) {
   final Map<String, double> map = {};
   for (final entry in notifier._exchangeRates.entries) {
     final code = entry.key;
-    final isCrypto =
-        CurrencyDefaults.cryptoCurrencies.any((c) => c.code == code);
+    // Use currency cache to check if it's crypto (respects API classification)
+    final currency = notifier._currencyCache[code];
+    final isCrypto = currency?.isCrypto ?? false;
     if (isCrypto && entry.value.rate != 0) {
       map[code] = 1.0 / entry.value.rate;
     }

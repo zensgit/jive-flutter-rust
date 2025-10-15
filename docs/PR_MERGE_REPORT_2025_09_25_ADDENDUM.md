@@ -49,27 +49,7 @@ Changes recap:
 
 ### 5. Recommended Follow-up Benchmark
 
-Benchmark tool now located at:
-`jive-api/src/bin/benchmark_export_streaming.rs`
-
-Run (streaming enabled):
-```bash
-cargo run -p jive-money-api --features export_stream --bin benchmark_export_streaming -- \
-  --rows 5000 --database-url $DATABASE_URL
-```
-Then measure HTTP export latency (buffered vs streaming):
-```bash
-# Start API with streaming
-cargo run -p jive-money-api --features export_stream --bin jive-api &
-TOKEN=...  # obtain a valid JWT
-time curl -s -H "Authorization: Bearer $TOKEN" \
-  "http://localhost:8012/api/v1/transactions/export.csv?include_header=false" -o /dev/null
-
-# Start API without streaming (new terminal, stop previous)
-cargo run -p jive-money-api --bin jive-api &
-time curl -s -H "Authorization: Bearer $TOKEN" \
-  "http://localhost:8012/api/v1/transactions/export.csv?include_header=false" -o /dev/null
-```
+Suggested script (added separately) seeds N transactions and measures export latency for buffered vs streaming modes.
 
 ### 6. Production Preflight (See `PRODUCTION_PREFLIGHT_CHECKLIST.md`)
 
@@ -81,3 +61,4 @@ time curl -s -H "Authorization: Bearer $TOKEN" \
 
 ---
 Status: All corrections applied. No further action required for already merged PRs.
+

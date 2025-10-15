@@ -614,7 +614,7 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
     });
 
     // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('已应用"${preset.name}"模板'),
         backgroundColor: Colors.green,
@@ -722,10 +722,8 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
   }
 
   Future<void> _saveTheme() async {
-    // Capture before awaits to avoid using context across async gaps
-    final navigator = Navigator.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     if (_nameController.text.trim().isEmpty) {
+      final messenger = ScaffoldMessenger.of(context);
       // ignore: use_build_context_synchronously
       messenger.showSnackBar(
         const SnackBar(
@@ -758,11 +756,14 @@ class _CustomThemeEditorState extends State<CustomThemeEditor>
         );
       }
 
-      if (!mounted) return;
+      if (!context.mounted) return;
 
+      final navigator = Navigator.of(context);
+      final messenger = ScaffoldMessenger.of(context);
       // ignore: use_build_context_synchronously
       navigator.pop(finalTheme);
     } catch (e) {
+      final messenger = ScaffoldMessenger.of(context);
       // ignore: use_build_context_synchronously
       messenger.showSnackBar(
         SnackBar(

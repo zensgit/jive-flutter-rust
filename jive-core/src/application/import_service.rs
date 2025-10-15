@@ -212,6 +212,7 @@ pub struct ImportService {}
 #[cfg(feature = "wasm")]
 #[wasm_bindgen]
 impl ImportService {
+    pub fn new() -> Self { Self {} }
     #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
         Self {}

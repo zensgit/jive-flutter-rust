@@ -62,7 +62,7 @@ impl CreateUserRequest {
         self.avatar_url = avatar_url;
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn set_preferences(&mut self, preferences: UserPreferences) {
         self.preferences = Some(preferences);
     }
@@ -108,17 +108,17 @@ impl UpdateUserRequest {
         self.avatar_url = avatar_url;
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn set_preferences(&mut self, preferences: UserPreferences) {
         self.preferences = Some(preferences);
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_status(&mut self, status: Option<UserStatus>) {
         self.status = status;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_role(&mut self, role: Option<UserRole>) {
         self.role = role;
     }
@@ -136,10 +136,9 @@ pub struct UserFilter {
     email_verified: Option<bool>,
 }
 
-#[cfg(feature = "wasm")]
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 impl UserFilter {
-    #[wasm_bindgen(constructor)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(constructor))]
     pub fn new() -> Self {
         Self {
             status: None,
@@ -151,22 +150,22 @@ impl UserFilter {
         }
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_status(&mut self, status: Option<UserStatus>) {
         self.status = status;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_role(&mut self, role: Option<UserRole>) {
         self.role = role;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_search_query(&mut self, query: Option<String>) {
         self.search_query = query;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_email_verified(&mut self, verified: Option<bool>) {
         self.email_verified = verified;
     }
@@ -339,16 +338,13 @@ pub struct UserService {
     // 在实际实现中，这里会包含数据库连接或仓储接口
 }
 
-#[cfg(feature = "wasm")]
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 impl UserService {
-    #[wasm_bindgen(constructor)]
-    pub fn new() -> Self {
-        Self {}
-    }
+    #[cfg_attr(feature = "wasm", wasm_bindgen(constructor))]
+    pub fn new() -> Self { Self {} }
 
     /// 创建用户
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn create_user(
         &self,
         request: CreateUserRequest,
@@ -359,7 +355,7 @@ impl UserService {
     }
 
     /// 更新用户
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn update_user(
         &self,
         user_id: String,
@@ -371,7 +367,7 @@ impl UserService {
     }
 
     /// 获取用户详情
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn get_user(
         &self,
         user_id: String,
@@ -382,14 +378,14 @@ impl UserService {
     }
 
     /// 获取当前用户
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn get_current_user(&self, context: ServiceContext) -> ServiceResponse<User> {
         let result = self._get_current_user(context).await;
         result.into()
     }
 
     /// 删除用户
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn delete_user(
         &self,
         user_id: String,
@@ -400,7 +396,7 @@ impl UserService {
     }
 
     /// 搜索用户
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn search_users(
         &self,
         filter: UserFilter,
@@ -412,7 +408,7 @@ impl UserService {
     }
 
     /// 更改密码
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn change_password(
         &self,
         user_id: String,
@@ -424,7 +420,7 @@ impl UserService {
     }
 
     /// 重置密码
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn reset_password(
         &self,
         email: String,
@@ -435,7 +431,7 @@ impl UserService {
     }
 
     /// 验证邮箱
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn verify_email(
         &self,
         user_id: String,
@@ -449,7 +445,7 @@ impl UserService {
     }
 
     /// 发送验证邮件
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn send_verification_email(
         &self,
         user_id: String,
@@ -460,7 +456,7 @@ impl UserService {
     }
 
     /// 邀请用户
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn invite_user(
         &self,
         request: InviteUserRequest,
@@ -471,7 +467,7 @@ impl UserService {
     }
 
     /// 激活用户
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn activate_user(
         &self,
         user_id: String,
@@ -482,7 +478,7 @@ impl UserService {
     }
 
     /// 暂停用户
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn suspend_user(
         &self,
         user_id: String,
@@ -494,7 +490,7 @@ impl UserService {
     }
 
     /// 更新用户偏好
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn update_preferences(
         &self,
         user_id: String,
@@ -508,14 +504,14 @@ impl UserService {
     }
 
     /// 获取用户统计信息
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn get_user_stats(&self, context: ServiceContext) -> ServiceResponse<UserStats> {
         let result = self._get_user_stats(context).await;
         result.into()
     }
 
     /// 获取用户活动记录
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn get_user_activities(
         &self,
         user_id: String,
@@ -529,7 +525,7 @@ impl UserService {
     }
 
     /// 记录用户活动
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn log_activity(
         &self,
         user_id: String,

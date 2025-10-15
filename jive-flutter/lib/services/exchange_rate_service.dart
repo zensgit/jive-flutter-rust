@@ -84,12 +84,33 @@ class ExchangeRateService {
             // Map is_manual into source when manual for UI consistency
             final isManual = (item['is_manual'] == true);
             final mappedSource = isManual ? 'manual' : source;
+
+            // Parse historical change percentages
+            final change24h = item['change_24h'] != null
+                ? (item['change_24h'] is num
+                    ? (item['change_24h'] as num).toDouble()
+                    : double.tryParse(item['change_24h'].toString()))
+                : null;
+            final change7d = item['change_7d'] != null
+                ? (item['change_7d'] is num
+                    ? (item['change_7d'] as num).toDouble()
+                    : double.tryParse(item['change_7d'].toString()))
+                : null;
+            final change30d = item['change_30d'] != null
+                ? (item['change_30d'] is num
+                    ? (item['change_30d'] as num).toDouble()
+                    : double.tryParse(item['change_30d'].toString()))
+                : null;
+
             result[code] = ExchangeRate(
               fromCurrency: baseCurrency,
               toCurrency: code,
               rate: rate,
               date: now,
               source: mappedSource,
+              change24h: change24h,
+              change7d: change7d,
+              change30d: change30d,
             );
           }
         });

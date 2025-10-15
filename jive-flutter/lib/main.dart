@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:jive_money/core/app.dart';
 import 'package:jive_money/core/storage/hive_config.dart';
+import 'package:jive_money/core/storage/token_storage.dart';
+import 'package:jive_money/core/network/http_client.dart';
 import 'package:jive_money/core/utils/logger.dart';
 
 void main() async {
@@ -19,6 +21,9 @@ void main() async {
   try {
     // 初始化本地存储
     await _initializeStorage();
+
+    // 恢复认证令牌（如果存在）
+    await _restoreAuthToken();
 
     // 设置系统UI样式
     await _setupSystemUI();
@@ -60,6 +65,27 @@ Future<void> _initializeStorage() async {
   await SharedPreferences.getInstance();
 
   AppLogger.info('✅ Storage initialized');
+}
+
+/// 恢复认证令牌
+Future<void> _restoreAuthToken() async {
+  AppLogger.info('🔐 Restoring authentication token...');
+
+  try {
+    final token = await TokenStorage.getAccessToken();
+
+    if (token != null && token.isNotEmpty) {
+      HttpClient.instance.setAuthToken(token);
+      AppLogger.info('✅ Token restored: ${token.substring(0, 20)}...');
+      print('🔐 main.dart - Token restored on app startup: ${token.substring(0, 20)}...');
+    } else {
+      AppLogger.info('ℹ️ No saved token found');
+      print('ℹ️ main.dart - No saved token found');
+    }
+  } catch (e, stackTrace) {
+    AppLogger.error('❌ Failed to restore token', e, stackTrace);
+    print('❌ main.dart - Failed to restore token: $e');
+  }
 }
 
 /// 设置系统UI样式

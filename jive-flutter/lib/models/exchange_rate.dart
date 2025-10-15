@@ -5,6 +5,9 @@ class ExchangeRate {
   final double rate;
   final DateTime date;
   final String? source; // API source (e.g., 'coingecko', 'fixer', 'mock')
+  final double? change24h; // 24小时变化百分比
+  final double? change7d;  // 7天变化百分比
+  final double? change30d; // 30天变化百分比
 
   const ExchangeRate({
     required this.fromCurrency,
@@ -12,6 +15,9 @@ class ExchangeRate {
     required this.rate,
     required this.date,
     this.source,
+    this.change24h,
+    this.change7d,
+    this.change30d,
   });
 
   factory ExchangeRate.fromJson(Map<String, dynamic> json) {
@@ -21,6 +27,21 @@ class ExchangeRate {
       rate: (json['rate'] as num).toDouble(),
       date: DateTime.parse(json['date'] as String),
       source: json['source'] as String?,
+      change24h: json['change_24h'] != null
+          ? (json['change_24h'] is String
+              ? double.tryParse(json['change_24h'])
+              : (json['change_24h'] as num?)?.toDouble())
+          : null,
+      change7d: json['change_7d'] != null
+          ? (json['change_7d'] is String
+              ? double.tryParse(json['change_7d'])
+              : (json['change_7d'] as num?)?.toDouble())
+          : null,
+      change30d: json['change_30d'] != null
+          ? (json['change_30d'] is String
+              ? double.tryParse(json['change_30d'])
+              : (json['change_30d'] as num?)?.toDouble())
+          : null,
     );
   }
 
@@ -30,6 +51,9 @@ class ExchangeRate {
         'rate': rate,
         'date': date.toIso8601String(),
         'source': source,
+        if (change24h != null) 'change_24h': change24h,
+        if (change7d != null) 'change_7d': change7d,
+        if (change30d != null) 'change_30d': change30d,
       };
 
   double convert(double amount) => amount * rate;
@@ -40,6 +64,9 @@ class ExchangeRate {
         rate: 1.0 / rate,
         date: date,
         source: source,
+        change24h: change24h != null ? -change24h! : null, // Invert sign for inverse rate
+        change7d: change7d != null ? -change7d! : null,
+        change30d: change30d != null ? -change30d! : null,
       );
 
   @override

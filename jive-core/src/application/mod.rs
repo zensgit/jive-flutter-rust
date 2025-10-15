@@ -7,33 +7,58 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
+// 应用层接口定义（Commands, Results, Service Traits）
+pub mod commands;
+pub mod results;
+pub mod services;
+
 // 导出所有应用服务
 pub mod account_service;
+#[cfg(feature = "app_experimental")]
 pub mod analytics_service;
 pub mod auth_service;
+#[cfg(feature = "app_experimental")]
 pub mod auth_service_enhanced;
 pub mod budget_service;
 pub mod category_service;
+#[cfg(feature = "app_experimental")]
 pub mod credit_card_service;
+#[cfg(feature = "app_experimental")]
 pub mod data_exchange_service;
+#[cfg(feature = "app_experimental")]
 pub mod export_service;
 pub mod family_service;
+#[cfg(feature = "app_experimental")]
 pub mod import_service;
+#[cfg(feature = "app_experimental")]
 pub mod investment_service;
+#[cfg(feature = "app_experimental")]
 pub mod ledger_service;
 pub mod mfa_service;
+#[cfg(feature = "perm_cache")]
 pub mod middleware;
+#[cfg(feature = "app_experimental")]
 pub mod multi_family_service;
+#[cfg(feature = "app_experimental")]
 pub mod notification_service;
+#[cfg(feature = "app_experimental")]
 pub mod payee_service;
+#[cfg(feature = "app_experimental")]
 pub mod quick_transaction_service;
+#[cfg(feature = "app_experimental")]
 pub mod report_service;
+#[cfg(feature = "app_experimental")]
 pub mod rule_service;
+#[cfg(feature = "app_experimental")]
 pub mod rules_engine;
+#[cfg(feature = "app_experimental")]
 pub mod scheduled_transaction_service;
+#[cfg(feature = "app_experimental")]
 pub mod sync_service;
+#[cfg(feature = "app_experimental")]
 pub mod tag_service;
 pub mod transaction_service;
+#[cfg(feature = "travel_mode")]
 pub mod travel_service;
 pub mod user_service;
 
@@ -41,18 +66,29 @@ pub use account_service::*;
 pub use auth_service::*;
 pub use budget_service::*;
 pub use category_service::*;
+#[cfg(feature = "app_experimental")]
 pub use export_service::*;
 pub use family_service::*;
+#[cfg(feature = "app_experimental")]
 pub use import_service::*;
+#[cfg(feature = "app_experimental")]
 pub use ledger_service::*;
+#[cfg(feature = "app_experimental")]
 pub use notification_service::*;
+#[cfg(feature = "app_experimental")]
 pub use payee_service::*;
+#[cfg(feature = "app_experimental")]
 pub use report_service::*;
+#[cfg(feature = "app_experimental")]
 pub use rule_service::*;
+#[cfg(feature = "app_experimental")]
 pub use scheduled_transaction_service::*;
+#[cfg(feature = "app_experimental")]
 pub use sync_service::*;
+#[cfg(feature = "app_experimental")]
 pub use tag_service::*;
 pub use transaction_service::*;
+#[cfg(feature = "travel_mode")]
 pub use travel_service::*;
 pub use user_service::*;
 
@@ -67,10 +103,9 @@ pub struct PaginationParams {
     pub offset: u32,
 }
 
-#[cfg(feature = "wasm")]
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 impl PaginationParams {
-    #[wasm_bindgen(constructor)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(constructor))]
     pub fn new(page: u32, per_page: u32) -> Self {
         let offset = (page.saturating_sub(1)) * per_page;
         Self {
@@ -80,17 +115,17 @@ impl PaginationParams {
         }
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn page(&self) -> u32 {
         self.page
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn per_page(&self) -> u32 {
         self.per_page
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn offset(&self) -> u32 {
         self.offset
     }
@@ -342,10 +377,9 @@ pub struct BatchResult {
     pub errors: Vec<String>,
 }
 
-#[cfg(feature = "wasm")]
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 impl BatchResult {
-    #[wasm_bindgen(constructor)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(constructor))]
     pub fn new() -> Self {
         Self {
             total: 0,
@@ -355,27 +389,27 @@ impl BatchResult {
         }
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn total(&self) -> u32 {
         self.total
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn successful(&self) -> u32 {
         self.successful
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn failed(&self) -> u32 {
         self.failed
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn errors(&self) -> Vec<String> {
         self.errors.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn success_rate(&self) -> f64 {
         if self.total == 0 {
             0.0
@@ -384,13 +418,13 @@ impl BatchResult {
         }
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn add_success(&mut self) {
         self.total += 1;
         self.successful += 1;
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn add_error(&mut self, error: String) {
         self.total += 1;
         self.failed += 1;
@@ -467,7 +501,7 @@ impl ServiceContext {
             "create_transactions" => Permission::CreateTransactions,
             "edit_transactions" => Permission::EditTransactions,
             "delete_transactions" => Permission::DeleteTransactions,
-            "manage_rules" => Permission::ManageFamily, // 暂时使用 ManageFamily 权限
+            "manage_rules" => Permission::ManageRules,
             _ => return false,
         };
 
@@ -480,11 +514,11 @@ impl ServiceContext {
         permission: crate::domain::Permission,
     ) -> crate::error::Result<()> {
         use crate::error::JiveError;
-        if !self.has_permission(permission) {
-            return Err(JiveError::Unauthorized(format!(
+        if !self.has_permission(permission.clone()) {
+            return Err(JiveError::AuthorizationError { message: format!(
                 "Missing permission: {:?}",
                 permission
-            )));
+            )});
         }
         Ok(())
     }

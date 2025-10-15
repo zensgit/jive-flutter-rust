@@ -295,7 +295,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                               ],
                             ),
                             const SizedBox(height: 20),
-                            SizedBox(
+                            const SizedBox(
                               width: double.infinity,
                               child: OutlinedButton(
                                 onPressed: _isLoading ? null : _handleUnbind,
@@ -314,7 +314,7 @@ class _WeChatBindingScreenState extends State<WeChatBindingScreen> {
                                                   Colors.red),
                                         ),
                                       )
-                                    : const Text('解绑微信账户'),
+                                    : Text('解绑微信账户'),
                               ),
                             ),
                           ],

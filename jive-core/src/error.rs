@@ -10,6 +10,8 @@ use wasm_bindgen::prelude::*;
 #[derive(Error, Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum JiveError {
+    #[error("Forbidden: {0}")]
+    Forbidden(String),
     #[error("Not found: {message}")]
     NotFound { message: String },
     #[error("Account not found: {id}")]
@@ -35,6 +37,12 @@ pub enum JiveError {
 
     #[error("Invalid currency: {currency}")]
     InvalidCurrency { currency: String },
+
+    #[error("Exchange rate not found: {from_currency} -> {to_currency}")]
+    ExchangeRateNotFound {
+        from_currency: String,
+        to_currency: String,
+    },
 
     #[error("Invalid date: {date}")]
     InvalidDate { date: String },
@@ -98,6 +106,7 @@ impl JiveError {
             JiveError::InsufficientBalance { .. } => "InsufficientBalance".to_string(),
             JiveError::InvalidAmount { .. } => "InvalidAmount".to_string(),
             JiveError::InvalidCurrency { .. } => "InvalidCurrency".to_string(),
+            JiveError::ExchangeRateNotFound { .. } => "ExchangeRateNotFound".to_string(),
             JiveError::InvalidDate { .. } => "InvalidDate".to_string(),
             JiveError::ValidationError { .. } => "ValidationError".to_string(),
             JiveError::DatabaseError { .. } => "DatabaseError".to_string(),
@@ -195,9 +204,44 @@ pub fn validate_email(email: &str) -> Result<()> {
         });
     }
 
-    if !email.contains('@') || !email.contains('.') {
+    // 检查是否包含@符号
+    if !email.contains('@') {
         return Err(JiveError::ValidationError {
-            message: "Invalid email format".to_string(),
+            message: "Invalid email format: missing @".to_string(),
+        });
+    }
+
+    // 分割成用户名和域名部分
+    let parts: Vec<&str> = email.split('@').collect();
+
+    // 必须恰好分成两部分
+    if parts.len() != 2 {
+        return Err(JiveError::ValidationError {
+            message: "Invalid email format: multiple @ symbols".to_string(),
+        });
+    }
+
+    let local_part = parts[0];
+    let domain_part = parts[1];
+
+    // 用户名部分不能为空
+    if local_part.is_empty() {
+        return Err(JiveError::ValidationError {
+            message: "Invalid email format: empty local part".to_string(),
+        });
+    }
+
+    // 域名部分必须包含.且不能为空
+    if domain_part.is_empty() || !domain_part.contains('.') {
+        return Err(JiveError::ValidationError {
+            message: "Invalid email format: invalid domain".to_string(),
+        });
+    }
+
+    // 域名最后一个.后面必须有内容(顶级域名)
+    if domain_part.ends_with('.') {
+        return Err(JiveError::ValidationError {
+            message: "Invalid email format: domain ends with dot".to_string(),
         });
     }
 
@@ -225,6 +269,7 @@ pub mod error_classification {
                 | JiveError::InsufficientBalance { .. }
                 | JiveError::InvalidAmount { .. }
                 | JiveError::InvalidCurrency { .. }
+                | JiveError::ExchangeRateNotFound { .. }
                 | JiveError::InvalidDate { .. }
                 | JiveError::ValidationError { .. }
                 | JiveError::AuthenticationError { .. }

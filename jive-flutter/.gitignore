@@ -48,3 +48,11 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Playwright Test Automation
+test-automation/node_modules/
+test-automation/package-lock.json
+test-automation/screenshots/
+test-automation/.playwright/
+test-automation/test-results/
+test-automation/playwright-report/

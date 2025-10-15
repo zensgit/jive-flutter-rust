@@ -37,9 +37,9 @@ pub struct CreateTransactionRequest {
 }
 
 #[cfg(feature = "wasm")]
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 impl CreateTransactionRequest {
-    #[wasm_bindgen(constructor)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(constructor))]
     pub fn new(
         account_id: String,
         ledger_id: String,
@@ -70,87 +70,87 @@ impl CreateTransactionRequest {
     }
 
     // Getters
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn account_id(&self) -> String {
         self.account_id.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn ledger_id(&self) -> String {
         self.ledger_id.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn name(&self) -> String {
         self.name.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn amount(&self) -> String {
         self.amount.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn currency(&self) -> String {
         self.currency.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn date(&self) -> String {
         self.date.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn transaction_type(&self) -> TransactionType {
         self.transaction_type.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn tags(&self) -> Vec<String> {
         self.tags.clone()
     }
 
     // Setters
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_category_id(&mut self, category_id: Option<String>) {
         self.category_id = category_id;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_payee_id(&mut self, payee_id: Option<String>) {
         self.payee_id = payee_id;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_description(&mut self, description: Option<String>) {
         self.description = description;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_notes(&mut self, notes: Option<String>) {
         self.notes = notes;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_reference(&mut self, reference: Option<String>) {
         self.reference = reference;
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn add_tag(&mut self, tag: String) {
         if !self.tags.contains(&tag) {
             self.tags.push(tag);
         }
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn remove_tag(&mut self, tag: String) {
         if let Some(pos) = self.tags.iter().position(|t| t == &tag) {
             self.tags.remove(pos);
         }
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn set_multi_currency(
         &mut self,
         original_amount: String,
@@ -162,7 +162,7 @@ impl CreateTransactionRequest {
         self.exchange_rate = Some(exchange_rate);
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn clear_multi_currency(&mut self) {
         self.original_amount = None;
         self.original_currency = None;
@@ -186,9 +186,9 @@ pub struct UpdateTransactionRequest {
 }
 
 #[cfg(feature = "wasm")]
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 impl UpdateTransactionRequest {
-    #[wasm_bindgen(constructor)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(constructor))]
     pub fn new() -> Self {
         Self {
             name: None,
@@ -203,27 +203,27 @@ impl UpdateTransactionRequest {
         }
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_name(&mut self, name: Option<String>) {
         self.name = name;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_amount(&mut self, amount: Option<String>) {
         self.amount = amount;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_date(&mut self, date: Option<String>) {
         self.date = date;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_category_id(&mut self, category_id: Option<String>) {
         self.category_id = category_id;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_status(&mut self, status: Option<TransactionStatus>) {
         self.status = status;
     }
@@ -249,10 +249,9 @@ pub struct TransactionFilter {
     include_transfers: bool,
 }
 
-#[cfg(feature = "wasm")]
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 impl TransactionFilter {
-    #[wasm_bindgen(constructor)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(constructor))]
     pub fn new() -> Self {
         Self {
             account_id: None,
@@ -272,34 +271,34 @@ impl TransactionFilter {
         }
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_account_id(&mut self, account_id: Option<String>) {
         self.account_id = account_id;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_ledger_id(&mut self, ledger_id: Option<String>) {
         self.ledger_id = ledger_id;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_date_range(&mut self, start_date: Option<String>, end_date: Option<String>) {
         self.start_date = start_date;
         self.end_date = end_date;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_amount_range(&mut self, min_amount: Option<String>, max_amount: Option<String>) {
         self.min_amount = min_amount;
         self.max_amount = max_amount;
     }
 
-    #[wasm_bindgen(setter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(setter))]
     pub fn set_search_query(&mut self, query: Option<String>) {
         self.search_query = query;
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub fn add_tag_filter(&mut self, tag: String) {
         if !self.tags.contains(&tag) {
             self.tags.push(tag);
@@ -308,9 +307,7 @@ impl TransactionFilter {
 }
 
 impl Default for TransactionFilter {
-    fn default() -> Self {
-        Self::new()
-    }
+    fn default() -> Self { Self::new() }
 }
 
 /// 交易统计信息
@@ -328,34 +325,34 @@ pub struct TransactionStats {
 }
 
 #[cfg(feature = "wasm")]
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 impl TransactionStats {
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn total_transactions(&self) -> u32 {
         self.total_transactions
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn total_income(&self) -> String {
         self.total_income.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn total_expenses(&self) -> String {
         self.total_expenses.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfgAttr(feature = "wasm", wasm_bindgen(getter))]
     pub fn net_flow(&self) -> String {
         self.net_flow.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn avg_transaction_amount(&self) -> String {
         self.avg_transaction_amount.clone()
     }
 
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn currency(&self) -> String {
         self.currency.clone()
     }
@@ -384,9 +381,9 @@ pub enum BulkOperation {
 }
 
 #[cfg(feature = "wasm")]
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 impl BulkOperation {
-    #[wasm_bindgen(getter)]
+    #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn as_string(&self) -> String {
         match self {
             BulkOperation::UpdateCategory => "update_category".to_string(),
@@ -405,16 +402,13 @@ pub struct TransactionService {
     // 在实际实现中，这里会包含数据库连接或仓储接口
 }
 
-#[cfg(feature = "wasm")]
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 impl TransactionService {
-    #[wasm_bindgen(constructor)]
-    pub fn new() -> Self {
-        Self {}
-    }
+    #[cfg_attr(feature = "wasm", wasm_bindgen(constructor))]
+    pub fn new() -> Self { Self {} }
 
     /// 创建交易
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn create_transaction(
         &self,
         request: CreateTransactionRequest,
@@ -425,7 +419,7 @@ impl TransactionService {
     }
 
     /// 更新交易
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn update_transaction(
         &self,
         transaction_id: String,
@@ -439,7 +433,7 @@ impl TransactionService {
     }
 
     /// 获取交易详情
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn get_transaction(
         &self,
         transaction_id: String,
@@ -450,7 +444,7 @@ impl TransactionService {
     }
 
     /// 删除交易
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn delete_transaction(
         &self,
         transaction_id: String,
@@ -461,7 +455,7 @@ impl TransactionService {
     }
 
     /// 搜索交易
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn search_transactions(
         &self,
         filter: TransactionFilter,
@@ -473,7 +467,7 @@ impl TransactionService {
     }
 
     /// 获取交易统计
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn get_transaction_stats(
         &self,
         filter: TransactionFilter,
@@ -484,7 +478,7 @@ impl TransactionService {
     }
 
     /// 批量操作交易
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn bulk_update_transactions(
         &self,
         request: BulkTransactionRequest,
@@ -495,7 +489,7 @@ impl TransactionService {
     }
 
     /// 复制交易
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn duplicate_transaction(
         &self,
         transaction_id: String,
@@ -509,7 +503,7 @@ impl TransactionService {
     }
 
     /// 按月分组交易
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn group_by_month(
         &self,
         filter: TransactionFilter,
@@ -520,7 +514,7 @@ impl TransactionService {
     }
 
     /// 按分类分组交易
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn group_by_category(
         &self,
         filter: TransactionFilter,
@@ -531,7 +525,7 @@ impl TransactionService {
     }
 
     /// 添加交易标签
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn add_tags(
         &self,
         transaction_id: String,
@@ -543,7 +537,7 @@ impl TransactionService {
     }
 
     /// 移除交易标签
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn remove_tags(
         &self,
         transaction_id: String,

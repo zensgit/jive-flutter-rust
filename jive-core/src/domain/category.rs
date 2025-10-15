@@ -1,13 +1,13 @@
 //! Category domain model
 
 use chrono::{DateTime, Utc};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
+use super::{AccountClassification, Entity, SoftDeletable};
 use crate::error::{JiveError, Result};
-use super::{Entity, SoftDeletable, AccountClassification};
 
 /// 分类实体
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -23,7 +23,7 @@ pub struct Category {
     icon: Option<String>,
     is_active: bool,
     is_system: bool, // 系统预置分类
-    position: u32, // 排序位置
+    position: u32,   // 排序位置
     // 统计信息
     transaction_count: u32,
     // 审计字段
@@ -110,7 +110,7 @@ impl Category {
 
     #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn classification(&self) -> AccountClassification {
-        self.classification.clone()
+        self.classification
     }
 
     #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
@@ -365,7 +365,8 @@ impl Category {
                     color.to_string(),
                     icon.map(|s| s.to_string()),
                     *position,
-                ).unwrap()
+                )
+                .unwrap()
             })
             .collect()
     }
@@ -394,7 +395,8 @@ impl Category {
                     color.to_string(),
                     icon.map(|s| s.to_string()),
                     *position,
-                ).unwrap()
+                )
+                .unwrap()
             })
             .collect()
     }
@@ -417,10 +419,18 @@ impl Entity for Category {
 }
 
 impl SoftDeletable for Category {
-    fn is_deleted(&self) -> bool { self.deleted_at.is_some() }
-    fn deleted_at(&self) -> Option<DateTime<Utc>> { self.deleted_at }
-    fn soft_delete(&mut self) { self.deleted_at = Some(Utc::now()); }
-    fn restore(&mut self) { self.deleted_at = None; }
+    fn is_deleted(&self) -> bool {
+        self.deleted_at.is_some()
+    }
+    fn deleted_at(&self) -> Option<DateTime<Utc>> {
+        self.deleted_at
+    }
+    fn soft_delete(&mut self) {
+        self.deleted_at = Some(Utc::now());
+    }
+    fn restore(&mut self) {
+        self.deleted_at = None;
+    }
 }
 
 /// 分类构建器
@@ -505,14 +515,16 @@ impl CategoryBuilder {
             message: "Category name is required".to_string(),
         })?;
 
-        let classification = self.classification.ok_or_else(|| JiveError::ValidationError {
-            message: "Classification is required".to_string(),
-        })?;
+        let classification = self
+            .classification
+            .ok_or_else(|| JiveError::ValidationError {
+                message: "Classification is required".to_string(),
+            })?;
 
         let color = self.color.unwrap_or_else(|| "#6B7280".to_string());
 
         let mut category = Category::new(ledger_id, name, classification, color)?;
-        
+
         category.parent_id = self.parent_id;
         if let Some(description) = self.description {
             category.set_description(Some(description))?;
@@ -527,6 +539,12 @@ impl CategoryBuilder {
     }
 }
 
+impl Default for CategoryBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -538,10 +556,14 @@ mod tests {
             "Dining".to_string(),
             AccountClassification::Expense,
             "#EF4444".to_string(),
-        ).unwrap();
+        )
+        .unwrap();
 
         assert_eq!(category.name(), "Dining");
-        assert!(matches!(category.classification(), AccountClassification::Expense));
+        assert!(matches!(
+            category.classification(),
+            AccountClassification::Expense
+        ));
         assert_eq!(category.color(), "#EF4444");
         assert!(!category.is_system());
         assert!(category.is_active());
@@ -555,14 +577,16 @@ mod tests {
             "Transportation".to_string(),
             AccountClassification::Expense,
             "#F97316".to_string(),
-        ).unwrap();
+        )
+        .unwrap();
 
         let mut child = Category::new(
             "ledger-123".to_string(),
             "Gas".to_string(),
             AccountClassification::Expense,
             "#FB923C".to_string(),
-        ).unwrap();
+        )
+        .unwrap();
 
         child.set_parent_id(Some(parent.id()));
 
@@ -586,14 +610,17 @@ mod tests {
 
         assert_eq!(category.name(), "Shopping");
         assert_eq!(category.icon(), Some("🛍️".to_string()));
-        assert_eq!(category.description(), Some("Shopping expenses".to_string()));
+        assert_eq!(
+            category.description(),
+            Some("Shopping expenses".to_string())
+        );
         assert_eq!(category.position(), 3);
     }
 
     #[test]
     fn test_system_categories() {
         let ledger_id = "ledger-123".to_string();
-        
+
         let income_categories = Category::default_income_categories(ledger_id.clone());
         let expense_categories = Category::default_expense_categories(ledger_id);
 
@@ -618,7 +645,8 @@ mod tests {
             "Test Category".to_string(),
             AccountClassification::Expense,
             "#6B7280".to_string(),
-        ).unwrap();
+        )
+        .unwrap();
 
         assert_eq!(category.transaction_count(), 0);
         assert!(category.can_be_deleted());
@@ -640,7 +668,8 @@ mod tests {
             "".to_string(),
             AccountClassification::Expense,
             "#EF4444".to_string(),
-        ).is_err());
+        )
+        .is_err());
 
         // 测试无效颜色
         assert!(Category::new(
@@ -648,6 +677,7 @@ mod tests {
             "Valid Name".to_string(),
             AccountClassification::Expense,
             "invalid-color".to_string(),
-        ).is_err());
+        )
+        .is_err());
     }
 }
