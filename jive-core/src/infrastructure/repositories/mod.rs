@@ -46,7 +46,7 @@ impl BaseRepository {
 #[derive(Debug, thiserror::Error)]
 pub enum RepositoryError {
     #[error("Database error: {0}")]
-    Database(#[from] sqlx::Error),
+    Database(sqlx::Error),
     
     #[error("Entity not found")]
     NotFound,
