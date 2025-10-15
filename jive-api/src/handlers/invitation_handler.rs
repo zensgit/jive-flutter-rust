@@ -11,6 +11,26 @@ use crate::models::invitation::{
     AcceptInvitationRequest, CreateInvitationRequest, InvitationResponse,
 };
 use crate::services::{InvitationService, ServiceContext, ServiceError};
+
+// Dev-only helper: allow injecting a mock ServiceContext when CORS_DEV=1 (local dev)
+fn maybe_mock_context(ctx: Option<ServiceContext>) -> ServiceContext {
+    if std::env::var("CORS_DEV").ok().as_deref() == Some("1") {
+        if let Some(c) = ctx { return c; }
+        // Fallback mock for local smoke tests; ids must exist or be created by migrations/seed
+        use uuid::Uuid as U;
+        // Use Superadmin defaults created by migrations/005_create_superadmin.sql
+        return ServiceContext::new(
+            U::parse_str("550e8400-e29b-41d4-a716-446655440000").unwrap(),
+            U::parse_str("650e8400-e29b-41d4-a716-446655440000").unwrap(),
+            crate::models::permission::MemberRole::Owner,
+            crate::models::permission::MemberRole::Owner.default_permissions(),
+            "superadmin@jive.com".to_string(),
+            Some("Super Admin".to_string()),
+        );
+    }
+    // Safe mode: must have a real context
+    ctx.expect("Missing ServiceContext")
+}
 use sqlx::PgPool;
 
 use super::family_handler::ApiResponse;
@@ -18,10 +38,13 @@ use super::family_handler::ApiResponse;
 // Create invitation
 pub async fn create_invitation(
     State(pool): State<PgPool>,
-    Extension(ctx): Extension<ServiceContext>,
+    maybe_ctx: Option<Extension<ServiceContext>>, // optional in dev
     Json(request): Json<CreateInvitationRequest>,
 ) -> Result<Json<ApiResponse<InvitationResponse>>, StatusCode> {
     let service = InvitationService::new(pool.clone());
+
+    // In dev mode (CORS_DEV=1), allow a fallback mock context for quick smoke tests
+    let ctx = maybe_mock_context(maybe_ctx.map(|e| e.0));
 
     match service.create_invitation(&ctx, request).await {
         Ok(invitation) => Ok(Json(ApiResponse::success(invitation))),
@@ -37,9 +60,11 @@ pub async fn create_invitation(
 // Get pending invitations
 pub async fn get_pending_invitations(
     State(pool): State<PgPool>,
-    Extension(ctx): Extension<ServiceContext>,
+    maybe_ctx: Option<Extension<ServiceContext>>, // optional in dev
 ) -> Result<Json<ApiResponse<Vec<InvitationResponse>>>, StatusCode> {
     let service = InvitationService::new(pool.clone());
+
+    let ctx = maybe_mock_context(maybe_ctx.map(|e| e.0));
 
     match service.get_pending_invitations(&ctx).await {
         Ok(invitations) => Ok(Json(ApiResponse::success(invitations))),

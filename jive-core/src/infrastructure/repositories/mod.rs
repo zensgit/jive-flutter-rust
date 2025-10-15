@@ -1,12 +1,18 @@
 // Repository Layer - Data Access Implementation
 // Based on Maybe's database structure
 
-pub mod family_repository;
-pub mod user_repository;
 pub mod account_repository;
-pub mod transaction_repository;
 pub mod category_repository;
-pub mod balance_repository;
+pub mod family_repository;
+pub mod idempotency_repository;
+pub mod transaction_repository;
+
+// Feature-gated implementations
+#[cfg(feature = "server")]
+pub mod idempotency_repository_pg;
+
+#[cfg(feature = "redis")]
+pub mod idempotency_repository_redis;
 
 use async_trait::async_trait;
 use sqlx::PgPool;

@@ -27,7 +27,7 @@ mixin _$TravelEvent {
   DateTime get endDate => throw _privateConstructorUsedError; // 扩展字段（测试覆盖）
   String? get destination => throw _privateConstructorUsedError;
   String get currency => throw _privateConstructorUsedError;
-  double? get budget => throw _privateConstructorUsedError;
+  double get budget => throw _privateConstructorUsedError;
   double get totalSpent => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
   String? get location => throw _privateConstructorUsedError;
@@ -61,7 +61,7 @@ abstract class $TravelEventCopyWith<$Res> {
       DateTime endDate,
       String? destination,
       String currency,
-      double? budget,
+      double budget,
       double totalSpent,
       String? notes,
       String? location,
@@ -96,7 +96,7 @@ class _$TravelEventCopyWithImpl<$Res, $Val extends TravelEvent>
     Object? endDate = null,
     Object? destination = freezed,
     Object? currency = null,
-    Object? budget = freezed,
+    Object? budget = null,
     Object? totalSpent = null,
     Object? notes = freezed,
     Object? location = freezed,
@@ -139,10 +139,10 @@ class _$TravelEventCopyWithImpl<$Res, $Val extends TravelEvent>
           ? _value.currency
           : currency // ignore: cast_nullable_to_non_nullable
               as String,
-      budget: freezed == budget
+      budget: null == budget
           ? _value.budget
           : budget // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as double,
       totalSpent: null == totalSpent
           ? _value.totalSpent
           : totalSpent // ignore: cast_nullable_to_non_nullable
@@ -211,7 +211,7 @@ abstract class _$$TravelEventImplCopyWith<$Res>
       DateTime endDate,
       String? destination,
       String currency,
-      double? budget,
+      double budget,
       double totalSpent,
       String? notes,
       String? location,
@@ -244,7 +244,7 @@ class __$$TravelEventImplCopyWithImpl<$Res>
     Object? endDate = null,
     Object? destination = freezed,
     Object? currency = null,
-    Object? budget = freezed,
+    Object? budget = null,
     Object? totalSpent = null,
     Object? notes = freezed,
     Object? location = freezed,
@@ -287,10 +287,10 @@ class __$$TravelEventImplCopyWithImpl<$Res>
           ? _value.currency
           : currency // ignore: cast_nullable_to_non_nullable
               as String,
-      budget: freezed == budget
+      budget: null == budget
           ? _value.budget
           : budget // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as double,
       totalSpent: null == totalSpent
           ? _value.totalSpent
           : totalSpent // ignore: cast_nullable_to_non_nullable
@@ -354,7 +354,7 @@ class _$TravelEventImpl implements _TravelEvent {
       required this.endDate,
       this.destination,
       this.currency = 'CNY',
-      this.budget,
+      this.budget = 0.0,
       this.totalSpent = 0.0,
       this.notes,
       this.location,
@@ -389,7 +389,8 @@ class _$TravelEventImpl implements _TravelEvent {
   @JsonKey()
   final String currency;
   @override
-  final double? budget;
+  @JsonKey()
+  final double budget;
   @override
   @JsonKey()
   final double totalSpent;
@@ -523,7 +524,7 @@ abstract class _TravelEvent implements TravelEvent {
       required final DateTime endDate,
       final String? destination,
       final String currency,
-      final double? budget,
+      final double budget,
       final double totalSpent,
       final String? notes,
       final String? location,
@@ -555,7 +556,7 @@ abstract class _TravelEvent implements TravelEvent {
   @override
   String get currency;
   @override
-  double? get budget;
+  double get budget;
   @override
   double get totalSpent;
   @override

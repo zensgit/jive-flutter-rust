@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                request_id,\n                operation,\n                result_payload,\n                status_code,\n                created_at,\n                expires_at\n            FROM idempotency_records\n            WHERE request_id = $1\n              AND expires_at > NOW()\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "request_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "operation",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "result_payload",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "status_code",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 5,
+        "name": "expires_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "aadc36effd36aa92f2ec7dc1eb560b7f72d62f68a687937850287724e0f40e9c"
+}
