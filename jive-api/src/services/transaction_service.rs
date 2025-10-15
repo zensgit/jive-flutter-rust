@@ -1,6 +1,7 @@
 use crate::error::{ApiError, ApiResult};
 use crate::models::transaction::{Transaction, TransactionCreate, TransactionType};
 use chrono::{DateTime, Utc};
+use rust_decimal::Decimal;
 use sqlx::PgPool;
 use std::collections::HashMap;
 use uuid::Uuid;
@@ -28,7 +29,7 @@ impl TransactionService {
         let data_snapshot = data.clone();
 
         // 获取账户当前余额
-        let current_balance: Option<(f64,)> =
+        let current_balance: Option<(Decimal,)> =
             sqlx::query_as("SELECT current_balance FROM accounts WHERE id = $1 FOR UPDATE")
                 .bind(data.account_id)
                 .fetch_optional(&mut *tx)
@@ -127,7 +128,7 @@ impl TransactionService {
         target_account_id: Uuid,
     ) -> ApiResult<()> {
         // 获取目标账户余额
-        let target_balance: Option<(f64,)> =
+        let target_balance: Option<(Decimal,)> =
             sqlx::query_as("SELECT current_balance FROM accounts WHERE id = $1 FOR UPDATE")
                 .bind(target_account_id)
                 .fetch_optional(&mut **tx)
@@ -190,14 +191,14 @@ impl TransactionService {
             .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         let mut created_transactions = Vec::new();
-        let mut account_balances: HashMap<Uuid, f64> = HashMap::new();
+        let mut account_balances: HashMap<Uuid, Decimal> = HashMap::new();
 
         // 预加载所有相关账户的余额
         for trans in &transactions {
             if let std::collections::hash_map::Entry::Vacant(e) =
                 account_balances.entry(trans.account_id)
             {
-                let balance: Option<(f64,)> =
+                let balance: Option<(Decimal,)> =
                     sqlx::query_as("SELECT current_balance FROM accounts WHERE id = $1")
                         .bind(trans.account_id)
                         .fetch_optional(&mut *tx)
