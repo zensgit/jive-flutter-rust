@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jive_money/services/api/transaction_service.dart';
 import 'package:jive_money/models/transaction.dart';
 import 'package:jive_money/models/transaction_filter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jive_money/providers/ledger_provider.dart';
+
+enum TransactionGrouping { date, category, account }
 
 /// 交易状态
 class TransactionState {
@@ -14,6 +18,8 @@ class TransactionState {
   final int totalCount;
   final double totalIncome;
   final double totalExpense;
+  final TransactionGrouping grouping;
+  final Set<String> groupCollapse;
 
   const TransactionState({
     this.transactions = const [],
@@ -24,6 +30,8 @@ class TransactionState {
     this.totalCount = 0,
     this.totalIncome = 0.0,
     this.totalExpense = 0.0,
+    this.grouping = TransactionGrouping.date,
+    this.groupCollapse = const {},
   });
 
   TransactionState copyWith({
@@ -35,6 +43,8 @@ class TransactionState {
     int? totalCount,
     double? totalIncome,
     double? totalExpense,
+    TransactionGrouping? grouping,
+    Set<String>? groupCollapse,
   }) {
     return TransactionState(
       transactions: transactions ?? this.transactions,
@@ -45,6 +55,8 @@ class TransactionState {
       totalCount: totalCount ?? this.totalCount,
       totalIncome: totalIncome ?? this.totalIncome,
       totalExpense: totalExpense ?? this.totalExpense,
+      grouping: grouping ?? this.grouping,
+      groupCollapse: groupCollapse ?? this.groupCollapse,
     );
   }
 }
@@ -56,6 +68,46 @@ class TransactionController extends StateNotifier<TransactionState> {
   TransactionController(this._transactionService)
       : super(const TransactionState()) {
     loadTransactions();
+  }
+
+  /// 设置分组方式并持久化
+  Future<void> setGrouping(TransactionGrouping grouping) async {
+    // 更新状态
+    state = state.copyWith(grouping: grouping);
+
+    // 持久化到 SharedPreferences
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final value = switch (grouping) {
+        TransactionGrouping.date => 'date',
+        TransactionGrouping.category => 'category',
+        TransactionGrouping.account => 'account',
+      };
+      await prefs.setString('tx_grouping', value);
+    } catch (_) {
+      // 忽略持久化异常以避免影响 UI 流程
+    }
+  }
+
+  /// 切换某个分组的折叠状态并持久化
+  Future<void> toggleGroupCollapse(String key) async {
+    final next = Set<String>.from(state.groupCollapse);
+    if (next.contains(key)) {
+      next.remove(key);
+    } else {
+      next.add(key);
+    }
+
+    // 更新状态
+    state = state.copyWith(groupCollapse: next);
+
+    // 持久化到 SharedPreferences
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList('tx_group_collapse', next.toList());
+    } catch (_) {
+      // 忽略持久化异常
+    }
   }
 
   /// 加载交易列表

@@ -16,6 +16,13 @@ class LedgerService {
       final List<dynamic> data = response.data['data'] ?? response.data;
       return data.map((json) => Ledger.fromJson(json)).toList();
     } catch (e) {
+      // 如果是认证错误或Missing credentials，返回空列表（新用户可能还没有ledgers）
+      if (e is BadRequestException && e.message.contains('Missing credentials')) {
+        return [];
+      }
+      if (e is UnauthorizedException) {
+        return [];
+      }
       throw _handleError(e);
     }
   }

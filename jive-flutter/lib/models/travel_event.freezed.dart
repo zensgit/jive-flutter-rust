@@ -24,7 +24,12 @@ mixin _$TravelEvent {
   String get name => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   DateTime get startDate => throw _privateConstructorUsedError;
-  DateTime get endDate => throw _privateConstructorUsedError;
+  DateTime get endDate => throw _privateConstructorUsedError; // 扩展字段（测试覆盖）
+  String? get destination => throw _privateConstructorUsedError;
+  String get currency => throw _privateConstructorUsedError;
+  double? get budget => throw _privateConstructorUsedError;
+  double get totalSpent => throw _privateConstructorUsedError;
+  String? get notes => throw _privateConstructorUsedError;
   String? get location => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
   bool get autoTag => throw _privateConstructorUsedError;
@@ -54,6 +59,11 @@ abstract class $TravelEventCopyWith<$Res> {
       String? description,
       DateTime startDate,
       DateTime endDate,
+      String? destination,
+      String currency,
+      double? budget,
+      double totalSpent,
+      String? notes,
       String? location,
       bool isActive,
       bool autoTag,
@@ -84,6 +94,11 @@ class _$TravelEventCopyWithImpl<$Res, $Val extends TravelEvent>
     Object? description = freezed,
     Object? startDate = null,
     Object? endDate = null,
+    Object? destination = freezed,
+    Object? currency = null,
+    Object? budget = freezed,
+    Object? totalSpent = null,
+    Object? notes = freezed,
     Object? location = freezed,
     Object? isActive = null,
     Object? autoTag = null,
@@ -116,6 +131,26 @@ class _$TravelEventCopyWithImpl<$Res, $Val extends TravelEvent>
           ? _value.endDate
           : endDate // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      destination: freezed == destination
+          ? _value.destination
+          : destination // ignore: cast_nullable_to_non_nullable
+              as String?,
+      currency: null == currency
+          ? _value.currency
+          : currency // ignore: cast_nullable_to_non_nullable
+              as String,
+      budget: freezed == budget
+          ? _value.budget
+          : budget // ignore: cast_nullable_to_non_nullable
+              as double?,
+      totalSpent: null == totalSpent
+          ? _value.totalSpent
+          : totalSpent // ignore: cast_nullable_to_non_nullable
+              as double,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
       location: freezed == location
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
@@ -174,6 +209,11 @@ abstract class _$$TravelEventImplCopyWith<$Res>
       String? description,
       DateTime startDate,
       DateTime endDate,
+      String? destination,
+      String currency,
+      double? budget,
+      double totalSpent,
+      String? notes,
       String? location,
       bool isActive,
       bool autoTag,
@@ -202,6 +242,11 @@ class __$$TravelEventImplCopyWithImpl<$Res>
     Object? description = freezed,
     Object? startDate = null,
     Object? endDate = null,
+    Object? destination = freezed,
+    Object? currency = null,
+    Object? budget = freezed,
+    Object? totalSpent = null,
+    Object? notes = freezed,
     Object? location = freezed,
     Object? isActive = null,
     Object? autoTag = null,
@@ -234,6 +279,26 @@ class __$$TravelEventImplCopyWithImpl<$Res>
           ? _value.endDate
           : endDate // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      destination: freezed == destination
+          ? _value.destination
+          : destination // ignore: cast_nullable_to_non_nullable
+              as String?,
+      currency: null == currency
+          ? _value.currency
+          : currency // ignore: cast_nullable_to_non_nullable
+              as String,
+      budget: freezed == budget
+          ? _value.budget
+          : budget // ignore: cast_nullable_to_non_nullable
+              as double?,
+      totalSpent: null == totalSpent
+          ? _value.totalSpent
+          : totalSpent // ignore: cast_nullable_to_non_nullable
+              as double,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
       location: freezed == location
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
@@ -287,6 +352,11 @@ class _$TravelEventImpl implements _TravelEvent {
       this.description,
       required this.startDate,
       required this.endDate,
+      this.destination,
+      this.currency = 'CNY',
+      this.budget,
+      this.totalSpent = 0.0,
+      this.notes,
       this.location,
       this.isActive = true,
       this.autoTag = false,
@@ -312,6 +382,19 @@ class _$TravelEventImpl implements _TravelEvent {
   final DateTime startDate;
   @override
   final DateTime endDate;
+// 扩展字段（测试覆盖）
+  @override
+  final String? destination;
+  @override
+  @JsonKey()
+  final String currency;
+  @override
+  final double? budget;
+  @override
+  @JsonKey()
+  final double totalSpent;
+  @override
+  final String? notes;
   @override
   final String? location;
   @override
@@ -347,7 +430,7 @@ class _$TravelEventImpl implements _TravelEvent {
 
   @override
   String toString() {
-    return 'TravelEvent(id: $id, name: $name, description: $description, startDate: $startDate, endDate: $endDate, location: $location, isActive: $isActive, autoTag: $autoTag, travelCategoryIds: $travelCategoryIds, ledgerId: $ledgerId, createdAt: $createdAt, updatedAt: $updatedAt, transactionCount: $transactionCount, totalAmount: $totalAmount, travelTagId: $travelTagId)';
+    return 'TravelEvent(id: $id, name: $name, description: $description, startDate: $startDate, endDate: $endDate, destination: $destination, currency: $currency, budget: $budget, totalSpent: $totalSpent, notes: $notes, location: $location, isActive: $isActive, autoTag: $autoTag, travelCategoryIds: $travelCategoryIds, ledgerId: $ledgerId, createdAt: $createdAt, updatedAt: $updatedAt, transactionCount: $transactionCount, totalAmount: $totalAmount, travelTagId: $travelTagId)';
   }
 
   @override
@@ -362,6 +445,14 @@ class _$TravelEventImpl implements _TravelEvent {
             (identical(other.startDate, startDate) ||
                 other.startDate == startDate) &&
             (identical(other.endDate, endDate) || other.endDate == endDate) &&
+            (identical(other.destination, destination) ||
+                other.destination == destination) &&
+            (identical(other.currency, currency) ||
+                other.currency == currency) &&
+            (identical(other.budget, budget) || other.budget == budget) &&
+            (identical(other.totalSpent, totalSpent) ||
+                other.totalSpent == totalSpent) &&
+            (identical(other.notes, notes) || other.notes == notes) &&
             (identical(other.location, location) ||
                 other.location == location) &&
             (identical(other.isActive, isActive) ||
@@ -385,23 +476,29 @@ class _$TravelEventImpl implements _TravelEvent {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      name,
-      description,
-      startDate,
-      endDate,
-      location,
-      isActive,
-      autoTag,
-      const DeepCollectionEquality().hash(_travelCategoryIds),
-      ledgerId,
-      createdAt,
-      updatedAt,
-      transactionCount,
-      totalAmount,
-      travelTagId);
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        id,
+        name,
+        description,
+        startDate,
+        endDate,
+        destination,
+        currency,
+        budget,
+        totalSpent,
+        notes,
+        location,
+        isActive,
+        autoTag,
+        const DeepCollectionEquality().hash(_travelCategoryIds),
+        ledgerId,
+        createdAt,
+        updatedAt,
+        transactionCount,
+        totalAmount,
+        travelTagId
+      ]);
 
   @JsonKey(ignore: true)
   @override
@@ -424,6 +521,11 @@ abstract class _TravelEvent implements TravelEvent {
       final String? description,
       required final DateTime startDate,
       required final DateTime endDate,
+      final String? destination,
+      final String currency,
+      final double? budget,
+      final double totalSpent,
+      final String? notes,
       final String? location,
       final bool isActive,
       final bool autoTag,
@@ -448,6 +550,16 @@ abstract class _TravelEvent implements TravelEvent {
   DateTime get startDate;
   @override
   DateTime get endDate;
+  @override // 扩展字段（测试覆盖）
+  String? get destination;
+  @override
+  String get currency;
+  @override
+  double? get budget;
+  @override
+  double get totalSpent;
+  @override
+  String? get notes;
   @override
   String? get location;
   @override

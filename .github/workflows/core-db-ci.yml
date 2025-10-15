@@ -1,0 +1,74 @@
+name: Core DB (Non-Blocking)
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'jive-core/**'
+      - '.github/workflows/core-db-ci.yml'
+
+jobs:
+  core-db-check:
+    name: jive-core server,db check (non-blocking)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: 1.89.0
+          override: true
+
+      - name: Cache Rust
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            jive-core/target/
+          key: ${{ runner.os }}-cargo-coredb-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-coredb-
+
+      - name: Start PostgreSQL
+        uses: docker/setup-buildx-action@v3
+      - name: Boot Postgres (service)
+        run: |
+          docker run -d --name pgsql -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=jive_money_test -p 5432:5432 postgres:15
+          for i in {1..30}; do
+            if docker exec pgsql pg_isready -U postgres >/dev/null 2>&1; then echo ready; break; fi; sleep 1; done
+
+      - name: Run API migrations for schema
+        working-directory: jive-api
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jive_money_test
+        run: |
+          ./scripts/migrate_local.sh --force --db-url "$DATABASE_URL"
+
+      - name: Core DB Check (runtime; no offline cache)
+        working-directory: jive-core
+        env:
+          SQLX_OFFLINE: true
+        run: |
+          # Prefer runtime queries (no macros); if macros remain, disable offline to avoid cache errors
+          SQLX_OFFLINE=false cargo check --features "server,db" || true
+          # Best-effort offline check; do not fail workflow
+          SQLX_OFFLINE=true cargo check --features "server,db" || true
+
+      - name: Summarize core-db check
+        run: |
+          echo "Core DB check completed (non-blocking)." > core-db-summary.txt
+        
+      - name: Upload core-db summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-db-summary
+          path: core-db-summary.txt

@@ -1,14 +1,13 @@
 //! Ledger domain model
 
 use chrono::{DateTime, Utc};
-use serde::{Serialize, Deserialize};
-use uuid::Uuid;
+use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
-use crate::error::{JiveError, Result};
 use super::{Entity, SoftDeletable};
+use crate::error::{JiveError, Result};
 
 /// 账本类型枚举
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -156,7 +155,7 @@ pub struct Ledger {
     name: String,
     description: Option<String>,
     ledger_type: LedgerType,
-    color: String, // 十六进制颜色代码
+    color: String,        // 十六进制颜色代码
     icon: Option<String>, // 图标名称或表情符号
     is_default: bool,
     is_active: bool,
@@ -172,7 +171,7 @@ pub struct Ledger {
     // 权限相关
     is_shared: bool,
     shared_with_users: Vec<String>, // 共享用户ID列表
-    permission_level: String, // "read", "write", "admin"
+    permission_level: String,       // "read", "write", "admin"
 }
 
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
@@ -457,8 +456,8 @@ impl Ledger {
         if self.user_id == user_id {
             return true;
         }
-        self.shared_with_users.contains(&user_id) && 
-        (self.permission_level == "write" || self.permission_level == "admin")
+        self.shared_with_users.contains(&user_id)
+            && (self.permission_level == "write" || self.permission_level == "admin")
     }
 
     #[cfg_attr(feature = "wasm", wasm_bindgen)]
@@ -530,7 +529,9 @@ impl Ledger {
     }
 
     /// 创建账本的 builder 模式
-    pub fn builder() -> LedgerBuilder { LedgerBuilder::new() }
+    pub fn builder() -> LedgerBuilder {
+        LedgerBuilder::new()
+    }
 
     /// 复制账本（新ID）
     pub fn duplicate(&self, new_name: String) -> Result<Self> {
@@ -566,10 +567,18 @@ impl Entity for Ledger {
 }
 
 impl SoftDeletable for Ledger {
-    fn is_deleted(&self) -> bool { self.deleted_at.is_some() }
-    fn deleted_at(&self) -> Option<DateTime<Utc>> { self.deleted_at }
-    fn soft_delete(&mut self) { self.deleted_at = Some(Utc::now()); }
-    fn restore(&mut self) { self.deleted_at = None; }
+    fn is_deleted(&self) -> bool {
+        self.deleted_at.is_some()
+    }
+    fn deleted_at(&self) -> Option<DateTime<Utc>> {
+        self.deleted_at
+    }
+    fn soft_delete(&mut self) {
+        self.deleted_at = Some(Utc::now());
+    }
+    fn restore(&mut self) {
+        self.deleted_at = None;
+    }
 }
 
 /// 账本构建器
@@ -647,23 +656,17 @@ impl LedgerBuilder {
             message: "Ledger name is required".to_string(),
         })?;
 
-        let ledger_type = self.ledger_type.clone().ok_or_else(|| JiveError::ValidationError {
+        let ledger_type = self.ledger_type.ok_or_else(|| JiveError::ValidationError {
             message: "Ledger type is required".to_string(),
         })?;
 
-        let color = self.color.clone().unwrap_or_else(|| "#3B82F6".to_string());
+        let color = self.color.unwrap_or_else(|| "#3B82F6".to_string());
 
-        let lt = self.ledger_type.unwrap_or(LedgerType::Personal);
-        let mut ledger = Ledger::new(
-            user_id,
-            name,
-            lt,
-            self.color.clone().unwrap_or_else(|| "#6B7280".into()),
-        )?;
+        let mut ledger = Ledger::new(user_id, name, ledger_type, color)?;
         ledger.description = self.description.clone();
         ledger.icon = self.icon.clone();
         ledger.is_default = self.is_default;
-        
+
         if let Some(description) = self.description.clone() {
             ledger.set_description(Some(description))?;
         }
@@ -682,6 +685,12 @@ impl LedgerBuilder {
     }
 }
 
+impl Default for LedgerBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -693,7 +702,8 @@ mod tests {
             "My Personal Ledger".to_string(),
             LedgerType::Personal,
             "#3B82F6".to_string(),
-        ).unwrap();
+        )
+        .unwrap();
 
         assert_eq!(ledger.name(), "My Personal Ledger");
         assert!(matches!(ledger.ledger_type(), LedgerType::Personal));
@@ -725,11 +735,14 @@ mod tests {
             "Shared Ledger".to_string(),
             LedgerType::Family,
             "#FF6B6B".to_string(),
-        ).unwrap();
+        )
+        .unwrap();
 
         assert!(!ledger.is_shared());
-        
-        ledger.share_with_user("user-456".to_string(), "write".to_string()).unwrap();
+
+        ledger
+            .share_with_user("user-456".to_string(), "write".to_string())
+            .unwrap();
         assert!(ledger.is_shared());
         assert!(ledger.can_user_access("user-456".to_string()));
         assert!(ledger.can_user_write("user-456".to_string()));
@@ -754,7 +767,10 @@ mod tests {
 
         assert_eq!(ledger.name(), "Project Alpha");
         assert!(matches!(ledger.ledger_type(), LedgerType::Project));
-        assert_eq!(ledger.description(), Some("Project tracking ledger".to_string()));
+        assert_eq!(
+            ledger.description(),
+            Some("Project tracking ledger".to_string())
+        );
         assert_eq!(ledger.icon(), Some("📊".to_string()));
         assert!(ledger.is_default());
     }
@@ -766,7 +782,8 @@ mod tests {
             "Test Ledger".to_string(),
             LedgerType::Personal,
             "#3B82F6".to_string(),
-        ).unwrap();
+        )
+        .unwrap();
 
         assert_eq!(ledger.transaction_count(), 0);
 
@@ -788,7 +805,8 @@ mod tests {
             "".to_string(),
             LedgerType::Personal,
             "#3B82F6".to_string(),
-        ).is_err());
+        )
+        .is_err());
 
         // 测试无效颜色
         assert!(Ledger::new(
@@ -796,6 +814,7 @@ mod tests {
             "Valid Name".to_string(),
             LedgerType::Personal,
             "invalid-color".to_string(),
-        ).is_err());
+        )
+        .is_err());
     }
 }

@@ -1,34 +1,34 @@
 //! Report service - 报表分析服务
-//! 
+//!
 //! 基于 Maybe 的报表功能转换而来，提供财务分析、趋势分析、预算对比等功能
 
-use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
-use chrono::{DateTime, Utc, NaiveDate, Datelike};
+use chrono::{DateTime, Datelike, NaiveDate, Utc};
 use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use uuid::Uuid;
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
-use crate::error::{JiveError, Result};
-use crate::domain::{Account, Transaction, Category};
 use super::{ServiceContext, ServiceResponse};
+use crate::domain::{Account, Category, Transaction};
+use crate::error::{JiveError, Result};
 
 /// 报表类型
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum ReportType {
-    IncomeStatement,        // 收支报表
-    BalanceSheet,          // 资产负债表
-    CashFlow,              // 现金流量表
-    BudgetComparison,      // 预算对比
-    CategoryAnalysis,      // 分类分析
-    TrendAnalysis,         // 趋势分析
-    AccountSummary,        // 账户汇总
-    TagAnalysis,           // 标签分析
-    MerchantAnalysis,      // 商户分析
-    Custom,                // 自定义报表
+    IncomeStatement,  // 收支报表
+    BalanceSheet,     // 资产负债表
+    CashFlow,         // 现金流量表
+    BudgetComparison, // 预算对比
+    CategoryAnalysis, // 分类分析
+    TrendAnalysis,    // 趋势分析
+    AccountSummary,   // 账户汇总
+    TagAnalysis,      // 标签分析
+    MerchantAnalysis, // 商户分析
+    Custom,           // 自定义报表
 }
 
 /// 报表周期
@@ -385,6 +385,7 @@ pub struct ReportService {}
 #[cfg(feature = "wasm")]
 #[wasm_bindgen]
 impl ReportService {
+    pub fn new() -> Self { Self {} }
     #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
         Self {}
@@ -409,7 +410,9 @@ impl ReportService {
         date_to: NaiveDate,
         context: ServiceContext,
     ) -> ServiceResponse<IncomeStatementData> {
-        let result = self._generate_income_statement(date_from, date_to, context).await;
+        let result = self
+            ._generate_income_statement(date_from, date_to, context)
+            .await;
         result.into()
     }
 
@@ -444,7 +447,9 @@ impl ReportService {
         period: ReportPeriod,
         context: ServiceContext,
     ) -> ServiceResponse<BudgetComparisonData> {
-        let result = self._generate_budget_comparison(budget_id, period, context).await;
+        let result = self
+            ._generate_budget_comparison(budget_id, period, context)
+            .await;
         result.into()
     }
 
@@ -456,7 +461,9 @@ impl ReportService {
         date_to: NaiveDate,
         context: ServiceContext,
     ) -> ServiceResponse<CategoryAnalysisData> {
-        let result = self._generate_category_analysis(date_from, date_to, context).await;
+        let result = self
+            ._generate_category_analysis(date_from, date_to, context)
+            .await;
         result.into()
     }
 
@@ -468,7 +475,9 @@ impl ReportService {
         period_type: ReportPeriod,
         context: ServiceContext,
     ) -> ServiceResponse<TrendAnalysisData> {
-        let result = self._generate_trend_analysis(periods, period_type, context).await;
+        let result = self
+            ._generate_trend_analysis(periods, period_type, context)
+            .await;
         result.into()
     }
 
@@ -537,31 +546,24 @@ impl ReportService {
     ) -> Result<ReportResult> {
         let data = match request.report_type {
             ReportType::IncomeStatement => {
-                let income_data = self._generate_income_statement(
-                    request.date_from,
-                    request.date_to,
-                    context.clone()
-                ).await?;
+                let income_data = self
+                    ._generate_income_statement(request.date_from, request.date_to, context.clone())
+                    .await?;
                 ReportData::IncomeStatement(income_data)
             }
             ReportType::BalanceSheet => {
-                let balance_data = self._generate_balance_sheet(
-                    request.date_to,
-                    context.clone()
-                ).await?;
+                let balance_data = self
+                    ._generate_balance_sheet(request.date_to, context.clone())
+                    .await?;
                 ReportData::BalanceSheet(balance_data)
             }
             ReportType::CashFlow => {
-                let cash_flow_data = self._generate_cash_flow(
-                    request.date_from,
-                    request.date_to,
-                    context.clone()
-                ).await?;
+                let cash_flow_data = self
+                    ._generate_cash_flow(request.date_from, request.date_to, context.clone())
+                    .await?;
                 ReportData::CashFlow(cash_flow_data)
             }
-            _ => {
-                ReportData::Custom(HashMap::new())
-            }
+            _ => ReportData::Custom(HashMap::new()),
         };
 
         let summary = self.generate_summary(&data);
@@ -663,15 +665,13 @@ impl ReportService {
             },
         ];
 
-        let liabilities = vec![
-            AccountBalance {
-                account_id: "acc-3".to_string(),
-                account_name: "Credit Card".to_string(),
-                account_type: "CreditCard".to_string(),
-                balance: Decimal::from(2000),
-                currency: "USD".to_string(),
-            },
-        ];
+        let liabilities = vec![AccountBalance {
+            account_id: "acc-3".to_string(),
+            account_name: "Credit Card".to_string(),
+            account_type: "CreditCard".to_string(),
+            balance: Decimal::from(2000),
+            currency: "USD".to_string(),
+        }];
 
         let total_assets = assets.iter().map(|a| a.balance).sum();
         let total_liabilities = liabilities.iter().map(|l| l.balance).sum();
@@ -727,16 +727,14 @@ impl ReportService {
         let variance = actual_amount - budgeted_amount;
         let variance_percentage = (variance / budgeted_amount) * Decimal::from(100);
 
-        let categories = vec![
-            BudgetCategoryComparison {
-                category_id: "cat-1".to_string(),
-                category_name: "Food".to_string(),
-                budgeted: Decimal::from(1000),
-                actual: Decimal::from(1200),
-                variance: Decimal::from(200),
-                variance_percentage: Decimal::from(20),
-            },
-        ];
+        let categories = vec![BudgetCategoryComparison {
+            category_id: "cat-1".to_string(),
+            category_name: "Food".to_string(),
+            budgeted: Decimal::from(1000),
+            actual: Decimal::from(1200),
+            variance: Decimal::from(200),
+            variance_percentage: Decimal::from(20),
+        }];
 
         Ok(BudgetComparisonData {
             budgeted_amount,
@@ -756,29 +754,25 @@ impl ReportService {
         _date_to: NaiveDate,
         _context: ServiceContext,
     ) -> Result<CategoryAnalysisData> {
-        let categories = vec![
-            CategoryStat {
-                category_id: "cat-1".to_string(),
-                category_name: "Food".to_string(),
-                total_amount: Decimal::from(2000),
-                average_amount: Decimal::from(40),
-                transaction_count: 50,
-                percentage: Decimal::from(25),
-            },
-        ];
+        let categories = vec![CategoryStat {
+            category_id: "cat-1".to_string(),
+            category_name: "Food".to_string(),
+            total_amount: Decimal::from(2000),
+            average_amount: Decimal::from(40),
+            transaction_count: 50,
+            percentage: Decimal::from(25),
+        }];
 
         Ok(CategoryAnalysisData {
             total_amount: Decimal::from(8000),
             categories: categories.clone(),
-            top_categories: vec![
-                CategoryAmount {
-                    category_id: "cat-1".to_string(),
-                    category_name: "Food".to_string(),
-                    amount: Decimal::from(2000),
-                    percentage: Decimal::from(25),
-                    transaction_count: 50,
-                },
-            ],
+            top_categories: vec![CategoryAmount {
+                category_id: "cat-1".to_string(),
+                category_name: "Food".to_string(),
+                amount: Decimal::from(2000),
+                percentage: Decimal::from(25),
+                transaction_count: 50,
+            }],
             category_trends: vec![],
         })
     }
@@ -800,7 +794,8 @@ impl ReportService {
             expense_trend.push(Decimal::from(6000 + i * 50));
         }
 
-        let net_income_trend: Vec<Decimal> = income_trend.iter()
+        let net_income_trend: Vec<Decimal> = income_trend
+            .iter()
             .zip(expense_trend.iter())
             .map(|(i, e)| i - e)
             .collect();
@@ -845,10 +840,7 @@ impl ReportService {
     }
 
     /// 获取报表模板的内部实现
-    async fn _get_report_templates(
-        &self,
-        _context: ServiceContext,
-    ) -> Result<Vec<ReportTemplate>> {
+    async fn _get_report_templates(&self, _context: ServiceContext) -> Result<Vec<ReportTemplate>> {
         Ok(Vec::new())
     }
 
@@ -874,20 +866,25 @@ impl ReportService {
 
     // 辅助方法
 
-    fn generate_monthly_amounts(&self, date_from: NaiveDate, date_to: NaiveDate, is_income: bool) -> Vec<PeriodAmount> {
+    fn generate_monthly_amounts(
+        &self,
+        date_from: NaiveDate,
+        date_to: NaiveDate,
+        is_income: bool,
+    ) -> Vec<PeriodAmount> {
         let mut amounts = Vec::new();
         let mut current = date_from;
-        
+
         while current <= date_to {
             let month = format!("{}-{:02}", current.year(), current.month());
             let base_amount = if is_income { 8000 } else { 6000 };
-            
+
             amounts.push(PeriodAmount {
                 period: month,
                 amount: Decimal::from(base_amount),
                 transaction_count: if is_income { 2 } else { 50 },
             });
-            
+
             // Move to next month
             current = if current.month() == 12 {
                 NaiveDate::from_ymd_opt(current.year() + 1, 1, 1).unwrap()
@@ -895,21 +892,25 @@ impl ReportService {
                 NaiveDate::from_ymd_opt(current.year(), current.month() + 1, 1).unwrap()
             };
         }
-        
+
         amounts
     }
 
-    fn generate_daily_cash_flow(&self, date_from: NaiveDate, date_to: NaiveDate) -> Vec<DailyCashFlow> {
+    fn generate_daily_cash_flow(
+        &self,
+        date_from: NaiveDate,
+        date_to: NaiveDate,
+    ) -> Vec<DailyCashFlow> {
         let mut cash_flows = Vec::new();
         let mut current = date_from;
         let mut balance = Decimal::from(10000);
-        
+
         while current <= date_to {
             let inflow = Decimal::from(300);
             let outflow = Decimal::from(200);
             let net_flow = inflow - outflow;
             balance += net_flow;
-            
+
             cash_flows.push(DailyCashFlow {
                 date: current,
                 inflow,
@@ -917,10 +918,10 @@ impl ReportService {
                 net_flow,
                 balance,
             });
-            
+
             current = current.succ_opt().unwrap_or(current);
         }
-        
+
         cash_flows
     }
 
@@ -938,7 +939,7 @@ impl ReportService {
                     change_percentage: Some(Decimal::from(25)),
                     trend: Some("up".to_string()),
                 });
-                
+
                 insights.push("Your income exceeds expenses by 25%".to_string());
                 recommendations.push("Consider increasing savings allocation".to_string());
             }
@@ -1016,7 +1017,9 @@ mod tests {
         let date_from = NaiveDate::from_ymd_opt(2024, 1, 1).unwrap();
         let date_to = NaiveDate::from_ymd_opt(2024, 12, 31).unwrap();
 
-        let result = service._generate_income_statement(date_from, date_to, context).await;
+        let result = service
+            ._generate_income_statement(date_from, date_to, context)
+            .await;
         assert!(result.is_ok());
 
         let data = result.unwrap();
@@ -1046,12 +1049,17 @@ mod tests {
         let date_from = NaiveDate::from_ymd_opt(2024, 1, 1).unwrap();
         let date_to = NaiveDate::from_ymd_opt(2024, 1, 31).unwrap();
 
-        let result = service._generate_cash_flow(date_from, date_to, context).await;
+        let result = service
+            ._generate_cash_flow(date_from, date_to, context)
+            .await;
         assert!(result.is_ok());
 
         let data = result.unwrap();
         assert_eq!(data.net_cash_flow, data.cash_inflow - data.cash_outflow);
-        assert_eq!(data.closing_balance, data.opening_balance + data.net_cash_flow);
+        assert_eq!(
+            data.closing_balance,
+            data.opening_balance + data.net_cash_flow
+        );
     }
 
     #[test]

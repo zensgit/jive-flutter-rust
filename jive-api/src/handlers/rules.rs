@@ -6,11 +6,11 @@ use axum::{
     http::StatusCode,
     response::Json,
 };
-use serde::{Deserialize, Serialize};
-use sqlx::{PgPool, Row, QueryBuilder};
-use uuid::Uuid;
 use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
+use sqlx::{PgPool, QueryBuilder, Row};
+use uuid::Uuid;
 
 use crate::error::{ApiError, ApiResult};
 
@@ -81,7 +81,7 @@ pub struct RuleExecutionResult {
 /// 规则条件
 #[derive(Debug, Deserialize, Serialize)]
 pub struct RuleCondition {
-    pub field: String, // amount, description, payee_name, etc.
+    pub field: String,    // amount, description, payee_name, etc.
     pub operator: String, // equals, contains, greater_than, less_than, regex
     pub value: serde_json::Value,
     pub case_sensitive: Option<bool>,
@@ -117,44 +117,44 @@ pub async fn list_rules(
         FROM rules r
         LEFT JOIN rule_matches rm ON r.id = rm.rule_id
         WHERE r.deleted_at IS NULL
-        "#
+        "#,
     );
-    
+
     // 添加过滤条件
     if let Some(ledger_id) = params.ledger_id {
         query.push(" AND r.ledger_id = ");
         query.push_bind(ledger_id);
     }
-    
+
     if let Some(is_active) = params.is_active {
         query.push(" AND r.is_active = ");
         query.push_bind(is_active);
     }
-    
+
     if let Some(rule_type) = params.rule_type {
         query.push(" AND r.rule_type = ");
         query.push_bind(rule_type);
     }
-    
+
     query.push(" GROUP BY r.id");
     query.push(" ORDER BY r.priority ASC, r.name");
-    
+
     // 分页
     let page = params.page.unwrap_or(1);
     let per_page = params.per_page.unwrap_or(50);
     let offset = ((page - 1) * per_page) as i64;
-    
+
     query.push(" LIMIT ");
     query.push_bind(per_page as i64);
     query.push(" OFFSET ");
     query.push_bind(offset);
-    
+
     let rows = query
         .build()
         .fetch_all(&pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     let mut response = Vec::new();
     for row in rows {
         response.push(RuleResponse {
@@ -173,7 +173,7 @@ pub async fn list_rules(
             updated_at: row.get("updated_at"),
         });
     }
-    
+
     Ok(Json(response))
 }
 
@@ -192,14 +192,14 @@ pub async fn get_rule(
         LEFT JOIN rule_matches rm ON r.id = rm.rule_id
         WHERE r.id = $1 AND r.deleted_at IS NULL
         GROUP BY r.id
-        "#
+        "#,
     )
     .bind(id)
     .fetch_optional(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?
     .ok_or(ApiError::NotFound("Rule not found".to_string()))?;
-    
+
     let response = RuleResponse {
         id: row.get("id"),
         ledger_id: row.get("ledger_id"),
@@ -215,7 +215,7 @@ pub async fn get_rule(
         created_at: row.get("created_at"),
         updated_at: row.get("updated_at"),
     };
-    
+
     Ok(Json(response))
 }
 
@@ -225,7 +225,7 @@ pub async fn create_rule(
     Json(req): Json<CreateRuleRequest>,
 ) -> ApiResult<Json<RuleResponse>> {
     let id = Uuid::new_v4();
-    
+
     // 创建规则
     sqlx::query(
         r#"
@@ -236,7 +236,7 @@ pub async fn create_rule(
         ) VALUES (
             $1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW()
         )
-        "#
+        "#,
     )
     .bind(id)
     .bind(req.ledger_id)
@@ -250,12 +250,12 @@ pub async fn create_rule(
     .execute(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     // 如果需要应用到现有交易
     if req.apply_to_existing.unwrap_or(false) {
         execute_rule_on_existing(id, req.ledger_id, &pool).await?;
     }
-    
+
     // 返回创建的规则
     get_rule(Path(id), State(pool)).await
 }
@@ -268,51 +268,51 @@ pub async fn update_rule(
 ) -> ApiResult<Json<RuleResponse>> {
     // 构建动态更新查询
     let mut query = QueryBuilder::new("UPDATE rules SET updated_at = NOW()");
-    
+
     if let Some(name) = &req.name {
         query.push(", name = ");
         query.push_bind(name);
     }
-    
+
     if let Some(description) = &req.description {
         query.push(", description = ");
         query.push_bind(description);
     }
-    
+
     if let Some(conditions) = &req.conditions {
         query.push(", conditions = ");
         query.push_bind(conditions);
     }
-    
+
     if let Some(actions) = &req.actions {
         query.push(", actions = ");
         query.push_bind(actions);
     }
-    
+
     if let Some(priority) = req.priority {
         query.push(", priority = ");
         query.push_bind(priority);
     }
-    
+
     if let Some(is_active) = req.is_active {
         query.push(", is_active = ");
         query.push_bind(is_active);
     }
-    
+
     query.push(" WHERE id = ");
     query.push_bind(id);
     query.push(" AND deleted_at IS NULL");
-    
+
     let result = query
         .build()
         .execute(&pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     if result.rows_affected() == 0 {
         return Err(ApiError::NotFound("Rule not found".to_string()));
     }
-    
+
     // 返回更新后的规则
     get_rule(Path(id), State(pool)).await
 }
@@ -329,11 +329,11 @@ pub async fn delete_rule(
     .execute(&pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     if result.rows_affected() == 0 {
         return Err(ApiError::NotFound("Rule not found".to_string()));
     }
-    
+
     Ok(StatusCode::NO_CONTENT)
 }
 
@@ -343,12 +343,11 @@ pub async fn execute_rules(
     Json(req): Json<ExecuteRulesRequest>,
 ) -> ApiResult<Json<Vec<RuleExecutionResult>>> {
     let mut results = Vec::new();
-    
+
     // 获取要执行的规则
-    let mut rule_query = QueryBuilder::new(
-        "SELECT * FROM rules WHERE deleted_at IS NULL AND is_active = true"
-    );
-    
+    let mut rule_query =
+        QueryBuilder::new("SELECT * FROM rules WHERE deleted_at IS NULL AND is_active = true");
+
     if let Some(rule_ids) = &req.rule_ids {
         rule_query.push(" AND id IN (");
         let mut separated = rule_query.separated(", ");
@@ -357,20 +356,18 @@ pub async fn execute_rules(
         }
         rule_query.push(")");
     }
-    
+
     rule_query.push(" ORDER BY priority ASC");
-    
+
     let rules = rule_query
         .build()
         .fetch_all(&pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     // 获取要处理的交易
-    let mut tx_query = QueryBuilder::new(
-        "SELECT * FROM transactions WHERE deleted_at IS NULL"
-    );
-    
+    let mut tx_query = QueryBuilder::new("SELECT * FROM transactions WHERE deleted_at IS NULL");
+
     if let Some(transaction_ids) = &req.transaction_ids {
         tx_query.push(" AND id IN (");
         let mut separated = tx_query.separated(", ");
@@ -379,31 +376,31 @@ pub async fn execute_rules(
         }
         tx_query.push(")");
     }
-    
+
     let transactions = tx_query
         .build()
         .fetch_all(&pool)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     // 对每个规则执行匹配和应用
     for rule in rules {
         let rule_id: Uuid = rule.get("id");
         let rule_name: String = rule.get("name");
         let conditions: serde_json::Value = rule.get("conditions");
         let actions: serde_json::Value = rule.get("actions");
-        
+
         let mut matched_transactions = Vec::new();
         let mut applied_count = 0;
         let mut failed_count = 0;
         let mut errors = Vec::new();
-        
+
         // 检查每个交易是否匹配规则
         for tx in &transactions {
             if check_rule_match(tx, &conditions) {
                 let tx_id: Uuid = tx.get("id");
                 matched_transactions.push(tx_id);
-                
+
                 if !req.dry_run.unwrap_or(false) {
                     // 应用规则动作
                     match apply_rule_actions(&tx_id, &actions, &pool).await {
@@ -420,7 +417,7 @@ pub async fn execute_rules(
                 }
             }
         }
-        
+
         results.push(RuleExecutionResult {
             rule_id,
             rule_name,
@@ -430,7 +427,7 @@ pub async fn execute_rules(
             errors,
         });
     }
-    
+
     Ok(Json(results))
 }
 
@@ -552,7 +549,7 @@ async fn apply_rule_actions(
                                 END || $1::jsonb,
                                 updated_at = NOW() 
                                 WHERE id = $2
-                                "#
+                                "#,
                             )
                             .bind(serde_json::json!([tag]))
                             .bind(transaction_id)
@@ -566,22 +563,18 @@ async fn apply_rule_actions(
             }
         }
     }
-    
+
     Ok(())
 }
 
 /// 记录规则匹配
-async fn record_rule_match(
-    rule_id: Uuid,
-    transaction_id: Uuid,
-    pool: &PgPool,
-) -> ApiResult<()> {
+async fn record_rule_match(rule_id: Uuid, transaction_id: Uuid, pool: &PgPool) -> ApiResult<()> {
     sqlx::query(
         r#"
         INSERT INTO rule_matches (id, rule_id, transaction_id, applied_at)
         VALUES ($1, $2, $3, NOW())
         ON CONFLICT (rule_id, transaction_id) DO UPDATE SET applied_at = NOW()
-        "#
+        "#,
     )
     .bind(Uuid::new_v4())
     .bind(rule_id)
@@ -589,37 +582,30 @@ async fn record_rule_match(
     .execute(pool)
     .await
     .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+
     Ok(())
 }
 
 /// 在现有交易上执行规则
-async fn execute_rule_on_existing(
-    rule_id: Uuid,
-    ledger_id: Uuid,
-    pool: &PgPool,
-) -> ApiResult<()> {
+async fn execute_rule_on_existing(rule_id: Uuid, ledger_id: Uuid, pool: &PgPool) -> ApiResult<()> {
     // 获取规则
-    let rule = sqlx::query(
-        "SELECT * FROM rules WHERE id = $1"
-    )
-    .bind(rule_id)
-    .fetch_one(pool)
-    .await
-    .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+    let rule = sqlx::query("SELECT * FROM rules WHERE id = $1")
+        .bind(rule_id)
+        .fetch_one(pool)
+        .await
+        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
     let conditions: serde_json::Value = rule.get("conditions");
     let actions: serde_json::Value = rule.get("actions");
-    
+
     // 获取账本的所有交易
-    let transactions = sqlx::query(
-        "SELECT * FROM transactions WHERE ledger_id = $1 AND deleted_at IS NULL"
-    )
-    .bind(ledger_id)
-    .fetch_all(pool)
-    .await
-    .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-    
+    let transactions =
+        sqlx::query("SELECT * FROM transactions WHERE ledger_id = $1 AND deleted_at IS NULL")
+            .bind(ledger_id)
+            .fetch_all(pool)
+            .await
+            .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
     // 应用规则到每个匹配的交易
     for tx in transactions {
         if check_rule_match(&tx, &conditions) {
@@ -628,6 +614,6 @@ async fn execute_rule_on_existing(
             record_rule_match(rule_id, tx_id, pool).await?;
         }
     }
-    
+
     Ok(())
 }

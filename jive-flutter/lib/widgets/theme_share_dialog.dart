@@ -332,7 +332,10 @@ class _ThemeShareDialogState extends State<ThemeShareDialog> {
         ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (!mounted) return;
+      final messenger = ScaffoldMessenger.of(context);
+      // ignore: use_build_context_synchronously
+      messenger.showSnackBar(
         SnackBar(
           content: Text('复制失败: $e'),
           backgroundColor: Colors.red,

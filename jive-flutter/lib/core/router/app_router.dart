@@ -11,6 +11,7 @@ import 'package:jive_money/screens/home/home_screen.dart';
 import 'package:jive_money/screens/dashboard/dashboard_screen.dart';
 import 'package:jive_money/screens/transactions/transactions_screen.dart';
 import 'package:jive_money/screens/accounts/accounts_screen.dart';
+import 'package:jive_money/screens/accounts/user_assets_screen.dart';
 import 'package:jive_money/screens/budgets/budgets_screen.dart';
 import 'package:jive_money/screens/settings/settings_screen.dart';
 import 'package:jive_money/screens/settings/theme_settings_screen.dart';
@@ -53,6 +54,9 @@ class AppRoutes {
   static const manualOverrides = '/settings/currency/manual-overrides';
   static const cryptoManagement = '/settings/crypto';
   static const categoryManagement = '/settings/categories';
+  // 资产总览与旅行模式（占位/已有页面）
+  static const userAssets = '/accounts/assets';
+  static const travel = '/travel';
 
   // 家庭管理路由
   static const familyMembers = '/family/members';
@@ -155,6 +159,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'add',
                 builder: (context, state) => const AccountAddScreen(),
+              ),
+              // 资产总览页
+              GoRoute(
+                path: 'assets',
+                builder: (context, state) => const UserAssetsScreen(),
               ),
               GoRoute(
                 path: ':id',

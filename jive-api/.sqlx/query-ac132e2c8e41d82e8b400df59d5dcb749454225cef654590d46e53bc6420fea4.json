@@ -11,12 +11,12 @@
       {
         "ordinal": 1,
         "name": "total_income!",
-        "type_info": "Numeric"
+        "type_info": "Float8"
       },
       {
         "ordinal": 2,
         "name": "total_expense!",
-        "type_info": "Numeric"
+        "type_info": "Float8"
       },
       {
         "ordinal": 3,

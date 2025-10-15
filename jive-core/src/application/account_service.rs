@@ -1,17 +1,20 @@
 //! Account service - 账户管理服务
-//! 
+//!
 //! 基于 Maybe 的账户功能转换而来，包括账户CRUD、余额管理、分组等功能
 
+use chrono::{DateTime, NaiveDate, Utc};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
-use chrono::{DateTime, Utc, NaiveDate};
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
-use crate::domain::{Account, AccountType, AccountClassification};
+use super::{
+    FilterCondition, FilterOperator, PaginatedResult, PaginationParams, QueryBuilder,
+    ServiceContext, ServiceResponse,
+};
+use crate::domain::{Account, AccountClassification, AccountType};
 use crate::error::{JiveError, Result};
-use super::{ServiceContext, ServiceResponse, PaginationParams, PaginatedResult, QueryBuilder, FilterCondition, FilterOperator};
 
 /// 账户创建请求
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -390,7 +393,9 @@ impl AccountService {
         end_date: Option<String>,
         context: ServiceContext,
     ) -> ServiceResponse<Vec<BalanceHistory>> {
-        let result = self._get_balance_history(account_id, start_date, end_date, context).await;
+        let result = self
+            ._get_balance_history(account_id, start_date, end_date, context)
+            .await;
         result.into()
     }
 
@@ -461,7 +466,7 @@ impl AccountService {
     ) -> Result<Account> {
         // 在实际实现中，从数据库获取账户
         // let mut account = repository.find_by_id(account_id).await?;
-        
+
         // 模拟账户获取
         let mut account = Account::new(
             "Test Account".to_string(),
@@ -494,14 +499,10 @@ impl AccountService {
     }
 
     /// 获取账户的内部实现
-    async fn _get_account(
-        &self,
-        account_id: String,
-        _context: ServiceContext,
-    ) -> Result<Account> {
+    async fn _get_account(&self, account_id: String, _context: ServiceContext) -> Result<Account> {
         // 在实际实现中，从数据库获取账户
         // let account = repository.find_by_id(account_id).await?;
-        
+
         // 模拟账户获取
         if account_id.is_empty() {
             return Err(JiveError::AccountNotFound { id: account_id });
@@ -518,16 +519,12 @@ impl AccountService {
     }
 
     /// 删除账户的内部实现
-    async fn _delete_account(
-        &self,
-        account_id: String,
-        _context: ServiceContext,
-    ) -> Result<bool> {
+    async fn _delete_account(&self, account_id: String, _context: ServiceContext) -> Result<bool> {
         // 在实际实现中，执行软删除
         // let mut account = repository.find_by_id(account_id).await?;
         // account.soft_delete();
         // repository.save(account).await?;
-        
+
         // 检查账户是否存在
         if account_id.is_empty() {
             return Err(JiveError::AccountNotFound { id: account_id });
@@ -566,10 +563,7 @@ impl AccountService {
     }
 
     /// 获取统计信息的内部实现
-    async fn _get_account_stats(
-        &self,
-        _context: ServiceContext,
-    ) -> Result<AccountStats> {
+    async fn _get_account_stats(&self, _context: ServiceContext) -> Result<AccountStats> {
         // 在实际实现中，从数据库聚合统计数据
         let stats = AccountStats {
             total_accounts: 10,
@@ -591,9 +585,7 @@ impl AccountService {
         _context: ServiceContext,
     ) -> Result<Vec<Account>> {
         // 在实际实现中，构建查询并执行
-        let _query = QueryBuilder::new()
-            .paginate(pagination)
-            .build();
+        let _query = QueryBuilder::new().paginate(pagination).build();
 
         // 应用过滤器
         if let Some(_account_type) = filter.account_type {
@@ -636,14 +628,12 @@ impl AccountService {
         _context: ServiceContext,
     ) -> Result<Vec<BalanceHistory>> {
         // 在实际实现中，从数据库查询余额历史
-        let history = vec![
-            BalanceHistory {
-                account_id: account_id.clone(),
-                date: chrono::Utc::now().naive_utc().date(),
-                balance: "1000.00".to_string(),
-                currency: "USD".to_string(),
-            },
-        ];
+        let history = vec![BalanceHistory {
+            account_id: account_id.clone(),
+            date: chrono::Utc::now().naive_utc().date(),
+            balance: "1000.00".to_string(),
+            currency: "USD".to_string(),
+        }];
 
         Ok(history)
     }
@@ -653,16 +643,21 @@ impl AccountService {
         &self,
         context: ServiceContext,
     ) -> Result<HashMap<String, Vec<Account>>> {
-        let accounts = self._search_accounts(
-            AccountFilter::default(),
-            PaginationParams::new(1, 100),
-            context,
-        ).await?;
+        let accounts = self
+            ._search_accounts(
+                AccountFilter::default(),
+                PaginationParams::new(1, 100),
+                context,
+            )
+            .await?;
 
         let mut grouped = HashMap::new();
         for account in accounts {
             let classification = account.classification().as_string();
-            grouped.entry(classification).or_insert_with(Vec::new).push(account);
+            grouped
+                .entry(classification)
+                .or_insert_with(Vec::new)
+                .push(account);
         }
 
         Ok(grouped)
@@ -673,16 +668,21 @@ impl AccountService {
         &self,
         context: ServiceContext,
     ) -> Result<HashMap<String, Vec<Account>>> {
-        let accounts = self._search_accounts(
-            AccountFilter::default(),
-            PaginationParams::new(1, 100),
-            context,
-        ).await?;
+        let accounts = self
+            ._search_accounts(
+                AccountFilter::default(),
+                PaginationParams::new(1, 100),
+                context,
+            )
+            .await?;
 
         let mut grouped = HashMap::new();
         for account in accounts {
             let account_type = account.account_type().as_string();
-            grouped.entry(account_type).or_insert_with(Vec::new).push(account);
+            grouped
+                .entry(account_type)
+                .or_insert_with(Vec::new)
+                .push(account);
         }
 
         Ok(grouped)
@@ -703,7 +703,7 @@ mod tests {
     async fn test_create_account() {
         let service = AccountService::new();
         let context = ServiceContext::new("user-123".to_string());
-        
+
         let request = CreateAccountRequest::new(
             "Test Account".to_string(),
             AccountType::Depository,
@@ -723,12 +723,14 @@ mod tests {
     async fn test_update_account() {
         let service = AccountService::new();
         let context = ServiceContext::new("user-123".to_string());
-        
+
         let mut request = UpdateAccountRequest::new();
         request.set_name(Some("Updated Account".to_string()));
         request.set_is_active(Some(false));
 
-        let result = service._update_account("account-123".to_string(), request, context).await;
+        let result = service
+            ._update_account("account-123".to_string(), request, context)
+            .await;
         assert!(result.is_ok());
     }
 
@@ -736,7 +738,7 @@ mod tests {
     async fn test_account_validation() {
         let service = AccountService::new();
         let context = ServiceContext::new("user-123".to_string());
-        
+
         let request = CreateAccountRequest::new(
             "".to_string(), // 空名称应该失败
             AccountType::Depository,

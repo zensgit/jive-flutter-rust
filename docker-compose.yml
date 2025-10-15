@@ -13,8 +13,8 @@ services:
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=en_US.UTF-8"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database/migrations:/docker-entrypoint-initdb.d:ro
-      - ./database/seed_data.sql:/docker-entrypoint-initdb.d/999_seed_data.sql:ro
+      # Mount the entire database init directory to avoid OneDrive file bind issues
+      - ./database:/docker-entrypoint-initdb.d:ro
     ports:
       - "${DB_PORT:-5432}:5432"
     networks:

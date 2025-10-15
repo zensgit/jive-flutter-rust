@@ -54,10 +54,7 @@ pushd "$API_DIR" >/dev/null
   export JWT_SECRET="${JWT_SECRET:-local_test_secret}"
   export API_PORT="${API_PORT:-8012}"
   cargo test --all-features -- --nocapture | tee "$ART_DIR/rust-tests.txt"
-  # Ensure default build compiles (demo_endpoints on)
-  cargo check --all-features | tee -a "$ART_DIR/rust-tests.txt"
-  # Run strict clippy without default features to exclude demo endpoints
-  cargo clippy --no-default-features -- -D warnings | tee "$ART_DIR/rust-clippy.txt"
+  cargo clippy --all-features -- -D warnings | tee "$ART_DIR/rust-clippy.txt"
 popd >/dev/null
 
 # 4) Flutter analyze and tests
@@ -67,12 +64,11 @@ if [ -d "$FLUTTER_DIR" ]; then
     pushd "$FLUTTER_DIR" >/dev/null
       flutter pub get
       flutter pub run build_runner build --delete-conflicting-outputs || true
-      log "Flutter analyze (non-fatal warnings)"
+      log "Flutter analyze (fatal warnings)"
       set -o pipefail
-      # Make analyze non-blocking for local CI; we record output then continue
-      flutter analyze 2>&1 | tee "$ART_DIR/flutter-analyze.txt" || true
+      flutter analyze --fatal-warnings 2>&1 | tee "$ART_DIR/flutter-analyze.txt"
       log "Flutter tests"
-      flutter test --coverage | tee "$ART_DIR/flutter-tests.txt" || true
+      flutter test --coverage | tee "$ART_DIR/flutter-tests.txt"
     popd >/dev/null
   else
     warn "flutter not found; skipping Flutter steps."
@@ -82,3 +78,4 @@ else
 fi
 
 log "Local CI complete. Artifacts in: $ART_DIR"
+

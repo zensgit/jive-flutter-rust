@@ -87,9 +87,8 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
       await imageFile.writeAsBytes(image);
 
       // 分享
-      await Share.shareXFiles(
-        [XFile(imagePath)],
-        text: '${widget.title}\n${widget.subtitle ?? ''}\n${widget.data}',
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(imagePath)], text: '${widget.title}\n${widget.subtitle ?? ''}\n${widget.data}'),
       );
 
       // 触发回调
@@ -195,10 +194,10 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
         // 二维码
         Center(
           child: _isGenerating
-              ? const SizedBox(
+              ? SizedBox(
                   width: widget.size,
                   height: widget.size,
-                  child: Center(
+                  child: const Center(
                     child: CircularProgressIndicator(),
                   ),
                 )
@@ -224,16 +223,13 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
                         version: QrVersions.auto,
                         size: widget.size,
                         backgroundColor: qrBackgroundColor,
-                        foregroundColor: qrForegroundColor,
+                        eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square),
+                        dataModuleStyle: QrDataModuleStyle(color: qrForegroundColor, dataModuleShape: QrDataModuleShape.square),
                         errorCorrectionLevel: QrErrorCorrectLevel.H,
                         embeddedImage: widget.logo != null
                             ? AssetImage(widget.logo!)
                             : null,
-                        embeddedImageStyle: const QrEmbeddedImageStyle(
-                          size: Size(60, 60),
-                        ),
                         padding: const EdgeInsets.all(0),
-                        gapless: true,
                       ),
                     ),
                   ),
@@ -302,35 +298,6 @@ class _QrCodeGeneratorState extends State<QrCodeGenerator>
           ),
         ],
       ],
-    );
-  }
-
-  // Stub methods for missing external dependencies
-  dynamic XFile(String path) {
-    return _StubXFile(path);
-  }
-
-  Widget QrImageView({
-    required String data,
-    dynamic version,
-    double? size,
-    Color? backgroundColor,
-    Color? foregroundColor,
-    dynamic errorCorrectionLevel,
-    dynamic embeddedImage,
-    double? embeddedImageSizeRatio,
-    EdgeInsets? padding,
-  }) {
-    return Container(
-      width: size ?? 200,
-      height: size ?? 200,
-      color: backgroundColor ?? Colors.white,
-      child: Center(
-        child: Text(
-          'QR Code Placeholder',
-          style: TextStyle(color: foregroundColor ?? Colors.black),
-        ),
-      ),
     );
   }
 }
@@ -484,12 +451,12 @@ class InvitationQrCodeDialog extends StatelessWidget {
                     icon: const Icon(Icons.share),
                     label: const Text('分享'),
                     onPressed: () async {
-                      await Share.share(
+                      await SharePlus.instance.share(ShareParams(text: 
                         '邀请你加入家庭「$familyName」\n\n'
                         '邀请码：$inviteCode\n'
                         '点击链接加入：$inviteLink\n\n'
                         '有效期：$daysLeft 天',
-                      );
+                      ));
                     },
                   ),
                 ),

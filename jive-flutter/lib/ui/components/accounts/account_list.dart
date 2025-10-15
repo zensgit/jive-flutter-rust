@@ -102,7 +102,7 @@ class AccountList extends StatelessWidget {
             itemCount: accounts.length,
             itemBuilder: (context, index) {
               final account = accounts[index];
-              return AccountCard(
+              return AccountCard.fromAccount(
                 account: account,
                 onTap: () => onAccountTap?.call(account),
                 onLongPress: () => onAccountLongPress?.call(account),
@@ -284,10 +284,11 @@ class AccountList extends StatelessWidget {
     final Map<AccountType, List<AccountData>> grouped = {};
 
     for (final account in accounts) {
-      if (!grouped.containsKey(account.type)) {
-        grouped[account.type] = [];
+      final key = _toUiAccountType(account.type);
+      if (!grouped.containsKey(key)) {
+        grouped[key] = [];
       }
-      grouped[account.type]!.add(account);
+      grouped[key]!.add(account);
     }
 
     // 按类型排序：资产、负债
@@ -299,7 +300,7 @@ class AccountList extends StatelessWidget {
 
   double _calculateTotal(AccountType type) {
     return accounts
-        .where((account) => account.type == type)
+        .where((account) => _matchesLocalType(type, account.type))
         .fold(0.0, (sum, account) => sum + account.balance);
   }
 
@@ -335,6 +336,21 @@ class AccountList extends StatelessWidget {
     // Note: This widget is not a ConsumerWidget; keep simple formatting here
     final sign = amount >= 0 ? '' : '-';
     return '$sign${amount.abs().toStringAsFixed(2)}';
+  }
+
+  /// Convert Account model type to UI AccountType enum
+  AccountType _toUiAccountType(dynamic modelType) {
+    // Handle string or enum type from Account model
+    if (modelType == 'asset' || modelType.toString().contains('asset')) {
+      return AccountType.asset;
+    } else {
+      return AccountType.liability;
+    }
+  }
+
+  /// Check if Account model type matches UI AccountType
+  bool _matchesLocalType(AccountType uiType, dynamic modelType) {
+    return _toUiAccountType(modelType) == uiType;
   }
 }
 
@@ -421,7 +437,7 @@ class GroupedAccountList extends StatelessWidget {
               : null,
           children: accounts
               .map(
-                (account) => AccountCard(
+                (account) => AccountCard.fromAccount(
                   account: account,
                   onTap: () => onAccountTap?.call(account),
                   margin:

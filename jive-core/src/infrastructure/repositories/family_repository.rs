@@ -109,7 +109,7 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(&family.updated_at)
         .fetch_one(&self.pool)
         .await
-        .map_err(|e| JiveError::DatabaseError(e.to_string()))?;
+        .map_err(|e| JiveError::DatabaseError { message: e.to_string() })?;
 
         Ok(Family {
             id: row.get("id"),
@@ -135,8 +135,8 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(family_id)
         .fetch_optional(&self.pool)
         .await
-        .map_err(|e| JiveError::DatabaseError(e.to_string()))?
-        .ok_or_else(|| JiveError::NotFound(format!("Family {} not found", family_id)))?;
+        .map_err(|e| JiveError::DatabaseError { message: e.to_string() })?
+        .ok_or_else(|| JiveError::NotFound { message: format!("Family {} not found", family_id) })?;
 
         Ok(Family {
             id: row.get("id"),
@@ -174,7 +174,7 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(&Utc::now())
         .fetch_optional(&self.pool)
         .await
-        .map_err(|e| JiveError::DatabaseError(e.to_string()))?
+        .map_err(|e| JiveError::DatabaseError { message: e.to_string() })?
         .ok_or_else(|| JiveError::NotFound(format!("Family {} not found", family.id)))?;
 
         Ok(Family {
@@ -204,7 +204,7 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(&Utc::now())
         .execute(&self.pool)
         .await
-        .map_err(|e| JiveError::DatabaseError(e.to_string()))?;
+        .map_err(|e| JiveError::DatabaseError { message: e.to_string() })?;
 
         Ok(())
     }
@@ -296,8 +296,8 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(membership_id)
         .fetch_optional(&self.pool)
         .await
-        .map_err(|e| JiveError::DatabaseError(e.to_string()))?
-        .ok_or_else(|| JiveError::NotFound(format!("Membership {} not found", membership_id)))?;
+        .map_err(|e| JiveError::DatabaseError { message: e.to_string() })?
+        .ok_or_else(|| JiveError::NotFound { message: format!("Membership {} not found", membership_id) })?;
 
         Ok(FamilyMembership {
             id: row.get("id"),
@@ -323,8 +323,8 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(family_id)
         .fetch_optional(&self.pool)
         .await
-        .map_err(|e| JiveError::DatabaseError(e.to_string()))?
-        .ok_or_else(|| JiveError::NotFound(format!("Membership not found for user {} in family {}", user_id, family_id)))?;
+        .map_err(|e| JiveError::DatabaseError { message: e.to_string() })?
+        .ok_or_else(|| JiveError::NotFound { message: format!("Membership not found for user {} in family {}", user_id, family_id) })?;
 
         Ok(FamilyMembership {
             id: row.get("id"),
@@ -357,8 +357,8 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(&membership.last_accessed_at)
         .fetch_optional(&self.pool)
         .await
-        .map_err(|e| JiveError::DatabaseError(e.to_string()))?
-        .ok_or_else(|| JiveError::NotFound(format!("Membership {} not found", membership.id)))?;
+        .map_err(|e| JiveError::DatabaseError { message: e.to_string() })?
+        .ok_or_else(|| JiveError::NotFound { message: format!("Membership {} not found", membership.id) })?;
 
         Ok(FamilyMembership {
             id: row.get("id"),
@@ -385,7 +385,7 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(membership_id)
         .execute(&self.pool)
         .await
-        .map_err(|e| JiveError::DatabaseError(e.to_string()))?;
+        .map_err(|e| JiveError::DatabaseError { message: e.to_string() })?;
 
         Ok(())
     }
@@ -401,7 +401,7 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(family_id)
         .fetch_all(&self.pool)
         .await
-        .map_err(|e| JiveError::DatabaseError(e.to_string()))?;
+        .map_err(|e| JiveError::DatabaseError { message: e.to_string() })?;
 
         let members = rows.into_iter().map(|row| {
             Ok(FamilyMembership {
@@ -461,8 +461,8 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(invitation_id)
         .fetch_optional(&self.pool)
         .await
-        .map_err(|e| JiveError::DatabaseError(e.to_string()))?
-        .ok_or_else(|| JiveError::NotFound(format!("Invitation {} not found", invitation_id)))?;
+        .map_err(|e| JiveError::DatabaseError { message: e.to_string() })?
+        .ok_or_else(|| JiveError::NotFound { message: format!("Invitation {} not found", invitation_id) })?;
 
         // TODO: 从 row 构建 FamilyInvitation
         Err(JiveError::NotImplemented("get_invitation".into()))
@@ -478,8 +478,8 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(token)
         .fetch_optional(&self.pool)
         .await
-        .map_err(|e| JiveError::DatabaseError(e.to_string()))?
-        .ok_or_else(|| JiveError::NotFound(format!("Invitation with token {} not found", token)))?;
+        .map_err(|e| JiveError::DatabaseError { message: e.to_string() })?
+        .ok_or_else(|| JiveError::NotFound { message: format!("Invitation with token {} not found", token) })?;
 
         // TODO: 从 row 构建 FamilyInvitation
         Err(JiveError::NotImplemented("get_invitation_by_token".into()))
@@ -499,8 +499,8 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(&invitation.accepted_at)
         .fetch_optional(&self.pool)
         .await
-        .map_err(|e| JiveError::DatabaseError(e.to_string()))?
-        .ok_or_else(|| JiveError::NotFound(format!("Invitation {} not found", invitation.id)))?;
+        .map_err(|e| JiveError::DatabaseError { message: e.to_string() })?
+        .ok_or_else(|| JiveError::NotFound { message: format!("Invitation {} not found", invitation.id) })?;
 
         Ok(invitation.clone())
     }
@@ -518,7 +518,7 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(&Utc::now())
         .fetch_all(&self.pool)
         .await
-        .map_err(|e| JiveError::DatabaseError(e.to_string()))?;
+        .map_err(|e| JiveError::DatabaseError { message: e.to_string() })?;
 
         // TODO: 从 rows 构建 Vec<FamilyInvitation>
         Ok(vec![])
@@ -546,7 +546,7 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(&log.created_at)
         .execute(&self.pool)
         .await
-        .map_err(|e| JiveError::DatabaseError(e.to_string()))?;
+        .map_err(|e| JiveError::DatabaseError { message: e.to_string() })?;
 
         Ok(())
     }
@@ -564,7 +564,7 @@ impl FamilyRepository for PgFamilyRepository {
         .bind(limit)
         .fetch_all(&self.pool)
         .await
-        .map_err(|e| JiveError::DatabaseError(e.to_string()))?;
+        .map_err(|e| JiveError::DatabaseError { message: e.to_string() })?;
 
         // TODO: 从 rows 构建 Vec<FamilyAuditLog>
         Ok(vec![])

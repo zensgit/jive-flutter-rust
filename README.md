@@ -149,6 +149,13 @@ make db-migrate
 # 查看日志
 make logs
 
+## 🔒 安全与变更记录
+
+- 安全总体文档：`docs/TRANSACTION_SECURITY_OVERVIEW.md`
+- 安全修复报告：`TRANSACTION_SECURITY_FIX_REPORT.md`
+- 完整修复报告：`TRANSACTION_SYSTEM_COMPLETE_FIX_REPORT.md`
+- 关键变更记录：`CHANGELOG.md`
+
 ## 🧪 本地CI（不占用GitHub Actions分钟）
 
 当你的GitHub Actions分钟不足时，可以使用本地CI脚本模拟CI流程：
@@ -315,3 +322,5 @@ MIT License
 ## 📞 联系
 
 如有问题，请提交 Issue 或联系维护者。
+<!-- ci: routing tests verify -->
+<!-- ci: routing tests verify 2 -->

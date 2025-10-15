@@ -19,6 +19,14 @@ help:
 	@echo "  make logs         - 查看日志"
 	@echo "  make api-dev      - 启动完整版 API (CORS_DEV=1)"
 	@echo "  make api-safe     - 启动完整版 API (安全CORS模式)"
+	@echo "  make sqlx-prepare-core - 准备 jive-core (server,db) 的 SQLx 元数据"
+	@echo "  make api-dev-core-export - 启动 API 并启用 core_export（走核心导出路径）"
+	@echo "  make db-dev-up    - 启动 Docker 开发数据库/Redis/Adminer (15432/16379/19080)"
+	@echo "  make db-dev-down  - 停止 Docker 开发数据库/Redis/Adminer"
+	@echo "  make api-dev-docker-db - 本地 API 连接 Docker 开发数据库 (15432)"
+	@echo "  make db-dev-status - 显示 Docker 开发数据库/Redis/Adminer 与 API 端口状态"
+	@echo "  make metrics-check  - 基础指标一致性校验 (/health vs /metrics)"
+	@echo "  make seed-bcrypt-user - 插入一个 bcrypt 测试用户 (触发登录重哈希)"
 
 # 安装依赖
 install:
@@ -65,7 +73,9 @@ build-flutter:
 test: test-rust test-flutter
 
 test-rust:
-	@echo "运行 Rust 测试..."
+	@echo "运行 Rust API 测试 (SQLX_OFFLINE=true)..."
+	@cd jive-api && SQLX_OFFLINE=true cargo test --tests
+	@echo "运行 jive-core 测试 (features=server)..."
 	@cd jive-core && cargo test --no-default-features --features server
 
 test-flutter:
@@ -144,6 +154,17 @@ api-sqlx-prepare-local:
 	@cd jive-api && cargo install sqlx-cli --no-default-features --features postgres || true
 	@cd jive-api && SQLX_OFFLINE=false cargo sqlx prepare
 
+# Prepare SQLx metadata for jive-core (server,db)
+sqlx-prepare-core:
+	@echo "准备 jive-core SQLx 元数据 (features=server,db)..."
+	@echo "确保数据库与迁移就绪 (优先 5433)..."
+	@cd jive-api && DB_PORT=$${DB_PORT:-5433} ./scripts/migrate_local.sh --force || true
+	@cd jive-core && cargo install sqlx-cli --no-default-features --features postgres || true
+	@cd jive-core && \
+		DATABASE_URL=$${DATABASE_URL:-postgresql://postgres:postgres@localhost:$${DB_PORT:-5433}/jive_money} \
+		SQLX_OFFLINE=false cargo sqlx prepare -- --features "server,db"
+	@echo "✅ 已生成 jive-core/.sqlx 元数据"
+
 # Enable local git hooks once per clone
 hooks:
 	@git config core.hooksPath .githooks
@@ -158,6 +179,60 @@ api-dev:
 api-safe:
 	@echo "启动完整版 API (安全 CORS 模式, 端口 $${API_PORT:-8012})..."
 	@cd jive-api && unset CORS_DEV && API_PORT=$${API_PORT:-8012} cargo run --bin jive-api
+# 启动完整版 API（宽松 CORS + 启用 core_export，导出走 jive-core Service）
+api-dev-core-export:
+	@echo "启动 API (CORS_DEV=1, 启用 core_export, 端口 $${API_PORT:-8012})..."
+	@cd jive-api && CORS_DEV=1 API_PORT=$${API_PORT:-8012} cargo run --features core_export --bin jive-api
+
+# ---- Docker DB + Local API (Dev) ----
+db-dev-up:
+	@echo "启动 Docker 开发数据库/Redis/Adminer (端口: PG=5433, Redis=6380, Adminer=9080)..."
+	@cd jive-api && docker-compose -f docker-compose.dev.yml up -d postgres redis adminer
+	@echo "✅ Postgres: postgresql://postgres:postgres@localhost:5433/jive_money"
+	@echo "✅ Redis:    redis://localhost:6380"
+	@echo "✅ Adminer:  http://localhost:9080"
+
+db-dev-down:
+	@echo "停止 Docker 开发数据库/Redis/Adminer..."
+	@cd jive-api && docker-compose -f docker-compose.dev.yml down
+	@echo "✅ 已停止"
+
+api-dev-docker-db:
+	@echo "本地运行 API (连接 Docker 开发数据库 5433; CORS_DEV=1, SQLX_OFFLINE=true)..."
+	@cd jive-api && \
+		CORS_DEV=1 \
+		API_PORT=$${API_PORT:-8012} \
+		SQLX_OFFLINE=true \
+		RUST_LOG=$${RUST_LOG:-info} \
+		DATABASE_URL=$${DATABASE_URL:-postgresql://postgres:postgres@localhost:5433/jive_money} \
+		cargo run --bin jive-api
+
+db-dev-status:
+	@echo "🔎 Docker 开发栈容器状态 (postgres/redis/adminer):"
+	@docker ps --format '{{.Names}}\t{{.Status}}\t{{.Ports}}' | grep -E 'jive-(postgres|redis|adminer)-dev' || echo "(未启动)"
+	@echo ""
+	@echo "📡 建议的连接信息:"
+	@echo "  - Postgres: postgresql://postgres:postgres@localhost:5433/jive_money"
+	@echo "  - Redis:    redis://localhost:6380"
+	@echo "  - Adminer:  http://localhost:9080"
+	@echo ""
+	@echo "🩺 API (本地) 端口状态:"
+	@lsof -iTCP:$${API_PORT:-8012} -sTCP:LISTEN 2>/dev/null || echo "(端口 $${API_PORT:-8012} 未监听)"
+	@echo ""
+	@echo "🌿 /health:"
+	@curl -fsS http://localhost:$${API_PORT:-8012}/health 2>/dev/null || echo "(API 未响应)"
+
+# ---- Metrics & Dev Utilities ----
+metrics-check:
+	@echo "运行指标一致性脚本..."
+	@cd jive-api && ./scripts/check_metrics_consistency.sh || true
+	@echo "抓取 /metrics 关键行:" && curl -fsS http://localhost:$${API_PORT:-8012}/metrics | grep -E 'password_hash_|jive_build_info|export_requests_' || true
+
+seed-bcrypt-user:
+	@echo "插入 bcrypt 测试用户 (若不存在)..."
+	@cd jive-api && cargo run --bin hash_password --quiet -- 'TempBcrypt123!' >/dev/null 2>&1 || true
+	@psql $${DATABASE_URL:-postgresql://postgres:postgres@localhost:5433/jive_money} -c "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM users WHERE email='bcrypt_test@example.com') THEN INSERT INTO users (email,password_hash,name,is_active,created_at,updated_at) VALUES ('bcrypt_test@example.com', crypt('TempBcrypt123!','bf'), 'Bcrypt Test', true, NOW(), NOW()); END IF; END $$;" 2>/dev/null || echo "⚠️ 需要本地 Postgres 运行 (5433)"
+	@echo "测试登录: curl -X POST -H 'Content-Type: application/json' -d '{\"email\":\"bcrypt_test@example.com\",\"password\":\"TempBcrypt123!\"}' http://localhost:$${API_PORT:-8012}/api/v1/auth/login"
 
 # 代码格式化
 format:

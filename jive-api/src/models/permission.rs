@@ -8,36 +8,36 @@ pub enum Permission {
     ViewFamilyInfo,
     UpdateFamilyInfo,
     DeleteFamily,
-    
+
     // 成员管理权限
     ViewMembers,
     InviteMembers,
     RemoveMembers,
     UpdateMemberRoles,
-    
+
     // 账户管理权限
     ViewAccounts,
     CreateAccounts,
     EditAccounts,
     DeleteAccounts,
-    
+
     // 交易管理权限
     ViewTransactions,
     CreateTransactions,
     EditTransactions,
     DeleteTransactions,
     BulkEditTransactions,
-    
+
     // 分类和预算权限
     ViewCategories,
     ManageCategories,
     ViewBudgets,
     ManageBudgets,
-    
+
     // 报表和数据权限
     ViewReports,
     ExportData,
-    
+
     // 系统管理权限
     ViewAuditLog,
     ManageIntegrations,
@@ -237,7 +237,10 @@ mod tests {
 
     #[test]
     fn test_permission_from_str() {
-        assert_eq!(Permission::from_str_name("ViewFamilyInfo"), Some(Permission::ViewFamilyInfo));
+        assert_eq!(
+            Permission::from_str_name("ViewFamilyInfo"),
+            Some(Permission::ViewFamilyInfo)
+        );
         assert_eq!(Permission::from_str_name("InvalidPermission"), None);
     }
 

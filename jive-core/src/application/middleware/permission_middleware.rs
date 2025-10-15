@@ -1,24 +1,27 @@
 //! Permission Middleware - 权限检查中间件
-//! 
+//!
 //! 提供统一的权限检查机制，确保所有服务调用都经过权限验证
 
+use async_trait::async_trait;
+use chrono::{DateTime, Utc};
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
-use async_trait::async_trait;
-use chrono::{DateTime, Utc};
 
-use crate::domain::{Permission, FamilyRole, FamilyAuditLog, AuditAction};
-use crate::error::{JiveError, Result};
 use crate::application::ServiceContext;
+use crate::domain::{AuditAction, FamilyAuditLog, FamilyRole, Permission};
+use crate::error::{JiveError, Result};
+#[cfg(feature = "db")]
 use crate::infrastructure::repositories::FamilyRepository;
 
 /// 权限检查中间件
+#[cfg(feature = "db")]
 pub struct PermissionMiddleware<R: FamilyRepository> {
     repository: Arc<R>,
     cache: Option<PermissionCache>,
 }
 
+#[cfg(feature = "db")]
 impl<R: FamilyRepository> PermissionMiddleware<R> {
     pub fn new(repository: Arc<R>) -> Self {
         Self {
@@ -48,7 +51,8 @@ impl<R: FamilyRepository> PermissionMiddleware<R> {
         }
 
         // 3. 从数据库获取权限
-        let permissions = self.repository
+        let permissions = self
+            .repository
             .get_user_permissions(&context.user_id, &context.family_id)
             .await?;
 
@@ -63,7 +67,10 @@ impl<R: FamilyRepository> PermissionMiddleware<R> {
         } else {
             // 记录未授权访问
             self.log_unauthorized_access(context, permission).await?;
-            Err(JiveError::Unauthorized(format!("Missing permission: {:?}", permission)))
+            Err(JiveError::Unauthorized(format!(
+                "Missing permission: {:?}",
+                permission
+            )))
         }
     }
 
@@ -86,14 +93,19 @@ impl<R: FamilyRepository> PermissionMiddleware<R> {
         permissions: &[Permission],
     ) -> Result<()> {
         for permission in permissions {
-            if self.check_permission(context, permission.clone()).await.is_ok() {
+            if self
+                .check_permission(context, permission.clone())
+                .await
+                .is_ok()
+            {
                 return Ok(());
             }
         }
-        
-        Err(JiveError::Unauthorized(
-            format!("Missing any of permissions: {:?}", permissions)
-        ))
+
+        Err(JiveError::Unauthorized(format!(
+            "Missing any of permissions: {:?}",
+            permissions
+        )))
     }
 
     /// 检查用户角色
@@ -102,30 +114,29 @@ impl<R: FamilyRepository> PermissionMiddleware<R> {
         context: &ServiceContext,
         required_role: FamilyRole,
     ) -> Result<()> {
-        let membership = self.repository
+        let membership = self
+            .repository
             .get_membership_by_user(&context.user_id, &context.family_id)
             .await?;
 
         // 角色层级检查
         let has_permission = match required_role {
-            FamilyRole::Viewer => true,  // 所有角色都满足 Viewer 要求
+            FamilyRole::Viewer => true, // 所有角色都满足 Viewer 要求
             FamilyRole::Member => matches!(
                 membership.role,
                 FamilyRole::Member | FamilyRole::Admin | FamilyRole::Owner
             ),
-            FamilyRole::Admin => matches!(
-                membership.role,
-                FamilyRole::Admin | FamilyRole::Owner
-            ),
+            FamilyRole::Admin => matches!(membership.role, FamilyRole::Admin | FamilyRole::Owner),
             FamilyRole::Owner => membership.role == FamilyRole::Owner,
         };
 
         if has_permission {
             Ok(())
         } else {
-            Err(JiveError::Unauthorized(
-                format!("Requires {:?} role or higher", required_role)
-            ))
+            Err(JiveError::Unauthorized(format!(
+                "Requires {:?} role or higher",
+                required_role
+            )))
         }
     }
 
@@ -141,7 +152,7 @@ impl<R: FamilyRepository> PermissionMiddleware<R> {
     {
         // 检查权限
         self.check_permission(context, permission).await?;
-        
+
         // 执行实际操作
         f().await
     }
@@ -158,7 +169,7 @@ impl<R: FamilyRepository> PermissionMiddleware<R> {
     {
         // 检查角色
         self.check_role(context, role).await?;
-        
+
         // 执行实际操作
         f().await
     }
@@ -211,23 +222,22 @@ impl PermissionCache {
     pub fn new() -> Self {
         Self {
             cache: Arc::new(parking_lot::RwLock::new(lru::LruCache::new(
-                std::num::NonZeroUsize::new(1000).unwrap()
+                std::num::NonZeroUsize::new(1000).unwrap(),
             ))),
-            ttl: std::time::Duration::from_secs(300),  // 5分钟缓存
+            ttl: std::time::Duration::from_secs(300), // 5分钟缓存
         }
     }
 
     pub fn get(&self, user_id: &str, family_id: &str) -> Option<Vec<Permission>> {
         let cache = self.cache.read();
-        cache.peek(&(user_id.to_string(), family_id.to_string())).cloned()
+        cache
+            .peek(&(user_id.to_string(), family_id.to_string()))
+            .cloned()
     }
 
     pub fn set(&self, user_id: &str, family_id: &str, permissions: Vec<Permission>) {
         let mut cache = self.cache.write();
-        cache.put(
-            (user_id.to_string(), family_id.to_string()),
-            permissions,
-        );
+        cache.put((user_id.to_string(), family_id.to_string()), permissions);
     }
 
     pub fn invalidate(&self, user_id: &str, family_id: &str) {
@@ -242,7 +252,7 @@ impl PermissionCache {
             .filter(|((_, fid), _)| fid == family_id)
             .map(|((uid, fid), _)| (uid.clone(), fid.clone()))
             .collect();
-        
+
         for key in keys_to_remove {
             cache.pop(&key);
         }
@@ -252,10 +262,22 @@ impl PermissionCache {
 /// 权限守卫 - 用于方法级别的权限注解
 #[async_trait]
 pub trait PermissionGuard {
-    async fn require_permission(&self, context: &ServiceContext, permission: Permission) -> Result<()>;
+    async fn require_permission(
+        &self,
+        context: &ServiceContext,
+        permission: Permission,
+    ) -> Result<()>;
     async fn require_role(&self, context: &ServiceContext, role: FamilyRole) -> Result<()>;
-    async fn require_any_permission(&self, context: &ServiceContext, permissions: &[Permission]) -> Result<()>;
-    async fn require_all_permissions(&self, context: &ServiceContext, permissions: &[Permission]) -> Result<()>;
+    async fn require_any_permission(
+        &self,
+        context: &ServiceContext,
+        permissions: &[Permission],
+    ) -> Result<()>;
+    async fn require_all_permissions(
+        &self,
+        context: &ServiceContext,
+        permissions: &[Permission],
+    ) -> Result<()>;
 }
 
 /// 宏：简化权限检查
@@ -265,7 +287,8 @@ macro_rules! require_permission {
         $context.require_permission($permission)?
     };
     ($context:expr, $permission:expr, $message:expr) => {
-        $context.require_permission($permission)
+        $context
+            .require_permission($permission)
             .map_err(|_| JiveError::Unauthorized($message.into()))?
     };
 }
@@ -299,8 +322,10 @@ impl<S> PermissionDecorator<S> {
         F: FnOnce(&S) -> Pin<Box<dyn Future<Output = Result<R>> + Send + '_>>,
     {
         // 检查权限
-        self.middleware.require_permission(context, permission).await?;
-        
+        self.middleware
+            .require_permission(context, permission)
+            .await?;
+
         // 执行原方法
         f(&self.inner).await
     }
@@ -317,7 +342,7 @@ impl<S> PermissionDecorator<S> {
     {
         // 检查角色
         self.middleware.require_role(context, role).await?;
-        
+
         // 执行原方法
         f(&self.inner).await
     }
@@ -330,14 +355,11 @@ mod tests {
     #[test]
     fn test_permission_cache() {
         let cache = PermissionCache::new();
-        let permissions = vec![
-            Permission::ViewTransactions,
-            Permission::CreateTransactions,
-        ];
+        let permissions = vec![Permission::ViewTransactions, Permission::CreateTransactions];
 
         // 设置缓存
         cache.set("user1", "family1", permissions.clone());
-        
+
         // 获取缓存
         let cached = cache.get("user1", "family1");
         assert!(cached.is_some());
@@ -351,7 +373,7 @@ mod tests {
     #[test]
     fn test_invalidate_family_cache() {
         let cache = PermissionCache::new();
-        
+
         // 设置多个用户的缓存
         cache.set("user1", "family1", vec![Permission::ViewTransactions]);
         cache.set("user2", "family1", vec![Permission::CreateTransactions]);
@@ -359,9 +381,9 @@ mod tests {
 
         // 清除 family1 的所有缓存
         cache.invalidate_family("family1");
-        
+
         assert!(cache.get("user1", "family1").is_none());
         assert!(cache.get("user2", "family1").is_none());
-        assert!(cache.get("user3", "family2").is_some());  // family2 不受影响
+        assert!(cache.get("user3", "family2").is_some()); // family2 不受影响
     }
 }

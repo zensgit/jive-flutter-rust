@@ -211,7 +211,7 @@ GET /api/v1/transactions/statistics?ledger_id={ledger_id}
 
 - GET 流式导出（浏览器友好）
   - `GET /api/v1/transactions/export.csv`
-  - 支持同样的过滤参数
+  - 支持同样的过滤参数，另支持 `include_header`（可选，默认 `true`）用于控制是否输出表头行
   - 响应头：
     - `Content-Type: text/csv; charset=utf-8`
     - `Content-Disposition: attachment; filename="transactions_export_YYYYMMDDHHMMSS.csv"`
@@ -243,9 +243,9 @@ GET /api/v1/transactions/statistics?ledger_id={ledger_id}
 TOKEN="<jwt>"
 API="http://localhost:8012/api/v1"
 
-# 请求导出
+# 请求导出（可选 include_header=false 关闭表头）
 resp=$(curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
-  -d '{"format":"csv","start_date":"2024-09-01","end_date":"2024-09-30"}' \
+  -d '{"format":"csv","start_date":"2024-09-01","end_date":"2024-09-30","include_header":false}' \
   "$API/transactions/export")
 
 audit_id=$(echo "$resp" | jq -r .audit_id)

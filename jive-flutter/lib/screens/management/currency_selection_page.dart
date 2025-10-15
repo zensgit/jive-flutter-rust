@@ -35,10 +35,13 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
   void initState() {
     super.initState();
     _compact = widget.compact;
-    // 打开页面时自动获取汇率
+    // 打开页面时只在汇率过期的情况下才刷新（避免每次都调用API）
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _fetchLatestRates();
+      // 检查汇率是否需要更新（超过1小时未更新）
+      if (ref.read(currencyProvider.notifier).ratesNeedUpdate) {
+        _fetchLatestRates();
+      }
     });
   }
 
@@ -94,6 +97,19 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
     List<model.Currency> fiatCurrencies =
         allCurrencies.where((c) => !c.isCrypto).toList();
 
+    // 🔍 DEBUG: 验证法币过滤是否正确
+    print('[CurrencySelectionPage] Total currencies: ${allCurrencies.length}');
+    print('[CurrencySelectionPage] Fiat currencies: ${fiatCurrencies.length}');
+
+    // 检查问题加密货币是否出现在法币列表
+    final problemCryptos = ['1INCH', 'AAVE', 'ADA', 'AGIX', 'PEPE', 'MKR', 'COMP', 'BTC', 'ETH'];
+    final foundProblems = fiatCurrencies.where((c) => problemCryptos.contains(c.code)).toList();
+    if (foundProblems.isNotEmpty) {
+      print('[CurrencySelectionPage] ❌ ERROR: Found crypto in fiat list: ${foundProblems.map((c) => c.code).join(", ")}');
+    } else {
+      print('[CurrencySelectionPage] ✅ OK: No crypto in fiat list');
+    }
+
     // 搜索过滤
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
@@ -105,11 +121,17 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
       }).toList();
     }
 
-    // 排序：基础货币第一，已选择的排前面
+    // 排序：基础货币第一，手动汇率第二，已选择的排前面
+    final rates = ref.watch(exchangeRateObjectsProvider);
     fiatCurrencies.sort((a, b) {
       // 基础货币永远第一
       if (a.code == baseCurrency.code) return -1;
       if (b.code == baseCurrency.code) return 1;
+
+      // ✅ 手动汇率的货币排在基础货币下面（第二优先级）
+      final aIsManual = rates[a.code]?.source == 'manual';
+      final bIsManual = rates[b.code]?.source == 'manual';
+      if (aIsManual != bIsManual) return aIsManual ? -1 : 1;
 
       // 已选择的排前面
       final aSelected = selectedCurrencies.contains(a);
@@ -133,13 +155,31 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
     final rates = ref.watch(exchangeRateObjectsProvider);
     final rateObj = rates[currency.code];
     final rate = rateObj?.rate ?? 1.0;
-    final displayRate = _localRateOverrides[currency.code] ?? rate;
+    // Check if this is a saved manual rate (provider loads manual rates with source='manual')
+    final isManual = rateObj?.source == 'manual';
+    final displayRate = isManual ? rate : (_localRateOverrides[currency.code] ?? rate);
+
+    // DEBUG: Log rate information for troubleshooting
+    if (rateObj != null && rateObj.source == 'manual') {
+      print('[CurrencySelectionPage] ${currency.code}: Manual rate detected! rate=$rate, source=${rateObj.source}');
+    }
 
     // 获取或创建汇率输入控制器
     if (!_rateControllers.containsKey(currency.code)) {
       _rateControllers[currency.code] = TextEditingController(
         text: displayRate.toStringAsFixed(4),
       );
+    } else {
+      // 如果controller已存在，检查是否需要更新其值
+      // 只在不是手动编辑状态时更新（避免覆盖用户正在输入的内容）
+      if (_manualRates[currency.code] != true) {
+        final currentValue = double.tryParse(_rateControllers[currency.code]!.text) ?? 0;
+        if ((currentValue - displayRate).abs() > 0.0001) {
+          // displayRate发生了变化，更新controller
+          _rateControllers[currency.code]!.text = displayRate.toStringAsFixed(4);
+          print('[CurrencySelectionPage] ${currency.code}: Updated controller from $currentValue to $displayRate');
+        }
+      }
     }
 
     if (widget.isSelectingBaseCurrency) {
@@ -148,18 +188,14 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
         elevation: isBaseCurrency ? 2 : 1,
         color: isBaseCurrency ? cs.tertiaryContainer : cs.surface,
         child: ListTile(
-          leading: Container(
+          leading: SizedBox(
             width: 48,
             height: 48,
-            decoration: BoxDecoration(
-              color: cs.surface,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                  color: isBaseCurrency ? cs.tertiary : cs.outlineVariant),
-            ),
             child: Center(
-              child: Text(currency.flag ?? currency.symbol,
-                  style: TextStyle(fontSize: 20, color: cs.onSurface)),
+              child: Text(
+                currency.flag ?? currency.symbol,
+                style: const TextStyle(fontSize: 32),
+              ),
             ),
           ),
           title: Row(
@@ -180,7 +216,8 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                           color: cs.onTertiaryContainer,
                           fontWeight: FontWeight.w700)),
                 ),
-              Text(currency.code,
+              // 🔥 优先显示中文名
+              Text(currency.nameZh,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 16)),
               const SizedBox(width: 8),
@@ -189,12 +226,12 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                 decoration: BoxDecoration(
                     color: cs.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(4)),
-                child: Text(currency.symbol,
+                child: Text(currency.code,
                     style: TextStyle(fontSize: dense ? 11 : 12)),
               ),
             ],
           ),
-          subtitle: Text(currency.nameZh,
+          subtitle: Text('${currency.symbol} · ${currency.code}',
               style: TextStyle(
                   fontSize: dense ? 12 : 13, color: cs.onSurfaceVariant)),
           trailing: isBaseCurrency
@@ -212,22 +249,13 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
           ? cs.tertiaryContainer
           : (isSelected ? cs.secondaryContainer : cs.surface),
       child: ExpansionTile(
-        leading: Container(
+        leading: SizedBox(
           width: 48,
           height: 48,
-          decoration: BoxDecoration(
-            color: cs.surface,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: isBaseCurrency
-                  ? cs.tertiary
-                  : (isSelected ? cs.secondary : cs.outlineVariant),
-            ),
-          ),
           child: Center(
             child: Text(
               currency.flag ?? currency.symbol,
-              style: TextStyle(fontSize: 20, color: cs.onSurface),
+              style: const TextStyle(fontSize: 32),
             ),
           ),
         ),
@@ -258,8 +286,9 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                 children: [
                   Row(
                     children: [
+                      // 🔥 优先显示中文名
                       Text(
-                        currency.code,
+                        currency.nameZh,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -275,61 +304,65 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                           color: cs.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Text(currency.symbol,
+                        child: Text(currency.code,
                             style: TextStyle(fontSize: dense ? 11 : 12)),
                       ),
                     ],
                   ),
-                  Text(currency.nameZh,
+                  Text('${currency.symbol} · ${currency.code}',
                       style: TextStyle(
                           fontSize: dense ? 12 : 13,
                           color: cs.onSurfaceVariant)),
-                  // Inline rate + source to avoid tall trailing overflow
-                  if (!isBaseCurrency &&
-                      (rateObj != null ||
-                          _localRateOverrides.containsKey(currency.code))) ...[
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                              '1 ${ref.watch(baseCurrencyProvider).code} = ${displayRate.toStringAsFixed(4)} ${currency.code}',
-                              style: TextStyle(
-                                  fontSize: dense ? 11 : 12,
-                                  color: cs.onSurface),
-                              overflow: TextOverflow.ellipsis),
-                        ),
-                        const SizedBox(width: 6),
-                        SourceBadge(
-                          source: _localRateOverrides.containsKey(currency.code)
-                              ? 'manual'
-                              : (rateObj?.source),
-                        ),
-                      ],
-                    ),
-                    if (rateObj?.source == 'manual')
-                      Padding(
-                        padding: const EdgeInsets.only(top: 2),
-                        child: Builder(builder: (_) {
-                          final expiry = ref
-                              .read(currencyProvider.notifier)
-                              .manualExpiryFor(currency.code);
-                          final text = expiry != null
-                              ? '手动有效至 ${expiry.year}-${expiry.month.toString().padLeft(2, '0')}-${expiry.day.toString().padLeft(2, '0')} ${expiry.hour.toString().padLeft(2, '0')}:${expiry.minute.toString().padLeft(2, '0')}'
-                              : '手动汇率有效中';
-                          return Text(
-                            text,
-                            style: TextStyle(
-                              fontSize: dense ? 10 : 11,
-                              color: Colors.orange[700],
-                            ),
-                          );
-                        }),
-                      ),
-                  ],
                 ],
               ),
             ),
+            // 🔥 将汇率和来源标识移到右侧，与加密货币页面保持一致
+            if (!isBaseCurrency &&
+                (rateObj != null ||
+                    _localRateOverrides.containsKey(currency.code)))
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    '1 ${ref.watch(baseCurrencyProvider).code} = ${displayRate.toStringAsFixed(4)} ${currency.code}',
+                    style: TextStyle(
+                      fontSize: dense ? 13 : 14,
+                      fontWeight: FontWeight.w600,
+                      color: cs.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SourceBadge(
+                        source: _localRateOverrides.containsKey(currency.code)
+                            ? 'manual'
+                            : (rateObj?.source),
+                      ),
+                    ],
+                  ),
+                  if (rateObj?.source == 'manual')
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Builder(builder: (_) {
+                        final expiry = ref
+                            .read(currencyProvider.notifier)
+                            .manualExpiryFor(currency.code);
+                        final text = expiry != null
+                            ? '手动有效至 ${expiry.year}-${expiry.month.toString().padLeft(2, '0')}-${expiry.day.toString().padLeft(2, '0')}'
+                            : '手动汇率有效中';
+                        return Text(
+                          text,
+                          style: TextStyle(
+                            fontSize: dense ? 10 : 11,
+                            color: Colors.orange[700],
+                          ),
+                        );
+                      }),
+                    ),
+                ],
+              ),
           ],
         ),
         trailing: Checkbox(
@@ -449,6 +482,8 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                                       0,
                                       0,
                                       0);
+
+                                  // 1. 选择日期
                                   final date = await showDatePicker(
                                     context: context,
                                     initialDate: _manualExpiry[currency.code]
@@ -458,18 +493,40 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                                     lastDate: DateTime.now()
                                         .add(const Duration(days: 60)),
                                   );
+
                                   if (date != null) {
-                                    _manualExpiry[currency.code] = DateTime.utc(
-                                        date.year,
-                                        date.month,
-                                        date.day,
-                                        0,
-                                        0,
-                                        0);
+                                    // 2. 选择时间
+                                    if (!mounted) return;
+                                    final time = await showTimePicker(
+                                      context: context,
+                                      initialTime: TimeOfDay.fromDateTime(
+                                          _manualExpiry[currency.code]?.toLocal() ??
+                                              defaultExpiry.toLocal()),
+                                    );
+
+                                    if (time != null) {
+                                      _manualExpiry[currency.code] = DateTime.utc(
+                                          date.year,
+                                          date.month,
+                                          date.day,
+                                          time.hour,   // 用户选择的小时
+                                          time.minute, // 用户选择的分钟
+                                          0);          // 秒固定为0
+                                    } else {
+                                      // 用户取消时间选择，使用默认 00:00
+                                      _manualExpiry[currency.code] = DateTime.utc(
+                                          date.year,
+                                          date.month,
+                                          date.day,
+                                          0,
+                                          0,
+                                          0);
+                                    }
                                   } else {
                                     _manualExpiry[currency.code] =
                                         defaultExpiry;
                                   }
+
                                   // 保存手动汇率 + 有效期
                                   final rate = double.tryParse(
                                       _rateControllers[currency.code]!.text);
@@ -488,8 +545,10 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                                         _rateControllers[currency.code]?.text =
                                             rate.toStringAsFixed(4);
                                       });
+                                      // 显示完整的日期时间
+                                      final expiryLocal = expiry.toLocal();
                                       _showSnackBar(
-                                          '汇率已保存，至 ${expiry.toLocal().toString().split(" ").first} 生效',
+                                          '汇率已保存，至 ${expiryLocal.year}-${expiryLocal.month.toString().padLeft(2, '0')}-${expiryLocal.day.toString().padLeft(2, '0')} ${expiryLocal.hour.toString().padLeft(2, '0')}:${expiryLocal.minute.toString().padLeft(2, '0')} 生效',
                                           Colors.green);
                                     }
                                   } else {
@@ -515,11 +574,47 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                               Icon(Icons.schedule,
                                   size: dense ? 14 : 16, color: cs.tertiary),
                               const SizedBox(width: 6),
-                              Text(
-                                '手动汇率有效期: ${_manualExpiry[currency.code]!.toLocal().toString().split(" ").first} 00:00',
-                                style: TextStyle(
-                                    fontSize: dense ? 11 : 12,
-                                    color: cs.tertiary),
+                              Builder(builder: (_) {
+                                final expiry = _manualExpiry[currency.code]!.toLocal();
+                                return Text(
+                                  '手动汇率有效期: ${expiry.year}-${expiry.month.toString().padLeft(2, '0')}-${expiry.day.toString().padLeft(2, '0')} ${expiry.hour.toString().padLeft(2, '0')}:${expiry.minute.toString().padLeft(2, '0')}',
+                                  style: TextStyle(
+                                      fontSize: dense ? 11 : 12,
+                                      color: cs.tertiary),
+                                );
+                              }),
+                            ],
+                          ),
+                        ),
+                      const SizedBox(height: 12),
+                      // 汇率变化趋势（实时数据）
+                      if (rateObj != null)
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: cs.surfaceContainerHighest.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildRateChange(
+                                cs,
+                                '24h',
+                                rateObj.change24h,
+                                _compact,
+                              ),
+                              _buildRateChange(
+                                cs,
+                                '7d',
+                                rateObj.change7d,
+                                _compact,
+                              ),
+                              _buildRateChange(
+                                cs,
+                                '30d',
+                                rateObj.change30d,
+                                _compact,
                               ),
                             ],
                           ),
@@ -530,6 +625,64 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
               ]
             : [],
       ),
+    );
+  }
+
+  Widget _buildRateChange(
+    ColorScheme cs,
+    String period,
+    double? changePercent,
+    bool compact,
+  ) {
+    // 如果没有数据，显示 --
+    if (changePercent == null) {
+      return Column(
+        children: [
+          Text(
+            period,
+            style: TextStyle(
+              fontSize: compact ? 10 : 11,
+              color: cs.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            '--',
+            style: TextStyle(
+              fontSize: compact ? 11 : 12,
+              color: cs.onSurfaceVariant,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      );
+    }
+
+    // 确定颜色：正数绿色，负数红色
+    final color = changePercent >= 0 ? Colors.green : Colors.red;
+    // 格式化百分比：带符号
+    final changeText =
+        '${changePercent >= 0 ? '+' : ''}${changePercent.toStringAsFixed(2)}%';
+
+    return Column(
+      children: [
+        Text(
+          period,
+          style: TextStyle(
+            fontSize: compact ? 10 : 11,
+            color: cs.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          changeText,
+          style: TextStyle(
+            fontSize: compact ? 11 : 12,
+            color: color,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 
@@ -680,18 +833,31 @@ class _CurrencySelectionPageState extends ConsumerState<CurrencySelectionPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      '已选择 ${ref.watch(selectedCurrenciesProvider).length} 种货币',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.onSurface),
-                    ),
+                    Builder(builder: (context) {
+                      final selectedCurrencies = ref.watch(selectedCurrenciesProvider);
+                      final fiatCount = selectedCurrencies.where((c) => !c.isCrypto).length;
+
+                      // 🔍 DEBUG: 打印selectedCurrenciesProvider的详细信息
+                      print('[Bottom Stats] Total selected currencies: ${selectedCurrencies.length}');
+                      print('[Bottom Stats] Fiat count: $fiatCount');
+                      print('[Bottom Stats] Selected currencies list:');
+                      for (final c in selectedCurrencies) {
+                        print('  - ${c.code}: isCrypto=${c.isCrypto}');
+                      }
+
+                      return Text(
+                        '已选择 $fiatCount 种法定货币',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).colorScheme.onSurface),
+                      );
+                    }),
                     TextButton.icon(
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      icon: const Icon(Icons.check),
-                      label: const Text('完成'),
+                      icon: const Icon(Icons.arrow_back),
+                      label: const Text('返回'),
                     ),
                   ],
                 ),

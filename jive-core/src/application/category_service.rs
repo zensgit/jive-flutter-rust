@@ -1,17 +1,17 @@
 //! Category service - 分类管理服务
-//! 
+//!
 //! 基于 Maybe 的分类功能转换而来，包括分类CRUD、分组、自动分类等功能
 
-use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
+use super::{BatchResult, PaginationParams, ServiceContext, ServiceResponse};
 use crate::domain::Category;
 use crate::error::{JiveError, Result};
-use super::{ServiceContext, ServiceResponse, PaginationParams, BatchResult};
 
 /// 分类创建请求
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -446,7 +446,9 @@ impl CategoryService {
         new_parent_id: Option<String>,
         context: ServiceContext,
     ) -> ServiceResponse<Category> {
-        let result = self._move_category(category_id, new_parent_id, context).await;
+        let result = self
+            ._move_category(category_id, new_parent_id, context)
+            .await;
         result.into()
     }
 
@@ -480,7 +482,9 @@ impl CategoryService {
         new_name: String,
         context: ServiceContext,
     ) -> ServiceResponse<Category> {
-        let result = self._duplicate_category(category_id, new_name, context).await;
+        let result = self
+            ._duplicate_category(category_id, new_name, context)
+            .await;
         result.into()
     }
 
@@ -522,7 +526,9 @@ impl CategoryService {
         transaction_description: String,
         context: ServiceContext,
     ) -> ServiceResponse<Vec<Category>> {
-        let result = self._suggest_category(transaction_description, context).await;
+        let result = self
+            ._suggest_category(transaction_description, context)
+            .await;
         result.into()
     }
 }
@@ -723,11 +729,13 @@ impl CategoryService {
         context: ServiceContext,
     ) -> Result<Vec<CategoryTreeNode>> {
         // 获取所有分类
-        let categories = self._search_categories(
-            CategoryFilter::default(),
-            PaginationParams::new(1, 1000),
-            context,
-        ).await?;
+        let categories = self
+            ._search_categories(
+                CategoryFilter::default(),
+                PaginationParams::new(1, 1000),
+                context,
+            )
+            .await?;
 
         // 构建分类树
         let mut tree = Vec::new();
@@ -745,7 +753,7 @@ impl CategoryService {
                     category: category.clone(),
                     children: Vec::new(), // 在实际实现中会递归构建子节点
                     depth: 0,
-                    transaction_count: 0, // 从数据库查询
+                    transaction_count: 0,             // 从数据库查询
                     total_amount: "0.00".to_string(), // 从数据库聚合
                 };
                 tree.push(node);
@@ -769,7 +777,7 @@ impl CategoryService {
             if !parent_id.is_empty() {
                 // 检查父分类是否存在
                 let _parent = self._get_category(parent_id.clone(), context).await?;
-                
+
                 // 检查是否会形成循环引用
                 // if self._would_create_cycle(&category, parent_id).await? {
                 //     return Err(JiveError::ValidationError {
@@ -796,10 +804,20 @@ impl CategoryService {
         let mut result = BatchResult::new();
 
         // 检查目标分类是否存在
-        let _target_category = self._get_category(request.target_category_id.clone(), context.clone()).await?;
+        let _target_category = self
+            ._get_category(request.target_category_id.clone(), context.clone())
+            .await?;
 
         for source_id in request.source_category_ids {
-            match self._merge_single_category(&source_id, &request.target_category_id, request.delete_source_categories, &context).await {
+            match self
+                ._merge_single_category(
+                    &source_id,
+                    &request.target_category_id,
+                    request.delete_source_categories,
+                    &context,
+                )
+                .await
+            {
                 Ok(_) => result.add_success(),
                 Err(error) => result.add_error(error.to_string()),
             }
@@ -822,7 +840,7 @@ impl CategoryService {
         // 3. 更新相关统计信息
 
         // transaction_repository.update_category_bulk(source_id, target_id).await?;
-        // 
+        //
         // if delete_source {
         //     self._delete_category(source_id.to_string(), context.clone()).await?;
         // }
@@ -839,7 +857,10 @@ impl CategoryService {
         let mut result = BatchResult::new();
 
         for category_id in request.category_ids {
-            match self._apply_bulk_operation(&category_id, &request, &context).await {
+            match self
+                ._apply_bulk_operation(&category_id, &request, &context)
+                .await
+            {
                 Ok(_) => result.add_success(),
                 Err(error) => result.add_error(error.to_string()),
             }
@@ -855,7 +876,9 @@ impl CategoryService {
         request: &BulkCategoryRequest,
         context: &ServiceContext,
     ) -> Result<()> {
-        let mut category = self._get_category(category_id.to_string(), context.clone()).await?;
+        let mut category = self
+            ._get_category(category_id.to_string(), context.clone())
+            .await?;
 
         match request.operation {
             BulkCategoryOperation::Activate => {
@@ -909,10 +932,7 @@ impl CategoryService {
     }
 
     /// 获取统计信息的内部实现
-    async fn _get_category_stats(
-        &self,
-        _context: ServiceContext,
-    ) -> Result<CategoryStats> {
+    async fn _get_category_stats(&self, _context: ServiceContext) -> Result<CategoryStats> {
         // 在实际实现中，从数据库聚合统计数据
         let stats = CategoryStats {
             total_categories: 25,
@@ -948,10 +968,7 @@ impl CategoryService {
     }
 
     /// 获取未分类交易数量的内部实现
-    async fn _get_uncategorized_transaction_count(
-        &self,
-        _context: ServiceContext,
-    ) -> Result<u32> {
+    async fn _get_uncategorized_transaction_count(&self, _context: ServiceContext) -> Result<u32> {
         // 在实际实现中，从数据库查询
         // transaction_repository.count_uncategorized().await
         Ok(42)
@@ -968,7 +985,7 @@ impl CategoryService {
 
         // 简单的关键词匹配示例
         let description_lower = transaction_description.to_lowercase();
-        
+
         if description_lower.contains("food") || description_lower.contains("restaurant") {
             let category = Category::new("Food & Dining".to_string())?;
             suggestions.push(category);
@@ -1007,7 +1024,7 @@ mod tests {
     async fn test_create_category() {
         let service = CategoryService::new();
         let context = ServiceContext::new("user-123".to_string());
-        
+
         let request = CreateCategoryRequest::new("Test Category".to_string());
 
         let result = service._create_category(request, context).await;
@@ -1022,7 +1039,7 @@ mod tests {
     async fn test_category_validation() {
         let service = CategoryService::new();
         let context = ServiceContext::new("user-123".to_string());
-        
+
         let request = CreateCategoryRequest::new("".to_string()); // 空名称应该失败
 
         let result = service._create_category(request, context).await;
@@ -1034,7 +1051,9 @@ mod tests {
         let service = CategoryService::new();
         let context = ServiceContext::new("user-123".to_string());
 
-        let result = service._suggest_category("McDonald's restaurant".to_string(), context).await;
+        let result = service
+            ._suggest_category("McDonald's restaurant".to_string(), context)
+            .await;
         assert!(result.is_ok());
 
         let suggestions = result.unwrap();

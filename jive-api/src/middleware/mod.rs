@@ -1,5 +1,6 @@
 pub mod auth;
-pub mod error_handler;
 pub mod cors;
-pub mod rate_limit;
+pub mod error_handler;
+pub mod metrics_guard;
 pub mod permission;
+pub mod rate_limit;

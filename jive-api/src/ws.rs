@@ -13,7 +13,7 @@ use sqlx::PgPool;
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use tracing::{info, error};
+use tracing::{error, info};
 
 /// WebSocket连接管理器
 pub struct WsConnectionManager {
@@ -26,15 +26,15 @@ impl WsConnectionManager {
             connections: Arc::new(RwLock::new(HashMap::new())),
         }
     }
-    
+
     pub async fn add_connection(&self, id: String, tx: tokio::sync::mpsc::UnboundedSender<String>) {
         self.connections.write().await.insert(id, tx);
     }
-    
+
     pub async fn remove_connection(&self, id: &str) {
         self.connections.write().await.remove(id);
     }
-    
+
     pub async fn send_message(&self, id: &str, message: String) -> Result<(), String> {
         if let Some(tx) = self.connections.read().await.get(id) {
             tx.send(message).map_err(|e| e.to_string())
@@ -45,7 +45,9 @@ impl WsConnectionManager {
 }
 
 impl Default for WsConnectionManager {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 /// WebSocket查询参数
@@ -73,11 +75,14 @@ pub async fn ws_handler(
     // 简单的令牌验证（实际应验证JWT）
     if query.token.is_empty() {
         return ws.on_upgrade(|mut socket| async move {
-            let _ = socket.send(Message::Text(
-                serde_json::to_string(&WsMessage::Error {
-                    message: "Invalid token".to_string(),
-                }).unwrap()
-            )).await;
+            let _ = socket
+                .send(Message::Text(
+                    serde_json::to_string(&WsMessage::Error {
+                        message: "Invalid token".to_string(),
+                    })
+                    .unwrap(),
+                ))
+                .await;
             let _ = socket.close().await;
         });
     }
@@ -88,18 +93,18 @@ pub async fn ws_handler(
 /// 处理WebSocket连接
 pub async fn handle_socket(socket: WebSocket, token: String, _pool: PgPool) {
     let (mut sender, mut receiver) = socket.split();
-    
+
     // 发送连接成功消息
     let connected_msg = WsMessage::Connected {
         user_id: "test-user".to_string(),
     };
-    
+
     if let Ok(msg_str) = serde_json::to_string(&connected_msg) {
         let _ = sender.send(Message::Text(msg_str)).await;
     }
-    
+
     info!("WebSocket connected with token: {}", token);
-    
+
     // 处理消息循环
     while let Some(msg) = receiver.next().await {
         match msg {

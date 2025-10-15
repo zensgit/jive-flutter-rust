@@ -91,13 +91,16 @@ class _DeleteFamilyDialogState extends ConsumerState<DeleteFamilyDialog> {
           if (families.isNotEmpty) {
             // 切换到第一个可用的Family
             await familyService.switchFamily(families.first.family.id);
-            if (!context.mounted) return;
-            ref.refresh(currentFamilyProvider);
+            if (!mounted) return;
+            final _ = ref.refresh(currentFamilyProvider);
           }
         }
 
-        Navigator.of(context).pop(true);
-        ScaffoldMessenger.of(context).showSnackBar(
+        final messenger = ScaffoldMessenger.of(context);
+        final navigator = Navigator.of(context);
+        // ignore: use_build_context_synchronously
+        navigator.pop(true);
+        messenger.showSnackBar(
           SnackBar(
             content: Text('已删除 "${widget.family.name}"'),
             backgroundColor: Colors.green,

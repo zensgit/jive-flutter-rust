@@ -334,7 +334,7 @@ class SwipeableTransactionList extends StatelessWidget {
   Widget _buildSwipeableItem(
       BuildContext context, TransactionData transaction) {
     return Dismissible(
-      key: Key(transaction.id),
+      key: ValueKey(transaction.id ?? "unknown"),
       direction: DismissDirection.horizontal,
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.endToStart) {

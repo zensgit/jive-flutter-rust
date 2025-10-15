@@ -7,7 +7,9 @@ use axum::{
 use serde::Serialize;
 use uuid::Uuid;
 
-use crate::models::invitation::{AcceptInvitationRequest, CreateInvitationRequest, InvitationResponse};
+use crate::models::invitation::{
+    AcceptInvitationRequest, CreateInvitationRequest, InvitationResponse,
+};
 use crate::services::{InvitationService, ServiceContext, ServiceError};
 use sqlx::PgPool;
 
@@ -20,7 +22,7 @@ pub async fn create_invitation(
     Json(request): Json<CreateInvitationRequest>,
 ) -> Result<Json<ApiResponse<InvitationResponse>>, StatusCode> {
     let service = InvitationService::new(pool.clone());
-    
+
     match service.create_invitation(&ctx, request).await {
         Ok(invitation) => Ok(Json(ApiResponse::success(invitation))),
         Err(ServiceError::PermissionDenied) => Err(StatusCode::FORBIDDEN),
@@ -38,7 +40,7 @@ pub async fn get_pending_invitations(
     Extension(ctx): Extension<ServiceContext>,
 ) -> Result<Json<ApiResponse<Vec<InvitationResponse>>>, StatusCode> {
     let service = InvitationService::new(pool.clone());
-    
+
     match service.get_pending_invitations(&ctx).await {
         Ok(invitations) => Ok(Json(ApiResponse::success(invitations))),
         Err(ServiceError::PermissionDenied) => Err(StatusCode::FORBIDDEN),
@@ -63,14 +65,15 @@ pub async fn accept_invitation(
     Json(request): Json<AcceptInvitationRequest>,
 ) -> Result<Json<ApiResponse<AcceptInvitationResponse>>, StatusCode> {
     let service = InvitationService::new(pool.clone());
-    
-    match service.accept_invitation(request.invite_code, request.invite_token, user_id).await {
-        Ok(family_id) => {
-            Ok(Json(ApiResponse::success(AcceptInvitationResponse {
-                family_id,
-                message: "Successfully joined family".to_string(),
-            })))
-        },
+
+    match service
+        .accept_invitation(request.invite_code, request.invite_token, user_id)
+        .await
+    {
+        Ok(family_id) => Ok(Json(ApiResponse::success(AcceptInvitationResponse {
+            family_id,
+            message: "Successfully joined family".to_string(),
+        }))),
         Err(ServiceError::InvalidInvitation) => Err(StatusCode::BAD_REQUEST),
         Err(ServiceError::InvitationExpired) => Err(StatusCode::GONE),
         Err(ServiceError::MemberAlreadyExists) => Err(StatusCode::CONFLICT),
@@ -88,7 +91,7 @@ pub async fn cancel_invitation(
     Extension(ctx): Extension<ServiceContext>,
 ) -> Result<StatusCode, StatusCode> {
     let service = InvitationService::new(pool.clone());
-    
+
     match service.cancel_invitation(&ctx, invitation_id).await {
         Ok(()) => Ok(StatusCode::NO_CONTENT),
         Err(ServiceError::PermissionDenied) => Err(StatusCode::FORBIDDEN),
@@ -106,7 +109,7 @@ pub async fn validate_invite_code(
     Path(code): Path<String>,
 ) -> Result<Json<ApiResponse<InvitationResponse>>, StatusCode> {
     let service = InvitationService::new(pool.clone());
-    
+
     match service.validate_invite_code(&code).await {
         Ok(invitation) => Ok(Json(ApiResponse::success(invitation))),
         Err(ServiceError::InvalidInvitation) => Err(StatusCode::NOT_FOUND),

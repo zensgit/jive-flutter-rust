@@ -1,45 +1,45 @@
 //! Import service - 数据导入服务
-//! 
+//!
 //! 基于 Maybe 的导入功能转换而来，支持 CSV、Mint、QIF、OFX 等格式
 
-use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
-use chrono::{DateTime, Utc, NaiveDate};
+use chrono::{DateTime, NaiveDate, Utc};
 use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use uuid::Uuid;
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
+use super::{BatchResult, ServiceContext, ServiceResponse};
+use crate::domain::{Account, Category, Transaction};
 use crate::error::{JiveError, Result};
-use crate::domain::{Account, Transaction, Category};
-use super::{ServiceContext, ServiceResponse, BatchResult};
 
 /// 导入格式
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum ImportFormat {
-    CSV,        // 通用 CSV
-    Mint,       // Mint 导出格式
-    QIF,        // Quicken Interchange Format
-    OFX,        // Open Financial Exchange
-    JSON,       // JSON 格式
-    Excel,      // Excel 表格
-    Alipay,     // 支付宝账单
-    WeChat,     // 微信账单
+    CSV,    // 通用 CSV
+    Mint,   // Mint 导出格式
+    QIF,    // Quicken Interchange Format
+    OFX,    // Open Financial Exchange
+    JSON,   // JSON 格式
+    Excel,  // Excel 表格
+    Alipay, // 支付宝账单
+    WeChat, // 微信账单
 }
 
 /// 导入状态
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum ImportStatus {
-    Pending,     // 待处理
-    Parsing,     // 解析中
-    Validating,  // 验证中
-    Mapping,     // 映射中
-    Importing,   // 导入中
-    Completed,   // 完成
-    Failed,      // 失败
+    Pending,    // 待处理
+    Parsing,    // 解析中
+    Validating, // 验证中
+    Mapping,    // 映射中
+    Importing,  // 导入中
+    Completed,  // 完成
+    Failed,     // 失败
 }
 
 /// 导入配置
@@ -212,6 +212,7 @@ pub struct ImportService {}
 #[cfg(feature = "wasm")]
 #[wasm_bindgen]
 impl ImportService {
+    pub fn new() -> Self { Self {} }
     #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
         Self {}
@@ -238,7 +239,9 @@ impl ImportService {
         mappings: Vec<FieldMapping>,
         context: ServiceContext,
     ) -> ServiceResponse<ImportTask> {
-        let result = self._start_import(file_data, config, mappings, context).await;
+        let result = self
+            ._start_import(file_data, config, mappings, context)
+            .await;
         result.into()
     }
 
@@ -339,10 +342,9 @@ impl ImportService {
         format: ImportFormat,
         _context: ServiceContext,
     ) -> Result<ImportPreview> {
-        let content = String::from_utf8(file_data)
-            .map_err(|_| JiveError::ValidationError {
-                message: "Invalid file encoding".to_string(),
-            })?;
+        let content = String::from_utf8(file_data).map_err(|_| JiveError::ValidationError {
+            message: "Invalid file encoding".to_string(),
+        })?;
 
         match format {
             ImportFormat::CSV => self.preview_csv(content),
@@ -364,10 +366,7 @@ impl ImportService {
         }
 
         // 检测列
-        let headers: Vec<String> = lines[0]
-            .split(',')
-            .map(|s| s.trim().to_string())
-            .collect();
+        let headers: Vec<String> = lines[0].split(',').map(|s| s.trim().to_string()).collect();
 
         // 获取示例行
         let mut sample_rows = Vec::new();
@@ -402,8 +401,8 @@ impl ImportService {
 
     /// 预览 JSON 格式
     fn preview_json(&self, content: String) -> Result<ImportPreview> {
-        let data: Vec<HashMap<String, String>> = serde_json::from_str(&content)
-            .map_err(|e| JiveError::ValidationError {
+        let data: Vec<HashMap<String, String>> =
+            serde_json::from_str(&content).map_err(|e| JiveError::ValidationError {
                 message: format!("Invalid JSON: {}", e),
             })?;
 
@@ -505,10 +504,9 @@ impl ImportService {
         config: &ImportConfig,
         mappings: &[FieldMapping],
     ) -> Result<Vec<ImportRow>> {
-        let content = String::from_utf8(file_data)
-            .map_err(|_| JiveError::ValidationError {
-                message: "Invalid file encoding".to_string(),
-            })?;
+        let content = String::from_utf8(file_data).map_err(|_| JiveError::ValidationError {
+            message: "Invalid file encoding".to_string(),
+        })?;
 
         match config.format {
             ImportFormat::CSV => self.parse_csv(content, config, mappings),
@@ -528,20 +526,17 @@ impl ImportService {
     ) -> Result<Vec<ImportRow>> {
         let mut rows = Vec::new();
         let lines: Vec<&str> = content.lines().collect();
-        
+
         if lines.is_empty() {
             return Ok(rows);
         }
 
-        let headers: Vec<String> = lines[0]
-            .split(',')
-            .map(|s| s.trim().to_string())
-            .collect();
+        let headers: Vec<String> = lines[0].split(',').map(|s| s.trim().to_string()).collect();
 
         for (index, line) in lines.iter().skip(1).enumerate() {
             let values: Vec<&str> = line.split(',').collect();
             let mut raw_data = HashMap::new();
-            
+
             for (i, header) in headers.iter().enumerate() {
                 if let Some(value) = values.get(i) {
                     raw_data.insert(header.clone(), value.trim().to_string());
@@ -563,13 +558,9 @@ impl ImportService {
     }
 
     /// 解析 JSON
-    fn parse_json(
-        &self,
-        content: String,
-        mappings: &[FieldMapping],
-    ) -> Result<Vec<ImportRow>> {
-        let data: Vec<HashMap<String, String>> = serde_json::from_str(&content)
-            .map_err(|e| JiveError::ValidationError {
+    fn parse_json(&self, content: String, mappings: &[FieldMapping]) -> Result<Vec<ImportRow>> {
+        let data: Vec<HashMap<String, String>> =
+            serde_json::from_str(&content).map_err(|e| JiveError::ValidationError {
                 message: format!("Invalid JSON: {}", e),
             })?;
 
@@ -634,10 +625,7 @@ impl ImportService {
                     "payee" => transaction.payee = Some(value.clone()),
                     "notes" => transaction.notes = Some(value.clone()),
                     "tags" => {
-                        transaction.tags = value
-                            .split(',')
-                            .map(|s| s.trim().to_string())
-                            .collect();
+                        transaction.tags = value.split(',').map(|s| s.trim().to_string()).collect();
                     }
                     _ => {}
                 }
@@ -674,11 +662,7 @@ impl ImportService {
     }
 
     /// 取消导入的内部实现
-    async fn _cancel_import(
-        &self,
-        _task_id: String,
-        _context: ServiceContext,
-    ) -> Result<bool> {
+    async fn _cancel_import(&self, _task_id: String, _context: ServiceContext) -> Result<bool> {
         // 在实际实现中，取消正在进行的导入任务
         Ok(true)
     }
@@ -690,25 +674,25 @@ impl ImportService {
         context: ServiceContext,
     ) -> Result<Vec<ImportTask>> {
         // 在实际实现中，从数据库获取导入历史
-        let history = vec![
-            ImportTask {
-                id: Uuid::new_v4().to_string(),
-                user_id: context.user_id.clone(),
-                ledger_id: "ledger-456".to_string(),
-                file_name: "transactions_2024.csv".to_string(),
-                file_size: 10240,
-                format: ImportFormat::CSV,
-                status: ImportStatus::Completed,
-                total_rows: 500,
-                processed_rows: 500,
-                successful_rows: 495,
-                failed_rows: 5,
-                duplicate_rows: 10,
-                error_messages: Vec::new(),
-                started_at: Utc::now() - chrono::Duration::days(1),
-                completed_at: Some(Utc::now() - chrono::Duration::days(1) + chrono::Duration::minutes(2)),
-            },
-        ];
+        let history = vec![ImportTask {
+            id: Uuid::new_v4().to_string(),
+            user_id: context.user_id.clone(),
+            ledger_id: "ledger-456".to_string(),
+            file_name: "transactions_2024.csv".to_string(),
+            file_size: 10240,
+            format: ImportFormat::CSV,
+            status: ImportStatus::Completed,
+            total_rows: 500,
+            processed_rows: 500,
+            successful_rows: 495,
+            failed_rows: 5,
+            duplicate_rows: 10,
+            error_messages: Vec::new(),
+            started_at: Utc::now() - chrono::Duration::days(1),
+            completed_at: Some(
+                Utc::now() - chrono::Duration::days(1) + chrono::Duration::minutes(2),
+            ),
+        }];
 
         Ok(history.into_iter().take(limit as usize).collect())
     }
@@ -728,10 +712,7 @@ impl ImportService {
     }
 
     /// 获取导入模板的内部实现
-    async fn _get_import_templates(
-        &self,
-        _context: ServiceContext,
-    ) -> Result<Vec<ImportTemplate>> {
+    async fn _get_import_templates(&self, _context: ServiceContext) -> Result<Vec<ImportTemplate>> {
         // 在实际实现中，从数据库获取模板
         Ok(Vec::new())
     }
@@ -756,11 +737,13 @@ impl ImportService {
             if let Some(ref parsed) = row.parsed_data {
                 // 验证必填字段
                 if parsed.description.is_empty() {
-                    row.validation_errors.push("Description is required".to_string());
+                    row.validation_errors
+                        .push("Description is required".to_string());
                 }
 
                 if parsed.amount == Decimal::ZERO {
-                    row.validation_errors.push("Amount cannot be zero".to_string());
+                    row.validation_errors
+                        .push("Amount cannot be zero".to_string());
                 }
 
                 // 设置状态
@@ -844,7 +827,11 @@ impl ImportService {
     }
 
     /// 检查是否重复
-    async fn is_duplicate(&self, _parsed: &ParsedTransaction, _context: &ServiceContext) -> Result<bool> {
+    async fn is_duplicate(
+        &self,
+        _parsed: &ParsedTransaction,
+        _context: &ServiceContext,
+    ) -> Result<bool> {
         // 在实际实现中，检查数据库中是否存在相同的交易
         Ok(false)
     }
@@ -873,11 +860,12 @@ mod tests {
     #[test]
     fn test_csv_preview() {
         let service = ImportService::new();
-        let csv_content = "Date,Description,Amount,Category\n2024-01-01,Test Transaction,-50.00,Food".to_string();
-        
+        let csv_content =
+            "Date,Description,Amount,Category\n2024-01-01,Test Transaction,-50.00,Food".to_string();
+
         let preview = service.preview_csv(csv_content);
         assert!(preview.is_ok());
-        
+
         let preview = preview.unwrap();
         assert_eq!(preview.detected_columns.len(), 4);
         assert_eq!(preview.total_rows, 1);
