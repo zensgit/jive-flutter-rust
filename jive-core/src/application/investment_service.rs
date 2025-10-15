@@ -453,7 +453,7 @@ impl InvestmentService {
 
         let mut trade_details = Vec::new();
 
-        for trade in trades {
+        for trade in &trades {
             let security = self.get_security(&trade.security_id).await?;
 
             let detail = TradeDetail {

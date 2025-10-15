@@ -121,6 +121,7 @@ impl CurrencyConverter {
     }
 
     #[cfg_attr(feature = "wasm", wasm_bindgen)]
+    #[allow(deprecated)]
     pub fn convert(&self, amount: &str, from_currency: &str, to_currency: &str) -> Result<String> {
         if from_currency == to_currency {
             return Ok(amount.to_string());
@@ -176,6 +177,7 @@ impl CurrencyConverter {
     #[deprecated(
         note = "Use CurrencyService::get_exchange_rate() for production. This is demo code with limited hardcoded rates."
     )]
+    #[allow(clippy::only_used_in_recursion)]
     fn get_exchange_rate(&self, from: &str, to: &str) -> Result<Decimal> {
         // 简化的汇率表，实际应该从外部 API 获取
         let rates = [

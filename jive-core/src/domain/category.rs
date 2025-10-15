@@ -110,7 +110,7 @@ impl Category {
 
     #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
     pub fn classification(&self) -> AccountClassification {
-        self.classification.clone()
+        self.classification
     }
 
     #[cfg_attr(feature = "wasm", wasm_bindgen(getter))]
@@ -536,6 +536,12 @@ impl CategoryBuilder {
         category.is_system = self.is_system;
 
         Ok(category)
+    }
+}
+
+impl Default for CategoryBuilder {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

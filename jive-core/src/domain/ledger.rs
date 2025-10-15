@@ -685,6 +685,12 @@ impl LedgerBuilder {
     }
 }
 
+impl Default for LedgerBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

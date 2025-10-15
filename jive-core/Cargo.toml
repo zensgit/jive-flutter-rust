@@ -142,6 +142,17 @@ db = ["sqlx", "reqwest", "tokio", "dep:csv", "dep:calamine", "dep:base32", "dep:
 server-lite = []
 # Gate unfinished application/infra modules to keep builds green by default
 app_experimental = []
+perm_cache = ["dep:parking_lot", "dep:lru"]
+travel_mode = []
+legacy_entities = []
+
+[dependencies.parking_lot]
+version = "0.12"
+optional = true
+
+[dependencies.lru]
+version = "0.12"
+optional = true
 
 # WASM 优化配置
 [profile.release]

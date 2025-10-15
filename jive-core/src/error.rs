@@ -10,6 +10,8 @@ use wasm_bindgen::prelude::*;
 #[derive(Error, Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub enum JiveError {
+    #[error("Forbidden: {0}")]
+    Forbidden(String),
     #[error("Not found: {message}")]
     NotFound { message: String },
     #[error("Account not found: {id}")]

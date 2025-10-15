@@ -810,6 +810,12 @@ impl TransactionBuilder {
     }
 }
 
+impl Default for TransactionBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
