@@ -19,8 +19,7 @@ impl AccountRepository {
     
     // Find all accounts for a family
     pub async fn find_by_family(&self, family_id: Uuid) -> Result<Vec<Account>, RepositoryError> {
-        let accounts = sqlx::query_as!(
-            Account,
+        let accounts = sqlx::query_as::<_, Account>(
             r#"
             SELECT 
                 id, family_id, name, accountable_type, accountable_id,
@@ -46,8 +45,7 @@ impl AccountRepository {
         family_id: Uuid, 
         accountable_type: &str
     ) -> Result<Vec<Account>, RepositoryError> {
-        let accounts = sqlx::query_as!(
-            Account,
+        let accounts = sqlx::query_as::<_, Account>(
             r#"
             SELECT 
                 id, family_id, name, accountable_type, accountable_id,
@@ -80,8 +78,7 @@ impl AccountRepository {
         let depository_id = depository.save(&mut tx).await?;
         
         // Then create the account
-        let created_account = sqlx::query_as!(
-            Account,
+        let created_account = sqlx::query_as::<_, Account>(
             r#"
             INSERT INTO accounts (
                 id, family_id, name, accountable_type, accountable_id,
@@ -127,8 +124,7 @@ impl AccountRepository {
         
         let credit_card_id = credit_card.save(&mut tx).await?;
         
-        let created_account = sqlx::query_as!(
-            Account,
+        let created_account = sqlx::query_as::<_, Account>(
             r#"
             INSERT INTO accounts (
                 id, family_id, name, accountable_type, accountable_id,
@@ -174,8 +170,7 @@ impl AccountRepository {
         
         let investment_id = investment.save(&mut tx).await?;
         
-        let created_account = sqlx::query_as!(
-            Account,
+        let created_account = sqlx::query_as::<_, Account>(
             r#"
             INSERT INTO accounts (
                 id, family_id, name, accountable_type, accountable_id,
