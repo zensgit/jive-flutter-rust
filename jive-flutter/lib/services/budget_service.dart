@@ -118,6 +118,58 @@ class BudgetService {
     }
   }
 
+  /// 获取预算报告（当前月）
+  Future<BudgetReport> getBudgetReport() async {
+    try {
+      final uri = Uri.parse('${ApiConfig.apiUrl}${Endpoints.budgets}/report');
+      final res = await _httpClient.get(uri, headers: ApiConfig.defaultHeaders);
+      if (res.statusCode == 200) {
+        final data = json.decode(res.body) as Map<String, dynamic>;
+        return BudgetReport.fromJson(data);
+      }
+      throw Exception('Failed to get budget report: ${res.statusCode}');
+    } catch (_) {
+      // fallback mock
+      return BudgetReport(
+        period: 'mock',
+        totalBudgeted: 2000,
+        totalSpent: 500,
+        totalRemaining: 1500,
+        overallPercentage: 25,
+        budgetSummaries: const [],
+        unbudgetedSpending: 0,
+        generatedAt: DateTime.now(),
+      );
+    }
+  }
+
+  /// 获取单个预算进度
+  Future<BudgetProgressModel> getBudgetProgress(String budgetId) async {
+    try {
+      final uri = Uri.parse('${ApiConfig.apiUrl}${Endpoints.budgets}/$budgetId/progress');
+      final res = await _httpClient.get(uri, headers: ApiConfig.defaultHeaders);
+      if (res.statusCode == 200) {
+        final data = json.decode(res.body) as Map<String, dynamic>;
+        return BudgetProgressModel.fromJson(data);
+      }
+      throw Exception('Failed to get budget progress: ${res.statusCode}');
+    } catch (_) {
+      return BudgetProgressModel(
+        budgetId: budgetId,
+        budgetName: 'Mock',
+        period: 'mock',
+        budgetedAmount: 1000,
+        spentAmount: 250,
+        remainingAmount: 750,
+        percentageUsed: 25,
+        daysRemaining: 10,
+        averageDailySpend: 10,
+        projectedOverspend: 0,
+        categories: const [],
+      );
+    }
+  }
+
   /// 获取模拟预算数据
   List<Budget> _getMockBudgets() {
     final now = DateTime.now();

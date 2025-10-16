@@ -58,7 +58,12 @@ class BudgetController extends StateNotifier<BudgetState> {
 
     try {
       final budgets = await _budgetService.getBudgets();
-      await _updateBudgetSpending(budgets);
+      // Try budget report for totals when available
+      BudgetReport? report;
+      try {
+        report = await _budgetService.getBudgetReport();
+      } catch (_) {}
+      await _updateBudgetSpending(budgets, report: report);
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -159,7 +164,7 @@ class BudgetController extends StateNotifier<BudgetState> {
   }
 
   /// 更新预算支出并计算统计数据
-  Future<void> _updateBudgetSpending(List<Budget> budgets) async {
+  Future<void> _updateBudgetSpending(List<Budget> budgets, {BudgetReport? report}) async {
     try {
       // 获取每个预算的实际支出
       final updatedBudgets = await Future.wait(
@@ -173,12 +178,14 @@ class BudgetController extends StateNotifier<BudgetState> {
         }),
       );
 
-      double totalBudgeted = 0;
-      double totalSpent = 0;
+      double totalBudgeted = report?.totalBudgeted ?? 0;
+      double totalSpent = report?.totalSpent ?? 0;
 
-      for (final budget in updatedBudgets) {
-        totalBudgeted += budget.amount;
-        totalSpent += budget.spent;
+      if (report == null) {
+        for (final budget in updatedBudgets) {
+          totalBudgeted += budget.amount;
+          totalSpent += budget.spent;
+        }
       }
 
       state = state.copyWith(

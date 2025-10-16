@@ -15,8 +15,8 @@ pub mod application;
 #[cfg(all(feature = "server", feature = "db"))]
 pub mod infrastructure;
 
-// API 适配层 (仅在服务端启用)
-#[cfg(feature = "server")]
+// API 适配层（仅在服务端且显式启用实验特性时暴露）
+#[cfg(all(feature = "server", feature = "app_experimental"))]
 pub mod api;
 
 #[cfg(feature = "wasm")]

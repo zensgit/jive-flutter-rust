@@ -32,12 +32,17 @@ pub mod ledger_service;
 pub mod mfa_service;
 #[cfg(feature = "perm_cache")]
 pub mod middleware;
+#[cfg(feature = "app_experimental")]
 pub mod multi_family_service;
 pub mod notification_service;
+#[cfg(feature = "app_experimental")]
 pub mod payee_service;
+#[cfg(feature = "app_experimental")]
 pub mod quick_transaction_service;
 pub mod report_service;
+#[cfg(feature = "app_experimental")]
 pub mod rule_service;
+#[cfg(feature = "app_experimental")]
 pub mod rules_engine;
 pub mod scheduled_transaction_service;
 pub mod sync_service;

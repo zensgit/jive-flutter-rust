@@ -19,18 +19,31 @@ impl AccountRepository {
     
     // Find all accounts for a family
     pub async fn find_by_family(&self, family_id: Uuid) -> Result<Vec<Account>, RepositoryError> {
-        let accounts = sqlx::query_as!(
-            Account,
+        let accounts = sqlx::query_as::<_, Account>(
             r#"
             SELECT 
-                id, family_id, name, accountable_type, accountable_id,
-                subtype, balance, balance_currency, currency,
-                cash_balance, status, description, include_in_net_worth,
-                plaid_account_id, import_id, locked_attributes,
-                created_at, updated_at
-            FROM accounts 
-            WHERE family_id = $1 
-            ORDER BY name
+                a.id,
+                a.ledger_id as ledger_id,
+                a.name,
+                a.accountable_type,
+                a.accountable_id,
+                a.subtype,
+                a.balance,
+                a.balance_currency,
+                a.currency,
+                a.cash_balance,
+                a.status,
+                a.description,
+                a.include_in_net_worth,
+                a.plaid_account_id,
+                a.import_id,
+                a.locked_attributes,
+                a.created_at,
+                a.updated_at
+            FROM accounts a
+            JOIN ledgers l ON l.id = a.ledger_id
+            WHERE l.family_id = $1
+            ORDER BY a.name
             "#,
             family_id
         )
@@ -46,18 +59,31 @@ impl AccountRepository {
         family_id: Uuid, 
         accountable_type: &str
     ) -> Result<Vec<Account>, RepositoryError> {
-        let accounts = sqlx::query_as!(
-            Account,
+        let accounts = sqlx::query_as::<_, Account>(
             r#"
             SELECT 
-                id, family_id, name, accountable_type, accountable_id,
-                subtype, balance, balance_currency, currency,
-                cash_balance, status, description, include_in_net_worth,
-                plaid_account_id, import_id, locked_attributes,
-                created_at, updated_at
-            FROM accounts 
-            WHERE family_id = $1 AND accountable_type = $2
-            ORDER BY name
+                a.id,
+                a.ledger_id as ledger_id,
+                a.name,
+                a.accountable_type,
+                a.accountable_id,
+                a.subtype,
+                a.balance,
+                a.balance_currency,
+                a.currency,
+                a.cash_balance,
+                a.status,
+                a.description,
+                a.include_in_net_worth,
+                a.plaid_account_id,
+                a.import_id,
+                a.locked_attributes,
+                a.created_at,
+                a.updated_at
+            FROM accounts a
+            JOIN ledgers l ON l.id = a.ledger_id
+            WHERE l.family_id = $1 AND a.accountable_type = $2
+            ORDER BY a.name
             "#,
             family_id,
             accountable_type
@@ -80,8 +106,7 @@ impl AccountRepository {
         let depository_id = depository.save(&mut tx).await?;
         
         // Then create the account
-        let created_account = sqlx::query_as!(
-            Account,
+        let created_account = sqlx::query_as::<_, Account>(
             r#"
             INSERT INTO accounts (
                 id, family_id, name, accountable_type, accountable_id,
@@ -127,8 +152,7 @@ impl AccountRepository {
         
         let credit_card_id = credit_card.save(&mut tx).await?;
         
-        let created_account = sqlx::query_as!(
-            Account,
+        let created_account = sqlx::query_as::<_, Account>(
             r#"
             INSERT INTO accounts (
                 id, family_id, name, accountable_type, accountable_id,
@@ -174,8 +198,7 @@ impl AccountRepository {
         
         let investment_id = investment.save(&mut tx).await?;
         
-        let created_account = sqlx::query_as!(
-            Account,
+        let created_account = sqlx::query_as::<_, Account>(
             r#"
             INSERT INTO accounts (
                 id, family_id, name, accountable_type, accountable_id,
@@ -268,8 +291,7 @@ impl AccountRepository {
     
     // Get account with accountable details
     pub async fn find_with_details(&self, account_id: Uuid) -> Result<AccountWithDetails, RepositoryError> {
-        let account = sqlx::query_as!(
-            Account,
+        let account = sqlx::query_as::<_, Account>(
             "SELECT * FROM accounts WHERE id = $1",
             account_id
         )
@@ -314,7 +336,8 @@ impl AccountRepository {
                 COALESCE(SUM(CASE WHEN a.accountable_type IN ('CreditCard', 'Loan', 'OtherLiability') 
                     THEN ABS(a.balance) ELSE 0 END), 0) as liabilities
             FROM accounts a
-            WHERE a.family_id = $1 
+            JOIN ledgers l ON l.id = a.ledger_id
+            WHERE l.family_id = $1 
                 AND a.include_in_net_worth = true
                 AND a.status != 'error'
             "#,
@@ -351,8 +374,7 @@ impl Repository<Account> for AccountRepository {
     }
     
     async fn find_all(&self) -> Result<Vec<Account>, Self::Error> {
-        let accounts = sqlx::query_as!(
-            Account,
+        let accounts = sqlx::query_as::<_, Account>(
             "SELECT * FROM accounts ORDER BY name"
         )
         .fetch_all(&*self.pool)
