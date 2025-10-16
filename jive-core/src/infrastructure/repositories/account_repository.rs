@@ -398,52 +398,72 @@ impl Repository<Account> for AccountRepository {
     }
     
     async fn update(&self, entity: Account) -> Result<Account, Self::Error> {
+        // Align to API schema: use ledger_id (via account lookup), existing columns only
         let updated = sqlx::query_as!(
             Account,
             r#"
-            UPDATE accounts 
-            SET 
-                name = $2,
-                subtype = $3,
-                balance = $4,
-                balance_currency = $5,
-                currency = $6,
-                cash_balance = $7,
-                status = $8,
-                description = $9,
-                include_in_net_worth = $10,
-                locked_attributes = $11,
-                updated_at = $12
-            WHERE id = $1
-            RETURNING *
+            WITH updated AS (
+                UPDATE accounts
+                SET
+                    name = $2,
+                    account_type = $3,
+                    currency = $4,
+                    current_balance = $5,
+                    status = $6,
+                    description = $7,
+                    is_included_in_total = $8,
+                    updated_at = $9
+                WHERE id = $1
+                RETURNING
+                    id,
+                    (SELECT family_id FROM ledgers WHERE id = accounts.ledger_id) as family_id,
+                    name,
+                    account_type as "accountable_type!",
+                    id as accountable_id,
+                    NULL::TEXT as subtype,
+                    current_balance as balance,
+                    NULL::TEXT as "balance_currency?",
+                    currency,
+                    NULL::DECIMAL as cash_balance,
+                    status,
+                    description,
+                    is_included_in_total as include_in_net_worth,
+                    NULL::UUID as "plaid_account_id?",
+                    NULL::UUID as "import_id?",
+                    '{}'::jsonb as locked_attributes,
+                    accounts.created_at,
+                    accounts.updated_at
+            )
+            SELECT * FROM updated
             "#,
             entity.id,
             entity.name,
-            entity.subtype,
-            entity.balance,
-            entity.balance_currency,
+            entity.accountable_type,
             entity.currency,
-            entity.cash_balance,
+            entity.balance,
             entity.status,
             entity.description,
             entity.include_in_net_worth,
-            entity.locked_attributes,
             Utc::now()
         )
         .fetch_one(&*self.pool)
         .await?;
-        
+
         Ok(updated)
     }
-    
+
     async fn delete(&self, id: Uuid) -> Result<bool, Self::Error> {
+        // Align to API schema: use ledger_id for authorization context
         let result = sqlx::query!(
-            "DELETE FROM accounts WHERE id = $1",
+            r#"
+            DELETE FROM accounts
+            WHERE id = $1
+            "#,
             id
         )
         .execute(&*self.pool)
         .await?;
-        
+
         Ok(result.rows_affected() > 0)
     }
 }
