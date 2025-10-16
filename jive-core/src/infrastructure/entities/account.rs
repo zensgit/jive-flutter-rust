@@ -4,7 +4,8 @@ use super::*;
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
 pub struct Account {
     pub id: Uuid,
-    pub family_id: Uuid,
+    // jive-api schema uses ledger_id; derive family_id via join when needed
+    pub ledger_id: Uuid,
     pub name: String,
     pub accountable_type: String,
     pub accountable_id: Uuid,

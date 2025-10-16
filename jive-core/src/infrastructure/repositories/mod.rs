@@ -1,10 +1,13 @@
 // Repository Layer - Data Access Implementation
 // Based on Maybe's database structure
 
+#[cfg(feature = "legacy_entities")]
 pub mod account_repository;
+#[cfg(feature = "legacy_entities")]
 pub mod category_repository;
 pub mod family_repository;
 pub mod idempotency_repository;
+#[cfg(feature = "legacy_entities")]
 pub mod transaction_repository;
 
 // Feature-gated implementations
