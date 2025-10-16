@@ -1,6 +1,7 @@
 // 预算进度组件
 import 'package:flutter/material.dart';
 import 'package:jive_money/core/constants/app_constants.dart';
+import 'package:jive_money/models/budget.dart' as models;
 
 class BudgetProgress extends StatelessWidget {
   final String category;
@@ -23,6 +24,16 @@ class BudgetProgress extends StatelessWidget {
     this.showPercentage = true,
     this.showAmount = true,
   });
+
+  // Convenience: create from BudgetSummary model
+  factory BudgetProgress.fromSummary(models.BudgetSummary summary, {Key? key, String? category}) {
+    return BudgetProgress(
+      key: key,
+      category: category ?? summary.budgetName,
+      budgeted: summary.budgeted,
+      spent: summary.spent,
+    );
+  }
 
   double get progress =>
       budgeted > 0 ? (spent / budgeted).clamp(0.0, 1.5) : 0.0;
