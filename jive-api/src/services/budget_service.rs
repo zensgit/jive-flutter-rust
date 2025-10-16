@@ -1,5 +1,7 @@
 use crate::error::{ApiError, ApiResult};
 use chrono::{DateTime, Datelike, Duration, Timelike, Utc};
+use rust_decimal::Decimal;
+use rust_decimal::prelude::{FromPrimitive, ToPrimitive};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use uuid::Uuid;
@@ -9,7 +11,7 @@ pub struct Budget {
     pub ledger_id: Uuid,
     pub name: String,
     pub period_type: BudgetPeriod,
-    pub amount: f64,
+    pub amount: Decimal,
     pub category_id: Option<Uuid>,
     pub start_date: DateTime<Utc>,
     pub end_date: Option<DateTime<Utc>>,
@@ -34,13 +36,13 @@ pub struct BudgetProgress {
     pub budget_id: Uuid,
     pub budget_name: String,
     pub period: String,
-    pub budgeted_amount: f64,
-    pub spent_amount: f64,
-    pub remaining_amount: f64,
+    pub budgeted_amount: Decimal,
+    pub spent_amount: Decimal,
+    pub remaining_amount: Decimal,
     pub percentage_used: f64,
     pub days_remaining: i64,
-    pub average_daily_spend: f64,
-    pub projected_overspend: Option<f64>,
+    pub average_daily_spend: Decimal,
+    pub projected_overspend: Option<Decimal>,
     pub categories: Vec<CategorySpending>,
 }
 
@@ -48,7 +50,7 @@ pub struct BudgetProgress {
 pub struct CategorySpending {
     pub category_id: Uuid,
     pub category_name: String,
-    pub amount_spent: f64,
+    pub amount_spent: Decimal,
     pub transaction_count: i32,
 }
 
@@ -121,7 +123,7 @@ impl BudgetService {
         let (period_start, period_end) = self.get_current_period(&budget)?;
 
         // 获取期间内的支出
-        let spent: (Option<f64>,) = sqlx::query_as(
+        let spent: (Option<Decimal>,) = sqlx::query_as(
             r#"
             SELECT SUM(amount) as total_spent
             FROM transactions
@@ -140,9 +142,18 @@ impl BudgetService {
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
-        let spent_amount = spent.0.unwrap_or(0.0);
+        let spent_amount = spent.0.unwrap_or(Decimal::ZERO);
         let remaining_amount = budget.amount - spent_amount;
-        let percentage_used = (spent_amount / budget.amount * 100.0).min(100.0);
+        let percentage_used = if budget.amount.is_zero() {
+            0.0
+        } else {
+            // ((spent / amount) * 100) as f64
+            let ratio = spent_amount / budget.amount;
+            // clamp to [0, 100]
+            let pct = (ratio * Decimal::from_u32(100).unwrap()).normalize();
+            let pct_f = pct.to_f64().unwrap_or(0.0);
+            pct_f.clamp(0.0, 100.0)
+        };
 
         // 计算剩余天数
         let now = Utc::now();
@@ -150,8 +161,14 @@ impl BudgetService {
         let days_passed = (now - period_start).num_days().max(1);
 
         // 计算平均日支出和预测
-        let average_daily_spend = spent_amount / days_passed as f64;
-        let projected_total = average_daily_spend * (days_passed + days_remaining) as f64;
+        let average_daily_spend = if days_passed <= 0 {
+            Decimal::ZERO
+        } else {
+            let dp = Decimal::from_i64(days_passed).unwrap();
+            spent_amount / dp
+        };
+        let projected_total = average_daily_spend
+            * Decimal::from_i64(days_passed + days_remaining).unwrap();
         let projected_overspend = if projected_total > budget.amount {
             Some(projected_total - budget.amount)
         } else {
@@ -318,7 +335,7 @@ impl BudgetService {
 
             // 检查超支预测
             if let Some(overspend) = progress.projected_overspend {
-                if overspend > 0.0 {
+                if overspend > Decimal::ZERO {
                     alerts.push(BudgetAlert {
                         budget_id: budget.id,
                         budget_name: budget.name.clone(),
@@ -354,8 +371,8 @@ impl BudgetService {
                 .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         let mut budget_summaries = Vec::new();
-        let mut total_budgeted = 0.0;
-        let mut total_spent = 0.0;
+        let mut total_budgeted = Decimal::ZERO;
+        let mut total_spent = Decimal::ZERO;
 
         for budget in budgets {
             let progress = self.get_budget_progress(budget.id).await?;
@@ -372,7 +389,7 @@ impl BudgetService {
         }
 
         // 获取无预算支出
-        let unbudgeted_spending: (Option<f64>,) = sqlx::query_as(
+        let unbudgeted_spending: (Option<Decimal>,) = sqlx::query_as(
             r#"
             SELECT SUM(amount) 
             FROM transactions
@@ -402,9 +419,15 @@ impl BudgetService {
             total_budgeted,
             total_spent,
             total_remaining: total_budgeted - total_spent,
-            overall_percentage: (total_spent / total_budgeted * 100.0).min(100.0),
+            overall_percentage: if total_budgeted.is_zero() {
+                0.0
+            } else {
+                let ratio = total_spent / total_budgeted;
+                let pct = (ratio * Decimal::from_u32(100).unwrap()).normalize();
+                pct.to_f64().unwrap_or(0.0).clamp(0.0, 100.0)
+            },
             budget_summaries,
-            unbudgeted_spending: unbudgeted_spending.0.unwrap_or(0.0),
+            unbudgeted_spending: unbudgeted_spending.0.unwrap_or(Decimal::ZERO),
             generated_at: Utc::now(),
         })
     }
@@ -478,7 +501,7 @@ pub struct CreateBudgetRequest {
     pub ledger_id: Uuid,
     pub name: String,
     pub period_type: BudgetPeriod,
-    pub amount: f64,
+    pub amount: Decimal,
     pub category_id: Option<Uuid>,
     pub start_date: DateTime<Utc>,
     pub end_date: Option<DateTime<Utc>>,
@@ -491,7 +514,7 @@ pub struct BudgetAlert {
     pub alert_type: AlertType,
     pub message: String,
     pub percentage_used: f64,
-    pub remaining_amount: f64,
+    pub remaining_amount: Decimal,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -504,21 +527,21 @@ pub enum AlertType {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BudgetReport {
     pub period: String,
-    pub total_budgeted: f64,
-    pub total_spent: f64,
-    pub total_remaining: f64,
+    pub total_budgeted: Decimal,
+    pub total_spent: Decimal,
+    pub total_remaining: Decimal,
     pub overall_percentage: f64,
     pub budget_summaries: Vec<BudgetSummary>,
-    pub unbudgeted_spending: f64,
+    pub unbudgeted_spending: Decimal,
     pub generated_at: DateTime<Utc>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BudgetSummary {
     pub budget_name: String,
-    pub budgeted: f64,
-    pub spent: f64,
-    pub remaining: f64,
+    pub budgeted: Decimal,
+    pub spent: Decimal,
+    pub remaining: Decimal,
     pub percentage: f64,
 }
 
