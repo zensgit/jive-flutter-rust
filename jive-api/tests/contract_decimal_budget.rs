@@ -1,7 +1,8 @@
 use serde_json::Value;
+use rust_decimal::Decimal;
 
 #[test]
-#[ignore = "Budget money fields are still f64; enable after Decimal migration"]
+// Enabled after migrating budget money fields to Decimal
 fn budget_progress_and_report_decimal_fields_serialize_as_string() {
     use jive_money_api::services::budget_service::{
         BudgetProgress, BudgetReport, BudgetSummary,
@@ -12,13 +13,13 @@ fn budget_progress_and_report_decimal_fields_serialize_as_string() {
         budget_id: uuid::Uuid::nil(),
         budget_name: "Groceries".to_string(),
         period: "2025-01-01 - 2025-01-31".to_string(),
-        budgeted_amount: 1000.0,
-        spent_amount: 123.45,
-        remaining_amount: 876.55,
+        budgeted_amount: Decimal::new(1000, 0),
+        spent_amount: Decimal::new(12345, 2),
+        remaining_amount: Decimal::new(87655, 2),
         percentage_used: 12.345,
         days_remaining: 10,
-        average_daily_spend: 4.0,
-        projected_overspend: Some(0.0),
+        average_daily_spend: Decimal::new(4, 0),
+        projected_overspend: Some(Decimal::ZERO),
         categories: vec![],
     };
 
@@ -39,18 +40,18 @@ fn budget_progress_and_report_decimal_fields_serialize_as_string() {
     // Construct a sample BudgetReport
     let report = BudgetReport {
         period: "2025-01".to_string(),
-        total_budgeted: 2000.0,
-        total_spent: 500.0,
-        total_remaining: 1500.0,
+        total_budgeted: Decimal::new(2000, 0),
+        total_spent: Decimal::new(500, 0),
+        total_remaining: Decimal::new(1500, 0),
         overall_percentage: 25.0,
         budget_summaries: vec![BudgetSummary {
             budget_name: "Groceries".to_string(),
-            budgeted: 1000.0,
-            spent: 200.0,
-            remaining: 800.0,
+            budgeted: Decimal::new(1000, 0),
+            spent: Decimal::new(200, 0),
+            remaining: Decimal::new(800, 0),
             percentage: 20.0,
         }],
-        unbudgeted_spending: 50.0,
+        unbudgeted_spending: Decimal::new(50, 0),
         generated_at: chrono::Utc::now(),
     };
 
