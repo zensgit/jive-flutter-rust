@@ -371,7 +371,7 @@ impl CategoryService {
     }
 
     /// 创建分类
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn create_category(
         &self,
         request: CreateCategoryRequest,
@@ -382,7 +382,7 @@ impl CategoryService {
     }
 
     /// 更新分类
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn update_category(
         &self,
         category_id: String,
@@ -394,7 +394,7 @@ impl CategoryService {
     }
 
     /// 获取分类详情
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn get_category(
         &self,
         category_id: String,
@@ -405,7 +405,7 @@ impl CategoryService {
     }
 
     /// 删除分类
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn delete_category(
         &self,
         category_id: String,
@@ -416,7 +416,7 @@ impl CategoryService {
     }
 
     /// 搜索分类
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn search_categories(
         &self,
         filter: CategoryFilter,
@@ -428,7 +428,7 @@ impl CategoryService {
     }
 
     /// 获取分类树
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn get_category_tree(
         &self,
         root_id: Option<String>,
@@ -439,7 +439,7 @@ impl CategoryService {
     }
 
     /// 移动分类
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn move_category(
         &self,
         category_id: String,
@@ -453,7 +453,7 @@ impl CategoryService {
     }
 
     /// 合并分类
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn merge_categories(
         &self,
         request: MergeCategoriesRequest,
@@ -464,7 +464,7 @@ impl CategoryService {
     }
 
     /// 批量操作分类
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn bulk_update_categories(
         &self,
         request: BulkCategoryRequest,
@@ -475,7 +475,7 @@ impl CategoryService {
     }
 
     /// 复制分类
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn duplicate_category(
         &self,
         category_id: String,
@@ -489,7 +489,7 @@ impl CategoryService {
     }
 
     /// 获取分类统计信息
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn get_category_stats(
         &self,
         context: ServiceContext,
@@ -499,7 +499,7 @@ impl CategoryService {
     }
 
     /// 获取热门分类
-    #[wasm_bindgen]
+    #[cfg_attr(feature = "wasm", wasm_bindgen)]
     pub async fn get_popular_categories(
         &self,
         limit: u32,
