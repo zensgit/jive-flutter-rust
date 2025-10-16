@@ -1,5 +1,112 @@
 import 'package:jive_money/utils/json_number.dart';
 
+// Core Budget entity used by existing providers/services
+class Budget {
+  final String id;
+  final String name;
+  final String? description;
+  final double amount;
+  final double spent;
+  final String category;
+  final DateTime startDate;
+  final DateTime? endDate;
+  final BudgetPeriod period;
+  final bool isActive;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  const Budget({
+    required this.id,
+    required this.name,
+    this.description,
+    required this.amount,
+    required this.spent,
+    required this.category,
+    required this.startDate,
+    this.endDate,
+    required this.period,
+    required this.isActive,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  Budget copyWith({
+    String? id,
+    String? name,
+    String? description,
+    double? amount,
+    double? spent,
+    String? category,
+    DateTime? startDate,
+    DateTime? endDate,
+    BudgetPeriod? period,
+    bool? isActive,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return Budget(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      amount: amount ?? this.amount,
+      spent: spent ?? this.spent,
+      category: category ?? this.category,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      period: period ?? this.period,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  factory Budget.fromJson(Map<String, dynamic> json) {
+    return Budget(
+      id: (json['id'] ?? '').toString(),
+      name: json['name'] ?? '',
+      description: json['description'],
+      amount: asDoubleOrZero(json['amount']),
+      spent: asDoubleOrZero(json['spent']),
+      category: json['category'] ?? '',
+      startDate: DateTime.parse(json['startDate'] ?? json['start_date']),
+      endDate: (json['endDate'] ?? json['end_date']) != null
+          ? DateTime.parse(json['endDate'] ?? json['end_date'])
+          : null,
+      period: BudgetPeriod.fromJson(json['period'] ?? json['period_type'] ?? 'monthly'),
+      isActive: (json['isActive'] ?? json['is_active'] ?? true) as bool,
+      createdAt: DateTime.tryParse(json['createdAt'] ?? json['created_at'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? json['updated_at'] ?? '') ?? DateTime.now(),
+    );
+  }
+}
+
+enum BudgetPeriod {
+  daily,
+  weekly,
+  monthly,
+  quarterly,
+  yearly,
+}
+
+extension BudgetPeriodCodec on BudgetPeriod {
+  static BudgetPeriod fromJson(dynamic v) {
+    final s = (v ?? '').toString().toLowerCase();
+    switch (s) {
+      case 'daily':
+        return BudgetPeriod.daily;
+      case 'weekly':
+        return BudgetPeriod.weekly;
+      case 'quarterly':
+        return BudgetPeriod.quarterly;
+      case 'yearly':
+        return BudgetPeriod.yearly;
+      case 'monthly':
+      default:
+        return BudgetPeriod.monthly;
+    }
+  }
+}
+
 class BudgetSummary {
   final String budgetName;
   final double budgeted;
@@ -140,4 +247,3 @@ DateTime? _parseDateTime(dynamic v) {
   }
   return null;
 }
-
