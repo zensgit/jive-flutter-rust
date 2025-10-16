@@ -68,146 +68,203 @@ impl AccountRepository {
         Ok(accounts)
     }
     
-    // Create account with polymorphic accountable
+    // Create account with depository - aligned to API schema
     pub async fn create_with_depository(
         &self,
         account: Account,
-        depository: Depository,
+        _depository: Depository,
     ) -> Result<Account, RepositoryError> {
+        // Align to API schema: write only existing columns, project back to Account
+        // Note: Depository details would be stored separately in API layer
+
         let mut tx = self.pool.begin().await?;
-        
-        // First create the depository
-        let depository_id = depository.save(&mut tx).await?;
-        
-        // Then create the account
+
         let created_account = sqlx::query_as!(
             Account,
             r#"
-            INSERT INTO accounts (
-                id, family_id, name, accountable_type, accountable_id,
-                subtype, balance, balance_currency, currency,
-                cash_balance, status, description, include_in_net_worth,
-                locked_attributes, created_at, updated_at
+            WITH ins AS (
+                INSERT INTO accounts (
+                    id, ledger_id, name, account_type, currency,
+                    current_balance, status, description, is_included_in_total,
+                    created_at, updated_at
+                )
+                SELECT
+                    $1::uuid,
+                    (SELECT id FROM ledgers WHERE family_id = $2::uuid LIMIT 1),
+                    $3,
+                    $4,
+                    $5,
+                    $6,
+                    $7,
+                    $8,
+                    $9,
+                    $10,
+                    $11
+                RETURNING
+                    id,
+                    (SELECT family_id FROM ledgers WHERE id = accounts.ledger_id) as family_id,
+                    name,
+                    account_type as "accountable_type!",
+                    id as accountable_id,
+                    NULL::TEXT as subtype,
+                    current_balance as balance,
+                    NULL::TEXT as "balance_currency?",
+                    currency,
+                    NULL::DECIMAL as cash_balance,
+                    status,
+                    description,
+                    is_included_in_total as include_in_net_worth,
+                    NULL::UUID as "plaid_account_id?",
+                    NULL::UUID as "import_id?",
+                    '{}'::jsonb as locked_attributes,
+                    accounts.created_at,
+                    accounts.updated_at
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
-            RETURNING *
+            SELECT * FROM ins
             "#,
             account.id,
             account.family_id,
             account.name,
-            Depository::TYPE_NAME,
-            depository_id,
-            account.subtype,
-            account.balance,
-            account.balance_currency,
+            "cash",  // Depository maps to cash account_type in API schema
             account.currency,
-            account.cash_balance,
+            account.balance,
             account.status,
             account.description,
             account.include_in_net_worth,
-            account.locked_attributes,
             account.created_at,
             account.updated_at
         )
         .fetch_one(&mut *tx)
         .await?;
-        
+
         tx.commit().await?;
-        
+
         Ok(created_account)
     }
     
-    // Create account with credit card
+    // Create account with credit card - aligned to API schema
     pub async fn create_with_credit_card(
         &self,
         account: Account,
-        credit_card: CreditCard,
+        _credit_card: CreditCard,
     ) -> Result<Account, RepositoryError> {
+        // Align to API schema: write only existing columns, project back to Account
         let mut tx = self.pool.begin().await?;
-        
-        let credit_card_id = credit_card.save(&mut tx).await?;
-        
+
         let created_account = sqlx::query_as!(
             Account,
             r#"
-            INSERT INTO accounts (
-                id, family_id, name, accountable_type, accountable_id,
-                subtype, balance, balance_currency, currency,
-                cash_balance, status, description, include_in_net_worth,
-                locked_attributes, created_at, updated_at
+            WITH ins AS (
+                INSERT INTO accounts (
+                    id, ledger_id, name, account_type, currency,
+                    current_balance, status, description, is_included_in_total,
+                    created_at, updated_at
+                )
+                SELECT
+                    $1::uuid,
+                    (SELECT id FROM ledgers WHERE family_id = $2::uuid LIMIT 1),
+                    $3, $4, $5, $6, $7, $8, $9, $10, $11
+                RETURNING
+                    id,
+                    (SELECT family_id FROM ledgers WHERE id = accounts.ledger_id) as family_id,
+                    name,
+                    account_type as "accountable_type!",
+                    id as accountable_id,
+                    NULL::TEXT as subtype,
+                    current_balance as balance,
+                    NULL::TEXT as "balance_currency?",
+                    currency,
+                    NULL::DECIMAL as cash_balance,
+                    status,
+                    description,
+                    is_included_in_total as include_in_net_worth,
+                    NULL::UUID as "plaid_account_id?",
+                    NULL::UUID as "import_id?",
+                    '{}'::jsonb as locked_attributes,
+                    accounts.created_at,
+                    accounts.updated_at
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
-            RETURNING *
+            SELECT * FROM ins
             "#,
             account.id,
             account.family_id,
             account.name,
-            CreditCard::TYPE_NAME,
-            credit_card_id,
-            account.subtype,
-            account.balance,
-            account.balance_currency,
+            "credit",  // CreditCard maps to credit account_type
             account.currency,
-            account.cash_balance,
+            account.balance,
             account.status,
             account.description,
             account.include_in_net_worth,
-            account.locked_attributes,
             account.created_at,
             account.updated_at
         )
         .fetch_one(&mut *tx)
         .await?;
-        
+
         tx.commit().await?;
-        
         Ok(created_account)
     }
     
-    // Create account with investment
+    // Create account with investment - aligned to API schema
     pub async fn create_with_investment(
         &self,
         account: Account,
-        investment: Investment,
+        _investment: Investment,
     ) -> Result<Account, RepositoryError> {
+        // Align to API schema: write only existing columns, project back to Account
         let mut tx = self.pool.begin().await?;
-        
-        let investment_id = investment.save(&mut tx).await?;
-        
+
         let created_account = sqlx::query_as!(
             Account,
             r#"
-            INSERT INTO accounts (
-                id, family_id, name, accountable_type, accountable_id,
-                subtype, balance, balance_currency, currency,
-                cash_balance, status, description, include_in_net_worth,
-                locked_attributes, created_at, updated_at
+            WITH ins AS (
+                INSERT INTO accounts (
+                    id, ledger_id, name, account_type, currency,
+                    current_balance, status, description, is_included_in_total,
+                    created_at, updated_at
+                )
+                SELECT
+                    $1::uuid,
+                    (SELECT id FROM ledgers WHERE family_id = $2::uuid LIMIT 1),
+                    $3, $4, $5, $6, $7, $8, $9, $10, $11
+                RETURNING
+                    id,
+                    (SELECT family_id FROM ledgers WHERE id = accounts.ledger_id) as family_id,
+                    name,
+                    account_type as "accountable_type!",
+                    id as accountable_id,
+                    NULL::TEXT as subtype,
+                    current_balance as balance,
+                    NULL::TEXT as "balance_currency?",
+                    currency,
+                    NULL::DECIMAL as cash_balance,
+                    status,
+                    description,
+                    is_included_in_total as include_in_net_worth,
+                    NULL::UUID as "plaid_account_id?",
+                    NULL::UUID as "import_id?",
+                    '{}'::jsonb as locked_attributes,
+                    accounts.created_at,
+                    accounts.updated_at
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
-            RETURNING *
+            SELECT * FROM ins
             "#,
             account.id,
             account.family_id,
             account.name,
-            Investment::TYPE_NAME,
-            investment_id,
-            account.subtype,
-            account.balance,
-            account.balance_currency,
+            "investment",  // Investment maps to investment account_type
             account.currency,
-            account.cash_balance,
+            account.balance,
             account.status,
             account.description,
             account.include_in_net_worth,
-            account.locked_attributes,
             account.created_at,
             account.updated_at
         )
         .fetch_one(&mut *tx)
         .await?;
-        
+
         tx.commit().await?;
-        
         Ok(created_account)
     }
     
@@ -362,38 +419,57 @@ impl Repository<Account> for AccountRepository {
     }
     
     async fn create(&self, entity: Account) -> Result<Account, Self::Error> {
+        // Align to API schema: write only existing columns, SELECT to project back to Account
         let created = sqlx::query_as!(
             Account,
             r#"
-            INSERT INTO accounts (
-                id, family_id, name, accountable_type, accountable_id,
-                subtype, balance, balance_currency, currency,
-                cash_balance, status, description, include_in_net_worth,
-                locked_attributes, created_at, updated_at
+            WITH ins AS (
+                INSERT INTO accounts (
+                    id, ledger_id, name, account_type, currency,
+                    current_balance, status, description, is_included_in_total,
+                    created_at, updated_at
+                )
+                SELECT
+                    $1::uuid,
+                    (SELECT id FROM ledgers WHERE family_id = $2::uuid LIMIT 1),
+                    $3, $4, $5, $6, $7, $8, $9, $10, $11
+                RETURNING
+                    id,
+                    (SELECT family_id FROM ledgers WHERE id = accounts.ledger_id) as family_id,
+                    name,
+                    account_type as "accountable_type!",
+                    id as accountable_id,
+                    NULL::TEXT as subtype,
+                    current_balance as balance,
+                    NULL::TEXT as "balance_currency?",
+                    currency,
+                    NULL::DECIMAL as cash_balance,
+                    status,
+                    description,
+                    is_included_in_total as include_in_net_worth,
+                    NULL::UUID as "plaid_account_id?",
+                    NULL::UUID as "import_id?",
+                    '{}'::jsonb as locked_attributes,
+                    accounts.created_at,
+                    accounts.updated_at
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
-            RETURNING *
+            SELECT * FROM ins
             "#,
             entity.id,
             entity.family_id,
             entity.name,
             entity.accountable_type,
-            entity.accountable_id,
-            entity.subtype,
-            entity.balance,
-            entity.balance_currency,
             entity.currency,
-            entity.cash_balance,
+            entity.balance,
             entity.status,
             entity.description,
             entity.include_in_net_worth,
-            entity.locked_attributes,
             entity.created_at,
             entity.updated_at
         )
         .fetch_one(&*self.pool)
         .await?;
-        
+
         Ok(created)
     }
     
