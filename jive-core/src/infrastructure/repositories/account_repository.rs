@@ -239,27 +239,48 @@ impl AccountRepository {
         &self,
         account_id: Uuid,
         new_balance: Decimal,
-        currency: Option<String>,
+        _currency: Option<String>,
     ) -> Result<Account, RepositoryError> {
+        // Align with API schema: write to current_balance; rebuild Account via projection
+        let now = Utc::now();
         let updated = sqlx::query_as!(
             Account,
             r#"
-            UPDATE accounts 
-            SET 
-                balance = $2,
-                balance_currency = COALESCE($3, balance_currency),
-                updated_at = $4
-            WHERE id = $1
-            RETURNING *
+            WITH updated AS (
+                UPDATE accounts
+                SET current_balance = $2,
+                    updated_at = $3
+                WHERE id = $1
+                RETURNING *
+            )
+            SELECT 
+                u.id,
+                u.ledger_id as "ledger_id: Uuid",
+                u.name,
+                ''::text as accountable_type,
+                gen_random_uuid() as "accountable_id: Uuid",
+                NULL::text as subtype,
+                u.current_balance as "balance: Option<Decimal>",
+                NULL::text as balance_currency,
+                u.currency,
+                NULL::numeric as "cash_balance: Option<Decimal>",
+                u.status,
+                u.description,
+                TRUE as include_in_net_worth,
+                NULL::uuid as "plaid_account_id: Option<Uuid>",
+                NULL::uuid as "import_id: Option<Uuid>",
+                '{}'::jsonb as locked_attributes,
+                u.created_at,
+                u.updated_at
+            FROM updated u
             "#,
             account_id,
             new_balance,
-            currency,
-            Utc::now()
+            now
         )
         .fetch_one(&*self.pool)
         .await?;
-        
+
         Ok(updated)
     }
     
@@ -269,23 +290,46 @@ impl AccountRepository {
         account_id: Uuid,
         status: &str,
     ) -> Result<Account, RepositoryError> {
+        // Align with API schema: update status; rebuild Account via projection
+        let now = Utc::now();
         let updated = sqlx::query_as!(
             Account,
             r#"
-            UPDATE accounts 
-            SET 
-                status = $2,
-                updated_at = $3
-            WHERE id = $1
-            RETURNING *
+            WITH updated AS (
+                UPDATE accounts
+                SET status = $2,
+                    updated_at = $3
+                WHERE id = $1
+                RETURNING *
+            )
+            SELECT 
+                u.id,
+                u.ledger_id as "ledger_id: Uuid",
+                u.name,
+                ''::text as accountable_type,
+                gen_random_uuid() as "accountable_id: Uuid",
+                NULL::text as subtype,
+                u.current_balance as "balance: Option<Decimal>",
+                NULL::text as balance_currency,
+                u.currency,
+                NULL::numeric as "cash_balance: Option<Decimal>",
+                u.status,
+                u.description,
+                TRUE as include_in_net_worth,
+                NULL::uuid as "plaid_account_id: Option<Uuid>",
+                NULL::uuid as "import_id: Option<Uuid>",
+                '{}'::jsonb as locked_attributes,
+                u.created_at,
+                u.updated_at
+            FROM updated u
             "#,
             account_id,
             status,
-            Utc::now()
+            now
         )
         .fetch_one(&*self.pool)
         .await?;
-        
+
         Ok(updated)
     }
     
