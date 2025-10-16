@@ -249,30 +249,24 @@ pub fn entry_result_to_response(result: EntryResult) -> EntryResponse {
 
 /// Convert TransferResult to TransferResponse
 pub fn transfer_result_to_response(result: TransferResult) -> TransferResponse {
-    let fx_details = result.fx_details.map(|fx| FxDetailsResponse {
-        rate: fx.rate.to_string(),
-        source_amount: fx.source_amount.amount.to_string(),
-        source_currency: fx.source_amount.currency.to_string(),
-        target_amount: fx.target_amount.amount.to_string(),
-        target_currency: fx.target_amount.currency.to_string(),
-    });
+    // FX details not present in current core TransferResult; keep None
+    let fx_details = None;
 
     TransferResponse {
         transfer_id: result.transfer_id.as_uuid(),
-        from_account_id: result.from_account_id.as_uuid(),
-        to_account_id: result.to_account_id.as_uuid(),
-        amount: result.amount.amount.to_string(),
-        currency: result.amount.currency.to_string(),
-        date: result.date.format("%Y-%m-%d").to_string(),
-        name: result.name,
+        from_account_id: result.from_transaction.account_id.as_uuid(),
+        to_account_id: result.to_transaction.account_id.as_uuid(),
+        amount: result.from_transaction.amount.amount.to_string(),
+        currency: result.from_transaction.amount.currency.to_string(),
+        date: result.from_transaction.date.format("%Y-%m-%d").to_string(),
+        name: result.from_transaction.name.clone(),
         fx_details,
-        transaction_ids: result
-            .transaction_ids
-            .into_iter()
-            .map(|id| id.as_uuid())
-            .collect(),
-        from_account_new_balance: result.from_account_new_balance.amount.to_string(),
-        to_account_new_balance: result.to_account_new_balance.amount.to_string(),
+        transaction_ids: vec![
+            result.from_transaction.transaction_id.as_uuid(),
+            result.to_transaction.transaction_id.as_uuid(),
+        ],
+        from_account_new_balance: result.from_balance.amount.to_string(),
+        to_account_new_balance: result.to_balance.amount.to_string(),
         created_at: result.created_at.to_rfc3339(),
     }
 }
@@ -293,10 +287,10 @@ pub fn bulk_import_result_to_response(result: BulkImportResult) -> BulkImportRes
             .errors
             .into_iter()
             .map(|e| ImportErrorResponse {
-                index: e.index,
+                index: e.row_index,
                 external_id: e.external_id,
                 error_message: e.error_message,
-                error_code: e.error_code,
+                error_code: String::new(),
             })
             .collect(),
         completed_at: Utc::now().to_rfc3339(),
@@ -326,8 +320,10 @@ fn parse_transaction_type(s: &str) -> Result<TransactionType> {
         "expense" => Ok(TransactionType::Expense),
         "transfer" => Ok(TransactionType::Transfer),
         _ => Err(JiveError::ValidationError {
-            field: "transaction_type".to_string(),
-            message: format!("Invalid transaction type: {}. Must be 'income', 'expense', or 'transfer'", s),
+            message: format!(
+                "Invalid transaction type: {}. Must be 'income', 'expense', or 'transfer'",
+                s
+            ),
         }),
     }
 }
@@ -344,11 +340,19 @@ fn transaction_type_to_string(t: TransactionType) -> String {
 /// Parse import policy string to enum
 fn parse_import_policy(s: &str) -> Result<ImportPolicy> {
     match s.to_lowercase().as_str() {
-        "skip_duplicates" => Ok(ImportPolicy::SkipDuplicates),
-        "update_existing" => Ok(ImportPolicy::UpdateExisting),
-        "fail_on_duplicate" => Ok(ImportPolicy::FailOnDuplicate),
+        "skip_duplicates" => Ok(ImportPolicy {
+            upsert: false,
+            conflict_strategy: ConflictStrategy::Skip,
+        }),
+        "update_existing" => Ok(ImportPolicy {
+            upsert: true,
+            conflict_strategy: ConflictStrategy::Overwrite,
+        }),
+        "fail_on_duplicate" => Ok(ImportPolicy {
+            upsert: false,
+            conflict_strategy: ConflictStrategy::Fail,
+        }),
         _ => Err(JiveError::ValidationError {
-            field: "policy".to_string(),
             message: format!(
                 "Invalid import policy: {}. Must be 'skip_duplicates', 'update_existing', or 'fail_on_duplicate'",
                 s
