@@ -15,6 +15,10 @@ pub struct TransactionMetrics {
     pub legacy_latency_ns_sum: Arc<AtomicU64>,
     pub legacy_latency_count: Arc<AtomicU64>,
     pub shadow_diff_count: Arc<AtomicU64>,
+    // Phase 1: Transaction operation counters
+    pub transaction_created: Arc<AtomicU64>,
+    pub transaction_updated: Arc<AtomicU64>,
+    pub transaction_deleted: Arc<AtomicU64>,
 }
 
 impl TransactionMetrics {
@@ -35,6 +39,27 @@ impl TransactionMetrics {
 
     pub fn record_shadow_diff(&self) {
         self.shadow_diff_count.fetch_add(1, Ordering::Relaxed);
+    }
+
+    // Phase 1: Transaction operation metrics
+    pub fn increment_transaction_created(&self) {
+        self.transaction_created.fetch_add(1, Ordering::Relaxed);
+    }
+
+    pub fn increment_transaction_updated(&self) {
+        self.transaction_updated.fetch_add(1, Ordering::Relaxed);
+    }
+
+    pub fn increment_transaction_deleted(&self) {
+        self.transaction_deleted.fetch_add(1, Ordering::Relaxed);
+    }
+
+    pub fn get_transaction_counts(&self) -> (u64, u64, u64) {
+        (
+            self.transaction_created.load(Ordering::Relaxed),
+            self.transaction_updated.load(Ordering::Relaxed),
+            self.transaction_deleted.load(Ordering::Relaxed),
+        )
     }
 }
 

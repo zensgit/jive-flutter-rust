@@ -628,7 +628,7 @@ pub async fn get_crypto_prices(
         .unwrap_or_else(|| vec!["BTC".to_string(), "ETH".to_string(), "USDT".to_string()]);
 
     // Get crypto prices from exchange_rates table
-    let prices = sqlx::query!(
+    let prices = sqlx::query(
         r#"
         SELECT 
             from_currency as crypto_code,
@@ -640,9 +640,9 @@ pub async fn get_crypto_prices(
         AND created_at > NOW() - INTERVAL '5 minutes'
         ORDER BY created_at DESC
         "#,
-        fiat_currency,
-        &crypto_codes
     )
+    .bind(&fiat_currency)
+    .bind(&crypto_codes)
     .fetch_all(&pool)
     .await
     .map_err(|_| ApiError::InternalServerError)?;
@@ -651,14 +651,18 @@ pub async fn get_crypto_prices(
     let mut last_updated: Option<chrono::NaiveDateTime> = None;
 
     for row in prices {
-        let price = Decimal::ONE / row.price;
-        crypto_prices.insert(row.crypto_code, price);
-        // created_at 可能为 NULL，防御性处理
-        if let Some(created_at) = row.created_at {
-            let created_naive = created_at.naive_utc();
-            if last_updated.map(|lu| created_naive > lu).unwrap_or(true) {
-                last_updated = Some(created_naive);
-            }
+        let code: String = row.get("crypto_code");
+        let rate: Decimal = row.get("price");
+        let price = Decimal::ONE / rate;
+        crypto_prices.insert(code, price);
+        // created_at 可能为空；回退为当前时间
+        let created_naive = row
+            .try_get::<Option<chrono::DateTime<Utc>>, _>("created_at")
+            .unwrap_or(None)
+            .map(|dt| dt.naive_utc())
+            .unwrap_or_else(|| Utc::now().naive_utc());
+        if last_updated.map(|lu| created_naive > lu).unwrap_or(true) {
+            last_updated = Some(created_naive);
         }
     }
 

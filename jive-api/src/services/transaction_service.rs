@@ -1,20 +1,41 @@
+//! Transaction Service (DEPRECATED)
+//!
+//! ⚠️ This service is deprecated and will be removed in a future version.
+//! Use `jive-core` transaction processing via `TransactionAdapter` instead.
+//!
+//! Migration: See TRANSACTION_UNIFICATION_PLAN.md
+
 use crate::error::{ApiError, ApiResult};
 use crate::models::transaction::{Transaction, TransactionCreate, TransactionType};
 use chrono::{DateTime, Utc};
+use rust_decimal::Decimal;
 use sqlx::PgPool;
 use std::collections::HashMap;
 use uuid::Uuid;
 
+#[deprecated(
+    since = "1.0.0",
+    note = "Use jive-core transaction processing via TransactionAdapter instead. See TRANSACTION_UNIFICATION_PLAN.md"
+)]
 pub struct TransactionService {
     pool: PgPool,
 }
 
+#[allow(deprecated)]
 impl TransactionService {
+    #[deprecated(
+        since = "1.0.0",
+        note = "Use TransactionAdapter::new instead"
+    )]
     pub fn new(pool: PgPool) -> Self {
         Self { pool }
     }
 
     /// 创建交易并更新账户余额
+    #[deprecated(
+        since = "1.0.0",
+        note = "Use TransactionAdapter::create_transaction instead"
+    )]
     pub async fn create_transaction(&self, data: TransactionCreate) -> ApiResult<Transaction> {
         let mut tx = self
             .pool
@@ -28,7 +49,7 @@ impl TransactionService {
         let data_snapshot = data.clone();
 
         // 获取账户当前余额
-        let current_balance: Option<(f64,)> =
+        let current_balance: Option<(Decimal,)> =
             sqlx::query_as("SELECT current_balance FROM accounts WHERE id = $1 FOR UPDATE")
                 .bind(data.account_id)
                 .fetch_optional(&mut *tx)
@@ -127,7 +148,7 @@ impl TransactionService {
         target_account_id: Uuid,
     ) -> ApiResult<()> {
         // 获取目标账户余额
-        let target_balance: Option<(f64,)> =
+        let target_balance: Option<(Decimal,)> =
             sqlx::query_as("SELECT current_balance FROM accounts WHERE id = $1 FOR UPDATE")
                 .bind(target_account_id)
                 .fetch_optional(&mut **tx)
@@ -179,6 +200,10 @@ impl TransactionService {
     }
 
     /// 批量导入交易
+    #[deprecated(
+        since = "1.0.0",
+        note = "Use TransactionAdapter::bulk_import instead"
+    )]
     pub async fn bulk_import(
         &self,
         transactions: Vec<TransactionCreate>,
@@ -190,14 +215,14 @@ impl TransactionService {
             .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         let mut created_transactions = Vec::new();
-        let mut account_balances: HashMap<Uuid, f64> = HashMap::new();
+        let mut account_balances: HashMap<Uuid, Decimal> = HashMap::new();
 
         // 预加载所有相关账户的余额
         for trans in &transactions {
             if let std::collections::hash_map::Entry::Vacant(e) =
                 account_balances.entry(trans.account_id)
             {
-                let balance: Option<(f64,)> =
+                let balance: Option<(Decimal,)> =
                     sqlx::query_as("SELECT current_balance FROM accounts WHERE id = $1")
                         .bind(trans.account_id)
                         .fetch_optional(&mut *tx)
@@ -278,6 +303,10 @@ impl TransactionService {
     }
 
     /// 智能分类交易
+    #[deprecated(
+        since = "1.0.0",
+        note = "Use TransactionAdapter::auto_categorize instead"
+    )]
     pub async fn auto_categorize(&self, transaction_id: Uuid) -> ApiResult<Option<Uuid>> {
         // 获取交易信息
         let transaction: Option<(String, Option<String>, f64)> =
@@ -345,6 +374,10 @@ impl TransactionService {
     }
 
     /// 获取交易统计
+    #[deprecated(
+        since = "1.0.0",
+        note = "Use TransactionAdapter::get_statistics instead"
+    )]
     pub async fn get_statistics(
         &self,
         ledger_id: Uuid,

@@ -11,6 +11,7 @@ pub mod payees;
 pub mod rules;
 pub mod template_handler;
 pub mod transactions;
+pub mod transactions_shadow_example;
 // Demo endpoints are optional
 pub mod category_handler;
 pub mod currency_handler;

@@ -1,14 +1,16 @@
 #![allow(dead_code, unused_imports)]
 
+pub mod adapters;
+pub mod application;
 pub mod auth;
+pub mod config;
 pub mod error;
 pub mod handlers;
-pub mod config;
 pub mod metrics;
-pub mod adapters;
 pub mod middleware;
 pub mod models;
 pub mod services;
+pub mod shadow_mode;
 pub mod utils;
 pub mod ws;
 
@@ -24,6 +26,7 @@ pub struct AppState {
     pub ws_manager: Option<std::sync::Arc<crate::ws::WsConnectionManager>>, // Optional WebSocket manager
     pub redis: Option<redis::aio::ConnectionManager>,
     pub metrics: AppMetrics,
+    pub transaction_adapter: Option<Arc<crate::adapters::transaction_adapter::TransactionAdapter>>, // Transaction adapter for clean architecture
 }
 
 /// Application metrics
@@ -269,6 +272,13 @@ impl FromRef<AppState> for AppMetrics {
 impl FromRef<AppState> for Option<redis::aio::ConnectionManager> {
     fn from_ref(app_state: &AppState) -> Option<redis::aio::ConnectionManager> {
         app_state.redis.clone()
+    }
+}
+
+// TransactionAdapter FromRef implementation
+impl FromRef<AppState> for Option<Arc<crate::adapters::transaction_adapter::TransactionAdapter>> {
+    fn from_ref(app_state: &AppState) -> Option<Arc<crate::adapters::transaction_adapter::TransactionAdapter>> {
+        app_state.transaction_adapter.clone()
     }
 }
 
