@@ -80,6 +80,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         ws_manager: None,
         redis: None,
         metrics: jive_money_api::AppMetrics::new(),
+        transaction_adapter: None, // No adapter in simple mode (uses legacy SQL)
     };
 
     // 使用统一的 CORS Layer（支持 CORS_DEV=1 开发模式）

@@ -773,7 +773,11 @@ pub async fn list_transactions(
     claims: Claims,
     Query(params): Query<TransactionQuery>,
     State(pool): State<PgPool>,
+    State(_adapter): State<Option<std::sync::Arc<crate::adapters::transaction_adapter::TransactionAdapter>>>,
 ) -> ApiResult<Json<Vec<TransactionResponse>>> {
+    // Note: list_transactions uses complex filtering - keep legacy implementation for now
+    // Adapter pattern is primarily for CRUD operations (create/update/delete)
+    // Query/list operations are fine with direct SQL for now
     // 验证权限
     let user_id = claims.user_id()?;
     let family_id = claims
@@ -1046,6 +1050,7 @@ pub async fn get_transaction(
 pub async fn create_transaction(
     claims: Claims,
     State(pool): State<PgPool>,
+    State(adapter): State<Option<std::sync::Arc<crate::adapters::transaction_adapter::TransactionAdapter>>>,
     Json(req): Json<CreateTransactionRequest>,
 ) -> ApiResult<Json<TransactionResponse>> {
     // 验证权限
@@ -1076,82 +1081,143 @@ pub async fn create_transaction(
         return Err(ApiError::Forbidden);
     }
 
-    let id = Uuid::new_v4();
-    let tags_json = req.tags.map(|t| serde_json::json!(t));
+    // 使用 adapter 创建交易 (新架构) 或回退到 legacy 实现
+    if let Some(adapter) = adapter {
+        // ✅ 新架构：通过 Adapter → AppService 处理
+        // Convert handler's CreateTransactionRequest to adapter's CreateTransactionRequest
+        let adapter_req = crate::models::transaction::CreateTransactionRequest {
+            ledger_id: req.ledger_id,
+            account_id: req.account_id,
+            transaction_date: req.transaction_date.and_hms_opt(0, 0, 0).unwrap().and_utc(),
+            amount: req.amount,
+            transaction_type: match req.transaction_type.as_str() {
+                "income" => crate::models::transaction::TransactionType::Income,
+                "expense" => crate::models::transaction::TransactionType::Expense,
+                "transfer" => crate::models::transaction::TransactionType::Transfer,
+                _ => crate::models::transaction::TransactionType::Expense, // default to expense
+            },
+            category_id: req.category_id,
+            payee: req.payee_name,
+            notes: req.notes,
+            target_account_id: None, // handler doesn't support transfer targets yet
+        };
 
-    // 开始事务
-    let mut tx = pool
-        .begin()
-        .await
-        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+        // Note: adapter returns models::transaction::TransactionResponse which is wrapped in Json already
+        let Json(adapter_response) = adapter.create_transaction(adapter_req).await?;
 
-    // 创建交易 - 包含created_by字段
-    sqlx::query(
-        r#"
-        INSERT INTO transactions (
-            id, account_id, ledger_id, amount, transaction_type,
-            transaction_date, category_id, category_name, payee_id, payee,
-            description, notes, tags, location, receipt_url, status,
-            is_recurring, recurring_rule, created_by, created_at, updated_at
-        ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-            $11, $12, $13, $14, $15, $16, $17, $18, $19, NOW(), NOW()
+        // Convert to handler's TransactionResponse format
+        let response = TransactionResponse {
+            id: adapter_response.id,
+            account_id: adapter_response.account_id,
+            ledger_id: adapter_response.ledger_id,
+            amount: adapter_response.amount,
+            transaction_type: match adapter_response.transaction_type {
+                crate::models::transaction::TransactionType::Income => "income".to_string(),
+                crate::models::transaction::TransactionType::Expense => "expense".to_string(),
+                crate::models::transaction::TransactionType::Transfer => "transfer".to_string(),
+            },
+            transaction_date: adapter_response.transaction_date.date_naive(),
+            category_id: adapter_response.category_id,
+            category_name: adapter_response.category_name,
+            payee_id: None, // adapter doesn't return payee_id
+            payee_name: adapter_response.payee,
+            description: None, // adapter doesn't have description field
+            notes: adapter_response.notes,
+            tags: Vec::new(), // adapter doesn't have tags
+            location: None, // adapter doesn't have location
+            receipt_url: None, // adapter doesn't have receipt_url
+            status: match adapter_response.status {
+                crate::models::transaction::TransactionStatus::Pending => "pending".to_string(),
+                crate::models::transaction::TransactionStatus::Cleared => "cleared".to_string(),
+                crate::models::transaction::TransactionStatus::Reconciled => "reconciled".to_string(),
+                crate::models::transaction::TransactionStatus::Void => "void".to_string(),
+            },
+            is_recurring: false, // adapter doesn't have is_recurring
+            recurring_rule: None, // adapter doesn't have recurring_rule
+            created_at: adapter_response.created_at,
+            updated_at: adapter_response.updated_at,
+        };
+
+        Ok(Json(response))
+    } else {
+        // ⚠️ Legacy 实现（当 USE_CORE_TRANSACTIONS=false 时使用）
+        let id = Uuid::new_v4();
+        let tags_json = req.tags.map(|t| serde_json::json!(t));
+
+        // 开始事务
+        let mut tx = pool
+            .begin()
+            .await
+            .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+        // 创建交易 - 包含created_by字段
+        sqlx::query(
+            r#"
+            INSERT INTO transactions (
+                id, account_id, ledger_id, amount, transaction_type,
+                transaction_date, category_id, category_name, payee_id, payee,
+                description, notes, tags, location, receipt_url, status,
+                is_recurring, recurring_rule, created_by, created_at, updated_at
+            ) VALUES (
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+                $11, $12, $13, $14, $15, $16, $17, $18, $19, NOW(), NOW()
+            )
+            "#,
         )
-        "#,
-    )
-    .bind(id)
-    .bind(req.account_id)
-    .bind(req.ledger_id)
-    .bind(req.amount)
-    .bind(&req.transaction_type)
-    .bind(req.transaction_date)
-    .bind(req.category_id)
-    .bind::<Option<String>>(None) // category_name is NULL, will be joined from categories table
-    .bind(req.payee_id)
-    .bind(req.payee_name.clone()) // payee is the legacy column for payee_name text
-    .bind(req.description.clone())
-    .bind(req.notes.clone())
-    .bind(tags_json)
-    .bind(req.location.clone())
-    .bind(req.receipt_url.clone())
-    .bind("pending")
-    .bind(req.is_recurring.unwrap_or(false))
-    .bind(req.recurring_rule.clone())
-    .bind(user_id) // created_by
-    .execute(&mut *tx)
-    .await
-    .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-
-    // 更新账户余额
-    // Note: For transfers, the handler treats them as expense from source account
-    // The TransactionService should be used for proper transfer handling (creates 2 transactions)
-    let amount_change = match req.transaction_type.as_str() {
-        "expense" => -req.amount,
-        "transfer" => -req.amount, // Transfer out from source account
-        _ => req.amount,           // Income or other types add to balance
-    };
-
-    sqlx::query(
-        r#"
-        UPDATE accounts
-        SET current_balance = current_balance + $1,
-            updated_at = NOW()
-        WHERE id = $2
-        "#,
-    )
-    .bind(amount_change)
-    .bind(req.account_id)
-    .execute(&mut *tx)
-    .await
-    .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-
-    // 提交事务
-    tx.commit()
+        .bind(id)
+        .bind(req.account_id)
+        .bind(req.ledger_id)
+        .bind(req.amount)
+        .bind(&req.transaction_type)
+        .bind(req.transaction_date)
+        .bind(req.category_id)
+        .bind::<Option<String>>(None) // category_name is NULL, will be joined from categories table
+        .bind(req.payee_id)
+        .bind(req.payee_name.clone()) // payee is the legacy column for payee_name text
+        .bind(req.description.clone())
+        .bind(req.notes.clone())
+        .bind(tags_json)
+        .bind(req.location.clone())
+        .bind(req.receipt_url.clone())
+        .bind("pending")
+        .bind(req.is_recurring.unwrap_or(false))
+        .bind(req.recurring_rule.clone())
+        .bind(user_id) // created_by
+        .execute(&mut *tx)
         .await
         .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
-    // 查询完整的交易信息
-    get_transaction(claims, Path(id), State(pool)).await
+        // 更新账户余额
+        // Note: For transfers, the handler treats them as expense from source account
+        // The TransactionService should be used for proper transfer handling (creates 2 transactions)
+        let amount_change = match req.transaction_type.as_str() {
+            "expense" => -req.amount,
+            "transfer" => -req.amount, // Transfer out from source account
+            _ => req.amount,           // Income or other types add to balance
+        };
+
+        sqlx::query(
+            r#"
+            UPDATE accounts
+            SET current_balance = current_balance + $1,
+                updated_at = NOW()
+            WHERE id = $2
+            "#,
+        )
+        .bind(amount_change)
+        .bind(req.account_id)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+        // 提交事务
+        tx.commit()
+            .await
+            .map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+        // 查询完整的交易信息
+        get_transaction(claims, Path(id), State(pool)).await
+    }
 }
 
 /// 更新交易
@@ -1159,6 +1225,7 @@ pub async fn update_transaction(
     claims: Claims,
     Path(id): Path<Uuid>,
     State(pool): State<PgPool>,
+    State(adapter): State<Option<std::sync::Arc<crate::adapters::transaction_adapter::TransactionAdapter>>>,
     Json(req): Json<UpdateTransactionRequest>,
 ) -> ApiResult<Json<TransactionResponse>> {
     // 验证权限
@@ -1194,6 +1261,27 @@ pub async fn update_transaction(
         "Transaction not found or access denied".to_string(),
     ))?;
 
+    // 使用 adapter 更新交易 (新架构) 或回退到 legacy 实现
+    if let Some(_adapter) = adapter {
+        // ✅ 新架构：通过 Adapter → AppService 处理
+        // Note: adapter.update_transaction expects CreateTransactionRequest with all fields
+        // We need to convert UpdateTransactionRequest, but for now use legacy path
+        // TODO: Enhance adapter to support partial updates
+        // For now, fallback to legacy for update operations
+        legacy_update_transaction(id, req, pool, claims).await
+    } else {
+        // ⚠️ Legacy 实现
+        legacy_update_transaction(id, req, pool, claims).await
+    }
+}
+
+// Legacy update implementation (extracted for reuse)
+async fn legacy_update_transaction(
+    id: Uuid,
+    req: UpdateTransactionRequest,
+    pool: PgPool,
+    claims: Claims,
+) -> ApiResult<Json<TransactionResponse>> {
     // 构建动态更新查询
     let mut query = QueryBuilder::new("UPDATE transactions SET updated_at = NOW()");
 
@@ -1275,6 +1363,7 @@ pub async fn delete_transaction(
     claims: Claims,
     Path(id): Path<Uuid>,
     State(pool): State<PgPool>,
+    State(adapter): State<Option<std::sync::Arc<crate::adapters::transaction_adapter::TransactionAdapter>>>,
 ) -> ApiResult<StatusCode> {
     // 验证权限
     let user_id = claims.user_id()?;
@@ -1291,6 +1380,23 @@ pub async fn delete_transaction(
     ctx.require_permission(Permission::DeleteTransactions)
         .map_err(|_| ApiError::Forbidden)?;
 
+    // 使用 adapter 删除交易 (新架构) 或回退到 legacy 实现
+    if let Some(adapter) = adapter {
+        // ✅ 新架构：通过 Adapter → AppService 处理
+        adapter.delete_transaction(id).await?;
+        Ok(StatusCode::NO_CONTENT)
+    } else {
+        // ⚠️ Legacy 实现
+        legacy_delete_transaction(id, family_id, pool).await
+    }
+}
+
+// Legacy delete implementation (extracted for reuse)
+async fn legacy_delete_transaction(
+    id: Uuid,
+    family_id: Uuid,
+    pool: PgPool,
+) -> ApiResult<StatusCode> {
     // 开始事务
     let mut tx = pool
         .begin()

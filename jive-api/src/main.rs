@@ -23,7 +23,7 @@ use tracing::{error, info, warn};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 // 使用库中的模块
-use jive_money_api::{handlers, services, ws};
+use jive_money_api::{adapters::transaction_adapter::TransactionAdapter, config::TransactionConfig, handlers, services, ws};
 
 // 导入处理器
 use handlers::accounts::*;
@@ -215,12 +215,31 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     };
 
+    // Create shared metrics
+    let metrics = jive_money_api::AppMetrics::new();
+
+    // Create Transaction Adapter based on config
+    let transaction_config = TransactionConfig::default();
+    let transaction_adapter = if transaction_config.use_core_transactions {
+        info!("✅ Transaction logic unified via new architecture.");
+        let transaction_metrics = Arc::new(jive_money_api::metrics::TransactionMetrics::default());
+        Some(Arc::new(TransactionAdapter::new(
+            transaction_config,
+            transaction_metrics,
+            pool.clone(),
+        )))
+    } else {
+        warn!("⚠️ Using legacy transaction handlers. Set USE_CORE_TRANSACTIONS=true to enable.");
+        None
+    };
+
     // 创建应用状态
     let app_state = AppState {
         pool: pool.clone(),
         ws_manager: Some(ws_manager.clone()),
         redis: redis_manager,
-        metrics: jive_money_api::AppMetrics::new(),
+        metrics,
+        transaction_adapter,
     };
 
     // 启动定时任务（汇率更新等）
