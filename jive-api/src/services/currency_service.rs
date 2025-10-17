@@ -480,8 +480,8 @@ impl CurrencyService {
                 source: row.source.unwrap_or_else(|| "manual".to_string()),
                 // effective_date 为非空（schema 约束）；直接使用
                 effective_date: row.effective_date,
-                // created_at 可能为 NULL；使用当前时间回填
-                created_at: row.created_at.unwrap_or(chrono::Utc::now()),
+                // created_at 为非空（schema 约束）；直接使用
+                created_at: row.created_at,
             })
             .collect())
     }

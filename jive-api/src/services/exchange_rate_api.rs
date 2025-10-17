@@ -1124,8 +1124,8 @@ impl ExchangeRateApiService {
 
         match db_result {
             Ok(Some(record)) => {
-                // updated_at 可能为 NULL（历史数据），使用当前时间回填
-                let updated_at = record.updated_at.unwrap_or(Utc::now());
+                // updated_at 为非空（schema 约束）；直接使用
+                let updated_at = record.updated_at;
                 let age_hours = (Utc::now().signed_duration_since(updated_at)).num_hours();
                 info!("✅ Step 1 SUCCESS: Found historical rate in database for {}->{}: rate={}, age={} hours ago",
                     crypto_code, fiat_currency, record.rate, age_hours);
